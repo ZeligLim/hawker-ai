@@ -1,97 +1,50 @@
 'use client';
 
 import Link from 'next/link';
+import {
+  ClipboardList,
+  CupSoda,
+  House,
+  IceCreamCone,
+  Leaf,
+  Menu,
+  Soup,
+  UserRound,
+  UtensilsCrossed,
+} from 'lucide-react';
 import { useState } from 'react';
 import { HawkerSearchBar } from '@/components/hawker-search-bar';
 
-const iconProps = {
-  width: 18,
-  height: 18,
-  viewBox: '0 0 24 24',
-  fill: 'none',
-  stroke: 'currentColor',
-  strokeWidth: 1.8,
-  strokeLinecap: 'round' as const,
-  strokeLinejoin: 'round' as const,
-};
-
 function RiceIcon() {
-  return (
-    <svg {...iconProps} aria-hidden="true" viewBox="0 0 24 24">
-      <path d="M4 13c2-3 5-5 8-5s6 2 8 5c-1.4 3.8-4.7 6-8 6s-6.6-2.2-8-6Z" />
-      <path d="M8 13h8" />
-      <path d="M9 10c.7 1.2 1.7 2 3 2s2.3-.8 3-2" />
-    </svg>
-  );
+  return <UtensilsCrossed className="h-[18px] w-[18px]" strokeWidth={1.8} />;
 }
 
 function NoodleIcon() {
-  return (
-    <svg {...iconProps} aria-hidden="true" viewBox="0 0 24 24">
-      <path d="M7 3v12a5 5 0 0 0 10 0V3" />
-      <path d="M7 7h10M7 11h10" />
-      <path d="M10 3v12" />
-      <path d="M14 3v12" />
-    </svg>
-  );
+  return <Soup className="h-[18px] w-[18px]" strokeWidth={1.8} />;
 }
 
 function DrinkIcon() {
-  return (
-    <svg {...iconProps} aria-hidden="true" viewBox="0 0 24 24">
-      <path d="M7 4h10l-1 13a4 4 0 0 1-8 0L7 4Z" />
-      <path d="M10 4V2M14 4V2" />
-      <path d="M9 19h6" />
-    </svg>
-  );
+  return <CupSoda className="h-[18px] w-[18px]" strokeWidth={1.8} />;
 }
 
 function DessertIcon() {
-  return (
-    <svg {...iconProps} aria-hidden="true" viewBox="0 0 24 24">
-      <path d="M7 12h10a3 3 0 1 1-3 3h-4a3 3 0 1 1-3-3Z" />
-      <path d="M12 6v6M9.5 8.5h5" />
-    </svg>
-  );
+  return <IceCreamCone className="h-[18px] w-[18px]" strokeWidth={1.8} />;
 }
 
 function HomeIcon({ active }: { active: boolean }) {
-  return (
-    <svg {...iconProps} aria-hidden="true">
-      <path d="M3 10.5L12 3l9 7.5" />
-      <path d="M5 9.5V20h14V9.5" />
-      {active ? <path d="M9 20v-6h6v6" /> : null}
-    </svg>
-  );
+  return <House className="h-[18px] w-[18px]" strokeWidth={1.8} fill={active ? 'currentColor' : 'none'} />;
 }
 
-function MenuIcon({ active }: { active: boolean }) {
-  return (
-    <svg {...iconProps} aria-hidden="true">
-      <path d="M4 7h16M4 12h16M4 17h16" />
-      {active ? <path d="M7 8.5h10M7 13.5h10" /> : null}
-    </svg>
-  );
+function MenuIcon() {
+  return <Menu className="h-[18px] w-[18px]" strokeWidth={1.8} />;
 }
 
 function OrdersIcon({ active }: { active: boolean }) {
-  return (
-    <svg {...iconProps} aria-hidden="true">
-      <path d="M7 4h10l2 2v14H5V6l2-2Z" />
-      <path d="M9 10h6M9 14h6" />
-      {active ? <path d="M9 4v4h6V4" /> : null}
-    </svg>
-  );
+  return <ClipboardList className="h-[18px] w-[18px]" strokeWidth={1.8} fill={active ? 'currentColor' : 'none'} />;
 }
 
 function ProfileIcon({ active }: { active: boolean }) {
-  return (
-    <svg {...iconProps} aria-hidden="true">
-      <circle cx="12" cy="8" r="4" />
-      <path d="M5 19c1.7-2.8 4-4.2 7-4.2s5.3 1.4 7 4.2" />
-      {active ? <path d="M9 6.5a3 3 0 0 1 6 0" /> : null}
-    </svg>
-  );
+  return <UserRound className="h-[18px] w-[18px]" strokeWidth={1.8} fill={active ? 'currentColor' : 'none'} />;
 }
 
 const navItems = [
@@ -129,15 +82,6 @@ const menuItems = {
     { name: 'Kuih', price: 2.5, vegetarian: true },
   ],
 } as const;
-
-function LeafIcon() {
-  return (
-    <svg {...iconProps} aria-hidden="true" viewBox="0 0 24 24">
-      <path d="M18 3c-7 0-12 5-12 12 0 2.2.7 4.3 2 6 2.1-1.3 4.2-2.6 6.2-4.4 2.5-2.2 4.8-4.9 5.8-9.6Z" />
-      <path d="M7 14c2.5-1.8 4.5-4 6-7" />
-    </svg>
-  );
-}
 
 export function MenuPage() {
   const [searchValue, setSearchValue] = useState('');
@@ -222,7 +166,7 @@ export function MenuPage() {
 
                           {item.vegetarian ? (
                             <div className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-[#ecfdf5] text-[#166534] shadow-[0_8px_20px_rgba(15,23,42,0.12)]">
-                              <LeafIcon />
+                              <Leaf className="h-[14px] w-[14px]" strokeWidth={1.8} />
                             </div>
                           ) : null}
 
