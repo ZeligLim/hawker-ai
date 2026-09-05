@@ -233,22 +233,23 @@ export function HomePage() {
 
             <form id="search" onSubmit={handleSubmit} className="mt-5">
               <div className="flex items-center gap-3 rounded-[18px] border border-[#dfe3ea] bg-[#f7f7f7] px-3 py-2.5 transition focus-within:border-[#c7ced8] focus-within:bg-[#f2f2f2]">
-                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#1d1d1f] shadow-[0_8px_20px_rgba(15,23,42,0.05)]">
+                <span className="flex h-8 w-8 items-center justify-center text-[#1d1d1f]">
                   <SearchIcon />
                 </span>
                 <input
                   value={query}
                   onChange={(event) => setQuery(event.target.value)}
                   aria-label="Search for dishes, ingredients or cravings"
-                  placeholder="Search for dishes, ingredients or cravings..."
+                  placeholder="Describe your cravings"
                   className="h-10 flex-1 border-0 bg-transparent text-sm text-[#1d1d1f] placeholder:text-[#6e6e73] focus:outline-none"
                 />
                 <button
                   type="submit"
+                  aria-label="Search for dishes"
                   disabled={isLoading}
-                  className="rounded-full bg-[#1d1d1f] px-3 py-2 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
+                  className="flex h-10 w-10 items-center justify-center rounded-full text-[#1d1d1f] transition hover:bg-black/5 disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  {isLoading ? 'Searching...' : 'Search'}
+                  <SearchIcon />
                 </button>
               </div>
             </form>
