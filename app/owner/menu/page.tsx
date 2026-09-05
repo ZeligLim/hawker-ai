@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowLeft, Plus } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { useState } from 'react';
 
 type OwnerDish = {
@@ -54,11 +54,7 @@ export default function OwnerMenuPage() {
       <div className="mx-auto max-w-[760px]">
         <header className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <Link href="/owner" className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white shadow-sm" aria-label="Back to owner dashboard">
-              <ArrowLeft className="h-5 w-5" />
-            </Link>
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#6e6e73]">Owner app</p>
               <h1 className="mt-1 text-3xl font-semibold tracking-[-0.06em]">Menu</h1>
             </div>
           </div>

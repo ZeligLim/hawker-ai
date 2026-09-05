@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowLeft, ClipboardList, UtensilsCrossed } from 'lucide-react';
+import { ClipboardList, UtensilsCrossed } from 'lucide-react';
 import { useAuth } from '@/components/auth-provider';
 
 const stats = [
@@ -18,12 +18,8 @@ export default function OwnerDashboardPage() {
       <div className="mx-auto max-w-[960px]">
         <header className="flex items-center justify-between gap-4">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#6e6e73]">Hawker owner</p>
             <h1 className="mt-1 text-3xl font-semibold tracking-[-0.06em]">Good evening{profile?.displayName ? `, ${profile.displayName}` : ''}</h1>
           </div>
-          <Link href="/profile" className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white shadow-sm" aria-label="Back to customer profile">
-            <ArrowLeft className="h-5 w-5" />
-          </Link>
         </header>
 
         <section className="mt-6 grid gap-3 sm:grid-cols-3">
