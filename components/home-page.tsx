@@ -72,6 +72,15 @@ function SearchIcon() {
   );
 }
 
+function LeafIcon() {
+  return (
+    <svg {...iconProps} aria-hidden="true" viewBox="0 0 24 24">
+      <path d="M18 3c-7 0-12 5-12 12 0 2.2.7 4.3 2 6 2.1-1.3 4.2-2.6 6.2-4.4 2.5-2.2 4.8-4.9 5.8-9.6Z" />
+      <path d="M7 14c2.5-1.8 4.5-4 6-7" />
+    </svg>
+  );
+}
+
 function HomeIcon({ active }: { active: boolean }) {
   return (
     <svg {...iconProps} aria-hidden="true">
@@ -281,42 +290,44 @@ export function HomePage() {
             {!isLoading && !error && (
               <div className="mt-4 space-y-3">
                 {featuredDishes.map((dish) => (
-                  <article key={dish.id} className="flex items-center gap-3 rounded-[22px] border border-[#e5e7eb] bg-white p-3 shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
-                    <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-[18px] bg-[linear-gradient(135deg,#f8e6c1_0%,#e6d4b0_100%)] text-xs font-semibold uppercase tracking-[0.22em] text-[#5c4b1d]">
-                      {dish.name.split(' ')[0]}
+                  <article key={dish.id} className="rounded-[22px] border border-[#e5e7eb] bg-white p-3 shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
+                    <div className="relative overflow-hidden rounded-[18px] bg-[linear-gradient(135deg,#f8e6c1_0%,#e6d4b0_100%)]">
+                      <div className="flex h-44 items-center justify-center text-xl font-semibold uppercase tracking-[0.28em] text-[#5c4b1d]">
+                        {dish.name.split(' ')[0]}
+                      </div>
+
+                      <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/55 to-transparent" />
+
+                      <div className="absolute left-3 top-3 rounded-full bg-black/70 px-2.5 py-1.5 text-[11px] font-semibold text-white backdrop-blur-sm">
+                        RM {dish.price.toFixed(2)}
+                      </div>
+
+                      {dish.isVegetarian ? (
+                        <div className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-[#ecfdf5] text-[#166534] shadow-[0_8px_20px_rgba(15,23,42,0.12)]">
+                          <LeafIcon />
+                        </div>
+                      ) : null}
                     </div>
 
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="min-w-0">
-                          <h3 className="truncate text-base font-semibold text-[#1d1d1f]">{dish.name}</h3>
-                          <p className="mt-1 text-xs text-[#6e6e73]">{dish.stallName}</p>
-                        </div>
-                        <div className="rounded-full bg-[#f5f5f7] px-2 py-1 text-sm font-medium text-[#1d1d1f]">
-                          RM {dish.price.toFixed(2)}
-                        </div>
+                    <div className="mt-3 flex items-center justify-between gap-3">
+                      <div className="min-w-0">
+                        <h3 className="truncate text-base font-semibold text-[#1d1d1f]">{dish.name}</h3>
+                        <p className="mt-1 text-xs text-[#6e6e73]">{dish.stallName}</p>
                       </div>
+                      <button
+                        type="button"
+                        className="rounded-full bg-[#1d1d1f] px-3 py-1.5 text-xs font-medium text-white"
+                        aria-label={`Add ${dish.name} to your order`}
+                      >
+                        Add
+                      </button>
+                    </div>
 
-                      <div className="mt-2 flex flex-wrap items-center gap-2 text-[10px] font-medium">
-                        {dish.isVegetarian ? (
-                          <span className="rounded-full bg-[#ecfdf5] px-2 py-1 text-[#065f46]">Vegetarian</span>
-                        ) : null}
-                        {dish.isHalal ? <span className="rounded-full bg-[#ecfeff] px-2 py-1 text-[#0f766e]">Halal</span> : null}
-                        <span className="rounded-full bg-[#f5f3ff] px-2 py-1 text-[#6d28d9]">
-                          {dish.spiceLevel <= 1 ? 'Mild' : dish.spiceLevel <= 3 ? 'Medium' : 'Spicy'}
-                        </span>
-                      </div>
-
-                      <div className="mt-3 flex items-center justify-between gap-3">
-                        <span className="text-xs text-[#3c3c43]">{dish.proteinGrams}g protein</span>
-                        <button
-                          type="button"
-                          className="rounded-full bg-[#1d1d1f] px-3 py-1.5 text-xs font-medium text-white"
-                          aria-label={`Add ${dish.name} to your order`}
-                        >
-                          Add
-                        </button>
-                      </div>
+                    <div className="mt-2 flex items-center gap-2 text-[10px] font-medium">
+                      <span className="rounded-full bg-[#f5f3ff] px-2 py-1 text-[#6d28d9]">
+                        {dish.spiceLevel <= 1 ? 'Mild' : dish.spiceLevel <= 3 ? 'Medium' : 'Spicy'}
+                      </span>
+                      <span className="rounded-full bg-[#f5f5f7] px-2 py-1 text-[#3c3c43]">{dish.proteinGrams}g protein</span>
                     </div>
                   </article>
                 ))}
