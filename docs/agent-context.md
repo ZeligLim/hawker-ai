@@ -28,6 +28,8 @@ Build the first customer-facing Hawker home page with table context, natural-lan
 - Supabase migration `002_backend_foundation.sql` adds dish metadata, merchant memberships, table sessions, parent orders, merchant sub-orders, order items, indexes, and RLS policies
 - Owner pages reserve additional bottom space so the fixed four-tab navigation does not cover content
 - Backend writes and local-to-Supabase data migration are not wired into the UI yet
+- Authenticated owner dish APIs are available at `/api/owner/dishes`; order creation uses the atomic `create_order_with_items` RPC through `/api/orders`
+- Table session creation/retrieval is available at `/api/table-sessions`; merchant order status updates are available at `/api/owner/orders/[id]`
 
 ## Current Architecture
 - Frontend: Next.js App Router, TypeScript, React, Tailwind
@@ -49,4 +51,4 @@ Build the first customer-facing Hawker home page with table context, natural-lan
 - Production credentials are still required for live Supabase/OpenRouter operations
 
 ## Next Task
-Next: add typed server-side Supabase repositories and authenticated route handlers for owner dishes, table sessions, and order creation/status updates.
+Next: connect customer cart checkout and owner screens to these APIs, then add storage-backed dish photo uploads.

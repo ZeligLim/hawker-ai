@@ -95,6 +95,33 @@ CREATE POLICY "Members can view their merchant memberships"
   ON merchant_memberships FOR SELECT
   USING (user_id = auth.uid());
 
+CREATE POLICY "Members can create dishes for their stalls"
+  ON dishes FOR INSERT
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM merchant_memberships
+      WHERE merchant_memberships.user_id = auth.uid()
+        AND merchant_memberships.food_outlet_id = dishes.food_outlet_id
+    )
+  );
+
+CREATE POLICY "Members can update dishes for their stalls"
+  ON dishes FOR UPDATE
+  USING (
+    EXISTS (
+      SELECT 1 FROM merchant_memberships
+      WHERE merchant_memberships.user_id = auth.uid()
+        AND merchant_memberships.food_outlet_id = dishes.food_outlet_id
+    )
+  )
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM merchant_memberships
+      WHERE merchant_memberships.user_id = auth.uid()
+        AND merchant_memberships.food_outlet_id = dishes.food_outlet_id
+    )
+  );
+
 CREATE POLICY "Customers can view tables"
   ON hawker_tables FOR SELECT
   USING (true);
