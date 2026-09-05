@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 type OrderRecord = {
   dish: string;
@@ -23,6 +23,12 @@ const defaultOrders: OrderRecord[] = [
   { dish: 'Cendol', place: 'Green Garden Vegetarian', price: 5, date: 'Last week', category: 'Desserts' },
 ];
 
+const defaultProfileState: ProfileState = {
+  name: 'Guest diner',
+  signedIn: false,
+  orders: defaultOrders,
+};
+
 const storageKey = 'hawker-profile';
 
 function readStoredProfile(): Partial<ProfileState> | null {
@@ -39,13 +45,36 @@ function readStoredProfile(): Partial<ProfileState> | null {
 }
 
 export default function ProfilePage() {
-  const storedProfile = readStoredProfile();
-  const [name, setName] = useState(storedProfile?.name ?? 'Guest diner');
-  const [signedIn, setSignedIn] = useState(Boolean(storedProfile?.signedIn));
-  const [orders, setOrders] = useState<OrderRecord[]>(
-    storedProfile?.orders && storedProfile.orders.length > 0 ? storedProfile.orders : defaultOrders,
-  );
-  const [draftName, setDraftName] = useState(storedProfile?.name ?? '');
+  const [profile, setProfile] = useState<ProfileState>(defaultProfileState);
+  const [draftName, setDraftName] = useState('');
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    const restoreProfile = () => {
+      const saved = readStoredProfile();
+      if (!saved) {
+        setProfile(defaultProfileState);
+        setDraftName('');
+        return;
+      }
+
+      const nextProfile: ProfileState = {
+        name: saved.name ?? defaultProfileState.name,
+        signedIn: Boolean(saved.signedIn),
+        orders: saved.orders && saved.orders.length > 0 ? saved.orders : defaultProfileState.orders,
+      };
+
+      setProfile(nextProfile);
+      setDraftName(nextProfile.name === defaultProfileState.name ? '' : nextProfile.name);
+    };
+
+    queueMicrotask(() => {
+      setIsMounted(true);
+      restoreProfile();
+    });
+  }, []);
+
+  const { name, signedIn, orders } = profile;
 
   const favoriteDishes = useMemo(() => {
     const counts = new Map<string, number>();
@@ -72,30 +101,51 @@ export default function ProfilePage() {
     if (!trimmedName) return;
 
     const nextProfile: ProfileState = { name: trimmedName, signedIn: true, orders };
-    setName(trimmedName);
-    setSignedIn(true);
+    setProfile(nextProfile);
+    setDraftName(trimmedName);
     window.localStorage.setItem(storageKey, JSON.stringify(nextProfile));
   };
 
   const handleSignOut = () => {
     const nextProfile: ProfileState = { name: 'Guest diner', signedIn: false, orders: defaultOrders };
-    setName('Guest diner');
-    setSignedIn(false);
+    setProfile(nextProfile);
     setDraftName('');
-    setOrders(defaultOrders);
     window.localStorage.setItem(storageKey, JSON.stringify(nextProfile));
   };
+
+  if (!isMounted) {
+    return (
+      <main className="min-h-screen bg-[#f5f5f7] px-4 pb-28 pt-5 text-[#1d1d1f]">
+        <div className="mx-auto max-w-[430px] sm:max-w-[480px] lg:max-w-[960px]">
+          <section className="rounded-[26px] bg-white p-4 shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#6e6e73]">Profile</p>
+            <h1 className="mt-2 text-3xl font-semibold tracking-[-0.06em]">Sign in</h1>
+            <div className="mt-5 space-y-4">
+              <div>
+                <label htmlFor="name" className="mb-2 block text-sm font-medium text-[#1d1d1f]">
+                  Your name
+                </label>
+                <input
+                  id="name"
+                  value={draftName}
+                  onChange={(event) => setDraftName(event.target.value)}
+                  placeholder="Enter your name"
+                  className="w-full rounded-[18px] bg-[#f5f5f7] px-4 py-3 text-sm text-[#1d1d1f] placeholder:text-[#6e6e73] outline-none"
+                />
+              </div>
+              <button type="button" className="w-full rounded-full bg-[#111827] px-4 py-3 text-sm font-medium text-white">
+                Sign in
+              </button>
+            </div>
+          </section>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-[#f5f5f7] px-4 pb-28 pt-5 text-[#1d1d1f]">
       <div className="mx-auto max-w-[430px] sm:max-w-[480px] lg:max-w-[960px]">
-        <header className="flex items-center gap-3 pb-4">
-          <div className="flex h-10 w-10 items-center justify-center rounded-[14px] bg-[#1d1d1f] text-sm font-semibold text-white">
-            H
-          </div>
-          <p className="text-sm font-medium text-[#1d1d1f]">Setia Hawker Centre · Table 12</p>
-        </header>
-
         {!signedIn ? (
           <section className="rounded-[26px] bg-white p-4 shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
             <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#6e6e73]">Profile</p>

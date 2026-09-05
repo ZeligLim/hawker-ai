@@ -19,13 +19,6 @@ export default function OrdersPage() {
   return (
     <main className="min-h-screen bg-[#f5f5f7] px-4 pb-28 pt-5 text-[#1d1d1f]">
       <div className="mx-auto max-w-[430px] sm:max-w-[480px] lg:max-w-[960px]">
-        <header className="flex items-center gap-3 pb-4">
-          <div className="flex h-10 w-10 items-center justify-center rounded-[14px] bg-[#1d1d1f] text-sm font-semibold text-white">
-            H
-          </div>
-          <p className="text-sm font-medium text-[#1d1d1f]">Setia Hawker Centre · Table 12</p>
-        </header>
-
         <section className="rounded-[26px] bg-white p-4 shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
           <div className="flex items-center justify-between gap-3">
             <div>
