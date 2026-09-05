@@ -58,14 +58,14 @@ export function CustomizationCard({
             const progress = customization.options.length > 1 ? (selectedIndex / (customization.options.length - 1)) * 100 : 100;
             return (
               <>
-                <div className="relative mt-5 h-3 rounded-full bg-[#e5e7eb]" style={{ background: `linear-gradient(to right, #eab308 0%, #f97316 ${progress}%, #dc2626 100%)` }}>
+                <div className="relative mt-5 h-5 rounded-full bg-[#e5e7eb]" style={{ background: `linear-gradient(to right, #eab308 0%, #f97316 ${progress}%, #dc2626 100%)` }}>
                   <input
                     type="range"
                     min="0"
                     max={customization.options.length - 1}
                     value={selectedIndex}
                     onChange={(event) => toggleOption(customization.options[Number(event.target.value)])}
-                    className="absolute inset-0 h-3 w-full cursor-pointer appearance-none rounded-full bg-transparent accent-[#dc2626]"
+                    className="absolute inset-0 h-5 w-full cursor-pointer appearance-none rounded-full bg-transparent accent-[#dc2626]"
                     aria-label="Spice level"
                   />
                 </div>
