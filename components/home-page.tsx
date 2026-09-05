@@ -82,12 +82,11 @@ function HomeIcon({ active }: { active: boolean }) {
   );
 }
 
-function SearchNavIcon({ active }: { active: boolean }) {
+function MenuIcon({ active }: { active: boolean }) {
   return (
     <svg {...iconProps} aria-hidden="true">
-      <circle cx="11" cy="11" r="6.5" />
-      <path d="M16 16L21 21" />
-      {active ? <circle cx="11" cy="11" r="2.25" fill="currentColor" stroke="none" /> : null}
+      <path d="M4 7h16M4 12h16M4 17h16" />
+      {active ? <path d="M7 8.5h10M7 13.5h10" /> : null}
     </svg>
   );
 }
@@ -114,7 +113,7 @@ function ProfileIcon({ active }: { active: boolean }) {
 
 const navItems = [
   { href: '/', label: 'Home', icon: HomeIcon, active: true },
-  { href: '#search', label: 'Search', icon: SearchNavIcon, active: false },
+  { href: '#menu', label: 'Menu', icon: MenuIcon, active: false },
   { href: '/orders', label: 'Orders', icon: OrdersIcon, active: false },
   { href: '/profile', label: 'Profile', icon: ProfileIcon, active: false },
 ];
@@ -241,7 +240,10 @@ export function HomePage() {
             </form>
           </section>
 
-          <section className="mt-6">
+          <section id="menu" className="mt-6">
+            <div className="mb-2 flex items-center justify-between gap-3">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#6e6e73]">Food categories</p>
+            </div>
             <div className="flex gap-2 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {quickFilters.map((filter) => (
                 <button
