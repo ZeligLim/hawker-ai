@@ -110,10 +110,10 @@ const navItems = [
 ];
 
 const categories = [
-  { id: 'rice', label: 'Rice', description: 'Comfort bowls', icon: RiceIcon },
-  { id: 'noodles', label: 'Noodles', description: 'Wok favourites', icon: NoodleIcon },
-  { id: 'drinks', label: 'Drinks', description: 'Cool down', icon: DrinkIcon },
-  { id: 'desserts', label: 'Desserts', description: 'Sweet finish', icon: DessertIcon },
+  { id: 'rice', label: 'Rice', icon: RiceIcon },
+  { id: 'noodles', label: 'Noodles', icon: NoodleIcon },
+  { id: 'drinks', label: 'Drinks', icon: DrinkIcon },
+  { id: 'desserts', label: 'Desserts', icon: DessertIcon },
 ] as const;
 
 const menuItems = {
@@ -173,18 +173,16 @@ export function MenuPage() {
           </section>
 
           <section className="mt-6">
-            <div className="mb-3 flex items-center justify-between gap-3">
-              <h1 className="text-[1.85rem] font-semibold tracking-[-0.06em] text-[#1d1d1f]">Menu</h1>
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              {categories.map(({ id, label, description, icon: Icon }) => (
-                <div key={id} className="rounded-[20px] border border-[#e5e7eb] bg-white p-3 shadow-[0_10px_22px_rgba(15,23,42,0.03)]">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-[14px] bg-[#f5f5f7] text-[#1d1d1f]">
-                    <Icon />
-                  </div>
-                  <p className="mt-3 text-base font-semibold text-[#1d1d1f]">{label}</p>
-                  <p className="mt-1 text-xs text-[#6e6e73]">{description}</p>
-                </div>
+            <div className="flex gap-3 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              {categories.map(({ id, icon: Icon }) => (
+                <button
+                  key={id}
+                  type="button"
+                  aria-label={`Browse ${id} category`}
+                  className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-[#e5e7eb] bg-[#f5f5f7] text-[#1d1d1f] shadow-[0_8px_18px_rgba(15,23,42,0.02)] transition hover:border-[#d4d9df]"
+                >
+                  <Icon />
+                </button>
               ))}
             </div>
           </section>
@@ -196,7 +194,6 @@ export function MenuPage() {
                   <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#f5f5f7] text-[#1d1d1f]">
                     <Icon />
                   </div>
-                  <h2 className="text-lg font-semibold tracking-[-0.04em] text-[#1d1d1f]">{label}</h2>
                 </div>
 
                 <div className="space-y-3">
@@ -204,7 +201,7 @@ export function MenuPage() {
                     <div key={item.name} className="flex items-center justify-between gap-3 rounded-[18px] border border-[#e5e7eb] bg-[#fafafa] p-3">
                       <div className="flex items-center gap-3">
                         <div className="flex h-11 w-11 items-center justify-center rounded-[14px] bg-[#f5f5f7] text-[#1d1d1f]">
-                          <span className="text-[11px] font-semibold uppercase tracking-[0.12em]">{label.slice(0, 2)}</span>
+                          <span className="text-[11px] font-semibold uppercase tracking-[0.12em]">{item.name.slice(0, 2)}</span>
                         </div>
                         <div>
                           <p className="text-sm font-semibold text-[#1d1d1f]">{item.name}</p>
