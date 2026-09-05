@@ -1,7 +1,7 @@
 # Current Project Context
 
 ## Current Phase
-Backend Phase 1: Supabase domain foundation
+Backend MVP complete: Supabase domain, APIs, storage, and checkout
 
 ## Current Feature
 Build the first customer-facing Hawker home page with table context, natural-language search entry, featured dishes, stall discovery, and mobile bottom navigation. The search interaction remains fully on the home screen, and a dedicated menu page now exists for browsing the broader hawker offering by category.
@@ -54,4 +54,4 @@ Build the first customer-facing Hawker home page with table context, natural-lan
 - Production credentials are still required for live Supabase/OpenRouter operations
 
 ## Next Task
-Next: connect customer cart checkout and owner screens to these APIs, then add storage-backed dish photo uploads.
+Next: replace owner browser-local menu/order state with API-backed state once merchant memberships and production Supabase data are seeded.
