@@ -153,7 +153,7 @@ export function MenuPage() {
           </header>
 
           <section className="mt-6 rounded-[24px] border border-[#e5e7eb] bg-white p-4 shadow-[0_14px_28px_rgba(15,23,42,0.04)]">
-            <div className="flex items-center gap-3 rounded-[18px] border border-[#dfe3ea] bg-[#f7f7f7] px-3 py-2.5">
+            <div className="flex items-center gap-3 rounded-[28px] border border-[#e5e7eb] bg-white px-3 py-2.5 shadow-[0_6px_18px_rgba(15,23,42,0.03)]">
               <span className="flex h-8 w-8 items-center justify-center text-[#1d1d1f]">
                 <SearchIcon />
               </span>
