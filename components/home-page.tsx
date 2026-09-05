@@ -224,7 +224,7 @@ export function HomePage() {
 
           <section className="mt-6 rounded-[24px] border border-[#e5e7eb] bg-white p-4 shadow-[0_14px_28px_rgba(15,23,42,0.04)]">
             <form id="search" onSubmit={handleSubmit} className="mt-5">
-              <div className="flex items-center gap-3 rounded-[18px] border border-[#dfe3ea] bg-[#f7f7f7] px-3 py-2.5 transition focus-within:border-[#c7ced8] focus-within:bg-[#f2f2f2]">
+              <div className="flex items-center gap-3 rounded-[28px] border border-[#dfe3ea] bg-[#f7f7f7] px-3 py-2.5 transition focus-within:border-[#c7ced8] focus-within:bg-[#f2f2f2]">
                 <input
                   value={query}
                   onChange={(event) => setQuery(event.target.value)}
