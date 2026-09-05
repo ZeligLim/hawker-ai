@@ -3,29 +3,6 @@
 import { useMemo, useState } from 'react';
 import type { CustomizationOption, DishCustomization } from '@/lib/order/customizations';
 
-function ChiliIcon({ active, level }: { active: boolean; level: number }) {
-  const color = !active ? '#d1d5db' : level <= 2 ? '#eab308' : level <= 3 ? '#f97316' : '#dc2626';
-
-  return (
-    <svg viewBox="0 0 24 24" className="h-7 w-7" aria-hidden="true">
-      <path d="M11.8 7.2c3.2-1.9 6.6-1.3 7.5 1.2 1 2.7-1.3 6.8-4.7 8.9-3.8 2.4-8.3 2-10.1-.8-1.5-2.4.1-5.3 3-6.8 1.3-.7 2.8-1.5 4.3-2.5Z" fill={color} />
-      <path d="M12.1 7.4c-.5-2.2.6-4.1 2.8-4.9M14.5 3.8c1.1-.5 2.2-.3 2.8.4" fill="none" stroke={color} strokeWidth="1.8" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function SpiceLogo({ level, active }: { level: number; active: boolean }) {
-  return (
-    <span className="flex items-end justify-center" aria-hidden="true">
-      {Array.from({ length: level }, (_, index) => (
-        <span key={index} className={index > 0 ? '-ml-2' : undefined}>
-          <ChiliIcon active={active} level={level} />
-        </span>
-      ))}
-    </span>
-  );
-}
-
 export function CustomizationCard({
   dishName,
   basePrice,
@@ -75,29 +52,27 @@ export function CustomizationCard({
 
       {isSpiceCustomization ? (
         <div className="mt-5">
-          <div className="grid grid-cols-5 items-end gap-1">
-            {customization.options.map((option, index) => {
-              const selected = selectedIds.includes(option.id);
-              return (
-                <button
-                  key={option.id}
-                  type="button"
-                  onClick={() => toggleOption(option)}
-                  className={`flex min-h-[76px] flex-col items-center justify-end gap-1 rounded-[14px] px-1 py-2 transition ${
-                    selected ? 'bg-[#fff7ed] ring-2 ring-[#f97316]/30' : 'bg-[#f5f5f7]'
-                  }`}
-                  aria-label={`${option.label}, ${index + 1} ${index === 0 ? 'chili' : 'chilies'}`}
-                  aria-pressed={selected}
-                >
-                  <SpiceLogo level={index + 1} active={selected} />
-                  <span className={`text-[10px] font-medium ${selected ? 'text-[#c2410c]' : 'text-[#6e6e73]'}`}>{index + 1}</span>
-                </button>
-              );
-            })}
-          </div>
-          <p className="mt-2 text-center text-xs font-medium text-[#6e6e73]">
-            {customization.options.find((option) => selectedIds.includes(option.id))?.label}
-          </p>
+          {(() => {
+            const selectedIndex = Math.max(0, customization.options.findIndex((option) => selectedIds.includes(option.id)));
+            const selectedOption = customization.options[selectedIndex];
+            const progress = customization.options.length > 1 ? (selectedIndex / (customization.options.length - 1)) * 100 : 100;
+            return (
+              <>
+                <div className="relative mt-5 h-3 rounded-full bg-[#e5e7eb]" style={{ background: `linear-gradient(to right, #eab308 0%, #f97316 ${progress}%, #dc2626 100%)` }}>
+                  <input
+                    type="range"
+                    min="0"
+                    max={customization.options.length - 1}
+                    value={selectedIndex}
+                    onChange={(event) => toggleOption(customization.options[Number(event.target.value)])}
+                    className="absolute inset-0 h-3 w-full cursor-pointer appearance-none rounded-full bg-transparent accent-[#dc2626]"
+                    aria-label="Spice level"
+                  />
+                </div>
+                <p className="mt-3 text-center text-sm font-semibold text-[#1d1d1f]">{selectedOption?.label}</p>
+              </>
+            );
+          })()}
         </div>
       ) : (
         <div className="mt-4 space-y-2">
