@@ -200,10 +200,7 @@ export function HomePage() {
               <div className="flex h-10 w-10 items-center justify-center rounded-[14px] bg-[#1d1d1f] text-sm font-semibold text-white">
                 H
               </div>
-              <div>
-                <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#6e6e73]">Hawker</p>
-                <p className="mt-0.5 text-sm font-medium text-[#1d1d1f]">Setia Hawker Centre · Table 12</p>
-              </div>
+              <p className="text-sm font-medium text-[#1d1d1f]">Setia Hawker Centre · Table 12</p>
             </div>
 
             <button
@@ -218,14 +215,6 @@ export function HomePage() {
           </header>
 
           <section className="mt-6 rounded-[24px] border border-[#e5e7eb] bg-white p-4 shadow-[0_14px_28px_rgba(15,23,42,0.04)]">
-            <div className="flex items-center justify-between gap-2">
-              <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#6e6e73]">Table session</span>
-              <span className="inline-flex items-center gap-2 rounded-full bg-[#ecfdf5] px-2 py-1 text-[10px] font-medium text-[#166534]">
-                <span className="h-2 w-2 rounded-full bg-[#22c55e]" />
-                Active
-              </span>
-            </div>
-
             <h1 className="mt-4 text-[2.5rem] font-semibold leading-[0.96] tracking-[-0.07em] text-[#1d1d1f]">
               What are you craving?
             </h1>
