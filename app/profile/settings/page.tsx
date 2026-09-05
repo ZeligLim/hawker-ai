@@ -2,13 +2,14 @@
 
 import Link from 'next/link';
 import { ArrowLeft, LoaderCircle } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/components/auth-provider';
 
 export default function ProfileSettingsPage() {
-  const { status, profile, isGuest, updatePassword, updateProfile } = useAuth();
+  const router = useRouter();
+  const { status, profile, isGuest, updateProfile } = useAuth();
   const [name, setName] = useState('');
-  const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [isSaving, setIsSaving] = useState(false);
@@ -27,15 +28,8 @@ export default function ProfileSettingsPage() {
       if (name.trim() && name.trim() !== profile?.displayName) {
         await updateProfile(name);
       }
-      if (password) {
-        if (password.length < 6) {
-          setError('Password must be at least 6 characters.');
-          return;
-        }
-        await updatePassword(password);
-      }
-      setPassword('');
       setMessage('Settings updated.');
+      setTimeout(() => router.replace('/profile'), 500);
     } catch (saveError) {
       setError(saveError instanceof Error ? saveError.message : 'Unable to update settings.');
     } finally {
@@ -75,10 +69,10 @@ export default function ProfileSettingsPage() {
               Name
               <input value={name} onChange={(event) => setName(event.target.value)} className="mt-2 w-full rounded-[14px] bg-[#f5f5f7] px-3 py-3 text-sm outline-none focus:ring-2 focus:ring-[#cbd5e1]" />
             </label>
-            <label className="mt-4 block text-sm font-medium">
-              New password
-              <input type="password" value={password} onChange={(event) => setPassword(event.target.value)} placeholder="Leave blank to keep current password" className="mt-2 w-full rounded-[14px] bg-[#f5f5f7] px-3 py-3 text-sm outline-none focus:ring-2 focus:ring-[#cbd5e1]" />
-            </label>
+            <Link href={'/profile/settings/password' as any} className="mt-4 flex items-center justify-between rounded-[16px] bg-[#f5f5f7] px-3 py-3 text-sm font-medium text-[#1d1d1f]">
+              <span>Change password</span>
+              <span aria-hidden="true">→</span>
+            </Link>
             {error ? <p className="mt-3 text-sm text-[#9f1239]">{error}</p> : null}
             {message ? <p className="mt-3 text-sm text-[#166534]">{message}</p> : null}
             <button type="submit" disabled={isSaving} className="mt-5 flex w-full items-center justify-center rounded-full bg-[#111827] px-4 py-3 text-sm font-semibold text-white disabled:opacity-60">

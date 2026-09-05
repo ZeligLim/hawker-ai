@@ -12,7 +12,7 @@ Build the first customer-facing Hawker home page with table context, natural-lan
 - Deterministic search API implemented and validated
 - OpenRouter AI intent parsing layered behind Zod validation
 - Mobile-first Apple-inspired search and results experience designed
-- Light/dark mode support introduced
+- Light mode is the supported account-settings appearance
 - Multi-stall cart model added with grouped merchant totals and checkout summary
 - Cart logic covered by TypeScript test cases
 - Customer home page implemented with premium mobile-first layout and navigation
@@ -34,9 +34,9 @@ Build the first customer-facing Hawker home page with table context, natural-lan
 - Home and search flow prioritize a premium consumer-app feel over dashboard-like layouts
 
 ## Known Issues
-- No persistent order storage or auth layer yet; cart state is local to the browser session
+- Password recovery depends on Supabase Auth email configuration
 - Merchant dashboard, QR sessions, and admin flows remain future milestones
 - Production credentials are still required for live Supabase/OpenRouter operations
 
 ## Next Task
-Implement the dish detail and add-to-order flow that follows the customer home page and search experience.
+Continue merchant and order persistence work; customer account settings now support profile-name editing and a protected change-password page.

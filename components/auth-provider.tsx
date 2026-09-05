@@ -27,6 +27,7 @@ type AuthContextValue = {
   updateProfile: (displayName: string) => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
   updatePassword: (newPassword: string) => Promise<void>;
+  changePassword: (currentPassword: string, newPassword: string) => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -287,6 +288,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(data.user);
   }, []);
 
+  const changePassword = useCallback(async (currentPassword: string, newPassword: string) => {
+    const client = supabase;
+    if (!client || !user?.email) throw new Error('You must be signed in to change your password.');
+
+    const { error: verifyError } = await client.auth.signInWithPassword({
+      email: user.email,
+      password: currentPassword,
+    });
+    if (verifyError) throw new Error('Current password is incorrect.');
+
+    const { error } = await client.auth.updateUser({ password: newPassword });
+    if (error) throw new Error(getFriendlyAuthError(error));
+  }, [user]);
+
   const value = useMemo<AuthContextValue>(
     () => ({
       status: effectiveStatus,
@@ -301,8 +316,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       resetPassword,
       updatePassword,
       updateProfile,
+      changePassword,
     }),
-    [continueAsGuest, effectiveStatus, isGuest, profile, signOut, updateProfile, user],
+    [changePassword, continueAsGuest, effectiveStatus, isGuest, profile, signOut, updateProfile, user],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
