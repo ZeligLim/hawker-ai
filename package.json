@@ -8,6 +8,7 @@
     "start": "next start -p ${PORT:-3000}",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
+    "test": "node --test --experimental-strip-types",
     "check:env": "node -e \"const fs=require('fs'); const path=require('path'); const root=process.cwd(); const files=['.env','.env.local','.env.production','.env.development']; const present=files.some((file)=>fs.existsSync(path.join(root,file))); console.log(present ? 'Environment file detected' : 'No environment file detected'); if (!present) process.exit(1);\""
   },
   "keywords": [
