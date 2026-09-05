@@ -3,6 +3,17 @@
 import { useMemo, useState } from 'react';
 import type { CustomizationOption, DishCustomization } from '@/lib/order/customizations';
 
+function ChiliIcon({ active, level }: { active: boolean; level: number }) {
+  const color = !active ? '#d1d5db' : level <= 2 ? '#eab308' : level <= 3 ? '#f97316' : '#dc2626';
+
+  return (
+    <svg viewBox="0 0 24 24" className="h-7 w-7" aria-hidden="true">
+      <path d="M11.8 7.2c3.2-1.9 6.6-1.3 7.5 1.2 1 2.7-1.3 6.8-4.7 8.9-3.8 2.4-8.3 2-10.1-.8-1.5-2.4.1-5.3 3-6.8 1.3-.7 2.8-1.5 4.3-2.5Z" fill={color} />
+      <path d="M12.1 7.4c-.5-2.2.6-4.1 2.8-4.9M14.5 3.8c1.1-.5 2.2-.3 2.8.4" fill="none" stroke={color} strokeWidth="1.8" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 export function CustomizationCard({
   dishName,
   basePrice,
@@ -26,6 +37,7 @@ export function CustomizationCard({
     [customization.options, selectedIds],
   );
   const extraPrice = selectedOptions.reduce((sum, option) => sum + option.price, 0);
+  const isSpiceCustomization = customization.title.toLowerCase().includes('spice');
 
   const toggleOption = (option: CustomizationOption) => {
     setSelectedIds((current) => {
@@ -49,26 +61,54 @@ export function CustomizationCard({
         </button>
       </div>
 
-      <div className="mt-4 space-y-2">
-        {customization.options.map((option) => {
-          const selected = selectedIds.includes(option.id);
-          return (
-            <button
-              key={option.id}
-              type="button"
-              onClick={() => toggleOption(option)}
-              className={`flex w-full items-center justify-between rounded-[16px] px-3 py-3 text-left text-sm ${
-                selected ? 'bg-[#111827] text-white' : 'bg-[#f5f5f7] text-[#1d1d1f]'
-              }`}
-            >
-              <span>{option.label}</span>
-              <span className={selected ? 'text-white/75' : 'text-[#6e6e73]'}>
-                {option.price > 0 ? `+ RM ${option.price.toFixed(2)}` : 'Included'}
-              </span>
-            </button>
-          );
-        })}
-      </div>
+      {isSpiceCustomization ? (
+        <div className="mt-5">
+          <div className="flex items-center justify-between gap-2">
+            {customization.options.map((option, index) => {
+              const selected = selectedIds.includes(option.id);
+              return (
+                <button key={option.id} type="button" onClick={() => toggleOption(option)} className="flex flex-1 flex-col items-center gap-1" aria-label={option.label}>
+                  <ChiliIcon active={selected} level={index + 1} />
+                  <span className={`text-[10px] font-medium ${selected ? 'text-[#1d1d1f]' : 'text-[#6e6e73]'}`}>{index + 1}</span>
+                </button>
+              );
+            })}
+          </div>
+          <input
+            type="range"
+            min="1"
+            max={customization.options.length}
+            value={Math.max(1, customization.options.findIndex((option) => selectedIds.includes(option.id)) + 1)}
+            onChange={(event) => toggleOption(customization.options[Number(event.target.value) - 1])}
+            className="mt-3 w-full accent-[#f97316]"
+            aria-label="Spice level"
+          />
+          <p className="mt-2 text-center text-xs font-medium text-[#6e6e73]">
+            {customization.options.find((option) => selectedIds.includes(option.id))?.label}
+          </p>
+        </div>
+      ) : (
+        <div className="mt-4 space-y-2">
+          {customization.options.map((option) => {
+            const selected = selectedIds.includes(option.id);
+            return (
+              <button
+                key={option.id}
+                type="button"
+                onClick={() => toggleOption(option)}
+                className={`flex w-full items-center justify-between rounded-[16px] px-3 py-3 text-left text-sm ${
+                  selected ? 'bg-[#111827] text-white' : 'bg-[#f5f5f7] text-[#1d1d1f]'
+                }`}
+              >
+                <span>{option.label}</span>
+                <span className={selected ? 'text-white/75' : 'text-[#6e6e73]'}>
+                  {option.price > 0 ? `+ RM ${option.price.toFixed(2)}` : 'Included'}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      )}
 
       <button
         type="button"
