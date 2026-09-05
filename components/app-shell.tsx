@@ -35,8 +35,9 @@ const navItems = [
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isAuthRoute = pathname.startsWith('/auth');
+  const isOwnerRoute = pathname.startsWith('/owner');
 
-  if (isAuthRoute) {
+  if (isAuthRoute || isOwnerRoute) {
     return <>{children}</>;
   }
 

@@ -1,7 +1,7 @@
 # Current Project Context
 
 ## Current Phase
-Phase 4: customer home experience and search entry flow
+Owner MVP Phase 1: owner dashboard shell and mode switching
 
 ## Current Feature
 Build the first customer-facing Hawker home page with table context, natural-language search entry, featured dishes, stall discovery, and mobile bottom navigation. The search interaction remains fully on the home screen, and a dedicated menu page now exists for browsing the broader hawker offering by category.
@@ -18,6 +18,7 @@ Build the first customer-facing Hawker home page with table context, natural-lan
 - Customer home page implemented with premium mobile-first layout and navigation
 - Inline search flow implemented on the main home page; `/search` route removed to avoid unnecessary navigation
 - Dedicated `/menu` route implemented with category cards, hawker-wide browsing, and logo-based category cues
+- Owner mode now opens a protected `/owner` dashboard from the profile toggle
 
 ## Current Architecture
 - Frontend: Next.js App Router, TypeScript, React, Tailwind
@@ -35,8 +36,8 @@ Build the first customer-facing Hawker home page with table context, natural-lan
 
 ## Known Issues
 - Password recovery depends on Supabase Auth email configuration
-- Merchant dashboard, QR sessions, and admin flows remain future milestones
+- Owner order workflow and menu management are the next owner MVP phases
 - Production credentials are still required for live Supabase/OpenRouter operations
 
 ## Next Task
-Continue merchant and order persistence work; customer account settings now support profile-name editing and a protected change-password page.
+Implement `/owner/orders` with status actions, then `/owner/menu` with availability and dish editing.

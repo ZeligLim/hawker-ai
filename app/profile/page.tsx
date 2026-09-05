@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { LogOut, Settings } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { useAuth } from '@/components/auth-provider';
 
@@ -49,6 +50,7 @@ function readStoredProfile(): Partial<ProfileState> | null {
 }
 
 export default function ProfilePage() {
+  const router = useRouter();
   const { status, profile: authProfile, isGuest, signOut } = useAuth();
   const [profile, setProfile] = useState<ProfileState>(defaultProfileState);
   const [isMounted, setIsMounted] = useState(false);
@@ -110,6 +112,9 @@ export default function ProfilePage() {
   const handleModeChange = (ownerMode: boolean) => {
     setIsOwnerMode(ownerMode);
     window.localStorage.setItem(modeStorageKey, ownerMode ? 'owner' : 'customer');
+    if (ownerMode) {
+      router.push('/owner' as any);
+    }
   };
 
   if (!isMounted) {
