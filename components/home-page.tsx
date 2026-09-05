@@ -1,7 +1,6 @@
 'use client';
 
-import Link from 'next/link';
-import { ClipboardList, House, Leaf, Menu, UserRound } from 'lucide-react';
+import { Leaf, Menu } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { HawkerSearchBar } from '@/components/hawker-search-bar';
 import { fallbackDishes } from '@/lib/search/fallback-data';
@@ -57,29 +56,6 @@ const stallDirectory = [
 function LeafIcon() {
   return <Leaf className="h-[14px] w-[14px]" strokeWidth={1.8} />;
 }
-
-function HomeIcon({ active }: { active: boolean }) {
-  return <House className="h-[18px] w-[18px]" strokeWidth={1.8} fill={active ? 'currentColor' : 'none'} />;
-}
-
-function MenuIcon() {
-  return <Menu className="h-[18px] w-[18px]" strokeWidth={1.8} />;
-}
-
-function OrdersIcon({ active }: { active: boolean }) {
-  return <ClipboardList className="h-[18px] w-[18px]" strokeWidth={1.8} fill={active ? 'currentColor' : 'none'} />;
-}
-
-function ProfileIcon({ active }: { active: boolean }) {
-  return <UserRound className="h-[18px] w-[18px]" strokeWidth={1.8} fill={active ? 'currentColor' : 'none'} />;
-}
-
-const navItems = [
-  { href: '/', label: 'Home', icon: HomeIcon, active: true },
-  { href: '/menu', label: 'Menu', icon: MenuIcon, active: false },
-  { href: '/orders', label: 'Orders', icon: OrdersIcon, active: false },
-  { href: '/profile', label: 'Profile', icon: ProfileIcon, active: false },
-];
 
 export function HomePage() {
   const [query, setQuery] = useState('');
@@ -273,25 +249,6 @@ export function HomePage() {
         </div>
       </div>
 
-      <nav className="fixed inset-x-0 bottom-0 z-20 mx-auto max-w-[430px] border-t border-[#e4e4e7] bg-[#f7f7f7]/95 px-2 py-2 backdrop-blur-xl sm:max-w-[480px] lg:max-w-[960px] lg:rounded-t-[22px] lg:border-x lg:border-b lg:border-[#e5e7eb] lg:bg-white/95 lg:px-4">
-        <div className="grid grid-cols-4 gap-1">
-          {navItems.map(({ href, label, icon: Icon, active }) => (
-            <Link
-              key={label}
-              href={href as any}
-              className={`flex flex-col items-center justify-center gap-1 rounded-[14px] px-2 py-2 text-[11px] font-medium transition ${
-                active ? 'text-[#1d1d1f]' : 'text-[#6e6e73]'
-              }`}
-              aria-current={active ? 'page' : undefined}
-            >
-              <span className={`flex h-7 w-7 items-center justify-center ${active ? 'text-[#1d1d1f]' : 'text-[#6e6e73]'}`}>
-                <Icon active={active} />
-              </span>
-              {label}
-            </Link>
-          ))}
-        </div>
-      </nav>
     </main>
   );
 }
