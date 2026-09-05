@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
     .order('created_at', { ascending: false });
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json({ dishes: data ?? [] });
+  return NextResponse.json({ dishes: data ?? [], foodOutletIds: (await auth.client.from('merchant_memberships').select('food_outlet_id').eq('user_id', auth.user.id)).data?.map((row) => row.food_outlet_id) ?? [] });
 }
 
 export async function POST(request: NextRequest) {

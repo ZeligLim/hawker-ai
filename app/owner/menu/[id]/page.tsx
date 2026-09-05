@@ -3,7 +3,8 @@
 import Link from 'next/link';
 import { ImagePlus, LoaderCircle, Plus, Trash2 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { supabase } from '@/lib/supabase/client';
 
 type Dish = {
   id: string;
@@ -17,6 +18,7 @@ type Dish = {
   tags?: string[];
   customizations?: { label: string; price: number }[];
   spiceLevels?: number;
+  foodOutletId?: string;
 };
 
 const storageKey = 'hawker-owner-menu';
@@ -50,6 +52,43 @@ export default function OwnerDishEditorPage() {
   const [tags, setTags] = useState(() => dish?.tags?.join(', ') ?? '');
   const [error, setError] = useState('');
   const [isSaving, setIsSaving] = useState(false);
+  const [pendingPhoto, setPendingPhoto] = useState<File | null>(null);
+
+  useEffect(() => {
+    const client = supabase;
+    if (!params.id || !client) return;
+    let active = true;
+    const loadDish = async () => {
+      const token = (await client.auth.getSession()).data.session?.access_token;
+      if (!token) return;
+      const response = await fetch('/api/owner/dishes', { headers: { Authorization: `Bearer ${token}` } });
+      if (!response.ok) return;
+      const payload = await response.json() as { dishes?: Array<Record<string, unknown>>; foodOutletIds?: string[] };
+      if (!active) return;
+      const remote = payload.dishes?.find((item) => String(item.id) === params.id);
+      if (remote) {
+        const loaded: Dish = {
+          id: String(remote.id), foodOutletId: String(remote.food_outlet_id), name: String(remote.name ?? ''),
+          category: 'Main course', price: Number(remote.price ?? 0), available: Boolean(remote.is_available),
+          imageUrl: typeof remote.image_url === 'string' ? remote.image_url : undefined,
+          vegetarian: Boolean(remote.is_vegetarian), description: String(remote.description ?? ''),
+          tags: Array.isArray(remote.tags) ? remote.tags.map(String) : [],
+          customizations: Array.isArray(remote.customizations) ? remote.customizations as Dish['customizations'] : [],
+          spiceLevels: Number(remote.spice_level ?? 1),
+        };
+        setDish(loaded);
+        setCustomizations(loadCustomizations(loaded));
+        setSpiceLevels(loaded.spiceLevels ?? 1);
+        setVegetarian(loaded.vegetarian ?? false);
+        setDescription(loaded.description ?? '');
+        setTags(loaded.tags?.join(', ') ?? '');
+      } else if (isNew && payload.foodOutletIds?.[0]) {
+        setDish((current) => current ? { ...current, foodOutletId: payload.foodOutletIds?.[0] } : current);
+      }
+    };
+    void loadDish();
+    return () => { active = false; };
+  }, [isNew, params.id]);
 
   if (!dish) {
     return <main className="min-h-screen bg-[#f5f5f7] p-5 text-[#1d1d1f]"><Link href="/owner/menu">Dish not found</Link></main>;
@@ -64,11 +103,12 @@ export default function OwnerDishEditorPage() {
       return;
     }
     const reader = new FileReader();
+    setPendingPhoto(file);
     reader.onload = () => updateDish({ imageUrl: typeof reader.result === 'string' ? reader.result : undefined });
     reader.readAsDataURL(file);
   };
 
-  const save = (event: React.FormEvent<HTMLFormElement>) => {
+  const save = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!dish.name.trim() || dish.price <= 0) {
       setError('Enter a dish name and a price greater than zero.');
@@ -84,6 +124,39 @@ export default function OwnerDishEditorPage() {
       customizations: customizations.filter((option) => option.label.trim()),
       spiceLevels,
     };
+    const token = (await supabase?.auth.getSession())?.data.session?.access_token;
+    if (token && dish.foodOutletId) {
+      const payload = {
+        ...(isNew ? { foodOutletId: dish.foodOutletId } : {}),
+        name: saved.name, description: saved.description, price: saved.price,
+        isVegetarian: saved.vegetarian, spiceLevel: saved.spiceLevels, isAvailable: saved.available,
+        tags: saved.tags, customizations: saved.customizations,
+      };
+      const response = await fetch(isNew ? '/api/owner/dishes' : `/api/owner/dishes/${dish.id}`, {
+        method: isNew ? 'POST' : 'PATCH',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (!response.ok) {
+        setError('Unable to save this dish. Please try again.');
+        setIsSaving(false);
+        return;
+      }
+      const result = await response.json() as { dish?: { id: string } };
+      const savedId = result.dish?.id ?? dish.id;
+      if (pendingPhoto) {
+        const formData = new FormData();
+        formData.append('file', pendingPhoto);
+        const imageResponse = await fetch(`/api/owner/dishes/${savedId}/image`, { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: formData });
+        if (!imageResponse.ok) {
+          setError('Dish saved, but the image upload failed.');
+          setIsSaving(false);
+          return;
+        }
+      }
+      router.replace('/owner/menu' as any);
+      return;
+    }
     const stored = window.localStorage.getItem(storageKey);
     let dishes: Dish[] = [];
     if (stored) {

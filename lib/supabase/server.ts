@@ -1,13 +1,14 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import type { NextRequest } from 'next/server';
+import type { Database } from '@/lib/database.types';
 
-export function createRequestSupabaseClient(request: NextRequest): SupabaseClient | null {
+export function createRequestSupabaseClient(request: NextRequest): SupabaseClient<Database> | null {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!url || !anonKey) return null;
 
   const authorization = request.headers.get('authorization');
-  return createClient(url, anonKey, {
+  return createClient<Database>(url, anonKey, {
     auth: { persistSession: false, autoRefreshToken: false },
     global: authorization ? { headers: { Authorization: authorization } } : undefined,
   });

@@ -2,12 +2,14 @@
 
 import Link from 'next/link';
 import { Check, Clock3, PackageCheck } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { supabase } from '@/lib/supabase/client';
 
 type OrderStatus = 'New' | 'Preparing' | 'Ready' | 'Completed';
 
 type OwnerOrder = {
   id: string;
+  backendId?: string;
   table: string;
   time: string;
   items: string[];
@@ -24,6 +26,8 @@ const initialOrders: OwnerOrder[] = [
 
 const statusOrder: OrderStatus[] = ['New', 'Preparing', 'Ready', 'Completed'];
 const storageKey = 'hawker-owner-orders';
+const backendStatus: Record<string, OrderStatus> = { waiting: 'New', accepted: 'New', preparing: 'Preparing', ready: 'Ready', served: 'Completed', cancelled: 'Completed' };
+const nextBackendStatus: Record<OrderStatus, string> = { New: 'preparing', Preparing: 'ready', Ready: 'served', Completed: 'served' };
 
 function nextStatus(status: OrderStatus) {
   const index = statusOrder.indexOf(status);
@@ -44,18 +48,58 @@ export default function OwnerOrdersPage() {
     }
   });
   const [filter, setFilter] = useState<'active' | 'completed'>('active');
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    let active = true;
+    const loadOrders = async () => {
+      const token = (await supabase?.auth.getSession())?.data.session?.access_token;
+      if (!token) return;
+      const response = await fetch('/api/owner/orders', { headers: { Authorization: `Bearer ${token}` } });
+      if (!response.ok) {
+        if (active) setError('Unable to load live orders. Showing saved local orders.');
+        return;
+      }
+      const payload = await response.json() as { orders?: Array<{ id: string; status: string; subtotal: number; created_at: string; order_items?: Array<{ dish_name: string; quantity: number }> }> };
+      if (active && Array.isArray(payload.orders)) {
+        setOrders(payload.orders.map((order) => ({
+          id: `#${order.id.slice(0, 6).toUpperCase()}`,
+          backendId: order.id,
+          table: 'Table session',
+          time: new Date(order.created_at).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }),
+          items: (order.order_items ?? []).map((item) => `${item.dish_name} × ${item.quantity}`),
+          total: Number(order.subtotal),
+          status: backendStatus[order.status] ?? 'New',
+        })));
+      }
+    };
+    void loadOrders();
+    return () => { active = false; };
+  }, []);
 
   const visibleOrders = useMemo(
     () => orders.filter((order) => (filter === 'active' ? order.status !== 'Completed' : order.status === 'Completed')),
     [filter, orders],
   );
 
-  const advanceOrder = (id: string) => {
+  const advanceOrder = async (id: string) => {
     setOrders((current) => {
       const next = current.map((order) => (order.id === id ? { ...order, status: nextStatus(order.status) } : order));
       window.localStorage.setItem(storageKey, JSON.stringify(next));
       return next;
     });
+    const order = orders.find((item) => item.id === id);
+    if (!order) return;
+    const token = (await supabase?.auth.getSession())?.data.session?.access_token;
+    const backendId = order.backendId;
+    if (!token) return;
+    if (!backendId) return;
+    const response = await fetch(`/api/owner/orders/${backendId}`, {
+      method: 'PATCH',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: nextBackendStatus[order.status] }),
+    });
+    if (!response.ok) setError('Order status could not be saved. Please try again.');
   };
 
   return (
@@ -74,6 +118,7 @@ export default function OwnerOrdersPage() {
             </button>
           ))}
         </div>
+        {error ? <p className="mt-3 text-sm text-[#9f1239]">{error}</p> : null}
 
         <section className="mt-4 space-y-3">
           {visibleOrders.length === 0 ? (

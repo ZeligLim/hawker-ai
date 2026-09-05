@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import { Edit3, Plus } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { supabase } from '@/lib/supabase/client';
 
 type OwnerDish = {
   id: string;
@@ -44,11 +45,57 @@ function loadDishes() {
 
 export default function OwnerMenuPage() {
   const [dishes, setDishes] = useState<OwnerDish[]>(loadDishes);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  const toggleAvailability = (id: string) => {
+  useEffect(() => {
+    let active = true;
+    const loadBackendDishes = async () => {
+      const token = (await supabase?.auth.getSession())?.data.session?.access_token;
+      if (!token) {
+        if (active) setIsLoading(false);
+        return;
+      }
+      const response = await fetch('/api/owner/dishes', { headers: { Authorization: `Bearer ${token}` } });
+      if (!response.ok) {
+        if (active) setError('Unable to load your menu. Showing saved local dishes.');
+        if (active) setIsLoading(false);
+        return;
+      }
+      const payload = await response.json() as { dishes?: Array<Record<string, unknown>> };
+      if (active && Array.isArray(payload.dishes)) {
+        setDishes(payload.dishes.map((dish) => ({
+          id: String(dish.id),
+          name: String(dish.name ?? ''),
+          category: 'Main course',
+          price: Number(dish.price ?? 0),
+          available: Boolean(dish.is_available),
+          imageUrl: typeof dish.image_url === 'string' ? dish.image_url : undefined,
+          vegetarian: Boolean(dish.is_vegetarian),
+          description: typeof dish.description === 'string' ? dish.description : undefined,
+          tags: Array.isArray(dish.tags) ? dish.tags.map(String) : [],
+        })));
+      }
+      if (active) setIsLoading(false);
+    };
+    void loadBackendDishes();
+    return () => { active = false; };
+  }, []);
+
+  const toggleAvailability = async (id: string) => {
     const next = dishes.map((dish) => (dish.id === id ? { ...dish, available: !dish.available } : dish));
     setDishes(next);
     window.localStorage.setItem(storageKey, JSON.stringify(next));
+    const token = (await supabase?.auth.getSession())?.data.session?.access_token;
+    if (!token) return;
+    const dish = next.find((item) => item.id === id);
+    if (!dish) return;
+    const response = await fetch(`/api/owner/dishes/${id}`, {
+      method: 'PATCH',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ isAvailable: dish.available }),
+    });
+    if (!response.ok) setError('Availability could not be saved. Please try again.');
   };
   return (
     <main className="min-h-screen bg-[#f5f5f7] px-4 pb-32 pt-5 text-[#1d1d1f]">
@@ -65,8 +112,10 @@ export default function OwnerMenuPage() {
         </header>
 
         <p className="mt-4 text-sm text-[#6e6e73]">Turn availability off when a dish is sold out. Customers will see the change immediately.</p>
+        {error ? <p className="mt-3 text-sm text-[#9f1239]">{error}</p> : null}
 
         <section className="mt-5 space-y-3">
+          {isLoading ? <div className="rounded-[24px] bg-white p-8 text-center text-sm text-[#6e6e73]">Loading menu...</div> : null}
           {dishes.map((dish) => (
             <article key={dish.id} className="flex items-center justify-between gap-4 rounded-[22px] bg-white p-4 shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
               <Link href={`/owner/menu/${dish.id}` as any} className="flex min-w-0 flex-1 items-center gap-3">

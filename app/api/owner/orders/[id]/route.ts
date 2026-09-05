@@ -10,10 +10,18 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ i
   const parsed = UpdateMerchantOrderSchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
 
+  const { data: merchantOrder } = await auth.client
+    .from('merchant_orders')
+    .select('food_outlet_id')
+    .eq('id', id)
+    .maybeSingle();
+  if (!merchantOrder) return NextResponse.json({ error: 'Merchant order not found.' }, { status: 404 });
+
   const { data: membership } = await auth.client
     .from('merchant_memberships')
     .select('food_outlet_id')
     .eq('user_id', auth.user.id)
+    .eq('food_outlet_id', merchantOrder.food_outlet_id)
     .maybeSingle();
   if (!membership) return NextResponse.json({ error: 'No merchant access.' }, { status: 403 });
 
@@ -21,7 +29,7 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ i
     .from('merchant_orders')
     .update({ status: parsed.data.status, updated_at: new Date().toISOString() })
     .eq('id', id)
-    .eq('food_outlet_id', membership.food_outlet_id)
+    .eq('food_outlet_id', merchantOrder.food_outlet_id)
     .select('id, order_id, food_outlet_id, status, subtotal, updated_at')
     .maybeSingle();
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });

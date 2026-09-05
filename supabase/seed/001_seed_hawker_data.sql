@@ -10,6 +10,14 @@ VALUES
   ('7dcb4f2d-6cfb-4bb0-9012-af2f3cd4dca4', '5e5b8e8e-6d6e-42d9-bd75-9d0bdfa55af0', 'Curry Mee Corner Stall'),
   ('1cab0e49-6606-4e7c-96a7-1d875e8af6b5', '8af690e9-7dc8-4f4b-9d4c-0d4ee99f5d12', 'Char Kway Teow Stall 1');
 
+INSERT INTO merchant_handles (food_outlet_id, handle, display_name)
+VALUES
+  ('c46f62c4-a1d9-4428-88f2-759da5cd9e16', '@pakmat_nasilemak', 'Kedai Nasi Lemak Pak Mat'),
+  ('7dcb4f2d-6cfb-4bb0-9012-af2f3cd4dca4', '@currymecorner', 'Curry Mee Corner Stall'),
+  ('1cab0e49-6606-4e7c-96a7-1d875e8af6b5', '@char_kwayteowstall', 'Char Kway Teow Stall 1')
+ON CONFLICT (food_outlet_id) DO UPDATE
+SET handle = EXCLUDED.handle, display_name = EXCLUDED.display_name;
+
 INSERT INTO dishes (id, food_outlet_id, name, price, is_vegetarian, is_halal, spice_level, protein_grams)
 VALUES
   ('9ef7b4df-b1db-4d66-8d9a-00d7c1d708a9', 'c46f62c4-a1d9-4428-88f2-759da5cd9e16', 'Nasi Lemak', 8.50, FALSE, TRUE, 2, 28.00),
