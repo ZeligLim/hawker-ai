@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Plus } from 'lucide-react';
+import { Edit3, Plus } from 'lucide-react';
 import { useState } from 'react';
 
 type OwnerDish = {
@@ -75,6 +75,9 @@ export default function OwnerMenuPage() {
                 <h2 className="truncate text-base font-semibold">{dish.name}</h2>
                 <p className="mt-1 text-xs text-[#6e6e73]">{dish.category} · RM {dish.price.toFixed(2)}{dish.vegetarian ? ' · Vegetarian' : ''}</p>
                 </div>
+              </Link>
+              <Link href={`/owner/menu/${dish.id}` as any} className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#f5f5f7] text-[#1d1d1f]" aria-label={`Edit ${dish.name}`}>
+                <Edit3 className="h-4 w-4" />
               </Link>
               <button type="button" role="switch" aria-checked={dish.available} onClick={() => toggleAvailability(dish.id)} className={`relative h-7 w-12 shrink-0 rounded-full transition ${dish.available ? 'bg-emerald-500' : 'bg-[#d1d5db]'}`} aria-label={`${dish.name} ${dish.available ? 'available' : 'unavailable'}`}>
                 <span className={`absolute top-1 h-5 w-5 rounded-full bg-white shadow-sm transition ${dish.available ? 'left-6' : 'left-1'}`} />
