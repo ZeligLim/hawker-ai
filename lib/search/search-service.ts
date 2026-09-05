@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase/client';
+import { getFallbackMatches } from '@/lib/search/fallback-data';
 import { SearchFilters, SearchFiltersSchema, SearchResult, SearchResultSchema } from '@/lib/search/schema';
 
 type DishRow = {
@@ -32,7 +33,7 @@ export class SearchService {
     const filters = SearchFiltersSchema.parse(rawFilters);
 
     if (!supabase) {
-      throw new Error('Supabase client is not configured. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.');
+      return getFallbackMatches(filters);
     }
 
     const dishQuery = supabase.from('dishes').select('*');
