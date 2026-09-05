@@ -65,7 +65,7 @@ export function CustomizationCard({
                     max={customization.options.length - 1}
                     value={selectedIndex}
                     onChange={(event) => toggleOption(customization.options[Number(event.target.value)])}
-                    className="absolute inset-0 h-5 w-full cursor-pointer appearance-none rounded-full bg-transparent accent-[#dc2626]"
+                    className="absolute inset-0 h-5 w-full cursor-pointer appearance-none rounded-full bg-transparent accent-[#dc2626] [&::-moz-range-thumb]:h-8 [&::-moz-range-thumb]:w-8 [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:shadow-[0_2px_8px_rgba(15,23,42,0.24)] [&::-webkit-slider-thumb]:h-8 [&::-webkit-slider-thumb]:w-8 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:shadow-[0_2px_8px_rgba(15,23,42,0.24)]"
                     aria-label="Spice level"
                   />
                 </div>
