@@ -137,10 +137,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       router.replace('/auth' as any);
     }
 
-    if (effectiveStatus === 'authenticated' && isPublicRoute && pathname.startsWith('/auth')) {
+    if (effectiveStatus === 'authenticated' && user && isPublicRoute && pathname.startsWith('/auth')) {
       router.replace('/' as any);
     }
-  }, [effectiveStatus, pathname, router]);
+  }, [effectiveStatus, isGuest, pathname, router, user]);
 
   const profile = useMemo<AuthUser | null>(() => {
     if (!user || isGuest) return null;
@@ -165,6 +165,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const client = supabase;
     if (!client) throw new Error('Supabase is not configured. Please add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.');
 
+    setIsGuest(false);
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem('hawker-guest-mode', 'false');
+    }
+
     const redirectUrl = `${getAppUrl()}/auth/callback`;
 
     const { error } = await client.auth.signInWithOAuth({
@@ -182,6 +187,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signInWithEmail = async (email: string, password: string) => {
     const client = supabase;
     if (!client) throw new Error('Supabase is not configured. Please add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.');
+
+    setIsGuest(false);
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem('hawker-guest-mode', 'false');
+    }
 
     const { error } = await client.auth.signInWithPassword({ email, password });
     if (error) {

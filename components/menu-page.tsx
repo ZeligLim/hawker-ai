@@ -1,9 +1,11 @@
 'use client';
 
-import { CupSoda, IceCreamCone, Leaf, UtensilsCrossed } from 'lucide-react';
+import { CupSoda, IceCreamCone, Leaf, Plus, UtensilsCrossed } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { HawkerSearchBar } from '@/components/hawker-search-bar';
-import { addItemToCart, readCartItems, removeCartItem, updateCartItemQuantity, writeCartItems, type CartItem } from '@/lib/order/cart';
+import { CustomizationCard } from '@/components/customization-card';
+import { addItemToCart, getDishQuantity, removeCartItem, updateCartItemQuantity, useCartItems } from '@/lib/order/cart';
+import { getDishCustomization } from '@/lib/order/customizations';
 
 function MainCourseIcon() {
   return <UtensilsCrossed className="h-[18px] w-[18px]" strokeWidth={1.8} />;
@@ -45,11 +47,8 @@ const menuItems = {
 
 export function MenuPage() {
   const [searchValue, setSearchValue] = useState('');
-  const [cartItems, setCartItems] = useState<CartItem[]>(() => readCartItems());
-
-  useEffect(() => {
-    writeCartItems(cartItems);
-  }, [cartItems]);
+  const { cartItems, setCartItems } = useCartItems();
+  const [customizingItem, setCustomizingItem] = useState<{ name: string; price: number } | null>(null);
 
   const updateQuantity = (name: string, price: number, delta: number) => {
     setCartItems((currentItems) => {
@@ -76,6 +75,31 @@ export function MenuPage() {
 
       return updateCartItemQuantity(currentItems, matchingItem.id, nextQuantity);
     });
+  };
+
+  const addMenuItem = (name: string, price: number) => {
+    if (getDishCustomization(name)) {
+      setCustomizingItem({ name, price });
+      return;
+    }
+    updateQuantity(name, price, 1);
+  };
+
+  const confirmCustomization = (item: { name: string; price: number }, selection: { options: { id: string; label: string; price: number }[]; price: number }) => {
+    setCartItems((currentItems) =>
+      addItemToCart(currentItems, {
+        dishId: item.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+        customizationKey: selection.options.map((option) => option.id).sort().join('|'),
+        customizations: selection.options.map((option) => option.label),
+        name: item.name,
+        restaurantName: 'Setia Hawker Centre',
+        stallName: 'Menu collection',
+        stallId: 'setia-hawker-centre',
+        price: selection.price,
+        quantity: 1,
+      }),
+    );
+    setCustomizingItem(null);
   };
 
   const scrollToCategory = (id: (typeof categories)[number]['id']) => {
@@ -122,7 +146,7 @@ export function MenuPage() {
 
                 <div className="grid grid-cols-2 gap-3">
                   {(menuItems[id as keyof typeof menuItems] ?? []).map((item) => {
-                    const quantity = cartItems.find((entry) => entry.name === item.name)?.quantity ?? 0;
+                    const quantity = getDishQuantity(cartItems, item.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'));
 
                     return (
                       <article key={item.name} className="overflow-hidden rounded-[22px] bg-white shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
@@ -141,14 +165,14 @@ export function MenuPage() {
                             </div>
                           ) : null}
 
-                          <div className="absolute bottom-2 right-2">
+                          <div className="absolute bottom-2 left-2 right-2">
                             {quantity > 0 ? (
-                              <div className="flex items-center gap-2 rounded-full bg-white/90 px-2 py-1 text-[10px] font-medium text-[#1d1d1f] shadow-[0_8px_20px_rgba(15,23,42,0.18)] backdrop-blur-sm">
+                              <div className="flex w-full items-center justify-between gap-2 rounded-full bg-white/90 px-2 py-1 text-[10px] font-medium text-[#1d1d1f] shadow-[0_8px_20px_rgba(15,23,42,0.18)] backdrop-blur-sm">
                                 <button
                                   type="button"
                                   aria-label={`Decrease ${item.name} quantity`}
                                   onClick={() => updateQuantity(item.name, item.price, -1)}
-                                  className="flex h-6 w-6 items-center justify-center rounded-full bg-[#f5f5f7] text-base font-semibold text-[#1d1d1f]"
+                                  className="flex h-8 w-8 items-center justify-center rounded-full bg-[#f5f5f7] text-lg font-semibold text-[#1d1d1f]"
                                 >
                                   −
                                 </button>
@@ -156,21 +180,23 @@ export function MenuPage() {
                                 <button
                                   type="button"
                                   aria-label={`Increase ${item.name} quantity`}
-                                  onClick={() => updateQuantity(item.name, item.price, 1)}
-                                  className="flex h-6 w-6 items-center justify-center rounded-full bg-[#1d1d1f] text-base font-semibold text-white"
+                                  onClick={() => addMenuItem(item.name, item.price)}
+                                  className="flex h-8 w-8 items-center justify-center rounded-full bg-[#1d1d1f] text-lg font-semibold text-white"
                                 >
                                   +
                                 </button>
                               </div>
                             ) : (
-                              <button
-                                type="button"
-                                onClick={() => updateQuantity(item.name, item.price, 1)}
-                                className="rounded-full bg-[#1d1d1f] px-2.5 py-1.5 text-[10px] font-medium text-white shadow-[0_8px_20px_rgba(15,23,42,0.18)]"
-                                aria-label={`Add ${item.name} to your order`}
-                              >
-                                Add
-                              </button>
+                              <div className="flex justify-end">
+                                <button
+                                  type="button"
+                                  onClick={() => addMenuItem(item.name, item.price)}
+                                  className="flex h-8 w-8 items-center justify-center rounded-full bg-[#1d1d1f] text-white shadow-[0_8px_20px_rgba(15,23,42,0.18)]"
+                                  aria-label={`Add ${item.name} to your order`}
+                                >
+                                  <Plus className="h-4 w-4" strokeWidth={2} />
+                                </button>
+                              </div>
                             )}
                           </div>
                         </div>
@@ -181,6 +207,15 @@ export function MenuPage() {
               </section>
             ))}
           </section>
+          {customizingItem ? (
+            <CustomizationCard
+              dishName={customizingItem.name}
+              basePrice={customizingItem.price}
+              customization={getDishCustomization(customizingItem.name)!}
+              onCancel={() => setCustomizingItem(null)}
+              onConfirm={(selection) => confirmCustomization(customizingItem, selection)}
+            />
+          ) : null}
         </div>
       </div>
 

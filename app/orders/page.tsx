@@ -2,7 +2,9 @@
 
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
-import { readCartItems, type CartItem } from '@/lib/order/cart';
+import { CustomizationCard } from '@/components/customization-card';
+import { buildCartSummary, updateCartItemCustomization, updateCartItemQuantity, useCartItems, type CartItem } from '@/lib/order/cart';
+import { getDishCustomization } from '@/lib/order/customizations';
 
 const directory = [
   { name: 'Ah Seng Chicken Rice', open: true, items: 12, eta: '10 min' },
@@ -12,7 +14,8 @@ const directory = [
 ];
 
 export default function OrdersPage() {
-  const [cartItems] = useState<CartItem[]>(() => readCartItems());
+  const { cartItems, setCartItems } = useCartItems();
+  const [customizingItem, setCustomizingItem] = useState<CartItem | null>(null);
 
   const orderItems = useMemo(
     () =>
@@ -24,7 +27,36 @@ export default function OrdersPage() {
     [cartItems],
   );
 
-  const total = orderItems.reduce((sum, item) => sum + item.price * item.qty, 0);
+  const summary = useMemo(() => buildCartSummary(cartItems), [cartItems]);
+
+  const updateQuantity = (itemId: string, quantity: number) => {
+    setCartItems((currentItems) => updateCartItemQuantity(currentItems, itemId, quantity));
+  };
+
+  const updateComment = (itemId: string, notes: string) => {
+    setCartItems((currentItems) =>
+      currentItems.map((item) => (item.id === itemId ? { ...item, notes } : item)),
+    );
+  };
+
+  const openCustomization = (item: CartItem) => {
+    if (getDishCustomization(item.name)) {
+      setCustomizingItem(item);
+    }
+  };
+
+  const confirmCustomization = (selection: { options: { id: string; label: string; price: number }[]; price: number }) => {
+    if (!customizingItem) return;
+
+    setCartItems((currentItems) =>
+      updateCartItemCustomization(currentItems, customizingItem.id, {
+        customizationKey: selection.options.map((option) => option.id).sort().join('|'),
+        customizations: selection.options.map((option) => option.label),
+        price: selection.price,
+      }),
+    );
+    setCustomizingItem(null);
+  };
 
   return (
     <main className="min-h-screen bg-[#f5f5f7] px-4 pb-28 pt-5 text-[#1d1d1f]">
@@ -46,8 +78,10 @@ export default function OrdersPage() {
             </div>
             <div className="mt-3 flex items-end justify-between gap-3">
               <div>
-                <p className="text-2xl font-semibold tracking-[-0.06em]">RM {total.toFixed(2)}</p>
-                <p className="mt-1 text-sm text-white/75">3 items from 2 stalls</p>
+                <p className="text-2xl font-semibold tracking-[-0.06em]">RM {summary.total.toFixed(2)}</p>
+                <p className="mt-1 text-sm text-white/75">
+                  {cartItems.reduce((count, item) => count + item.quantity, 0)} items from {summary.merchantGroups.length} stalls
+                </p>
               </div>
               <button type="button" className="rounded-full bg-white px-3.5 py-2 text-xs font-semibold text-[#111827]">
                 Checkout
@@ -63,17 +97,82 @@ export default function OrdersPage() {
           </div>
 
           <div className="space-y-3">
-            {orderItems.map((item) => (
-              <div key={item.name} className="flex items-center justify-between gap-3 rounded-[16px] bg-[#f5f5f7] px-3 py-2.5">
-                <div>
-                  <p className="text-sm font-medium text-[#1d1d1f]">{item.name}</p>
-                  <p className="text-xs text-[#6e6e73]">Qty {item.qty}</p>
+            {cartItems.map((item) => (
+              <div key={item.id} className="rounded-[16px] bg-[#f5f5f7] px-3 py-3">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="text-sm font-medium text-[#1d1d1f]">{item.name}</p>
+                    <p className="text-xs text-[#6e6e73]">RM {item.price.toFixed(2)} each</p>
+                    {item.customizations?.length ? (
+                      <p className="mt-1 text-xs text-[#6e6e73]">Customised: {item.customizations.join(' · ')}</p>
+                    ) : null}
+                  </div>
+                  <p className="text-sm font-semibold text-[#1d1d1f]">RM {(item.price * item.quantity).toFixed(2)}</p>
                 </div>
-                <p className="text-sm font-semibold text-[#1d1d1f]">RM {(item.price * item.qty).toFixed(2)}</p>
+
+                <div className="mt-3 flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                      className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-lg font-semibold text-[#1d1d1f] shadow-sm"
+                      aria-label={`Decrease quantity for ${item.name}`}
+                    >
+                      −
+                    </button>
+                    <span className="min-w-5 text-center text-sm font-semibold">{item.quantity}</span>
+                    <button
+                      type="button"
+                      onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                      className="flex h-8 w-8 items-center justify-center rounded-full bg-[#111827] text-lg font-semibold text-white shadow-sm"
+                      aria-label={`Increase quantity for ${item.name}`}
+                    >
+                      +
+                    </button>
+                  </div>
+                  <span className="text-xs text-[#6e6e73]">{item.stallName}</span>
+                </div>
+
+                {getDishCustomization(item.name) ? (
+                  <button
+                    type="button"
+                    onClick={() => openCustomization(item)}
+                    className="mt-3 text-xs font-semibold text-[#3c3c43] underline underline-offset-4"
+                  >
+                    Customize
+                  </button>
+                ) : null}
+
+                <label className="mt-3 block">
+                  <span className="sr-only">Comment for {item.name}</span>
+                  <textarea
+                    value={item.notes ?? ''}
+                    onChange={(event) => updateComment(item.id, event.target.value)}
+                    placeholder="Add a comment"
+                    rows={2}
+                    className="w-full resize-none rounded-[12px] border-0 bg-white px-3 py-2 text-xs text-[#1d1d1f] outline-none placeholder:text-[#8e8e93] focus:ring-2 focus:ring-[#cbd5e1]"
+                  />
+                </label>
               </div>
             ))}
           </div>
         </section>
+
+        {customizingItem ? (
+          <CustomizationCard
+            dishName={customizingItem.name}
+            basePrice={customizingItem.price - (customizingItem.customizations ?? []).reduce((total, label) => {
+              const option = getDishCustomization(customizingItem.name)?.options.find((candidate) => candidate.label === label);
+              return total + (option?.price ?? 0);
+            }, 0)}
+            customization={getDishCustomization(customizingItem.name)!}
+            initialSelection={getDishCustomization(customizingItem.name)?.options
+              .filter((option) => customizingItem.customizations?.includes(option.label))
+              .map((option) => option.id)}
+            onCancel={() => setCustomizingItem(null)}
+            onConfirm={confirmCustomization}
+          />
+        ) : null}
 
         <Link href="/" className="mt-6 inline-flex rounded-full bg-[#111827] px-4 py-2.5 text-sm font-medium text-white">
           Browse dishes

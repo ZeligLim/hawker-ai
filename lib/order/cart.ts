@@ -1,4 +1,27 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+
 export const CART_STORAGE_KEY = 'hawker-cart-items';
+
+export function useCartItems() {
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [hasHydrated, setHasHydrated] = useState(false);
+
+  useEffect(() => {
+    queueMicrotask(() => {
+      setCartItems(readCartItems());
+      setHasHydrated(true);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!hasHydrated) return;
+    writeCartItems(cartItems);
+  }, [cartItems, hasHydrated]);
+
+  return { cartItems, setCartItems, hasHydrated };
+}
 
 export function readCartItems(): CartItem[] {
   if (typeof window === 'undefined') return [];
@@ -29,6 +52,8 @@ export type CartItem = {
   price: number;
   quantity: number;
   notes?: string;
+  customizationKey?: string;
+  customizations?: string[];
 };
 
 export type MerchantGroup = {
@@ -60,7 +85,10 @@ export function addItemToCart(
   };
 
   const existingIndex = items.findIndex(
-    (item) => item.dishId === normalizedDish.dishId && item.stallId === normalizedDish.stallId,
+    (item) =>
+      item.dishId === normalizedDish.dishId &&
+      item.stallId === normalizedDish.stallId &&
+      item.customizationKey === normalizedDish.customizationKey,
   );
 
   if (existingIndex >= 0) {
@@ -88,8 +116,30 @@ export function updateCartItemQuantity(items: CartItem[], itemId: string, quanti
   return items.map((item) => (item.id === itemId ? { ...item, quantity } : item));
 }
 
+export function updateCartItemCustomization(
+  items: CartItem[],
+  itemId: string,
+  customization: { customizationKey: string; customizations: string[]; price: number },
+): CartItem[] {
+  return items.map((item) =>
+    item.id === itemId
+      ? {
+          ...item,
+          ...customization,
+        }
+      : item,
+  );
+}
+
 export function removeCartItem(items: CartItem[], itemId: string): CartItem[] {
   return items.filter((item) => item.id !== itemId);
+}
+
+export function getDishQuantity(items: CartItem[], dishId: string, stallId?: string): number {
+  return items.reduce(
+    (total, item) => total + (item.dishId === dishId && (!stallId || item.stallId === stallId) ? item.quantity : 0),
+    0,
+  );
 }
 
 export function buildCartSummary(items: CartItem[]): CartSummary {

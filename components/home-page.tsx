@@ -1,10 +1,12 @@
 'use client';
 
 import Link from 'next/link';
-import { Leaf } from 'lucide-react';
+import { Leaf, Plus } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { HawkerSearchBar } from '@/components/hawker-search-bar';
-import { addItemToCart, readCartItems, removeCartItem, updateCartItemQuantity, writeCartItems, type CartItem } from '@/lib/order/cart';
+import { CustomizationCard } from '@/components/customization-card';
+import { addItemToCart, getDishQuantity, removeCartItem, updateCartItemQuantity, useCartItems } from '@/lib/order/cart';
+import { getDishCustomization } from '@/lib/order/customizations';
 import { fallbackDishes } from '@/lib/search/fallback-data';
 
 type FeaturedDish = {
@@ -68,11 +70,8 @@ export function HomePage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [results, setResults] = useState<FeaturedDish[]>([]);
-  const [cartItems, setCartItems] = useState<CartItem[]>(() => readCartItems());
-
-  useEffect(() => {
-    writeCartItems(cartItems);
-  }, [cartItems]);
+  const { cartItems, setCartItems } = useCartItems();
+  const [customizingDish, setCustomizingDish] = useState<FeaturedDish | null>(null);
 
   const featuredDishes = useMemo<FeaturedDish[]>(() => {
     if (results.length > 0) return results;
@@ -168,6 +167,33 @@ export function HomePage() {
     });
   };
 
+  const addDish = (dish: FeaturedDish) => {
+    const customization = getDishCustomization(dish.name);
+    if (customization) {
+      setCustomizingDish(dish);
+      return;
+    }
+    updateQuantity(dish, 1);
+  };
+
+  const confirmCustomization = (dish: FeaturedDish, selection: { options: { id: string; label: string; price: number }[]; price: number }) => {
+    const stallId = `${dish.restaurantName}:${dish.stallName}`.replace(/[^a-z0-9]+/gi, '-').toLowerCase();
+    setCartItems((currentItems) =>
+      addItemToCart(currentItems, {
+        dishId: dish.id,
+        customizationKey: selection.options.map((option) => option.id).sort().join('|'),
+        customizations: selection.options.map((option) => option.label),
+        name: dish.name,
+        restaurantName: dish.restaurantName,
+        stallName: dish.stallName,
+        stallId,
+        price: selection.price,
+        quantity: 1,
+      }),
+    );
+    setCustomizingDish(null);
+  };
+
   return (
     <main className="min-h-screen bg-[#f5f5f7] text-[#1d1d1f]">
       <div className="mx-auto min-h-screen max-w-[430px] px-4 pb-28 pt-5 sm:max-w-[480px] lg:max-w-[960px] lg:px-6">
@@ -216,7 +242,7 @@ export function HomePage() {
             {!isLoading && !error && (
               <div className="mt-4 grid grid-cols-2 gap-3">
                 {featuredDishes.map((dish) => {
-                  const quantity = cartItems.find((item) => item.dishId === dish.id)?.quantity ?? 0;
+                  const quantity = getDishQuantity(cartItems, dish.id);
 
                   return (
                     <article key={dish.id} className="overflow-hidden rounded-[22px] bg-white shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
@@ -235,9 +261,9 @@ export function HomePage() {
                           </div>
                         ) : null}
 
-                        <div className="absolute bottom-2 right-2">
+                        <div className="absolute bottom-2 left-2 right-2">
                           {quantity > 0 ? (
-                            <div className="flex items-center gap-2.5 rounded-full bg-white/95 px-2.5 py-1.5 text-[10px] font-medium text-[#1d1d1f] shadow-[0_8px_20px_rgba(15,23,42,0.18)] backdrop-blur-sm">
+                            <div className="flex w-full items-center justify-between gap-2.5 rounded-full bg-white/95 px-2.5 py-1.5 text-[10px] font-medium text-[#1d1d1f] shadow-[0_8px_20px_rgba(15,23,42,0.18)] backdrop-blur-sm">
                               <button
                                 type="button"
                                 aria-label={`Decrease ${dish.name} quantity`}
@@ -250,21 +276,23 @@ export function HomePage() {
                               <button
                                 type="button"
                                 aria-label={`Increase ${dish.name} quantity`}
-                                onClick={() => updateQuantity(dish, 1)}
+                                onClick={() => addDish(dish)}
                                 className="flex h-8 w-8 items-center justify-center rounded-full bg-[#1d1d1f] text-lg font-semibold text-white"
                               >
                                 +
                               </button>
                             </div>
                           ) : (
-                            <button
-                              type="button"
-                              onClick={() => updateQuantity(dish, 1)}
-                              className="rounded-full bg-[#1d1d1f] px-2.5 py-1.5 text-[10px] font-medium text-white shadow-[0_8px_20px_rgba(15,23,42,0.18)]"
-                              aria-label={`Add ${dish.name} to your order`}
-                            >
-                              Add
-                            </button>
+                            <div className="flex justify-end">
+                              <button
+                                type="button"
+                                onClick={() => addDish(dish)}
+                                className="flex h-8 w-8 items-center justify-center rounded-full bg-[#1d1d1f] text-white shadow-[0_8px_20px_rgba(15,23,42,0.18)]"
+                                aria-label={`Add ${dish.name} to your order`}
+                              >
+                                <Plus className="h-4 w-4" strokeWidth={2} />
+                              </button>
+                            </div>
                           )}
                         </div>
                       </div>
@@ -274,6 +302,15 @@ export function HomePage() {
               </div>
             )}
           </section>
+          {customizingDish ? (
+            <CustomizationCard
+              dishName={customizingDish.name}
+              basePrice={customizingDish.price}
+              customization={getDishCustomization(customizingDish.name)!}
+              onCancel={() => setCustomizingDish(null)}
+              onConfirm={(selection) => confirmCustomization(customizingDish, selection)}
+            />
+          ) : null}
 
           <section className="mt-8">
             <div className="mb-3 flex items-center justify-between gap-3">

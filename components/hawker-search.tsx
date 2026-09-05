@@ -6,7 +6,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { CartSummary } from '@/components/cart-summary';
 import { ResultCard } from '@/components/result-card';
 import type { SearchResult } from '@/lib/search/schema';
-import { addItemToCart, buildCartSummary, readCartItems, removeCartItem, updateCartItemQuantity, writeCartItems, type CartItem } from '@/lib/order/cart';
+import { addItemToCart, buildCartSummary, removeCartItem, updateCartItemQuantity, useCartItems } from '@/lib/order/cart';
 
 const quickIdeas = [
   'I want a halal meal under RM15',
@@ -52,12 +52,8 @@ export function HawkerSearch({ initialQuery = 'I want a vegetarian meal under RM
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [cartItems, setCartItems] = useState<CartItem[]>(() => readCartItems());
+  const { cartItems, setCartItems } = useCartItems();
   const [checkoutMessage, setCheckoutMessage] = useState<string | null>(null);
-
-  useEffect(() => {
-    writeCartItems(cartItems);
-  }, [cartItems]);
 
   const isDark = theme === 'dark';
   const shellBg = isDark ? 'bg-[#0a0a0d] text-[#f5f5f7]' : 'bg-[#f5f5f7] text-[#1d1d1f]';

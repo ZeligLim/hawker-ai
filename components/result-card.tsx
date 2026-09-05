@@ -1,4 +1,5 @@
 import type { SearchResult } from '@/lib/search/schema';
+import { Plus } from 'lucide-react';
 
 const spiceLabels: Record<number, string> = {
   0: 'Mild',
@@ -60,9 +61,10 @@ export function ResultCard({
       <button
         type="button"
         onClick={() => onAddToCart?.(dish)}
-        className="mt-5 w-full rounded-full bg-[#111827] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#1f2937]"
+        aria-label={`Add ${dish.name} to your order`}
+        className="mt-5 flex w-full items-center justify-center rounded-full bg-[#111827] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#1f2937]"
       >
-        Add to order
+        <Plus className="h-5 w-5" strokeWidth={2} />
       </button>
     </article>
   );
