@@ -1,10 +1,10 @@
 # Current Project Context
 
 ## Current Phase
-Phase 5: customer order flow and multi-stall checkout
+Phase 4: customer home experience and search entry flow
 
 ## Current Feature
-Multi-stall cart and mock checkout summary for the customer ordering loop.
+Build the first customer-facing Hawker home page with table context, natural-language search entry, featured dishes, stall discovery, and mobile bottom navigation.
 
 ## Completed
 - Next.js App Router foundation initialized
@@ -15,6 +15,7 @@ Multi-stall cart and mock checkout summary for the customer ordering loop.
 - Light/dark mode support introduced
 - Multi-stall cart model added with grouped merchant totals and checkout summary
 - Cart logic covered by TypeScript test cases
+- Customer home page implemented with premium mobile-first layout and navigation
 
 ## Current Architecture
 - Frontend: Next.js App Router, TypeScript, React, Tailwind
@@ -27,7 +28,8 @@ Multi-stall cart and mock checkout summary for the customer ordering loop.
 - AI output is validated with Zod before it can affect backend logic
 - Search remains deterministic and database-backed when credentials are present
 - Fallback data keeps the app usable when Supabase or OpenRouter credentials are absent
-- Cart state is intentionally client-side in this milestone so the UI can validate the order flow before persistent backend storage
+- Cart state remains client-side for this milestone while the customer-facing product experience is refined
+- Home and search flow prioritize a premium consumer-app feel over dashboard-like layouts
 
 ## Known Issues
 - No persistent order storage or auth layer yet; cart state is local to the browser session
@@ -35,4 +37,4 @@ Multi-stall cart and mock checkout summary for the customer ordering loop.
 - Production credentials are still required for live Supabase/OpenRouter operations
 
 ## Next Task
-Implement customer order tracking and merchant acceptance flow as the next milestone after the cart/checkout loop.
+Implement the dish detail and add-to-order flow that follows the customer home page and search experience.
