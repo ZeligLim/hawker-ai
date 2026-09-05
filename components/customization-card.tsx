@@ -58,14 +58,14 @@ export function CustomizationCard({
             const progress = customization.options.length > 1 ? (selectedIndex / (customization.options.length - 1)) * 100 : 100;
             return (
               <>
-                <div className="relative mx-2 mt-5 h-5 rounded-full bg-[#e5e7eb]" style={{ background: `linear-gradient(to right, #eab308 0%, #f97316 ${progress}%, #dc2626 100%)` }}>
+                <div className="relative mx-2 mt-5 h-5 rounded-full bg-[#e5e7eb]" style={{ background: 'linear-gradient(to right, #fde047 0%, #facc15 24%, #fb923c 52%, #f43f5e 76%, #b91c1c 100%)' }}>
                   <input
                     type="range"
                     min="0"
                     max={customization.options.length - 1}
                     value={selectedIndex}
                     onChange={(event) => toggleOption(customization.options[Number(event.target.value)])}
-                    className="absolute inset-0 h-5 w-full cursor-pointer appearance-none rounded-full bg-transparent accent-[#dc2626] [&::-moz-range-thumb]:h-8 [&::-moz-range-thumb]:w-8 [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:shadow-[0_2px_8px_rgba(15,23,42,0.24)] [&::-webkit-slider-thumb]:h-8 [&::-webkit-slider-thumb]:w-8 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:shadow-[0_2px_8px_rgba(15,23,42,0.24)]"
+                    className="absolute inset-0 h-5 w-full cursor-pointer appearance-none rounded-full bg-transparent accent-[#111827] [&::-moz-range-thumb]:h-8 [&::-moz-range-thumb]:w-8 [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-[#111827] [&::-moz-range-thumb]:shadow-[0_2px_8px_rgba(15,23,42,0.28)] [&::-webkit-slider-thumb]:h-8 [&::-webkit-slider-thumb]:w-8 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#111827] [&::-webkit-slider-thumb]:shadow-[0_2px_8px_rgba(15,23,42,0.28)]"
                     aria-label="Spice level"
                   />
                 </div>
