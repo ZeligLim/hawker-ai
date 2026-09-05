@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
+import { HawkerSearchBar } from '@/components/hawker-search-bar';
 
 const iconProps = {
   width: 18,
@@ -13,15 +14,6 @@ const iconProps = {
   strokeLinecap: 'round' as const,
   strokeLinejoin: 'round' as const,
 };
-
-function SearchIcon() {
-  return (
-    <svg {...iconProps} aria-hidden="true">
-      <circle cx="11" cy="11" r="6" />
-      <path d="M16 16L21 21" />
-    </svg>
-  );
-}
 
 function RiceIcon() {
   return (
@@ -148,6 +140,7 @@ function LeafIcon() {
 }
 
 export function MenuPage() {
+  const [searchValue, setSearchValue] = useState('');
   const [quantities, setQuantities] = useState<Record<string, number>>({});
 
   const updateQuantity = (name: string, delta: number) => {
@@ -178,23 +171,12 @@ export function MenuPage() {
             </div>
           </header>
 
-          <div className="mt-6 flex items-center gap-3 rounded-[28px] border border-[#e5e7eb] bg-white px-3 py-2.5 shadow-[0_6px_18px_rgba(15,23,42,0.03)]">
-            <span className="flex h-8 w-8 items-center justify-center text-[#1d1d1f]">
-              <SearchIcon />
-            </span>
-            <input
-              aria-label="Search the hawker menu"
-              placeholder="Search the menu"
-              className="h-10 flex-1 border-0 bg-transparent text-sm text-[#1d1d1f] placeholder:text-[#6e6e73] focus:outline-none"
-            />
-            <button
-              type="button"
-              aria-label="Search menu"
-              className="flex h-10 w-10 items-center justify-center rounded-full bg-[#1d1d1f] text-white"
-            >
-              <SearchIcon />
-            </button>
-          </div>
+          <HawkerSearchBar
+            placeholder="Search the menu"
+            value={searchValue}
+            onChange={setSearchValue}
+            buttonLabel="Search menu"
+          />
 
           <section className="mt-6">
             <div className="flex gap-3 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">

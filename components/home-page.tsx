@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
+import { HawkerSearchBar } from '@/components/hawker-search-bar';
 import { fallbackDishes } from '@/lib/search/fallback-data';
 
 type FeaturedDish = {
@@ -62,15 +63,6 @@ const iconProps = {
   strokeLinecap: 'round' as const,
   strokeLinejoin: 'round' as const,
 };
-
-function SearchIcon() {
-  return (
-    <svg {...iconProps} aria-hidden="true">
-      <circle cx="11" cy="11" r="6" />
-      <path d="M16 16L21 21" />
-    </svg>
-  );
-}
 
 function LeafIcon() {
   return (
@@ -223,25 +215,13 @@ export function HomePage() {
           </header>
 
           <section className="mt-6 rounded-[24px] border border-[#e5e7eb] bg-white p-4 shadow-[0_14px_28px_rgba(15,23,42,0.04)]">
-            <form id="search" onSubmit={handleSubmit} className="mt-5">
-              <div className="flex items-center gap-3 rounded-[28px] border border-[#dfe3ea] bg-[#f7f7f7] px-3 py-2.5 transition focus-within:border-[#c7ced8] focus-within:bg-[#f2f2f2]">
-                <input
-                  value={query}
-                  onChange={(event) => setQuery(event.target.value)}
-                  aria-label="Search for dishes, ingredients or cravings"
-                  placeholder="Describe your cravings"
-                  className="h-10 flex-1 border-0 bg-transparent text-sm text-[#1d1d1f] placeholder:text-[#6e6e73] focus:outline-none"
-                />
-                <button
-                  type="submit"
-                  aria-label="Search for dishes"
-                  disabled={isLoading}
-                  className="flex h-10 w-10 items-center justify-center rounded-full bg-[#1d1d1f] text-white transition hover:bg-[#2a2a2a] disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  <SearchIcon />
-                </button>
-              </div>
-            </form>
+            <HawkerSearchBar
+              placeholder="Describe your cravings"
+              value={query}
+              onChange={setQuery}
+              onSubmit={handleSubmit}
+              buttonLabel="Search for dishes"
+            />
           </section>
 
 
