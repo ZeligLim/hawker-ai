@@ -1,7 +1,7 @@
 # Current Project Context
 
 ## Current Phase
-Owner MVP Phase 5: dish editor and customisation setup
+Backend Phase 1: Supabase domain foundation
 
 ## Current Feature
 Build the first customer-facing Hawker home page with table context, natural-language search entry, featured dishes, stall discovery, and mobile bottom navigation. The search interaction remains fully on the home screen, and a dedicated menu page now exists for browsing the broader hawker offering by category.
@@ -25,7 +25,9 @@ Build the first customer-facing Hawker home page with table context, natural-lan
 - Owner menu entries open dedicated dish editor pages with photo selection and large, egg, and spicy-level customisation settings
 - Dish customisations are owner-defined, capped at 10 options per dish, with extra prices and no preset option labels
 - Dish editors support vegetarian metadata, descriptions, and comma-separated search tags for future AI-assisted discovery
+- Supabase migration `002_backend_foundation.sql` adds dish metadata, merchant memberships, table sessions, parent orders, merchant sub-orders, order items, indexes, and RLS policies
 - Owner pages reserve additional bottom space so the fixed four-tab navigation does not cover content
+- Backend writes and local-to-Supabase data migration are not wired into the UI yet
 
 ## Current Architecture
 - Frontend: Next.js App Router, TypeScript, React, Tailwind
@@ -47,4 +49,4 @@ Build the first customer-facing Hawker home page with table context, natural-lan
 - Production credentials are still required for live Supabase/OpenRouter operations
 
 ## Next Task
-Owner MVP baseline is complete; replace local persistence with Supabase-backed merchant data when the owner schema and merchant authorization are defined. Customer-facing customisation rendering should consume merchant-configured options when the persistent menu schema is introduced.
+Next: add typed server-side Supabase repositories and authenticated route handlers for owner dishes, table sessions, and order creation/status updates.
