@@ -65,8 +65,7 @@ export default async function ShopDetailPage({ params }: { params: Promise<{ slu
     return (
       <main className="min-h-screen bg-[#f5f5f7] px-4 py-6 text-[#1d1d1f]">
         <div className="mx-auto max-w-[430px] rounded-[26px] bg-white p-5 shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#6e6e73]">Shop</p>
-          <h1 className="mt-2 text-3xl font-semibold tracking-[-0.06em]">Not found</h1>
+          <h1 className="text-3xl font-semibold tracking-[-0.06em]">Not found</h1>
           <Link href="/shop" className="mt-5 inline-flex rounded-full bg-[#111827] px-4 py-2.5 text-sm font-medium text-white">
             Back to shops
           </Link>
@@ -78,52 +77,73 @@ export default async function ShopDetailPage({ params }: { params: Promise<{ slu
   return (
     <main className="min-h-screen bg-[#f5f5f7] px-4 pb-28 pt-5 text-[#1d1d1f]">
       <div className="mx-auto max-w-[430px] sm:max-w-[480px] lg:max-w-[960px]">
-        <header className="mb-4 flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-[14px] bg-[#1d1d1f] text-sm font-semibold text-white">
-            H
-          </div>
-          <p className="text-sm font-medium text-[#1d1d1f]">Setia Hawker Centre</p>
-        </header>
-
         <section className="rounded-[26px] bg-white p-4 shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
           <div className="flex items-start justify-between gap-3">
-            <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#6e6e73]">Stall</p>
-              <h1 className="mt-2 text-3xl font-semibold tracking-[-0.06em]">{shop.name}</h1>
+            <div className="flex min-w-0 items-start gap-3">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[14px] bg-white text-sm font-semibold text-[#1d1d1f] shadow-[0_6px_16px_rgba(15,23,42,0.04)] ring-1 ring-[#f1f5f9]">
+                {shop.name
+                  .split(' ')
+                  .slice(0, 2)
+                  .map((part) => part[0])
+                  .join('')}
+              </div>
+              <div className="min-w-0">
+                <h1 className="text-3xl font-semibold tracking-[-0.06em]">{shop.name}</h1>
+                <p className="mt-1 text-sm text-[#6e6e73]">{shop.description}</p>
+              </div>
             </div>
-            <span className={`rounded-full px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] ${
-              shop.busy === 'Busy'
-                ? 'bg-[#fef3c7] text-[#b45309]'
-                : shop.busy === 'Moderate'
-                  ? 'bg-[#dbeafe] text-[#1d4ed8]'
-                  : shop.busy === 'Closed'
-                    ? 'bg-[#f5f5f7] text-[#6e6e73]'
-                    : 'bg-[#dcfce7] text-[#166534]'
-            }`}>
-              {shop.busy}
-            </span>
-          </div>
 
-          <p className="mt-3 text-sm text-[#6e6e73]">{shop.description}</p>
-
-          <div className="mt-4 flex items-center justify-between text-xs text-[#6e6e73]">
-            <span>ETA {shop.eta}</span>
-            <span>{shop.dishes.length} dishes</span>
+            <div className="flex min-w-[88px] shrink-0 flex-col items-end gap-1 text-right">
+              <span className={`whitespace-nowrap rounded-full px-2 py-1 text-[9px] font-semibold uppercase tracking-[0.14em] ${
+                shop.busy === 'Busy'
+                  ? 'bg-[#fef3c7] text-[#b45309]'
+                  : shop.busy === 'Moderate'
+                    ? 'bg-[#dbeafe] text-[#1d4ed8]'
+                    : shop.busy === 'Closed'
+                      ? 'bg-[#f5f5f7] text-[#6e6e73]'
+                      : 'bg-[#dcfce7] text-[#166534]'
+              }`}>
+                {shop.busy}
+              </span>
+              {shop.busy !== 'Closed' ? (
+                <span className="whitespace-nowrap text-[10px] font-medium leading-none text-[#6e6e73]">ETA {shop.eta}</span>
+              ) : null}
+            </div>
           </div>
         </section>
 
-        <section className="mt-6 rounded-[26px] bg-white p-4 shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
-          <h2 className="text-lg font-semibold tracking-[-0.04em]">Popular dishes</h2>
-
-          <div className="mt-4 space-y-3">
+        <section className="mt-6">
+          <div className="grid grid-cols-2 gap-3">
             {shop.dishes.map((dish) => (
-              <div key={dish.name} className="flex items-center justify-between gap-3 rounded-[18px] bg-[#f5f5f7] px-3 py-2.5">
-                <div>
-                  <p className="text-sm font-medium text-[#1d1d1f]">{dish.name}</p>
-                  {dish.vegetarian ? <p className="mt-0.5 text-[10px] uppercase tracking-[0.18em] text-[#166534]">Vegetarian</p> : null}
+              <article key={dish.name} className="overflow-hidden rounded-[22px] bg-white shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
+                <div className="relative h-40 overflow-hidden bg-[#f3efe8]">
+                  <div className="flex h-full items-center justify-center text-lg font-semibold uppercase tracking-[0.22em] text-[#5c4b1d]">
+                    {dish.name.split(' ')[0]}
+                  </div>
+
+                  <div className="absolute left-2 top-2 rounded-full bg-black/70 px-2 py-1 text-[10px] font-semibold text-white backdrop-blur-sm">
+                    RM {dish.price.toFixed(2)}
+                  </div>
+
+                  {dish.vegetarian ? (
+                    <div className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-[#ecfdf5] text-[#166534] shadow-[0_8px_20px_rgba(15,23,42,0.12)]">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-[14px] w-[14px]">
+                        <path d="M18 3c-4.5 2.4-7.1 5.1-8.3 9.2C8.5 16 7.2 17.1 4 19.3c3.5 0 6.7-1.1 9.5-4.5C15.8 10.3 17.2 7 18 3Z" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </div>
+                  ) : null}
+
+                  <div className="absolute bottom-2 right-2">
+                    <button
+                      type="button"
+                      className="rounded-full bg-[#1d1d1f] px-2.5 py-1.5 text-[10px] font-medium text-white shadow-[0_8px_20px_rgba(15,23,42,0.18)]"
+                      aria-label={`Add ${dish.name} to your order`}
+                    >
+                      Add
+                    </button>
+                  </div>
                 </div>
-                <p className="text-sm font-semibold text-[#1d1d1f]">RM {dish.price.toFixed(2)}</p>
-              </div>
+              </article>
             ))}
           </div>
         </section>

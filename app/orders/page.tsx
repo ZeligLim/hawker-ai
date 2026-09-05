@@ -22,8 +22,7 @@ export default function OrdersPage() {
         <section className="rounded-[26px] bg-white p-4 shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#6e6e73]">Orders</p>
-              <h1 className="mt-2 text-3xl font-semibold tracking-[-0.06em]">Your order</h1>
+              <h1 className="text-3xl font-semibold tracking-[-0.06em]">Your order</h1>
             </div>
             <span className="rounded-full bg-[#f5f5f7] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#3c3c43]">
               Ready
@@ -49,7 +48,7 @@ export default function OrdersPage() {
 
         <section className="mt-6 rounded-[24px] bg-white p-4 shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-lg font-semibold tracking-[-0.04em]">Order details</h2>
+            <h2 className="text-lg font-semibold tracking-[-0.04em]">Details</h2>
             <span className="text-sm text-[#6e6e73]">{orderItems.length} items</span>
           </div>
 

@@ -118,7 +118,6 @@ export default function ProfilePage() {
       <main className="min-h-screen bg-[#f5f5f7] px-4 pb-28 pt-5 text-[#1d1d1f]">
         <div className="mx-auto max-w-[430px] sm:max-w-[480px] lg:max-w-[960px]">
           <section className="rounded-[26px] bg-white p-4 shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#6e6e73]">Profile</p>
             <h1 className="mt-2 text-3xl font-semibold tracking-[-0.06em]">Sign in</h1>
             <div className="mt-5 space-y-4">
               <div>
@@ -148,8 +147,7 @@ export default function ProfilePage() {
       <div className="mx-auto max-w-[430px] sm:max-w-[480px] lg:max-w-[960px]">
         {!signedIn ? (
           <section className="rounded-[26px] bg-white p-4 shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#6e6e73]">Profile</p>
-            <h1 className="mt-2 text-3xl font-semibold tracking-[-0.06em]">Sign in</h1>
+            <h1 className="text-3xl font-semibold tracking-[-0.06em]">Sign in</h1>
             <form onSubmit={handleSignIn} className="mt-5 space-y-4">
               <div>
                 <label htmlFor="name" className="mb-2 block text-sm font-medium text-[#1d1d1f]">
@@ -174,8 +172,7 @@ export default function ProfilePage() {
             <section className="rounded-[26px] bg-white p-4 shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
               <div className="flex items-center justify-between gap-3">
                 <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#6e6e73]">Profile</p>
-                  <h1 className="mt-2 text-3xl font-semibold tracking-[-0.06em]">{name}</h1>
+                  <h1 className="text-3xl font-semibold tracking-[-0.06em]">{name}</h1>
                 </div>
                 <button type="button" onClick={handleSignOut} className="rounded-full bg-[#f5f5f7] px-3 py-1.5 text-[11px] font-medium text-[#1d1d1f]">
                   Sign out

@@ -65,15 +65,6 @@ export function MenuPage() {
     <main className="min-h-screen bg-[#f5f5f7] text-[#1d1d1f]">
       <div className="mx-auto min-h-screen max-w-[430px] px-4 pb-28 pt-5 sm:max-w-[480px] lg:max-w-[960px] lg:px-6">
         <div className="lg:rounded-[32px] lg:bg-white lg:p-5 lg:shadow-[0_24px_60px_rgba(15,23,42,0.08)]">
-          <header className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-[14px] bg-[#1d1d1f] text-sm font-semibold text-white">
-                H
-              </div>
-              <p className="text-sm font-medium text-[#1d1d1f]">Setia Hawker Centre · Table 12</p>
-            </div>
-          </header>
-
           <div className="sticky top-0 z-10 bg-transparent pb-2 pt-1">
             <HawkerSearchBar
               placeholder="Search the menu"

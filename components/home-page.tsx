@@ -266,21 +266,21 @@ export function HomePage() {
                   <Link key={stall.name} href={`/shop/${slug}`} className="block">
                     <article className="rounded-[22px] bg-white p-3 shadow-[0_8px_18px_rgba(15,23,42,0.02)]">
                       <div className="flex items-start justify-between gap-3">
-                        <div className="flex items-center gap-3">
-                          <div className="flex h-12 w-12 items-center justify-center rounded-[14px] bg-white text-sm font-semibold text-[#1d1d1f] shadow-[0_6px_16px_rgba(15,23,42,0.04)] ring-1 ring-[#f1f5f9]">
+                        <div className="flex min-w-0 items-start gap-3">
+                          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[14px] bg-white text-sm font-semibold text-[#1d1d1f] shadow-[0_6px_16px_rgba(15,23,42,0.04)] ring-1 ring-[#f1f5f9]">
                             {stall.name
                               .split(' ')
                               .slice(0, 2)
                               .map((part) => part[0])
                               .join('')}
                           </div>
-                          <div>
+                          <div className="min-w-0">
                             <p className="text-base font-semibold text-[#1d1d1f]">{stall.name}</p>
                             <p className="mt-0.5 text-xs text-[#6e6e73]">{stall.description}</p>
                           </div>
                         </div>
 
-                        <div className="flex min-w-[88px] flex-col items-end gap-1 text-right">
+                        <div className="flex min-w-[88px] shrink-0 flex-col items-end gap-1 text-right">
                           <span className={`whitespace-nowrap rounded-full px-2 py-1 text-[9px] font-semibold uppercase tracking-[0.14em] ${
                             stall.busy === 'Busy'
                               ? 'bg-[#fef3c7] text-[#b45309]'
