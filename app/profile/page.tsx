@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 
 type OrderRecord = {
@@ -46,7 +47,6 @@ function readStoredProfile(): Partial<ProfileState> | null {
 
 export default function ProfilePage() {
   const [profile, setProfile] = useState<ProfileState>(defaultProfileState);
-  const [draftName, setDraftName] = useState('');
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -54,7 +54,6 @@ export default function ProfilePage() {
       const saved = readStoredProfile();
       if (!saved) {
         setProfile(defaultProfileState);
-        setDraftName('');
         return;
       }
 
@@ -65,7 +64,6 @@ export default function ProfilePage() {
       };
 
       setProfile(nextProfile);
-      setDraftName(nextProfile.name === defaultProfileState.name ? '' : nextProfile.name);
     };
 
     queueMicrotask(() => {
@@ -95,21 +93,18 @@ export default function ProfilePage() {
     return topCategory;
   }, [orders]);
 
-  const handleSignIn = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const trimmedName = draftName.trim();
-    if (!trimmedName) return;
-
-    const nextProfile: ProfileState = { name: trimmedName, signedIn: true, orders };
-    setProfile(nextProfile);
-    setDraftName(trimmedName);
-    window.localStorage.setItem(storageKey, JSON.stringify(nextProfile));
-  };
+  const orderLinks = useMemo(
+    () =>
+      orders.map((order) => ({
+        id: `${order.place}-${order.date}-${order.dish}`,
+        order,
+      })),
+    [orders],
+  );
 
   const handleSignOut = () => {
     const nextProfile: ProfileState = { name: 'Guest diner', signedIn: false, orders: defaultOrders };
     setProfile(nextProfile);
-    setDraftName('');
     window.localStorage.setItem(storageKey, JSON.stringify(nextProfile));
   };
 
@@ -118,24 +113,11 @@ export default function ProfilePage() {
       <main className="min-h-screen bg-[#f5f5f7] px-4 pb-28 pt-5 text-[#1d1d1f]">
         <div className="mx-auto max-w-[430px] sm:max-w-[480px] lg:max-w-[960px]">
           <section className="rounded-[26px] bg-white p-4 shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
-            <h1 className="mt-2 text-3xl font-semibold tracking-[-0.06em]">Sign in</h1>
-            <div className="mt-5 space-y-4">
-              <div>
-                <label htmlFor="name" className="mb-2 block text-sm font-medium text-[#1d1d1f]">
-                  Your name
-                </label>
-                <input
-                  id="name"
-                  value={draftName}
-                  onChange={(event) => setDraftName(event.target.value)}
-                  placeholder="Enter your name"
-                  className="w-full rounded-[18px] bg-[#f5f5f7] px-4 py-3 text-sm text-[#1d1d1f] placeholder:text-[#6e6e73] outline-none"
-                />
-              </div>
-              <button type="button" className="w-full rounded-full bg-[#111827] px-4 py-3 text-sm font-medium text-white">
-                Sign in
-              </button>
-            </div>
+            <h1 className="text-3xl font-semibold tracking-[-0.06em]">Sign in</h1>
+            <p className="mt-3 text-sm text-[#6e6e73]">Save your favourite hawker picks and revisit your recent orders in one place.</p>
+            <Link href="/auth" className="mt-5 inline-flex w-full items-center justify-center rounded-full bg-[#111827] px-4 py-3 text-sm font-medium text-white">
+              Sign in
+            </Link>
           </section>
         </div>
       </main>
@@ -148,24 +130,10 @@ export default function ProfilePage() {
         {!signedIn ? (
           <section className="rounded-[26px] bg-white p-4 shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
             <h1 className="text-3xl font-semibold tracking-[-0.06em]">Sign in</h1>
-            <form onSubmit={handleSignIn} className="mt-5 space-y-4">
-              <div>
-                <label htmlFor="name" className="mb-2 block text-sm font-medium text-[#1d1d1f]">
-                  Your name
-                </label>
-                <input
-                  id="name"
-                  value={draftName}
-                  onChange={(event) => setDraftName(event.target.value)}
-                  placeholder="Enter your name"
-                  className="w-full rounded-[18px] bg-[#f5f5f7] px-4 py-3 text-sm text-[#1d1d1f] placeholder:text-[#6e6e73] outline-none"
-                />
-              </div>
-
-              <button type="submit" className="w-full rounded-full bg-[#111827] px-4 py-3 text-sm font-medium text-white">
-                Sign in
-              </button>
-            </form>
+            <p className="mt-3 text-sm text-[#6e6e73]">Save your favourite hawker picks and revisit your recent orders in one place.</p>
+            <Link href="/auth" className="mt-5 inline-flex w-full items-center justify-center rounded-full bg-[#111827] px-4 py-3 text-sm font-medium text-white">
+              Sign in
+            </Link>
           </section>
         ) : (
           <>
@@ -191,27 +159,24 @@ export default function ProfilePage() {
         <section className="mt-6 rounded-[24px] bg-white p-4 shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
           <div className="mb-3 flex items-center justify-between">
             <h2 className="text-lg font-semibold tracking-[-0.04em]">Previous orders</h2>
-            <span className="text-sm text-[#6e6e73]">{orders.length} items</span>
+            <span className="text-sm text-[#6e6e73]">{orders.length} orders</span>
           </div>
 
           <div className="space-y-3">
-            {orders.map((order) => (
-              <div key={`${order.dish}-${order.date}`} className="rounded-[18px] bg-[#f5f5f7] p-3">
-                <div className="flex items-center justify-between gap-3">
-                  <div>
-                    <p className="text-sm font-medium text-[#1d1d1f]">{order.dish}</p>
-                    <p className="mt-0.5 text-xs text-[#6e6e73]">{order.place}</p>
-                  </div>
-                  <span className="rounded-full bg-white px-2 py-1 text-[10px] font-medium text-[#3c3c43]">
-                    {order.category}
-                  </span>
-                </div>
-                <div className="mt-2 flex items-center justify-between text-xs text-[#6e6e73]">
-                  <span>{order.date}</span>
-                  <span>RM {order.price.toFixed(2)}</span>
-                </div>
-              </div>
-            ))}
+            {orderLinks.map(({ id, order }) => {
+              const orderHref = `/profile/order/${encodeURIComponent(id)}` as any;
+
+              return (
+                <Link
+                  key={id}
+                  href={orderHref}
+                  className="flex items-center justify-between gap-3 rounded-[18px] border border-[#e5e7eb] bg-[#f5f5f7] p-3 text-left transition hover:border-[#d1d5db]"
+                >
+                  <span className="text-sm font-medium text-[#1d1d1f]">{order.date}</span>
+                  <span className="text-sm font-semibold text-[#1d1d1f]">RM {order.price.toFixed(2)}</span>
+                </Link>
+              );
+            })}
           </div>
         </section>
 
