@@ -233,9 +233,6 @@ export function HomePage() {
 
             <form id="search" onSubmit={handleSubmit} className="mt-5">
               <div className="flex items-center gap-3 rounded-[18px] border border-[#dfe3ea] bg-[#f7f7f7] px-3 py-2.5 transition focus-within:border-[#c7ced8] focus-within:bg-[#f2f2f2]">
-                <span className="flex h-8 w-8 items-center justify-center text-[#1d1d1f]">
-                  <SearchIcon />
-                </span>
                 <input
                   value={query}
                   onChange={(event) => setQuery(event.target.value)}
@@ -247,7 +244,7 @@ export function HomePage() {
                   type="submit"
                   aria-label="Search for dishes"
                   disabled={isLoading}
-                  className="flex h-10 w-10 items-center justify-center rounded-full text-[#1d1d1f] transition hover:bg-black/5 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="flex h-10 w-10 items-center justify-center rounded-full bg-[#1d1d1f] text-white transition hover:bg-[#2a2a2a] disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   <SearchIcon />
                 </button>
