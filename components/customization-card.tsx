@@ -14,6 +14,18 @@ function ChiliIcon({ active, level }: { active: boolean; level: number }) {
   );
 }
 
+function SpiceLogo({ level, active }: { level: number; active: boolean }) {
+  return (
+    <span className="flex items-end justify-center" aria-hidden="true">
+      {Array.from({ length: level }, (_, index) => (
+        <span key={index} className={index > 0 ? '-ml-2' : undefined}>
+          <ChiliIcon active={active} level={level} />
+        </span>
+      ))}
+    </span>
+  );
+}
+
 export function CustomizationCard({
   dishName,
   basePrice,
@@ -63,26 +75,26 @@ export function CustomizationCard({
 
       {isSpiceCustomization ? (
         <div className="mt-5">
-          <div className="flex items-center justify-between gap-2">
+          <div className="grid grid-cols-5 items-end gap-1">
             {customization.options.map((option, index) => {
               const selected = selectedIds.includes(option.id);
               return (
-                <button key={option.id} type="button" onClick={() => toggleOption(option)} className="flex flex-1 flex-col items-center gap-1" aria-label={option.label}>
-                  <ChiliIcon active={selected} level={index + 1} />
-                  <span className={`text-[10px] font-medium ${selected ? 'text-[#1d1d1f]' : 'text-[#6e6e73]'}`}>{index + 1}</span>
+                <button
+                  key={option.id}
+                  type="button"
+                  onClick={() => toggleOption(option)}
+                  className={`flex min-h-[76px] flex-col items-center justify-end gap-1 rounded-[14px] px-1 py-2 transition ${
+                    selected ? 'bg-[#fff7ed] ring-2 ring-[#f97316]/30' : 'bg-[#f5f5f7]'
+                  }`}
+                  aria-label={`${option.label}, ${index + 1} ${index === 0 ? 'chili' : 'chilies'}`}
+                  aria-pressed={selected}
+                >
+                  <SpiceLogo level={index + 1} active={selected} />
+                  <span className={`text-[10px] font-medium ${selected ? 'text-[#c2410c]' : 'text-[#6e6e73]'}`}>{index + 1}</span>
                 </button>
               );
             })}
           </div>
-          <input
-            type="range"
-            min="1"
-            max={customization.options.length}
-            value={Math.max(1, customization.options.findIndex((option) => selectedIds.includes(option.id)) + 1)}
-            onChange={(event) => toggleOption(customization.options[Number(event.target.value) - 1])}
-            className="mt-3 w-full accent-[#f97316]"
-            aria-label="Spice level"
-          />
           <p className="mt-2 text-center text-xs font-medium text-[#6e6e73]">
             {customization.options.find((option) => selectedIds.includes(option.id))?.label}
           </p>
