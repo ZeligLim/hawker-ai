@@ -5,9 +5,10 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p ${PORT:-3000}",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "check:env": "node -e \"const fs=require('fs'); const path=require('path'); const root=process.cwd(); const files=['.env','.env.local','.env.production','.env.development']; const present=files.some((file)=>fs.existsSync(path.join(root,file))); console.log(present ? 'Environment file detected' : 'No environment file detected'); if (!present) process.exit(1);\""
   },
   "keywords": [
     "hawker",

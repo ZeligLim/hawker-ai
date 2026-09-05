@@ -80,6 +80,15 @@ const normalizeText = (value: string) => value.trim().toLowerCase();
 
 export function getFallbackMatches(filters: SearchFilters): SearchResult[] {
   const query = normalizeText(filters.query ?? '');
+  const queryTokens = query
+    .split(/\s+/)
+    .map((token) => token.replace(/[^a-z0-9]/g, ''))
+    .filter(
+      (token) =>
+        token &&
+        !/^\d+$/.test(token) &&
+        !['rm', 'ringgit', 'myr', 'under', 'below', 'max', 'about', 'around', 'for', 'with', 'the', 'and', 'or'].includes(token),
+    );
 
   const filtered = fallbackDishes.filter((dish) => {
     const matchesPrice =
@@ -92,10 +101,11 @@ export function getFallbackMatches(filters: SearchFilters): SearchResult[] {
       filters.spiceLevel === undefined || Math.abs(dish.spiceLevel - filters.spiceLevel) <= 1;
 
     const matchesQuery =
-      !query ||
-      [dish.name, dish.restaurantName, dish.stallName, ...dish.ingredients].some((value) =>
-        normalizeText(value).includes(query),
-      );
+      queryTokens.length === 0 ||
+      [dish.name, dish.restaurantName, dish.stallName, ...dish.ingredients].some((value) => {
+        const haystack = normalizeText(value);
+        return queryTokens.some((token) => haystack.includes(token));
+      });
 
     return matchesPrice && matchesVegetarian && matchesHalal && matchesSpice && matchesQuery;
   });

@@ -6,3 +6,7 @@ out
 !.env.example
 npm-debug.log*
 .DS_Store
+*.tsbuildinfo
+.vercel
+AGENTS.md
+CLAUDE.md
