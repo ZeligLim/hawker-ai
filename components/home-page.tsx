@@ -1,9 +1,29 @@
 'use client';
 
 import Link from 'next/link';
+import { useMemo, useState } from 'react';
 import { fallbackDishes } from '@/lib/search/fallback-data';
 
-const quickFilters = ['Vegetarian', 'Halal', 'Spicy', 'Under RM10', 'High Protein', 'Popular'];
+type FeaturedDish = {
+  id: string;
+  name: string;
+  restaurantName: string;
+  stallName: string;
+  price: number;
+  isVegetarian: boolean;
+  isHalal: boolean;
+  spiceLevel: number;
+  proteinGrams: number;
+};
+
+const quickFilters = [
+  { label: 'Vegetarian', query: 'vegetarian food' },
+  { label: 'Halal', query: 'halal food' },
+  { label: 'Spicy', query: 'spicy noodles under RM10' },
+  { label: 'Under RM10', query: 'food under RM10' },
+  { label: 'High Protein', query: 'something high in protein' },
+  { label: 'Popular', query: 'popular hawker dishes' },
+];
 
 const stallDirectory = [
   {
@@ -94,12 +114,83 @@ function ProfileIcon({ active }: { active: boolean }) {
 
 const navItems = [
   { href: '/', label: 'Home', icon: HomeIcon, active: true },
-  { href: '/search', label: 'Search', icon: SearchNavIcon, active: false },
+  { href: '#search', label: 'Search', icon: SearchNavIcon, active: false },
   { href: '/orders', label: 'Orders', icon: OrdersIcon, active: false },
   { href: '/profile', label: 'Profile', icon: ProfileIcon, active: false },
 ];
 
 export function HomePage() {
+  const [query, setQuery] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [results, setResults] = useState<FeaturedDish[]>([]);
+
+  const featuredDishes = useMemo<FeaturedDish[]>(() => {
+    if (results.length > 0) return results;
+    return fallbackDishes.slice(0, 4).map((dish) => ({
+      id: dish.id,
+      name: dish.name,
+      restaurantName: dish.restaurantName,
+      stallName: dish.stallName,
+      price: dish.price,
+      isVegetarian: dish.isVegetarian,
+      isHalal: dish.isHalal,
+      spiceLevel: dish.spiceLevel,
+      proteinGrams: dish.proteinGrams,
+    }));
+  }, [results]);
+
+  const handleSearch = async (nextQuery: string) => {
+    const trimmed = nextQuery.trim();
+    const payloadQuery = trimmed || 'spicy noodles under RM10';
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch('/api/search', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          query: payloadQuery,
+          limit: 4,
+        }),
+      });
+
+      const payload = await response.json();
+      if (!response.ok) throw new Error(payload?.error ?? 'Search failed');
+
+      const nextResults = (payload.results ?? []).map((dish: any) => ({
+        id: dish.id,
+        name: dish.name,
+        restaurantName: dish.restaurantName,
+        stallName: dish.stallName,
+        price: Number(dish.price),
+        isVegetarian: Boolean(dish.isVegetarian),
+        isHalal: Boolean(dish.isHalal),
+        spiceLevel: Number(dish.spiceLevel),
+        proteinGrams: Number(dish.proteinGrams),
+      }));
+
+      setResults(nextResults);
+    } catch (searchError) {
+      setResults([]);
+      setError(searchError instanceof Error ? searchError.message : 'Unable to search right now.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    void handleSearch(query);
+  };
+
+  const handleQuickFilter = (nextQuery: string) => {
+    setQuery(nextQuery);
+    void handleSearch(nextQuery);
+  };
+
   return (
     <main className="min-h-screen bg-[#f5f5f7] text-[#1d1d1f]">
       <div className="mx-auto min-h-screen max-w-[430px] px-4 pb-28 pt-5 sm:max-w-[480px] lg:max-w-[960px] lg:px-6">
@@ -140,27 +231,39 @@ export function HomePage() {
             </h1>
             <p className="mt-2 text-base text-[#4b5563]">Find dishes from every stall around you.</p>
 
-            <Link
-              href={'/search' as any}
-              aria-label="Search for dishes, ingredients or cravings"
-              className="mt-5 flex items-center gap-3 rounded-[18px] border border-[#dfe3ea] bg-[#f7f7f7] px-4 py-3.5 text-left text-sm text-[#6e6e73] transition hover:border-[#c7ced8] hover:bg-[#f2f2f2]"
-            >
-              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#1d1d1f] shadow-[0_8px_20px_rgba(15,23,42,0.05)]">
-                <SearchIcon />
-              </span>
-              <span className="block truncate">Search for dishes, ingredients or cravings...</span>
-            </Link>
+            <form id="search" onSubmit={handleSubmit} className="mt-5">
+              <div className="flex items-center gap-3 rounded-[18px] border border-[#dfe3ea] bg-[#f7f7f7] px-3 py-2.5 transition focus-within:border-[#c7ced8] focus-within:bg-[#f2f2f2]">
+                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#1d1d1f] shadow-[0_8px_20px_rgba(15,23,42,0.05)]">
+                  <SearchIcon />
+                </span>
+                <input
+                  value={query}
+                  onChange={(event) => setQuery(event.target.value)}
+                  aria-label="Search for dishes, ingredients or cravings"
+                  placeholder="Search for dishes, ingredients or cravings..."
+                  className="h-10 flex-1 border-0 bg-transparent text-sm text-[#1d1d1f] placeholder:text-[#6e6e73] focus:outline-none"
+                />
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="rounded-full bg-[#1d1d1f] px-3 py-2 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {isLoading ? 'Searching...' : 'Search'}
+                </button>
+              </div>
+            </form>
           </section>
 
           <section className="mt-6">
             <div className="flex gap-2 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {quickFilters.map((filter) => (
                 <button
-                  key={filter}
+                  key={filter.label}
                   type="button"
+                  onClick={() => handleQuickFilter(filter.query)}
                   className="shrink-0 rounded-full border border-[#e5e7eb] bg-white px-3.5 py-2 text-sm font-medium text-[#1d1d1f] shadow-[0_8px_18px_rgba(15,23,42,0.02)] transition hover:border-[#d4d9df]"
                 >
-                  {filter}
+                  {filter.label}
                 </button>
               ))}
             </div>
@@ -169,61 +272,72 @@ export function HomePage() {
           <section className="mt-8">
             <div className="flex items-center justify-between gap-3">
               <h2 className="text-[1.3rem] font-semibold tracking-[-0.05em] text-[#1d1d1f]">Popular right now</h2>
-              <Link href={'/search' as any} className="text-sm font-medium text-[#3c3c43] underline-offset-4 hover:underline">
-                See all
-              </Link>
+              <button type="button" onClick={() => void handleSearch(query || 'popular hawker dishes')} className="text-sm font-medium text-[#3c3c43] underline-offset-4 hover:underline">
+                Refresh
+              </button>
             </div>
 
-            <div className="mt-4 space-y-3">
-              {fallbackDishes.slice(0, 4).map((dish) => (
-                <article key={dish.id} className="flex items-center gap-3 rounded-[22px] border border-[#e5e7eb] bg-white p-3 shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
-                  <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-[18px] bg-[linear-gradient(135deg,#f8e6c1_0%,#e6d4b0_100%)] text-xs font-semibold uppercase tracking-[0.22em] text-[#5c4b1d]">
-                    {dish.name.split(' ')[0]}
-                  </div>
+            {isLoading && (
+              <div className="mt-4 rounded-[20px] border border-[#e5e7eb] bg-white p-4 text-sm text-[#6e6e73]">
+                Finding dishes near your table…
+              </div>
+            )}
 
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="min-w-0">
-                        <h3 className="truncate text-base font-semibold text-[#1d1d1f]">{dish.name}</h3>
-                        <p className="mt-1 text-xs text-[#6e6e73]">{dish.stallName}</p>
+            {error && (
+              <div className="mt-4 rounded-[20px] border border-[#f5c2c7] bg-[#fff1f2] p-4 text-sm text-[#9f1239]">
+                {error}
+              </div>
+            )}
+
+            {!isLoading && !error && (
+              <div className="mt-4 space-y-3">
+                {featuredDishes.map((dish) => (
+                  <article key={dish.id} className="flex items-center gap-3 rounded-[22px] border border-[#e5e7eb] bg-white p-3 shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
+                    <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-[18px] bg-[linear-gradient(135deg,#f8e6c1_0%,#e6d4b0_100%)] text-xs font-semibold uppercase tracking-[0.22em] text-[#5c4b1d]">
+                      {dish.name.split(' ')[0]}
+                    </div>
+
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <h3 className="truncate text-base font-semibold text-[#1d1d1f]">{dish.name}</h3>
+                          <p className="mt-1 text-xs text-[#6e6e73]">{dish.stallName}</p>
+                        </div>
+                        <div className="rounded-full bg-[#f5f5f7] px-2 py-1 text-sm font-medium text-[#1d1d1f]">
+                          RM {dish.price.toFixed(2)}
+                        </div>
                       </div>
-                      <div className="rounded-full bg-[#f5f5f7] px-2 py-1 text-sm font-medium text-[#1d1d1f]">
-                        RM {dish.price.toFixed(2)}
+
+                      <div className="mt-2 flex flex-wrap items-center gap-2 text-[10px] font-medium">
+                        <span className="rounded-full bg-[#ecfdf5] px-2 py-1 text-[#065f46]">
+                          {dish.isVegetarian ? 'Vegetarian' : 'Non-veg'}
+                        </span>
+                        <span className="rounded-full bg-[#ecfeff] px-2 py-1 text-[#0f766e]">{dish.isHalal ? 'Halal' : 'Non-halal'}</span>
+                        <span className="rounded-full bg-[#f5f3ff] px-2 py-1 text-[#6d28d9]">
+                          {dish.spiceLevel <= 1 ? 'Mild' : dish.spiceLevel <= 3 ? 'Medium' : 'Spicy'}
+                        </span>
+                      </div>
+
+                      <div className="mt-3 flex items-center justify-between gap-3">
+                        <span className="text-xs text-[#3c3c43]">{dish.proteinGrams}g protein</span>
+                        <button
+                          type="button"
+                          className="rounded-full bg-[#1d1d1f] px-3 py-1.5 text-xs font-medium text-white"
+                          aria-label={`Add ${dish.name} to your order`}
+                        >
+                          Add
+                        </button>
                       </div>
                     </div>
-
-                    <div className="mt-2 flex flex-wrap items-center gap-2 text-[10px] font-medium">
-                      <span className="rounded-full bg-[#ecfdf5] px-2 py-1 text-[#065f46]">
-                        {dish.isVegetarian ? 'Vegetarian' : 'Non-veg'}
-                      </span>
-                      <span className="rounded-full bg-[#ecfeff] px-2 py-1 text-[#0f766e]">{dish.isHalal ? 'Halal' : 'Non-halal'}</span>
-                      <span className="rounded-full bg-[#f5f3ff] px-2 py-1 text-[#6d28d9]">
-                        {dish.spiceLevel <= 1 ? 'Mild' : dish.spiceLevel <= 3 ? 'Medium' : 'Spicy'}
-                      </span>
-                    </div>
-
-                    <div className="mt-3 flex items-center justify-between gap-3">
-                      <span className="text-xs text-[#3c3c43]">{dish.proteinGrams}g protein</span>
-                      <button
-                        type="button"
-                        className="rounded-full bg-[#1d1d1f] px-3 py-1.5 text-xs font-medium text-white"
-                        aria-label={`Add ${dish.name} to your order`}
-                      >
-                        Add
-                      </button>
-                    </div>
-                  </div>
-                </article>
-              ))}
-            </div>
+                  </article>
+                ))}
+              </div>
+            )}
           </section>
 
           <section className="mt-8">
             <div className="mb-3 flex items-center justify-between gap-3">
               <h2 className="text-[1.3rem] font-semibold tracking-[-0.05em] text-[#1d1d1f]">Browse stalls</h2>
-              <Link href={'/search' as any} className="text-sm font-medium text-[#3c3c43] underline-offset-4 hover:underline">
-                Explore
-              </Link>
             </div>
 
             <div className="space-y-3">
