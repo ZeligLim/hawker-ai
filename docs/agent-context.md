@@ -4,7 +4,7 @@
 Phase 4: customer home experience and search entry flow
 
 ## Current Feature
-Build the first customer-facing Hawker home page with table context, natural-language search entry, featured dishes, stall discovery, and mobile bottom navigation. The search interaction remains fully on the home screen, and the separate `/search` page has been removed to keep the customer flow in-place and instant.
+Build the first customer-facing Hawker home page with table context, natural-language search entry, featured dishes, stall discovery, and mobile bottom navigation. The search interaction remains fully on the home screen, and a dedicated menu page now exists for browsing the broader hawker offering by category.
 
 ## Completed
 - Next.js App Router foundation initialized
@@ -17,6 +17,7 @@ Build the first customer-facing Hawker home page with table context, natural-lan
 - Cart logic covered by TypeScript test cases
 - Customer home page implemented with premium mobile-first layout and navigation
 - Inline search flow implemented on the main home page; `/search` route removed to avoid unnecessary navigation
+- Dedicated `/menu` route implemented with category cards, hawker-wide browsing, and logo-based category cues
 
 ## Current Architecture
 - Frontend: Next.js App Router, TypeScript, React, Tailwind

@@ -122,7 +122,7 @@ function ProfileIcon({ active }: { active: boolean }) {
 
 const navItems = [
   { href: '/', label: 'Home', icon: HomeIcon, active: true },
-  { href: '#menu', label: 'Menu', icon: MenuIcon, active: false },
+  { href: '/menu', label: 'Menu', icon: MenuIcon, active: false },
   { href: '/orders', label: 'Orders', icon: OrdersIcon, active: false },
   { href: '/profile', label: 'Profile', icon: ProfileIcon, active: false },
 ];
@@ -249,23 +249,6 @@ export function HomePage() {
             </form>
           </section>
 
-          <section id="menu" className="mt-6">
-            <div className="mb-2 flex items-center justify-between gap-3">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#6e6e73]">Food categories</p>
-            </div>
-            <div className="flex gap-2 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-              {quickFilters.map((filter) => (
-                <button
-                  key={filter.label}
-                  type="button"
-                  onClick={() => handleQuickFilter(filter.query)}
-                  className="shrink-0 rounded-full border border-[#e5e7eb] bg-white px-3.5 py-2 text-sm font-medium text-[#1d1d1f] shadow-[0_8px_18px_rgba(15,23,42,0.02)] transition hover:border-[#d4d9df]"
-                >
-                  {filter.label}
-                </button>
-              ))}
-            </div>
-          </section>
 
           <section className="mt-8">
             <div className="flex items-center justify-between gap-3">
