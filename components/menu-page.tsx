@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { fallbackDishes } from '@/lib/search/fallback-data';
+import { useState } from 'react';
 
 const iconProps = {
   width: 18,
@@ -118,27 +118,53 @@ const categories = [
 
 const menuItems = {
   rice: [
-    { name: 'Nasi Lemak', price: 8.5, vegetarian: false, tag: 'Popular' },
-    { name: 'Chicken Rice', price: 7, vegetarian: false, tag: 'Classic' },
+    { name: 'Nasi Lemak', price: 8.5, vegetarian: false },
+    { name: 'Chicken Rice', price: 7, vegetarian: false },
   ],
   noodles: [
-    { name: 'Curry Mee', price: 12, vegetarian: false, tag: 'Spicy' },
-    { name: 'Char Kway Teow', price: 11.5, vegetarian: false, tag: 'Wok-fried' },
-    { name: 'Mee Goreng', price: 9.5, vegetarian: false, tag: 'Mamak' },
-    { name: 'Vegetarian Curry Laksa', price: 13, vegetarian: true, tag: 'Vegetarian' },
+    { name: 'Curry Mee', price: 12, vegetarian: false },
+    { name: 'Char Kway Teow', price: 11.5, vegetarian: false },
+    { name: 'Mee Goreng', price: 9.5, vegetarian: false },
+    { name: 'Vegetarian Curry Laksa', price: 13, vegetarian: true },
   ],
   drinks: [
-    { name: 'Teh Tarik', price: 3.5, vegetarian: true, tag: 'Best seller' },
-    { name: 'Bandung', price: 3, vegetarian: true, tag: 'Sweet' },
-    { name: 'Lime Juice', price: 4.5, vegetarian: true, tag: 'Fresh' },
+    { name: 'Teh Tarik', price: 3.5, vegetarian: true },
+    { name: 'Bandung', price: 3, vegetarian: true },
+    { name: 'Lime Juice', price: 4.5, vegetarian: true },
   ],
   desserts: [
-    { name: 'Cendol', price: 5, vegetarian: true, tag: 'Cool' },
-    { name: 'Kuih', price: 2.5, vegetarian: true, tag: 'Snack' },
+    { name: 'Cendol', price: 5, vegetarian: true },
+    { name: 'Kuih', price: 2.5, vegetarian: true },
   ],
-};
+} as const;
+
+function LeafIcon() {
+  return (
+    <svg {...iconProps} aria-hidden="true" viewBox="0 0 24 24">
+      <path d="M18 3c-7 0-12 5-12 12 0 2.2.7 4.3 2 6 2.1-1.3 4.2-2.6 6.2-4.4 2.5-2.2 4.8-4.9 5.8-9.6Z" />
+      <path d="M7 14c2.5-1.8 4.5-4 6-7" />
+    </svg>
+  );
+}
 
 export function MenuPage() {
+  const [quantities, setQuantities] = useState<Record<string, number>>({});
+
+  const updateQuantity = (name: string, delta: number) => {
+    setQuantities((current: Record<string, number>) => {
+      const nextValue = (current[name] ?? 0) + delta;
+      if (nextValue <= 0) {
+        const { [name]: _removed, ...rest } = current;
+        return rest;
+      }
+      return { ...current, [name]: nextValue };
+    });
+  };
+
+  const scrollToCategory = (id: (typeof categories)[number]['id']) => {
+    document.getElementById(`category-${id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
   return (
     <main className="min-h-screen bg-[#f5f5f7] text-[#1d1d1f]">
       <div className="mx-auto min-h-screen max-w-[430px] px-4 pb-28 pt-5 sm:max-w-[480px] lg:max-w-[960px] lg:px-6">
@@ -177,7 +203,8 @@ export function MenuPage() {
                   key={id}
                   type="button"
                   aria-label={`Browse ${id} category`}
-                  className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-[#e5e7eb] bg-[#f5f5f7] text-[#1d1d1f] shadow-[0_8px_18px_rgba(15,23,42,0.02)] transition hover:border-[#d4d9df]"
+                  onClick={() => scrollToCategory(id)}
+                  className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-[#e5e7eb] bg-white text-[#1d1d1f] shadow-[0_8px_18px_rgba(15,23,42,0.02)] transition hover:border-[#d4d9df]"
                 >
                   <Icon />
                 </button>
@@ -186,52 +213,75 @@ export function MenuPage() {
           </section>
 
           <section className="mt-8 space-y-5">
-            {categories.map(({ id, label, icon: Icon }) => (
-              <div key={id}>
-                <div className="mb-3 flex items-center gap-3">
+            {categories.map(({ id, icon: Icon }) => (
+              <section key={id} id={`category-${id}`} className="scroll-mt-24">
+                <div className="mb-3 flex items-center justify-start">
                   <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#f5f5f7] text-[#1d1d1f]">
                     <Icon />
                   </div>
                 </div>
 
-                <div className="space-y-3">
-                  {(menuItems[id as keyof typeof menuItems] ?? []).map((item) => (
-                    <div key={item.name} className="flex items-center justify-between gap-3 rounded-[18px] border border-[#e5e7eb] bg-[#fafafa] p-3">
-                      <div className="flex items-center gap-3">
-                        <div className="flex h-11 w-11 items-center justify-center rounded-[14px] bg-[#f5f5f7] text-[#1d1d1f]">
-                          <span className="text-[11px] font-semibold uppercase tracking-[0.12em]">{item.name.slice(0, 2)}</span>
-                        </div>
-                        <div>
-                          <p className="text-sm font-semibold text-[#1d1d1f]">{item.name}</p>
-                          <div className="mt-1 flex items-center gap-2">
-                            {item.vegetarian ? (
-                              <span className="inline-flex items-center gap-1 rounded-full bg-[#ecfdf5] px-2 py-0.5 text-[10px] font-medium text-[#065f46]">
-                                <svg {...iconProps} aria-hidden="true" viewBox="0 0 24 24" className="h-3.5 w-3.5">
-                                  <path d="M18 3c-7 0-12 5-12 12 0 2.2.7 4.3 2 6 2.1-1.3 4.2-2.6 6.2-4.4 2.5-2.2 4.8-4.9 5.8-9.6Z" />
-                                  <path d="M7 14c2.5-1.8 4.5-4 6-7" />
-                                </svg>
-                                Veg
-                              </span>
-                            ) : null}
-                            <span className="rounded-full bg-[#f5f3ff] px-2 py-0.5 text-[10px] font-medium text-[#6d28d9]">{item.tag}</span>
+                <div className="grid grid-cols-2 gap-3">
+                  {(menuItems[id as keyof typeof menuItems] ?? []).map((item) => {
+                    const quantity = quantities[item.name] ?? 0;
+
+                    return (
+                      <article key={item.name} className="overflow-hidden rounded-[22px] border border-[#e5e7eb] bg-white shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
+                        <div className="relative h-40 overflow-hidden bg-[linear-gradient(135deg,#f8e6c1_0%,#e6d4b0_100%)]">
+                          <div className="flex h-full items-center justify-center text-lg font-semibold uppercase tracking-[0.22em] text-[#5c4b1d]">
+                            {item.name.split(' ')[0]}
+                          </div>
+
+                          <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/55 to-transparent" />
+
+                          <div className="absolute left-2 top-2 rounded-full bg-black/70 px-2 py-1 text-[10px] font-semibold text-white backdrop-blur-sm">
+                            RM {item.price.toFixed(2)}
+                          </div>
+
+                          {item.vegetarian ? (
+                            <div className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-[#ecfdf5] text-[#166534] shadow-[0_8px_20px_rgba(15,23,42,0.12)]">
+                              <LeafIcon />
+                            </div>
+                          ) : null}
+
+                          <div className="absolute bottom-2 right-2">
+                            {quantity > 0 ? (
+                              <div className="flex items-center gap-2 rounded-full bg-white/90 px-2 py-1 text-[10px] font-medium text-[#1d1d1f] shadow-[0_8px_20px_rgba(15,23,42,0.18)] backdrop-blur-sm">
+                                <button
+                                  type="button"
+                                  aria-label={`Decrease ${item.name} quantity`}
+                                  onClick={() => updateQuantity(item.name, -1)}
+                                  className="flex h-6 w-6 items-center justify-center rounded-full bg-[#f5f5f7] text-base font-semibold text-[#1d1d1f]"
+                                >
+                                  −
+                                </button>
+                                <span className="min-w-4 text-center text-[11px] font-semibold">{quantity}</span>
+                                <button
+                                  type="button"
+                                  aria-label={`Increase ${item.name} quantity`}
+                                  onClick={() => updateQuantity(item.name, 1)}
+                                  className="flex h-6 w-6 items-center justify-center rounded-full bg-[#1d1d1f] text-base font-semibold text-white"
+                                >
+                                  +
+                                </button>
+                              </div>
+                            ) : (
+                              <button
+                                type="button"
+                                onClick={() => updateQuantity(item.name, 1)}
+                                className="rounded-full bg-[#1d1d1f] px-2.5 py-1.5 text-[10px] font-medium text-white shadow-[0_8px_20px_rgba(15,23,42,0.18)]"
+                                aria-label={`Add ${item.name} to your order`}
+                              >
+                                Add
+                              </button>
+                            )}
                           </div>
                         </div>
-                      </div>
-
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-semibold text-[#1d1d1f]">RM {item.price.toFixed(2)}</span>
-                        <button
-                          type="button"
-                          aria-label={`Add ${item.name} to order`}
-                          className="rounded-full bg-[#1d1d1f] px-2.5 py-1.5 text-[10px] font-medium text-white"
-                        >
-                          Add
-                        </button>
-                      </div>
-                    </div>
-                  ))}
+                      </article>
+                    );
+                  })}
                 </div>
-              </div>
+              </section>
             ))}
           </section>
         </div>
