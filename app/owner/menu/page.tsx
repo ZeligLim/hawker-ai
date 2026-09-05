@@ -50,7 +50,7 @@ export default function OwnerMenuPage() {
     window.localStorage.setItem(storageKey, JSON.stringify(next));
   };
   return (
-    <main className="min-h-screen bg-[#f5f5f7] px-4 pb-8 pt-5 text-[#1d1d1f]">
+    <main className="min-h-screen bg-[#f5f5f7] px-4 pb-32 pt-5 text-[#1d1d1f]">
       <div className="mx-auto max-w-[760px]">
         <header className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">

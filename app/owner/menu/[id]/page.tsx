@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ImagePlus, LoaderCircle } from 'lucide-react';
+import { ImagePlus, LoaderCircle, Plus, Trash2 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { useState } from 'react';
 
@@ -12,20 +12,11 @@ type Dish = {
   price: number;
   available: boolean;
   imageUrl?: string;
-  customizations?: {
-    large: { enabled: boolean; price: number };
-    egg: { enabled: boolean; price: number };
-    spice: { enabled: boolean; levels: number };
-  };
+  customizations?: { label: string; price: number }[];
+  spiceLevels?: number;
 };
 
 const storageKey = 'hawker-owner-menu';
-const defaultCustomization = {
-  large: { enabled: false, price: 2 },
-  egg: { enabled: false, price: 1.5 },
-  spice: { enabled: false, levels: 5 },
-};
-
 function loadDish(id: string): Dish | null {
   if (typeof window === 'undefined') return null;
   const stored = window.localStorage.getItem(storageKey);
@@ -38,6 +29,10 @@ function loadDish(id: string): Dish | null {
   }
 }
 
+function loadCustomizations(dish: Dish | null) {
+  return Array.isArray(dish?.customizations) ? dish.customizations : [];
+}
+
 export default function OwnerDishEditorPage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
@@ -45,9 +40,8 @@ export default function OwnerDishEditorPage() {
   const [dish, setDish] = useState<Dish | null>(() => isNew ? {
     id: `dish-${Date.now()}`, name: '', category: 'Main course', price: 0, available: true,
   } : loadDish(params.id));
-  const [largePrice, setLargePrice] = useState(() => dish?.customizations?.large.price ?? defaultCustomization.large.price);
-  const [eggPrice, setEggPrice] = useState(() => dish?.customizations?.egg.price ?? defaultCustomization.egg.price);
-  const [spiceLevels, setSpiceLevels] = useState(() => dish?.customizations?.spice.levels ?? defaultCustomization.spice.levels);
+  const [customizations, setCustomizations] = useState<{ label: string; price: number }[]>(() => loadCustomizations(dish));
+  const [spiceLevels, setSpiceLevels] = useState(() => dish?.spiceLevels ?? 1);
   const [error, setError] = useState('');
   const [isSaving, setIsSaving] = useState(false);
 
@@ -75,11 +69,7 @@ export default function OwnerDishEditorPage() {
       return;
     }
     setIsSaving(true);
-    const saved = { ...dish, name: dish.name.trim(), customizations: {
-      large: { enabled: dish.customizations?.large.enabled ?? false, price: largePrice },
-      egg: { enabled: dish.customizations?.egg.enabled ?? false, price: eggPrice },
-      spice: { enabled: dish.customizations?.spice.enabled ?? false, levels: spiceLevels },
-    }};
+    const saved = { ...dish, name: dish.name.trim(), customizations: customizations.filter((option) => option.label.trim()), spiceLevels };
     const stored = window.localStorage.getItem(storageKey);
     let dishes: Dish[] = [];
     if (stored) {
@@ -91,7 +81,7 @@ export default function OwnerDishEditorPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#f5f5f7] px-4 pb-8 pt-5 text-[#1d1d1f]">
+    <main className="min-h-screen bg-[#f5f5f7] px-4 pb-32 pt-5 text-[#1d1d1f]">
       <div className="mx-auto max-w-[620px]">
         <header className="flex items-center gap-3">
           <div><h1 className="text-3xl font-semibold tracking-[-0.06em]">{isNew ? 'Add dish' : 'Edit dish'}</h1></div>
@@ -114,20 +104,29 @@ export default function OwnerDishEditorPage() {
           </section>
           <section className="rounded-[24px] bg-white p-4 shadow-sm">
             <h2 className="text-lg font-semibold">Customisation</h2>
-            <p className="mt-1 text-sm text-[#6e6e73]">Customers will see these options every time they add this dish.</p>
-            {(['large', 'egg'] as const).map((key) => (
-              <div key={key} className="mt-4 flex items-center gap-3">
-                <input type="checkbox" checked={dish.customizations?.[key].enabled ?? false} onChange={(event) => updateDish({ customizations: { ...(dish.customizations ?? defaultCustomization), [key]: { enabled: event.target.checked, price: key === 'large' ? largePrice : eggPrice } } })} className="h-5 w-5 accent-[#111827]" />
-                <span className="flex-1 text-sm font-medium">{key === 'large' ? 'Add large' : 'Add egg'}</span>
-                <input type="number" min="0" step="0.10" value={key === 'large' ? largePrice : eggPrice} onChange={(event) => key === 'large' ? setLargePrice(Number(event.target.value)) : setEggPrice(Number(event.target.value))} className="w-24 rounded-[12px] bg-[#f5f5f7] px-2 py-2 text-sm" aria-label={`${key} price`} />
-              </div>
-            ))}
-            <div className="mt-5 flex items-center gap-3">
-              <input type="checkbox" checked={dish.customizations?.spice.enabled ?? false} onChange={(event) => updateDish({ customizations: { ...(dish.customizations ?? defaultCustomization), spice: { enabled: event.target.checked, levels: spiceLevels } } })} className="h-5 w-5 accent-[#111827]" />
-              <span className="flex-1 text-sm font-medium">Spicy level</span>
-              <span className="text-sm font-semibold">{spiceLevels} / 5</span>
+            <p className="mt-1 text-sm text-[#6e6e73]">Add up to 10 options. Enter the label and extra price for each option.</p>
+            <div className="mt-4 space-y-3">
+              {customizations.map((option, index) => (
+                <div key={index} className="flex items-center gap-2">
+                  <input value={option.label} onChange={(event) => setCustomizations((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, label: event.target.value } : item))} placeholder="e.g. Add egg or Large" className="min-w-0 flex-1 rounded-[12px] bg-[#f5f5f7] px-3 py-3 text-sm outline-none" />
+                  <input type="number" min="0" step="0.10" value={option.price || ''} onChange={(event) => setCustomizations((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, price: Number(event.target.value) } : item))} placeholder="RM" className="w-20 rounded-[12px] bg-[#f5f5f7] px-2 py-3 text-sm outline-none" aria-label={`Price for customisation ${index + 1}`} />
+                  <button type="button" onClick={() => setCustomizations((current) => current.filter((_, itemIndex) => itemIndex !== index))} className="rounded-full p-2 text-[#6e6e73]" aria-label={`Remove customisation ${index + 1}`}><Trash2 className="h-4 w-4" /></button>
+                </div>
+              ))}
             </div>
-            <input type="range" min="1" max="5" value={spiceLevels} onChange={(event) => setSpiceLevels(Number(event.target.value))} className="mt-3 w-full accent-[#111827]" aria-label="Number of spicy levels" />
+            {customizations.length < 10 ? (
+              <button type="button" onClick={() => setCustomizations((current) => [...current, { label: '', price: 0 }])} className="mt-4 inline-flex items-center gap-2 rounded-full bg-[#f5f5f7] px-4 py-2.5 text-sm font-semibold"><Plus className="h-4 w-4" /> Add customisation</button>
+            ) : <p className="mt-4 text-xs text-[#6e6e73]">Maximum of 10 customisations reached.</p>}
+            <div className="mt-6 border-t border-[#f0f0f2] pt-4">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-sm font-semibold">Spicy level</p>
+                  <p className="mt-1 text-xs text-[#6e6e73]">Allow customers to choose up to five levels.</p>
+                </div>
+                <span className="text-sm font-semibold">{spiceLevels} / 5</span>
+              </div>
+              <input type="range" min="1" max="5" value={spiceLevels} onChange={(event) => setSpiceLevels(Number(event.target.value))} className="mt-3 w-full accent-[#111827]" aria-label="Number of spicy levels" />
+            </div>
           </section>
           {error ? <p className="text-sm text-[#9f1239]">{error}</p> : null}
           <button type="submit" disabled={isSaving} className="flex w-full items-center justify-center rounded-full bg-[#111827] px-4 py-3 text-sm font-semibold text-white disabled:opacity-60">{isSaving ? <LoaderCircle className="h-4 w-4 animate-spin" /> : 'Save dish'}</button>

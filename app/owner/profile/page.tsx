@@ -23,7 +23,7 @@ export default function OwnerProfilePage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#f5f5f7] px-4 pb-28 pt-5 text-[#1d1d1f]">
+    <main className="min-h-screen bg-[#f5f5f7] px-4 pb-32 pt-5 text-[#1d1d1f]">
       <div className="mx-auto max-w-[760px]">
         <header className="flex items-center gap-3">
           <div>
