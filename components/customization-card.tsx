@@ -58,7 +58,7 @@ export function CustomizationCard({
             const progress = customization.options.length > 1 ? (selectedIndex / (customization.options.length - 1)) * 100 : 100;
             return (
               <>
-                <div className="relative mt-5 h-5 rounded-full bg-[#e5e7eb]" style={{ background: `linear-gradient(to right, #eab308 0%, #f97316 ${progress}%, #dc2626 100%)` }}>
+                <div className="relative mx-2 mt-5 h-5 rounded-full bg-[#e5e7eb]" style={{ background: `linear-gradient(to right, #eab308 0%, #f97316 ${progress}%, #dc2626 100%)` }}>
                   <input
                     type="range"
                     min="0"
