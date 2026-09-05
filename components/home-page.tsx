@@ -275,22 +275,22 @@ export function HomePage() {
                           </div>
                         </div>
 
-                        <span className={`rounded-full px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] ${
-                          stall.busy === 'Busy'
-                            ? 'bg-[#fef3c7] text-[#b45309]'
-                            : stall.busy === 'Moderate'
-                              ? 'bg-[#dbeafe] text-[#1d4ed8]'
-                              : stall.busy === 'Closed'
-                                ? 'bg-[#f5f5f7] text-[#6e6e73]'
-                                : 'bg-[#dcfce7] text-[#166534]'
-                        }`}>
-                          {stall.busy}
-                        </span>
-                      </div>
-
-                      <div className="mt-3 flex items-center justify-between text-xs text-[#6e6e73]">
-                        <span>{stall.dishCount} dishes</span>
-                        <span className="text-right">ETA {stall.eta}</span>
+                        <div className="flex min-w-[88px] flex-col items-end gap-1 text-right">
+                          <span className={`whitespace-nowrap rounded-full px-2 py-1 text-[9px] font-semibold uppercase tracking-[0.14em] ${
+                            stall.busy === 'Busy'
+                              ? 'bg-[#fef3c7] text-[#b45309]'
+                              : stall.busy === 'Moderate'
+                                ? 'bg-[#dbeafe] text-[#1d4ed8]'
+                                : stall.busy === 'Closed'
+                                  ? 'bg-[#f5f5f7] text-[#6e6e73]'
+                                  : 'bg-[#dcfce7] text-[#166534]'
+                          }`}>
+                            {stall.busy}
+                          </span>
+                          {stall.busy !== 'Closed' ? (
+                            <span className="whitespace-nowrap text-[10px] font-medium leading-none text-[#6e6e73]">ETA {stall.eta}</span>
+                          ) : null}
+                        </div>
                       </div>
                     </article>
                   </Link>

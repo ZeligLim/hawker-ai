@@ -1,10 +1,10 @@
 import Link from 'next/link';
 
 const shops = [
-  { name: 'Ah Seng Chicken Rice', eta: '10 min', busy: 'Busy', dishes: 12 },
-  { name: 'Penang Corner', eta: '12 min', busy: 'Moderate', dishes: 9 },
-  { name: 'Curry House', eta: 'Closed', busy: 'Closed', dishes: 8 },
-  { name: 'Green Garden Vegetarian', eta: '8 min', busy: 'Quiet', dishes: 11 },
+  { name: 'Ah Seng Chicken Rice', description: 'Chicken rice, roasted meats & noodles', eta: '10 min', busy: 'Busy' },
+  { name: 'Penang Corner', description: 'Penang favourites', eta: '12 min', busy: 'Moderate' },
+  { name: 'Curry House', description: 'Curry noodles & rice dishes', eta: 'Closed', busy: 'Closed' },
+  { name: 'Green Garden Vegetarian', description: 'Vegetarian staples', eta: '8 min', busy: 'Quiet' },
 ];
 
 export default function ShopPage() {
@@ -41,24 +41,27 @@ export default function ShopPage() {
                       </div>
                       <div>
                         <p className="text-base font-semibold text-[#1d1d1f]">{shop.name}</p>
-                        <p className="mt-0.5 text-xs text-[#6e6e73]">{shop.dishes} dishes</p>
+                        <p className="mt-0.5 text-xs text-[#6e6e73]">{shop.description}</p>
                       </div>
                     </div>
 
-                    <span className={`rounded-full px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] ${
-                      shop.busy === 'Busy'
-                        ? 'bg-[#fef3c7] text-[#b45309]'
-                        : shop.busy === 'Moderate'
-                          ? 'bg-[#dbeafe] text-[#1d4ed8]'
-                          : shop.busy === 'Closed'
-                            ? 'bg-[#f5f5f7] text-[#6e6e73]'
-                            : 'bg-[#dcfce7] text-[#166534]'
-                    }`}>
-                      {shop.busy}
-                    </span>
+                    <div className="flex min-w-[88px] flex-col items-end gap-1 text-right">
+                      <span className={`whitespace-nowrap rounded-full px-2 py-1 text-[9px] font-semibold uppercase tracking-[0.14em] ${
+                        shop.busy === 'Busy'
+                          ? 'bg-[#fef3c7] text-[#b45309]'
+                          : shop.busy === 'Moderate'
+                            ? 'bg-[#dbeafe] text-[#1d4ed8]'
+                            : shop.busy === 'Closed'
+                              ? 'bg-[#f5f5f7] text-[#6e6e73]'
+                              : 'bg-[#dcfce7] text-[#166534]'
+                      }`}>
+                        {shop.busy}
+                      </span>
+                      {shop.busy !== 'Closed' ? (
+                        <span className="whitespace-nowrap text-[10px] font-medium leading-none text-[#6e6e73]">ETA {shop.eta}</span>
+                      ) : null}
+                    </div>
                   </div>
-
-                  <div className="mt-3 text-xs text-[#6e6e73]">ETA {shop.eta}</div>
                 </article>
               </Link>
             );
