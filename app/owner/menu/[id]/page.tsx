@@ -12,6 +12,9 @@ type Dish = {
   price: number;
   available: boolean;
   imageUrl?: string;
+  vegetarian?: boolean;
+  description?: string;
+  tags?: string[];
   customizations?: { label: string; price: number }[];
   spiceLevels?: number;
 };
@@ -42,6 +45,9 @@ export default function OwnerDishEditorPage() {
   } : loadDish(params.id));
   const [customizations, setCustomizations] = useState<{ label: string; price: number }[]>(() => loadCustomizations(dish));
   const [spiceLevels, setSpiceLevels] = useState(() => dish?.spiceLevels ?? 1);
+  const [vegetarian, setVegetarian] = useState(() => dish?.vegetarian ?? false);
+  const [description, setDescription] = useState(() => dish?.description ?? '');
+  const [tags, setTags] = useState(() => dish?.tags?.join(', ') ?? '');
   const [error, setError] = useState('');
   const [isSaving, setIsSaving] = useState(false);
 
@@ -69,7 +75,15 @@ export default function OwnerDishEditorPage() {
       return;
     }
     setIsSaving(true);
-    const saved = { ...dish, name: dish.name.trim(), customizations: customizations.filter((option) => option.label.trim()), spiceLevels };
+    const saved = {
+      ...dish,
+      name: dish.name.trim(),
+      vegetarian,
+      description: description.trim(),
+      tags: [...new Set(tags.split(',').map((tag) => tag.trim()).filter(Boolean))],
+      customizations: customizations.filter((option) => option.label.trim()),
+      spiceLevels,
+    };
     const stored = window.localStorage.getItem(storageKey);
     let dishes: Dish[] = [];
     if (stored) {
@@ -101,6 +115,19 @@ export default function OwnerDishEditorPage() {
               <select value={dish.category} onChange={(event) => updateDish({ category: event.target.value })} className="rounded-[14px] bg-[#f5f5f7] px-3 py-3 text-sm outline-none"><option>Main course</option><option>Drinks</option><option>Desserts</option></select>
               <input type="number" min="0.01" step="0.10" value={dish.price || ''} onChange={(event) => updateDish({ price: Number(event.target.value) })} placeholder="Price (RM)" className="rounded-[14px] bg-[#f5f5f7] px-3 py-3 text-sm outline-none" />
             </div>
+            <label className="mt-4 flex items-center gap-3 rounded-[14px] bg-[#f5f5f7] px-3 py-3 text-sm font-medium">
+              <input type="checkbox" checked={vegetarian} onChange={(event) => setVegetarian(event.target.checked)} className="h-5 w-5 accent-[#111827]" />
+              Vegetarian dish
+            </label>
+            <label className="mt-4 block text-sm font-medium">
+              Description
+              <textarea value={description} onChange={(event) => setDescription(event.target.value)} placeholder="Describe the dish, ingredients, and flavour." rows={3} className="mt-2 w-full resize-none rounded-[14px] bg-[#f5f5f7] px-3 py-3 text-sm outline-none" />
+            </label>
+            <label className="mt-4 block text-sm font-medium">
+              Search tags
+              <input value={tags} onChange={(event) => setTags(event.target.value)} placeholder="e.g. halal, no onion, breakfast" className="mt-2 w-full rounded-[14px] bg-[#f5f5f7] px-3 py-3 text-sm outline-none" />
+              <span className="mt-1 block text-xs font-normal text-[#6e6e73]">Separate tags with commas. These will support future AI search.</span>
+            </label>
           </section>
           <section className="rounded-[24px] bg-white p-4 shadow-sm">
             <h2 className="text-lg font-semibold">Customisation</h2>

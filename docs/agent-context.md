@@ -24,6 +24,7 @@ Build the first customer-facing Hawker home page with table context, natural-lan
 - Owner routes use a separate four-tab bottom navigation: Dashboard, Orders, Menu, and Profile
 - Owner menu entries open dedicated dish editor pages with photo selection and large, egg, and spicy-level customisation settings
 - Dish customisations are owner-defined, capped at 10 options per dish, with extra prices and no preset option labels
+- Dish editors support vegetarian metadata, descriptions, and comma-separated search tags for future AI-assisted discovery
 - Owner pages reserve additional bottom space so the fixed four-tab navigation does not cover content
 
 ## Current Architecture

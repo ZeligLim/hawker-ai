@@ -10,6 +10,7 @@ type OwnerDish = {
   category: string;
   price: number;
   available: boolean;
+  vegetarian?: boolean;
   imageUrl?: string;
   customizations?: {
     large: { enabled: boolean; price: number };
@@ -72,7 +73,7 @@ export default function OwnerMenuPage() {
                 {dish.imageUrl ? <img src={dish.imageUrl} alt="" className="h-12 w-12 rounded-[14px] object-cover" /> : null}
                 <div className="min-w-0">
                 <h2 className="truncate text-base font-semibold">{dish.name}</h2>
-                <p className="mt-1 text-xs text-[#6e6e73]">{dish.category} · RM {dish.price.toFixed(2)}</p>
+                <p className="mt-1 text-xs text-[#6e6e73]">{dish.category} · RM {dish.price.toFixed(2)}{dish.vegetarian ? ' · Vegetarian' : ''}</p>
                 </div>
               </Link>
               <button type="button" role="switch" aria-checked={dish.available} onClick={() => toggleAvailability(dish.id)} className={`relative h-7 w-12 shrink-0 rounded-full transition ${dish.available ? 'bg-emerald-500' : 'bg-[#d1d5db]'}`} aria-label={`${dish.name} ${dish.available ? 'available' : 'unavailable'}`}>
