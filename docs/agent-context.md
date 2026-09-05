@@ -1,7 +1,7 @@
 # Current Project Context
 
 ## Current Phase
-Owner MVP Phase 4: owner app navigation
+Owner MVP Phase 5: dish editor and customisation setup
 
 ## Current Feature
 Build the first customer-facing Hawker home page with table context, natural-language search entry, featured dishes, stall discovery, and mobile bottom navigation. The search interaction remains fully on the home screen, and a dedicated menu page now exists for browsing the broader hawker offering by category.
@@ -22,6 +22,7 @@ Build the first customer-facing Hawker home page with table context, natural-lan
 - Owner orders are grouped into active/completed views and support persisted status progression
 - Owner menu supports adding dishes and toggling availability with local persistence
 - Owner routes use a separate four-tab bottom navigation: Dashboard, Orders, Menu, and Profile
+- Owner menu entries open dedicated dish editor pages with photo selection and large, egg, and spicy-level customisation settings
 
 ## Current Architecture
 - Frontend: Next.js App Router, TypeScript, React, Tailwind
@@ -43,4 +44,4 @@ Build the first customer-facing Hawker home page with table context, natural-lan
 - Production credentials are still required for live Supabase/OpenRouter operations
 
 ## Next Task
-Owner MVP baseline is complete; replace local persistence with Supabase-backed merchant data when the owner schema and merchant authorization are defined.
+Owner MVP baseline is complete; replace local persistence with Supabase-backed merchant data when the owner schema and merchant authorization are defined. Customer-facing customisation rendering should consume merchant-configured options when the persistent menu schema is introduced.
