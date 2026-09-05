@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { LogOut, Settings, X } from 'lucide-react';
+import { LogOut, Settings } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { useAuth } from '@/components/auth-provider';
 
@@ -49,15 +49,11 @@ function readStoredProfile(): Partial<ProfileState> | null {
 }
 
 export default function ProfilePage() {
-  const { status, profile: authProfile, isGuest, signOut, updatePassword, updateProfile } = useAuth();
+  const { status, profile: authProfile, isGuest, signOut } = useAuth();
   const [profile, setProfile] = useState<ProfileState>(defaultProfileState);
   const [isMounted, setIsMounted] = useState(false);
   const [isOwnerMode, setIsOwnerMode] = useState(false);
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [nameInput, setNameInput] = useState('');
-  const [passwordInput, setPasswordInput] = useState('');
-  const [settingsMessage, setSettingsMessage] = useState('');
-  const [settingsError, setSettingsError] = useState('');
+  const [isSignOutDialogOpen, setIsSignOutDialogOpen] = useState(false);
 
   useEffect(() => {
     const restoreProfile = () => {
@@ -116,27 +112,6 @@ export default function ProfilePage() {
     window.localStorage.setItem(modeStorageKey, ownerMode ? 'owner' : 'customer');
   };
 
-  const handleSettingsSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setSettingsMessage('');
-    setSettingsError('');
-
-    try {
-      if (nameInput.trim() && nameInput.trim() !== displayName) await updateProfile(nameInput);
-      if (passwordInput) {
-        if (passwordInput.length < 6) {
-          setSettingsError('Password must be at least 6 characters.');
-          return;
-        }
-        await updatePassword(passwordInput);
-      }
-      setPasswordInput('');
-      setSettingsMessage('Settings updated.');
-    } catch (error) {
-      setSettingsError(error instanceof Error ? error.message : 'Unable to update settings.');
-    }
-  };
-
   if (!isMounted) {
     return (
       <main className="min-h-screen bg-[#f5f5f7] px-4 pb-28 pt-5 text-[#1d1d1f]">
@@ -183,31 +158,31 @@ export default function ProfilePage() {
                     </div>
                   </div>
                 </div>
-                <div className="flex w-[82px] shrink-0 items-center justify-end gap-2">
-                  <button type="button" onClick={() => { setNameInput(displayName); setIsSettingsOpen((open) => !open); }} className="flex h-9 w-9 items-center justify-center rounded-full bg-[#f5f5f7] text-[#1d1d1f]" aria-label="Edit settings">
-                    {isSettingsOpen ? <X className="h-4 w-4" /> : <Settings className="h-4 w-4" />}
-                  </button>
-                  <button type="button" onClick={() => void signOut()} className="flex h-9 w-9 items-center justify-center rounded-full bg-[#f5f5f7] text-[#1d1d1f]" aria-label="Sign out">
-                    <LogOut className="h-4 w-4" />
+                <div className="flex w-[104px] shrink-0 items-center justify-end gap-2">
+                  <Link href={'/profile/settings' as any} className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#f5f5f7] text-[#1d1d1f]" aria-label="Edit settings">
+                    <Settings className="h-5 w-5" />
+                  </Link>
+                  <button type="button" onClick={() => setIsSignOutDialogOpen(true)} className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#f5f5f7] text-[#1d1d1f]" aria-label="Sign out">
+                    <LogOut className="h-5 w-5" />
                   </button>
                 </div>
               </div>
             </section>
-            {isSettingsOpen ? (
-              <form onSubmit={(event) => void handleSettingsSubmit(event)} className="mt-4 rounded-[22px] bg-white p-4 shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
-                <h2 className="text-lg font-semibold tracking-[-0.04em]">Edit settings</h2>
-                <label className="mt-4 block text-sm font-medium">
-                  Name
-                  <input value={nameInput} onChange={(event) => setNameInput(event.target.value)} className="mt-2 w-full rounded-[14px] bg-[#f5f5f7] px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-[#cbd5e1]" />
-                </label>
-                <label className="mt-3 block text-sm font-medium">
-                  New password
-                  <input type="password" value={passwordInput} onChange={(event) => setPasswordInput(event.target.value)} placeholder="Leave blank to keep current password" className="mt-2 w-full rounded-[14px] bg-[#f5f5f7] px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-[#cbd5e1]" />
-                </label>
-                {settingsError ? <p className="mt-3 text-sm text-[#9f1239]">{settingsError}</p> : null}
-                {settingsMessage ? <p className="mt-3 text-sm text-[#166534]">{settingsMessage}</p> : null}
-                <button type="submit" className="mt-4 w-full rounded-full bg-[#111827] px-4 py-3 text-sm font-semibold text-white">Save settings</button>
-              </form>
+            {isSignOutDialogOpen ? (
+              <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/35 px-4" role="presentation">
+                <div role="dialog" aria-modal="true" aria-labelledby="sign-out-title" className="w-full max-w-[360px] rounded-[24px] bg-white p-5 shadow-[0_24px_70px_rgba(15,23,42,0.24)]">
+                  <h2 id="sign-out-title" className="text-xl font-semibold tracking-[-0.04em]">Sign out?</h2>
+                  <p className="mt-2 text-sm text-[#6e6e73]">You can sign in again anytime to access your profile.</p>
+                  <div className="mt-5 flex gap-2">
+                    <button type="button" onClick={() => setIsSignOutDialogOpen(false)} className="flex-1 rounded-full bg-[#f5f5f7] px-4 py-3 text-sm font-semibold text-[#1d1d1f]">
+                      Cancel
+                    </button>
+                    <button type="button" onClick={() => void signOut()} className="flex-1 rounded-full bg-[#111827] px-4 py-3 text-sm font-semibold text-white">
+                      Sign out
+                    </button>
+                  </div>
+                </div>
+              </div>
             ) : null}
             <section className="mt-4 rounded-[22px] bg-white p-4 shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
               <div className="flex items-center justify-between gap-3">
