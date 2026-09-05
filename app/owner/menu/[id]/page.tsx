@@ -111,9 +111,9 @@ export default function OwnerDishEditorPage() {
           </section>
           <section className="rounded-[24px] bg-white p-4 shadow-sm">
             <div className="grid gap-3 sm:grid-cols-3">
-              <input value={dish.name} onChange={(event) => updateDish({ name: event.target.value })} placeholder="Dish name" className="rounded-[14px] bg-[#f5f5f7] px-3 py-3 text-sm outline-none" />
-              <select value={dish.category} onChange={(event) => updateDish({ category: event.target.value })} className="rounded-[14px] bg-[#f5f5f7] px-3 py-3 text-sm outline-none"><option>Main course</option><option>Drinks</option><option>Desserts</option></select>
-              <input type="number" min="0.01" step="0.10" value={dish.price || ''} onChange={(event) => updateDish({ price: Number(event.target.value) })} placeholder="Price (RM)" className="rounded-[14px] bg-[#f5f5f7] px-3 py-3 text-sm outline-none" />
+              <input value={dish.name} onChange={(event) => updateDish({ name: event.target.value })} placeholder="Dish name" className="h-11 rounded-[14px] bg-[#f5f5f7] px-3 text-sm outline-none" />
+              <select value={dish.category} onChange={(event) => updateDish({ category: event.target.value })} className="h-11 rounded-[14px] bg-[#f5f5f7] px-3 text-sm outline-none"><option>Main course</option><option>Drinks</option><option>Desserts</option></select>
+              <input type="number" min="0.01" step="0.10" value={dish.price || ''} onChange={(event) => updateDish({ price: Number(event.target.value) })} placeholder="Price (RM)" className="h-11 rounded-[14px] bg-[#f5f5f7] px-3 text-sm outline-none" />
             </div>
             <label className="mt-4 flex items-center gap-3 rounded-[14px] bg-[#f5f5f7] px-3 py-3 text-sm font-medium">
               <input type="checkbox" checked={vegetarian} onChange={(event) => setVegetarian(event.target.checked)} className="h-5 w-5 accent-[#111827]" />
