@@ -30,6 +30,7 @@ Build the first customer-facing Hawker home page with table context, natural-lan
 - Backend writes and local-to-Supabase data migration are not wired into the UI yet
 - Authenticated owner dish APIs are available at `/api/owner/dishes`; order creation uses the atomic `create_order_with_items` RPC through `/api/orders`
 - Table session creation/retrieval is available at `/api/table-sessions`; merchant order status updates are available at `/api/owner/orders/[id]`
+- Dish image uploads use the Supabase `dish-images` bucket and `/api/owner/dishes/[id]/image`, with merchant-scoped storage policies
 
 ## Current Architecture
 - Frontend: Next.js App Router, TypeScript, React, Tailwind
