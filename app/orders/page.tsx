@@ -3,8 +3,10 @@
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import { CustomizationCard } from '@/components/customization-card';
+import { useAuth } from '@/components/auth-provider';
 import { buildCartSummary, updateCartItemCustomization, updateCartItemQuantity, useCartItems, type CartItem } from '@/lib/order/cart';
 import { getDishCustomization } from '@/lib/order/customizations';
+import { supabase } from '@/lib/supabase/client';
 
 const directory = [
   { name: 'Ah Seng Chicken Rice', open: true, items: 12, eta: '10 min' },
@@ -15,7 +17,10 @@ const directory = [
 
 export default function OrdersPage() {
   const { cartItems, setCartItems } = useCartItems();
+  const { status, isGuest } = useAuth();
   const [customizingItem, setCustomizingItem] = useState<CartItem | null>(null);
+  const [checkoutState, setCheckoutState] = useState<'idle' | 'submitting' | 'success'>('idle');
+  const [checkoutError, setCheckoutError] = useState('');
 
   const orderItems = useMemo(
     () =>
@@ -58,6 +63,60 @@ export default function OrdersPage() {
     setCustomizingItem(null);
   };
 
+  const checkout = async () => {
+    setCheckoutError('');
+    if (status !== 'authenticated' || isGuest || !supabase) {
+      setCheckoutError('Please sign in before placing an order.');
+      return;
+    }
+    if (cartItems.length === 0) {
+      setCheckoutError('Add at least one dish before checking out.');
+      return;
+    }
+
+    setCheckoutState('submitting');
+    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+    if (sessionError || !sessionData.session) {
+      setCheckoutState('idle');
+      setCheckoutError('Your session has expired. Please sign in again.');
+      return;
+    }
+
+    const response = await fetch('/api/orders', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${sessionData.session.access_token}`,
+      },
+      body: JSON.stringify({
+        tableSessionId: null,
+        subtotal: summary.subtotal,
+        serviceFee: summary.serviceFee,
+        total: summary.total,
+        paymentReference: `mock-${Date.now()}`,
+        items: cartItems.map((item) => ({
+          dishId: item.dishId,
+          stallId: item.stallId,
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+          customizations: item.customizations ?? [],
+          notes: item.notes ?? '',
+        })),
+      }),
+    });
+
+    const payload = (await response.json().catch(() => ({}))) as { error?: string; orderId?: string };
+    if (!response.ok) {
+      setCheckoutState('idle');
+      setCheckoutError(payload.error ?? 'Unable to place your order.');
+      return;
+    }
+
+    setCartItems([]);
+    setCheckoutState('success');
+  };
+
   return (
     <main className="min-h-screen bg-[#f5f5f7] px-4 pb-28 pt-5 text-[#1d1d1f]">
       <div className="mx-auto max-w-[430px] sm:max-w-[480px] lg:max-w-[960px]">
@@ -83,10 +142,12 @@ export default function OrdersPage() {
                   {cartItems.reduce((count, item) => count + item.quantity, 0)} items from {summary.merchantGroups.length} stalls
                 </p>
               </div>
-              <button type="button" className="rounded-full bg-white px-3.5 py-2 text-xs font-semibold text-[#111827]">
-                Checkout
+              <button type="button" onClick={() => void checkout()} disabled={checkoutState === 'submitting' || checkoutState === 'success'} className="rounded-full bg-white px-3.5 py-2 text-xs font-semibold text-[#111827] disabled:opacity-60">
+                {checkoutState === 'submitting' ? 'Placing...' : checkoutState === 'success' ? 'Placed' : 'Checkout'}
               </button>
             </div>
+            {checkoutError ? <p className="mt-3 text-xs text-rose-200">{checkoutError}</p> : null}
+            {checkoutState === 'success' ? <p className="mt-3 text-xs text-emerald-200">Order placed successfully.</p> : null}
           </div>
         </section>
 
