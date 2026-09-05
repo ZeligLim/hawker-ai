@@ -112,13 +112,15 @@ export default function OwnerDishEditorPage() {
           <section className="rounded-[24px] bg-white p-4 shadow-sm">
             <div className="grid gap-3 sm:grid-cols-3">
               <input value={dish.name} onChange={(event) => updateDish({ name: event.target.value })} placeholder="Dish name" className="h-11 rounded-[14px] bg-[#f5f5f7] px-3 text-sm outline-none" />
-              <select value={dish.category} onChange={(event) => updateDish({ category: event.target.value })} className="h-11 rounded-[14px] bg-[#f5f5f7] px-3 text-sm outline-none"><option>Main course</option><option>Drinks</option><option>Desserts</option></select>
+              <select value={dish.category} onChange={(event) => updateDish({ category: event.target.value })} className="h-11 appearance-none rounded-[14px] bg-[#f5f5f7] px-3 text-sm outline-none"><option>Main course</option><option>Drinks</option><option>Desserts</option></select>
               <input type="number" min="0.01" step="0.10" value={dish.price || ''} onChange={(event) => updateDish({ price: Number(event.target.value) })} placeholder="Price (RM)" className="h-11 rounded-[14px] bg-[#f5f5f7] px-3 text-sm outline-none" />
             </div>
-            <label className="mt-4 flex items-center gap-3 rounded-[14px] bg-[#f5f5f7] px-3 py-3 text-sm font-medium">
-              <input type="checkbox" checked={vegetarian} onChange={(event) => setVegetarian(event.target.checked)} className="h-5 w-5 accent-[#111827]" />
-              Vegetarian dish
-            </label>
+            <div className="mt-4 flex items-center justify-between rounded-[14px] bg-[#f5f5f7] px-3 py-3 text-sm font-medium">
+              <span>Vegetarian dish</span>
+              <button type="button" role="switch" aria-checked={vegetarian} onClick={() => setVegetarian((current) => !current)} className={`relative h-7 w-12 rounded-full transition ${vegetarian ? 'bg-emerald-500' : 'bg-[#d1d5db]'}`} aria-label="Toggle vegetarian dish">
+                <span className={`absolute top-1 h-5 w-5 rounded-full bg-white shadow-sm transition ${vegetarian ? 'left-6' : 'left-1'}`} />
+              </button>
+            </div>
             <label className="mt-4 block text-sm font-medium">
               Description
               <textarea value={description} onChange={(event) => setDescription(event.target.value)} placeholder="Describe the dish, ingredients, and flavour." rows={3} className="mt-2 w-full resize-none rounded-[14px] bg-[#f5f5f7] px-3 py-3 text-sm outline-none" />
