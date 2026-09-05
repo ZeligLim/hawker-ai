@@ -1,4 +1,8 @@
+'use client';
+
 import Link from 'next/link';
+import { useMemo, useState } from 'react';
+import { readCartItems, type CartItem } from '@/lib/order/cart';
 
 const directory = [
   { name: 'Ah Seng Chicken Rice', open: true, items: 12, eta: '10 min' },
@@ -7,13 +11,19 @@ const directory = [
   { name: 'Curry House', open: false, items: 8, eta: 'Closed' },
 ];
 
-const orderItems = [
-  { name: 'Nasi Lemak', qty: 1, price: 8.5 },
-  { name: 'Teh Tarik', qty: 2, price: 3.5 },
-  { name: 'Curry Mee', qty: 1, price: 12 },
-];
-
 export default function OrdersPage() {
+  const [cartItems] = useState<CartItem[]>(() => readCartItems());
+
+  const orderItems = useMemo(
+    () =>
+      cartItems.map((item) => ({
+        name: item.name,
+        qty: item.quantity,
+        price: item.price,
+      })),
+    [cartItems],
+  );
+
   const total = orderItems.reduce((sum, item) => sum + item.price * item.qty, 0);
 
   return (

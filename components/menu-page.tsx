@@ -1,8 +1,9 @@
 'use client';
 
 import { CupSoda, IceCreamCone, Leaf, UtensilsCrossed } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { HawkerSearchBar } from '@/components/hawker-search-bar';
+import { addItemToCart, readCartItems, removeCartItem, updateCartItemQuantity, writeCartItems, type CartItem } from '@/lib/order/cart';
 
 function MainCourseIcon() {
   return <UtensilsCrossed className="h-[18px] w-[18px]" strokeWidth={1.8} />;
@@ -44,16 +45,36 @@ const menuItems = {
 
 export function MenuPage() {
   const [searchValue, setSearchValue] = useState('');
-  const [quantities, setQuantities] = useState<Record<string, number>>({});
+  const [cartItems, setCartItems] = useState<CartItem[]>(() => readCartItems());
 
-  const updateQuantity = (name: string, delta: number) => {
-    setQuantities((current: Record<string, number>) => {
-      const nextValue = (current[name] ?? 0) + delta;
-      if (nextValue <= 0) {
-        const { [name]: _removed, ...rest } = current;
-        return rest;
+  useEffect(() => {
+    writeCartItems(cartItems);
+  }, [cartItems]);
+
+  const updateQuantity = (name: string, price: number, delta: number) => {
+    setCartItems((currentItems) => {
+      const matchingItem = currentItems.find((item) => item.name === name);
+
+      if (!matchingItem) {
+        if (delta <= 0) return currentItems;
+
+        return addItemToCart(currentItems, {
+          dishId: name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+          name,
+          restaurantName: 'Setia Hawker Centre',
+          stallName: 'Menu collection',
+          stallId: 'setia-hawker-centre',
+          price,
+          quantity: 1,
+        });
       }
-      return { ...current, [name]: nextValue };
+
+      const nextQuantity = matchingItem.quantity + delta;
+      if (nextQuantity <= 0) {
+        return removeCartItem(currentItems, matchingItem.id);
+      }
+
+      return updateCartItemQuantity(currentItems, matchingItem.id, nextQuantity);
     });
   };
 
@@ -101,7 +122,7 @@ export function MenuPage() {
 
                 <div className="grid grid-cols-2 gap-3">
                   {(menuItems[id as keyof typeof menuItems] ?? []).map((item) => {
-                    const quantity = quantities[item.name] ?? 0;
+                    const quantity = cartItems.find((entry) => entry.name === item.name)?.quantity ?? 0;
 
                     return (
                       <article key={item.name} className="overflow-hidden rounded-[22px] bg-white shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
@@ -126,7 +147,7 @@ export function MenuPage() {
                                 <button
                                   type="button"
                                   aria-label={`Decrease ${item.name} quantity`}
-                                  onClick={() => updateQuantity(item.name, -1)}
+                                  onClick={() => updateQuantity(item.name, item.price, -1)}
                                   className="flex h-6 w-6 items-center justify-center rounded-full bg-[#f5f5f7] text-base font-semibold text-[#1d1d1f]"
                                 >
                                   −
@@ -135,7 +156,7 @@ export function MenuPage() {
                                 <button
                                   type="button"
                                   aria-label={`Increase ${item.name} quantity`}
-                                  onClick={() => updateQuantity(item.name, 1)}
+                                  onClick={() => updateQuantity(item.name, item.price, 1)}
                                   className="flex h-6 w-6 items-center justify-center rounded-full bg-[#1d1d1f] text-base font-semibold text-white"
                                 >
                                   +
@@ -144,7 +165,7 @@ export function MenuPage() {
                             ) : (
                               <button
                                 type="button"
-                                onClick={() => updateQuantity(item.name, 1)}
+                                onClick={() => updateQuantity(item.name, item.price, 1)}
                                 className="rounded-full bg-[#1d1d1f] px-2.5 py-1.5 text-[10px] font-medium text-white shadow-[0_8px_20px_rgba(15,23,42,0.18)]"
                                 aria-label={`Add ${item.name} to your order`}
                               >

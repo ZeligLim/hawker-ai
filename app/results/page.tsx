@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { CartSummary } from '@/components/cart-summary';
 import { ResultCard } from '@/components/result-card';
-import { addItemToCart, buildCartSummary, removeCartItem, updateCartItemQuantity, type CartItem } from '@/lib/order/cart';
+import { addItemToCart, buildCartSummary, readCartItems, removeCartItem, updateCartItemQuantity, writeCartItems, type CartItem } from '@/lib/order/cart';
 import type { SearchResult } from '@/lib/search/schema';
 
 export default function ResultsPage() {
@@ -36,8 +36,12 @@ function ResultsContent() {
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [cartItems, setCartItems] = useState<CartItem[]>(() => readCartItems());
   const [checkoutMessage, setCheckoutMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    writeCartItems(cartItems);
+  }, [cartItems]);
 
   const query = searchParams.get('query') ?? 'I want a vegetarian meal under RM15 with medium spice.';
   const maxPrice = searchParams.get('maxPrice') ?? '15';

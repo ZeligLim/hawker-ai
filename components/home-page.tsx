@@ -2,8 +2,9 @@
 
 import Link from 'next/link';
 import { Leaf } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { HawkerSearchBar } from '@/components/hawker-search-bar';
+import { addItemToCart, readCartItems, removeCartItem, updateCartItemQuantity, writeCartItems, type CartItem } from '@/lib/order/cart';
 import { fallbackDishes } from '@/lib/search/fallback-data';
 
 type FeaturedDish = {
@@ -67,7 +68,11 @@ export function HomePage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [results, setResults] = useState<FeaturedDish[]>([]);
-  const [quantities, setQuantities] = useState<Record<string, number>>({});
+  const [cartItems, setCartItems] = useState<CartItem[]>(() => readCartItems());
+
+  useEffect(() => {
+    writeCartItems(cartItems);
+  }, [cartItems]);
 
   const featuredDishes = useMemo<FeaturedDish[]>(() => {
     if (results.length > 0) return results;
@@ -135,14 +140,31 @@ export function HomePage() {
     void handleSearch(nextQuery);
   };
 
-  const updateQuantity = (dishId: string, delta: number) => {
-    setQuantities((current: Record<string, number>) => {
-      const nextValue = (current[dishId] ?? 0) + delta;
-      if (nextValue <= 0) {
-        const { [dishId]: _removed, ...rest } = current;
-        return rest;
+  const updateQuantity = (dish: FeaturedDish, delta: number) => {
+    setCartItems((currentItems) => {
+      const matchingItem = currentItems.find((item) => item.dishId === dish.id);
+
+      if (!matchingItem) {
+        if (delta <= 0) return currentItems;
+
+        const stallId = `${dish.restaurantName}:${dish.stallName}`.replace(/[^a-z0-9]+/gi, '-').toLowerCase();
+        return addItemToCart(currentItems, {
+          dishId: dish.id,
+          name: dish.name,
+          restaurantName: dish.restaurantName,
+          stallName: dish.stallName,
+          stallId,
+          price: dish.price,
+          quantity: 1,
+        });
       }
-      return { ...current, [dishId]: nextValue };
+
+      const nextQuantity = matchingItem.quantity + delta;
+      if (nextQuantity <= 0) {
+        return removeCartItem(currentItems, matchingItem.id);
+      }
+
+      return updateCartItemQuantity(currentItems, matchingItem.id, nextQuantity);
     });
   };
 
@@ -194,7 +216,7 @@ export function HomePage() {
             {!isLoading && !error && (
               <div className="mt-4 grid grid-cols-2 gap-3">
                 {featuredDishes.map((dish) => {
-                  const quantity = quantities[dish.id] ?? 0;
+                  const quantity = cartItems.find((item) => item.dishId === dish.id)?.quantity ?? 0;
 
                   return (
                     <article key={dish.id} className="overflow-hidden rounded-[22px] bg-white shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
@@ -219,7 +241,7 @@ export function HomePage() {
                               <button
                                 type="button"
                                 aria-label={`Decrease ${dish.name} quantity`}
-                                onClick={() => updateQuantity(dish.id, -1)}
+                                onClick={() => updateQuantity(dish, -1)}
                                 className="flex h-8 w-8 items-center justify-center rounded-full bg-[#f5f5f7] text-lg font-semibold text-[#1d1d1f]"
                               >
                                 −
@@ -228,7 +250,7 @@ export function HomePage() {
                               <button
                                 type="button"
                                 aria-label={`Increase ${dish.name} quantity`}
-                                onClick={() => updateQuantity(dish.id, 1)}
+                                onClick={() => updateQuantity(dish, 1)}
                                 className="flex h-8 w-8 items-center justify-center rounded-full bg-[#1d1d1f] text-lg font-semibold text-white"
                               >
                                 +
@@ -237,7 +259,7 @@ export function HomePage() {
                           ) : (
                             <button
                               type="button"
-                              onClick={() => updateQuantity(dish.id, 1)}
+                              onClick={() => updateQuantity(dish, 1)}
                               className="rounded-full bg-[#1d1d1f] px-2.5 py-1.5 text-[10px] font-medium text-white shadow-[0_8px_20px_rgba(15,23,42,0.18)]"
                               aria-label={`Add ${dish.name} to your order`}
                             >

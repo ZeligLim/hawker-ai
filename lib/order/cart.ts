@@ -1,3 +1,24 @@
+export const CART_STORAGE_KEY = 'hawker-cart-items';
+
+export function readCartItems(): CartItem[] {
+  if (typeof window === 'undefined') return [];
+
+  try {
+    const raw = window.localStorage.getItem(CART_STORAGE_KEY);
+    if (!raw) return [];
+
+    const parsed = JSON.parse(raw) as CartItem[];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+export function writeCartItems(items: CartItem[]) {
+  if (typeof window === 'undefined') return;
+  window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
+}
+
 export type CartItem = {
   id: string;
   dishId: string;
