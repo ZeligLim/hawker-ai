@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { Settings2 } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { CustomizationCard } from '@/components/customization-card';
 import { useAuth } from '@/components/auth-provider';
@@ -191,18 +192,17 @@ export default function OrdersPage() {
                       +
                     </button>
                   </div>
-                  <span className="text-xs text-[#6e6e73]">{item.stallName}</span>
+                  {getDishCustomization(item.name) ? (
+                    <button
+                      type="button"
+                      onClick={() => openCustomization(item)}
+                      className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#1d1d1f] shadow-sm"
+                      aria-label={`Customize ${item.name}`}
+                    >
+                      <Settings2 className="h-4 w-4" />
+                    </button>
+                  ) : null}
                 </div>
-
-                {getDishCustomization(item.name) ? (
-                  <button
-                    type="button"
-                    onClick={() => openCustomization(item)}
-                    className="mt-3 text-xs font-semibold text-[#3c3c43] underline underline-offset-4"
-                  >
-                    Customize
-                  </button>
-                ) : null}
 
                 <label className="mt-3 block">
                   <span className="sr-only">Comment for {item.name}</span>
