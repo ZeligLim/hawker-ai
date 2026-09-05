@@ -21,7 +21,7 @@ type AuthContextValue = {
   isGuest: boolean;
   continueAsGuest: () => Promise<void>;
   signInWithGoogle: () => Promise<void>;
-  signInWithEmail: (email: string, password: string) => Promise<void>;
+  signInWithEmail: (email: string, password: string) => Promise<'signed-in' | 'activation-sent'>;
   signUpWithEmail: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
@@ -194,9 +194,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     const { error } = await client.auth.signInWithPassword({ email, password });
-    if (error) {
-      throw new Error(getFriendlyAuthError(error));
+    if (!error) return 'signed-in';
+
+    if (error.message.toLowerCase().includes('invalid login credentials')) {
+      const { data, error: signUpError } = await client.auth.signUp({ email, password });
+
+      if (!signUpError && data.user && (data.user.identities?.length ?? 0) > 0) {
+        return 'activation-sent';
+      }
+
+      if (signUpError) {
+        throw new Error(getFriendlyAuthError(signUpError));
+      }
     }
+
+    throw new Error(getFriendlyAuthError(error));
   };
 
   const signUpWithEmail = async (email: string, password: string) => {
