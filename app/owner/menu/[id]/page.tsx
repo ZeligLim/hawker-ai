@@ -21,19 +21,6 @@ type Dish = {
   foodOutletId?: string;
 };
 
-const storageKey = 'hawker-owner-menu';
-function loadDish(id: string): Dish | null {
-  if (typeof window === 'undefined') return null;
-  const stored = window.localStorage.getItem(storageKey);
-  if (!stored) return null;
-  try {
-    const dishes = JSON.parse(stored) as Dish[];
-    return dishes.find((dish) => dish.id === id) ?? null;
-  } catch {
-    return null;
-  }
-}
-
 function loadCustomizations(dish: Dish | null) {
   return Array.isArray(dish?.customizations) ? dish.customizations : [];
 }
@@ -44,7 +31,7 @@ export default function OwnerDishEditorPage() {
   const isNew = params.id === 'new';
   const [dish, setDish] = useState<Dish | null>(() => isNew ? {
     id: `dish-${Date.now()}`, name: '', category: 'Main course', price: 0, available: true,
-  } : loadDish(params.id));
+  } : null);
   const [customizations, setCustomizations] = useState<{ label: string; price: number }[]>(() => loadCustomizations(dish));
   const [spiceLevels, setSpiceLevels] = useState(() => dish?.spiceLevels ?? 1);
   const [vegetarian, setVegetarian] = useState(() => dish?.vegetarian ?? false);
@@ -157,14 +144,8 @@ export default function OwnerDishEditorPage() {
       router.replace('/owner/menu' as any);
       return;
     }
-    const stored = window.localStorage.getItem(storageKey);
-    let dishes: Dish[] = [];
-    if (stored) {
-      try { dishes = JSON.parse(stored) as Dish[]; } catch { dishes = []; }
-    }
-    const next = dishes.some((item) => item.id === saved.id) ? dishes.map((item) => item.id === saved.id ? saved : item) : [...dishes, saved];
-    window.localStorage.setItem(storageKey, JSON.stringify(next));
-    setTimeout(() => router.replace('/owner/menu' as any), 300);
+    setError('Please sign in to save this dish.');
+    setIsSaving(false);
   };
 
   return (

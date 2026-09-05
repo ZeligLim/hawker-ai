@@ -20,31 +20,8 @@ type OwnerDish = {
   };
 };
 
-const initialDishes: OwnerDish[] = [
-  { id: 'nasi-lemak', name: 'Nasi Lemak', category: 'Main course', price: 8.5, available: true },
-  { id: 'curry-mee', name: 'Curry Mee', category: 'Main course', price: 12, available: true },
-  { id: 'chicken-rice', name: 'Chicken Rice', category: 'Main course', price: 8.5, available: false },
-  { id: 'teh-tarik', name: 'Teh Tarik', category: 'Drinks', price: 3.5, available: true },
-  { id: 'cendol', name: 'Cendol', category: 'Desserts', price: 5, available: true },
-];
-
-const storageKey = 'hawker-owner-menu';
-
-function loadDishes() {
-  if (typeof window === 'undefined') return initialDishes;
-  const stored = window.localStorage.getItem(storageKey);
-  if (!stored) return initialDishes;
-  try {
-    const parsed = JSON.parse(stored) as OwnerDish[];
-    return Array.isArray(parsed) ? parsed : initialDishes;
-  } catch {
-    window.localStorage.removeItem(storageKey);
-    return initialDishes;
-  }
-}
-
 export default function OwnerMenuPage() {
-  const [dishes, setDishes] = useState<OwnerDish[]>(loadDishes);
+  const [dishes, setDishes] = useState<OwnerDish[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -53,12 +30,15 @@ export default function OwnerMenuPage() {
     const loadBackendDishes = async () => {
       const token = (await supabase?.auth.getSession())?.data.session?.access_token;
       if (!token) {
-        if (active) setIsLoading(false);
+        if (active) {
+          setError('Please sign in to load your menu.');
+          setIsLoading(false);
+        }
         return;
       }
       const response = await fetch('/api/owner/dishes', { headers: { Authorization: `Bearer ${token}` } });
       if (!response.ok) {
-        if (active) setError('Unable to load your menu. Showing saved local dishes.');
+        if (active) setError('Unable to load your menu from the backend. Please try again.');
         if (active) setIsLoading(false);
         return;
       }
@@ -85,7 +65,6 @@ export default function OwnerMenuPage() {
   const toggleAvailability = async (id: string) => {
     const next = dishes.map((dish) => (dish.id === id ? { ...dish, available: !dish.available } : dish));
     setDishes(next);
-    window.localStorage.setItem(storageKey, JSON.stringify(next));
     const token = (await supabase?.auth.getSession())?.data.session?.access_token;
     if (!token) return;
     const dish = next.find((item) => item.id === id);
