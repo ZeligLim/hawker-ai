@@ -1,17 +1,187 @@
-import Link from 'next/link';
+'use client';
+
+import { useMemo, useState } from 'react';
+
+type OrderRecord = {
+  dish: string;
+  place: string;
+  price: number;
+  date: string;
+  category: 'Main course' | 'Drinks' | 'Desserts';
+};
+
+type ProfileState = {
+  name: string;
+  signedIn: boolean;
+  orders: OrderRecord[];
+};
+
+const defaultOrders: OrderRecord[] = [
+  { dish: 'Nasi Lemak', place: 'Ah Seng Chicken Rice', price: 8.5, date: 'Today', category: 'Main course' },
+  { dish: 'Teh Tarik', place: 'Penang Corner', price: 3.5, date: 'Yesterday', category: 'Drinks' },
+  { dish: 'Curry Mee', place: 'Curry House', price: 12, date: '2 days ago', category: 'Main course' },
+  { dish: 'Cendol', place: 'Green Garden Vegetarian', price: 5, date: 'Last week', category: 'Desserts' },
+];
+
+const storageKey = 'hawker-profile';
+
+function readStoredProfile(): Partial<ProfileState> | null {
+  if (typeof window === 'undefined') return null;
+
+  const savedRaw = window.localStorage.getItem(storageKey);
+  if (!savedRaw) return null;
+
+  try {
+    return JSON.parse(savedRaw) as Partial<ProfileState>;
+  } catch {
+    return null;
+  }
+}
 
 export default function ProfilePage() {
+  const storedProfile = readStoredProfile();
+  const [name, setName] = useState(storedProfile?.name ?? 'Guest diner');
+  const [signedIn, setSignedIn] = useState(Boolean(storedProfile?.signedIn));
+  const [orders, setOrders] = useState<OrderRecord[]>(
+    storedProfile?.orders && storedProfile.orders.length > 0 ? storedProfile.orders : defaultOrders,
+  );
+  const [draftName, setDraftName] = useState(storedProfile?.name ?? '');
+
+  const favoriteDishes = useMemo(() => {
+    const counts = new Map<string, number>();
+    orders.forEach((order) => {
+      counts.set(order.dish, (counts.get(order.dish) ?? 0) + 1);
+    });
+
+    return [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 3);
+  }, [orders]);
+
+  const favoriteCategory = useMemo(() => {
+    const counts = new Map<string, number>();
+    orders.forEach((order) => {
+      counts.set(order.category, (counts.get(order.category) ?? 0) + 1);
+    });
+
+    const [topCategory] = [...counts.entries()].sort((a, b) => b[1] - a[1])[0] ?? ['Main course', 0];
+    return topCategory;
+  }, [orders]);
+
+  const handleSignIn = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const trimmedName = draftName.trim();
+    if (!trimmedName) return;
+
+    const nextProfile: ProfileState = { name: trimmedName, signedIn: true, orders };
+    setName(trimmedName);
+    setSignedIn(true);
+    window.localStorage.setItem(storageKey, JSON.stringify(nextProfile));
+  };
+
+  const handleSignOut = () => {
+    const nextProfile: ProfileState = { name: 'Guest diner', signedIn: false, orders: defaultOrders };
+    setName('Guest diner');
+    setSignedIn(false);
+    setDraftName('');
+    setOrders(defaultOrders);
+    window.localStorage.setItem(storageKey, JSON.stringify(nextProfile));
+  };
+
   return (
-    <main className="min-h-screen bg-[#f5f5f7] px-4 py-6 text-[#1d1d1f]">
-      <div className="mx-auto max-w-[430px] rounded-[28px] border border-[#e5e7eb] bg-white p-5 shadow-[0_20px_45px_rgba(15,23,42,0.05)]">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#6e6e73]">Profile</p>
-        <h1 className="mt-3 text-3xl font-semibold tracking-[-0.06em]">Guest diner</h1>
-        <div className="mt-5 rounded-[22px] border border-[#e5e7eb] bg-[#fafafa] p-4 text-sm text-[#4b5563]">
-          Table: 12 · Setia Hawker Centre
-        </div>
-        <Link href="/" className="mt-5 inline-flex rounded-full bg-[#111827] px-4 py-2.5 text-sm font-medium text-white">
-          Back home
-        </Link>
+    <main className="min-h-screen bg-[#f5f5f7] px-4 pb-28 pt-5 text-[#1d1d1f]">
+      <div className="mx-auto max-w-[430px] sm:max-w-[480px] lg:max-w-[960px]">
+        <header className="flex items-center gap-3 pb-4">
+          <div className="flex h-10 w-10 items-center justify-center rounded-[14px] bg-[#1d1d1f] text-sm font-semibold text-white">
+            H
+          </div>
+          <p className="text-sm font-medium text-[#1d1d1f]">Setia Hawker Centre · Table 12</p>
+        </header>
+
+        {!signedIn ? (
+          <section className="rounded-[26px] bg-white p-4 shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#6e6e73]">Profile</p>
+            <h1 className="mt-2 text-3xl font-semibold tracking-[-0.06em]">Sign in</h1>
+            <form onSubmit={handleSignIn} className="mt-5 space-y-4">
+              <div>
+                <label htmlFor="name" className="mb-2 block text-sm font-medium text-[#1d1d1f]">
+                  Your name
+                </label>
+                <input
+                  id="name"
+                  value={draftName}
+                  onChange={(event) => setDraftName(event.target.value)}
+                  placeholder="Enter your name"
+                  className="w-full rounded-[18px] bg-[#f5f5f7] px-4 py-3 text-sm text-[#1d1d1f] placeholder:text-[#6e6e73] outline-none"
+                />
+              </div>
+
+              <button type="submit" className="w-full rounded-full bg-[#111827] px-4 py-3 text-sm font-medium text-white">
+                Sign in
+              </button>
+            </form>
+          </section>
+        ) : (
+          <>
+            <section className="rounded-[26px] bg-white p-4 shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#6e6e73]">Profile</p>
+                  <h1 className="mt-2 text-3xl font-semibold tracking-[-0.06em]">{name}</h1>
+                </div>
+                <button type="button" onClick={handleSignOut} className="rounded-full bg-[#f5f5f7] px-3 py-1.5 text-[11px] font-medium text-[#1d1d1f]">
+                  Sign out
+                </button>
+              </div>
+
+              <div className="mt-5 rounded-[22px] bg-[#111827] p-4 text-white">
+                <p className="text-[10px] uppercase tracking-[0.18em] text-white/70">Member profile</p>
+                <p className="mt-2 text-2xl font-semibold tracking-[-0.05em]">{favoriteCategory}</p>
+                <p className="mt-1 text-sm text-white/75">Your most frequent order type</p>
+              </div>
+            </section>
+          </>
+        )}
+
+        <section className="mt-6 rounded-[24px] bg-white p-4 shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
+          <div className="mb-3 flex items-center justify-between">
+            <h2 className="text-lg font-semibold tracking-[-0.04em]">Previous orders</h2>
+            <span className="text-sm text-[#6e6e73]">{orders.length} items</span>
+          </div>
+
+          <div className="space-y-3">
+            {orders.map((order) => (
+              <div key={`${order.dish}-${order.date}`} className="rounded-[18px] bg-[#f5f5f7] p-3">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <p className="text-sm font-medium text-[#1d1d1f]">{order.dish}</p>
+                    <p className="mt-0.5 text-xs text-[#6e6e73]">{order.place}</p>
+                  </div>
+                  <span className="rounded-full bg-white px-2 py-1 text-[10px] font-medium text-[#3c3c43]">
+                    {order.category}
+                  </span>
+                </div>
+                <div className="mt-2 flex items-center justify-between text-xs text-[#6e6e73]">
+                  <span>{order.date}</span>
+                  <span>RM {order.price.toFixed(2)}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="mt-6 rounded-[24px] bg-white p-4 shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
+          <h2 className="text-lg font-semibold tracking-[-0.04em]">Eating pattern</h2>
+
+          <div className="mt-3 rounded-[22px] bg-[#f5f5f7] p-4">
+            <p className="text-sm text-[#6e6e73]">Most ordered</p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {favoriteDishes.map(([dish, count]) => (
+                <span key={dish} className="rounded-full bg-white px-2.5 py-1.5 text-xs font-medium text-[#1d1d1f]">
+                  {dish} · {count}x
+                </span>
+              ))}
+            </div>
+          </div>
+        </section>
       </div>
     </main>
   );

@@ -119,8 +119,6 @@ export function MenuPage() {
                             {item.name.split(' ')[0]}
                           </div>
 
-                          <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/55 to-transparent" />
-
                           <div className="absolute left-2 top-2 rounded-full bg-black/70 px-2 py-1 text-[10px] font-semibold text-white backdrop-blur-sm">
                             RM {item.price.toFixed(2)}
                           </div>
