@@ -288,46 +288,33 @@ export function HomePage() {
             )}
 
             {!isLoading && !error && (
-              <div className="mt-4 space-y-3">
+              <div className="mt-4 grid grid-cols-2 gap-3">
                 {featuredDishes.map((dish) => (
-                  <article key={dish.id} className="rounded-[22px] border border-[#e5e7eb] bg-white p-3 shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
-                    <div className="relative overflow-hidden rounded-[18px] bg-[linear-gradient(135deg,#f8e6c1_0%,#e6d4b0_100%)]">
-                      <div className="flex h-44 items-center justify-center text-xl font-semibold uppercase tracking-[0.28em] text-[#5c4b1d]">
+                  <article key={dish.id} className="overflow-hidden rounded-[22px] border border-[#e5e7eb] bg-white shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
+                    <div className="relative h-40 overflow-hidden bg-[linear-gradient(135deg,#f8e6c1_0%,#e6d4b0_100%)]">
+                      <div className="flex h-full items-center justify-center text-lg font-semibold uppercase tracking-[0.22em] text-[#5c4b1d]">
                         {dish.name.split(' ')[0]}
                       </div>
 
-                      <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/55 to-transparent" />
+                      <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/55 to-transparent" />
 
-                      <div className="absolute left-3 top-3 rounded-full bg-black/70 px-2.5 py-1.5 text-[11px] font-semibold text-white backdrop-blur-sm">
+                      <div className="absolute left-2 top-2 rounded-full bg-black/70 px-2 py-1 text-[10px] font-semibold text-white backdrop-blur-sm">
                         RM {dish.price.toFixed(2)}
                       </div>
 
                       {dish.isVegetarian ? (
-                        <div className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-[#ecfdf5] text-[#166534] shadow-[0_8px_20px_rgba(15,23,42,0.12)]">
+                        <div className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-[#ecfdf5] text-[#166534] shadow-[0_8px_20px_rgba(15,23,42,0.12)]">
                           <LeafIcon />
                         </div>
                       ) : null}
-                    </div>
 
-                    <div className="mt-3 flex items-center justify-between gap-3">
-                      <div className="min-w-0">
-                        <h3 className="truncate text-base font-semibold text-[#1d1d1f]">{dish.name}</h3>
-                        <p className="mt-1 text-xs text-[#6e6e73]">{dish.stallName}</p>
-                      </div>
                       <button
                         type="button"
-                        className="rounded-full bg-[#1d1d1f] px-3 py-1.5 text-xs font-medium text-white"
+                        className="absolute bottom-2 right-2 rounded-full bg-[#1d1d1f] px-2.5 py-1.5 text-[10px] font-medium text-white shadow-[0_8px_20px_rgba(15,23,42,0.18)]"
                         aria-label={`Add ${dish.name} to your order`}
                       >
                         Add
                       </button>
-                    </div>
-
-                    <div className="mt-2 flex items-center gap-2 text-[10px] font-medium">
-                      <span className="rounded-full bg-[#f5f3ff] px-2 py-1 text-[#6d28d9]">
-                        {dish.spiceLevel <= 1 ? 'Mild' : dish.spiceLevel <= 3 ? 'Medium' : 'Spicy'}
-                      </span>
-                      <span className="rounded-full bg-[#f5f5f7] px-2 py-1 text-[#3c3c43]">{dish.proteinGrams}g protein</span>
                     </div>
                   </article>
                 ))}
