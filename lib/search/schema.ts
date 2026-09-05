@@ -10,6 +10,18 @@ const optionalBoolean = z.preprocess((value) => {
   return value;
 }, z.boolean().optional());
 
+export const SearchIntentSchema = z.object({
+  query: z.string().trim().default(''),
+  minPrice: z.number().min(0).optional(),
+  maxPrice: z.number().min(0).optional(),
+  vegetarian: z.boolean().optional(),
+  halal: z.boolean().optional(),
+  spiceLevel: z.number().int().min(0).max(5).optional(),
+  limit: z.number().int().min(1).max(20).default(10),
+});
+
+export type SearchIntent = z.infer<typeof SearchIntentSchema>;
+
 export const SearchFiltersSchema = z.object({
   query: z.string().trim().optional().default(''),
   minPrice: z.coerce.number().min(0).optional(),

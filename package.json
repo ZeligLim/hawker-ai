@@ -21,6 +21,7 @@
   "dependencies": {
     "@ai-sdk/openai": "^4.0.59",
     "@supabase/supabase-js": "^2.115.0",
+    "ai": "^7.0.93",
     "next": "^16.3.4",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
@@ -32,7 +33,7 @@
     "@types/node": "^26.4.1",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.7",
-    "eslint": "^8.57.1",
+    "eslint": "^9.39.5",
     "eslint-config-next": "^16.3.4",
     "postcss": "^8.5.28",
     "tailwindcss": "^4.3.3",
