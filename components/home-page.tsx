@@ -296,10 +296,10 @@ export function HomePage() {
                       </div>
 
                       <div className="mt-2 flex flex-wrap items-center gap-2 text-[10px] font-medium">
-                        <span className="rounded-full bg-[#ecfdf5] px-2 py-1 text-[#065f46]">
-                          {dish.isVegetarian ? 'Vegetarian' : 'Non-veg'}
-                        </span>
-                        <span className="rounded-full bg-[#ecfeff] px-2 py-1 text-[#0f766e]">{dish.isHalal ? 'Halal' : 'Non-halal'}</span>
+                        {dish.isVegetarian ? (
+                          <span className="rounded-full bg-[#ecfdf5] px-2 py-1 text-[#065f46]">Vegetarian</span>
+                        ) : null}
+                        {dish.isHalal ? <span className="rounded-full bg-[#ecfeff] px-2 py-1 text-[#0f766e]">Halal</span> : null}
                         <span className="rounded-full bg-[#f5f3ff] px-2 py-1 text-[#6d28d9]">
                           {dish.spiceLevel <= 1 ? 'Mild' : dish.spiceLevel <= 3 ? 'Medium' : 'Spicy'}
                         </span>
