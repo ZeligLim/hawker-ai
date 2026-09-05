@@ -2,10 +2,25 @@
 
 import Link from 'next/link';
 import { ArrowLeft, LogOut, Store } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import { useAuth } from '@/components/auth-provider';
 
 export default function OwnerProfilePage() {
+  const router = useRouter();
   const { profile, signOut } = useAuth();
+  const [isOwnerMode, setIsOwnerMode] = useState(() => {
+    if (typeof window === 'undefined') return true;
+    return window.localStorage.getItem('hawker-user-mode') !== 'customer';
+  });
+
+  const handleModeChange = (ownerMode: boolean) => {
+    setIsOwnerMode(ownerMode);
+    window.localStorage.setItem('hawker-user-mode', ownerMode ? 'owner' : 'customer');
+    if (!ownerMode) {
+      router.push('/' as any);
+    }
+  };
 
   return (
     <main className="min-h-screen bg-[#f5f5f7] px-4 pb-28 pt-5 text-[#1d1d1f]">
@@ -37,9 +52,22 @@ export default function OwnerProfilePage() {
               <p className="mt-1 text-xs text-[#6e6e73]">Ah Seng Chicken Rice</p>
             </div>
           </div>
-          <Link href="/profile" className="mt-4 flex w-full items-center justify-center rounded-full bg-[#f5f5f7] px-4 py-3 text-sm font-semibold">
-            Switch to customer app
-          </Link>
+          <div className="mt-4 flex items-center justify-between rounded-[18px] bg-[#f5f5f7] px-4 py-3">
+            <div>
+              <p className="text-sm font-semibold">Hawker owner mode</p>
+              <p className="mt-1 text-xs text-[#6e6e73]">Switch between managing and ordering</p>
+            </div>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={isOwnerMode}
+              onClick={() => handleModeChange(!isOwnerMode)}
+              className={`relative h-7 w-12 shrink-0 rounded-full transition ${isOwnerMode ? 'bg-[#111827]' : 'bg-[#d1d5db]'}`}
+              aria-label="Toggle hawker owner mode"
+            >
+              <span className={`absolute top-1 h-5 w-5 rounded-full bg-white shadow-sm transition ${isOwnerMode ? 'left-6' : 'left-1'}`} />
+            </button>
+          </div>
           <button type="button" onClick={() => void signOut()} className="mt-3 flex w-full items-center justify-center gap-2 rounded-full bg-[#111827] px-4 py-3 text-sm font-semibold text-white">
             <LogOut className="h-4 w-4" /> Sign out
           </button>
