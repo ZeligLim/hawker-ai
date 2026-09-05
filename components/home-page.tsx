@@ -223,11 +223,6 @@ export function HomePage() {
           </header>
 
           <section className="mt-6 rounded-[24px] border border-[#e5e7eb] bg-white p-4 shadow-[0_14px_28px_rgba(15,23,42,0.04)]">
-            <h1 className="mt-4 text-[2.5rem] font-semibold leading-[0.96] tracking-[-0.07em] text-[#1d1d1f]">
-              What are you craving?
-            </h1>
-            <p className="mt-2 text-base text-[#4b5563]">Find dishes from every stall around you.</p>
-
             <form id="search" onSubmit={handleSubmit} className="mt-5">
               <div className="flex items-center gap-3 rounded-[18px] border border-[#dfe3ea] bg-[#f7f7f7] px-3 py-2.5 transition focus-within:border-[#c7ced8] focus-within:bg-[#f2f2f2]">
                 <input
