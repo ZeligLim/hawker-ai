@@ -1,7 +1,9 @@
 'use client';
 
 import Link from 'next/link';
+import { LogOut, Settings, X } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
+import { useAuth } from '@/components/auth-provider';
 
 type OrderRecord = {
   dish: string;
@@ -31,6 +33,7 @@ const defaultProfileState: ProfileState = {
 };
 
 const storageKey = 'hawker-profile';
+const modeStorageKey = 'hawker-user-mode';
 
 function readStoredProfile(): Partial<ProfileState> | null {
   if (typeof window === 'undefined') return null;
@@ -46,8 +49,15 @@ function readStoredProfile(): Partial<ProfileState> | null {
 }
 
 export default function ProfilePage() {
+  const { status, profile: authProfile, isGuest, signOut, updatePassword, updateProfile } = useAuth();
   const [profile, setProfile] = useState<ProfileState>(defaultProfileState);
   const [isMounted, setIsMounted] = useState(false);
+  const [isOwnerMode, setIsOwnerMode] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [nameInput, setNameInput] = useState('');
+  const [passwordInput, setPasswordInput] = useState('');
+  const [settingsMessage, setSettingsMessage] = useState('');
+  const [settingsError, setSettingsError] = useState('');
 
   useEffect(() => {
     const restoreProfile = () => {
@@ -69,10 +79,19 @@ export default function ProfilePage() {
     queueMicrotask(() => {
       setIsMounted(true);
       restoreProfile();
+      setIsOwnerMode(window.localStorage.getItem(modeStorageKey) === 'owner');
     });
   }, []);
 
-  const { name, signedIn, orders } = profile;
+  const { name, orders } = profile;
+  const signedIn = status === 'authenticated' && !isGuest && Boolean(authProfile);
+  const displayName = authProfile?.displayName ?? name;
+  const initials = displayName
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join('') || 'H';
 
   const favoriteDishes = useMemo(() => {
     const counts = new Map<string, number>();
@@ -81,16 +100,6 @@ export default function ProfilePage() {
     });
 
     return [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 3);
-  }, [orders]);
-
-  const favoriteCategory = useMemo(() => {
-    const counts = new Map<string, number>();
-    orders.forEach((order) => {
-      counts.set(order.category, (counts.get(order.category) ?? 0) + 1);
-    });
-
-    const [topCategory] = [...counts.entries()].sort((a, b) => b[1] - a[1])[0] ?? ['Main course', 0];
-    return topCategory;
   }, [orders]);
 
   const orderLinks = useMemo(
@@ -102,10 +111,30 @@ export default function ProfilePage() {
     [orders],
   );
 
-  const handleSignOut = () => {
-    const nextProfile: ProfileState = { name: 'Guest diner', signedIn: false, orders: defaultOrders };
-    setProfile(nextProfile);
-    window.localStorage.setItem(storageKey, JSON.stringify(nextProfile));
+  const handleModeChange = (ownerMode: boolean) => {
+    setIsOwnerMode(ownerMode);
+    window.localStorage.setItem(modeStorageKey, ownerMode ? 'owner' : 'customer');
+  };
+
+  const handleSettingsSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setSettingsMessage('');
+    setSettingsError('');
+
+    try {
+      if (nameInput.trim() && nameInput.trim() !== displayName) await updateProfile(nameInput);
+      if (passwordInput) {
+        if (passwordInput.length < 6) {
+          setSettingsError('Password must be at least 6 characters.');
+          return;
+        }
+        await updatePassword(passwordInput);
+      }
+      setPasswordInput('');
+      setSettingsMessage('Settings updated.');
+    } catch (error) {
+      setSettingsError(error instanceof Error ? error.message : 'Unable to update settings.');
+    }
   };
 
   if (!isMounted) {
@@ -139,18 +168,62 @@ export default function ProfilePage() {
           <>
             <section className="rounded-[26px] bg-white p-4 shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
               <div className="flex items-center justify-between gap-3">
-                <div>
-                  <h1 className="text-3xl font-semibold tracking-[-0.06em]">{name}</h1>
+                <div className="min-w-0 flex-1">
+                  <div className="flex min-w-0 items-center gap-3">
+                    {authProfile?.avatarUrl ? (
+                      <img src={authProfile.avatarUrl} alt="" className="h-11 w-11 rounded-full object-cover" />
+                    ) : (
+                      <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#111827] text-sm font-semibold text-white">
+                        {initials}
+                      </div>
+                    )}
+                    <div className="min-w-0">
+                      <h1 className="max-w-[190px] truncate text-3xl font-semibold tracking-[-0.06em]" title={displayName}>{displayName}</h1>
+                      <p className="mt-1 max-w-[190px] truncate text-xs text-[#6e6e73]" title={authProfile?.email ?? undefined}>{authProfile?.email}</p>
+                    </div>
+                  </div>
                 </div>
-                <button type="button" onClick={handleSignOut} className="rounded-full bg-[#f5f5f7] px-3 py-1.5 text-[11px] font-medium text-[#1d1d1f]">
-                  Sign out
-                </button>
+                <div className="flex w-[82px] shrink-0 items-center justify-end gap-2">
+                  <button type="button" onClick={() => { setNameInput(displayName); setIsSettingsOpen((open) => !open); }} className="flex h-9 w-9 items-center justify-center rounded-full bg-[#f5f5f7] text-[#1d1d1f]" aria-label="Edit settings">
+                    {isSettingsOpen ? <X className="h-4 w-4" /> : <Settings className="h-4 w-4" />}
+                  </button>
+                  <button type="button" onClick={() => void signOut()} className="flex h-9 w-9 items-center justify-center rounded-full bg-[#f5f5f7] text-[#1d1d1f]" aria-label="Sign out">
+                    <LogOut className="h-4 w-4" />
+                  </button>
+                </div>
               </div>
-
-              <div className="mt-5 rounded-[22px] bg-[#111827] p-4 text-white">
-                <p className="text-[10px] uppercase tracking-[0.18em] text-white/70">Member profile</p>
-                <p className="mt-2 text-2xl font-semibold tracking-[-0.05em]">{favoriteCategory}</p>
-                <p className="mt-1 text-sm text-white/75">Your most frequent order type</p>
+            </section>
+            {isSettingsOpen ? (
+              <form onSubmit={(event) => void handleSettingsSubmit(event)} className="mt-4 rounded-[22px] bg-white p-4 shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
+                <h2 className="text-lg font-semibold tracking-[-0.04em]">Edit settings</h2>
+                <label className="mt-4 block text-sm font-medium">
+                  Name
+                  <input value={nameInput} onChange={(event) => setNameInput(event.target.value)} className="mt-2 w-full rounded-[14px] bg-[#f5f5f7] px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-[#cbd5e1]" />
+                </label>
+                <label className="mt-3 block text-sm font-medium">
+                  New password
+                  <input type="password" value={passwordInput} onChange={(event) => setPasswordInput(event.target.value)} placeholder="Leave blank to keep current password" className="mt-2 w-full rounded-[14px] bg-[#f5f5f7] px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-[#cbd5e1]" />
+                </label>
+                {settingsError ? <p className="mt-3 text-sm text-[#9f1239]">{settingsError}</p> : null}
+                {settingsMessage ? <p className="mt-3 text-sm text-[#166534]">{settingsMessage}</p> : null}
+                <button type="submit" className="mt-4 w-full rounded-full bg-[#111827] px-4 py-3 text-sm font-semibold text-white">Save settings</button>
+              </form>
+            ) : null}
+            <section className="mt-4 rounded-[22px] bg-white p-4 shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-sm font-semibold text-[#1d1d1f]">Hawker owner mode</p>
+                  <p className="mt-1 text-xs text-[#6e6e73]">Switch between ordering and managing a stall</p>
+                </div>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={isOwnerMode}
+                  onClick={() => handleModeChange(!isOwnerMode)}
+                  className={`relative h-7 w-12 rounded-full transition ${isOwnerMode ? 'bg-[#111827]' : 'bg-[#d1d5db]'}`}
+                >
+                  <span className={`absolute top-1 h-5 w-5 rounded-full bg-white shadow-sm transition ${isOwnerMode ? 'left-6' : 'left-1'}`} />
+                </button>
               </div>
             </section>
           </>

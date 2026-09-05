@@ -24,6 +24,7 @@ type AuthContextValue = {
   signInWithEmail: (email: string, password: string) => Promise<'signed-in' | 'activation-sent'>;
   signUpWithEmail: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
+  updateProfile: (displayName: string) => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
   updatePassword: (newPassword: string) => Promise<void>;
 };
@@ -145,10 +146,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const profile = useMemo<AuthUser | null>(() => {
     if (!user || isGuest) return null;
 
+    const rawDisplayName = user.user_metadata?.full_name ?? user.user_metadata?.name ?? user.email ?? null;
+
     return {
       id: user.id,
       email: user.email ?? null,
-      displayName: user.user_metadata?.full_name ?? user.user_metadata?.name ?? user.email ?? null,
+      displayName: rawDisplayName?.split('@')[0] ?? null,
       avatarUrl: user.user_metadata?.avatar_url ?? user.user_metadata?.picture ?? null,
     };
   }, [isGuest, user]);
@@ -269,6 +272,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const updateProfile = useCallback(async (displayName: string) => {
+    const client = supabase;
+    if (!client) throw new Error('Supabase is not configured. Please add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.');
+
+    const trimmedName = displayName.trim();
+    if (!trimmedName) throw new Error('Please enter a name.');
+
+    const { data, error } = await client.auth.updateUser({
+      data: { full_name: trimmedName, name: trimmedName },
+    });
+
+    if (error) throw new Error(getFriendlyAuthError(error));
+    setUser(data.user);
+  }, []);
+
   const value = useMemo<AuthContextValue>(
     () => ({
       status: effectiveStatus,
@@ -282,8 +300,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       signOut,
       resetPassword,
       updatePassword,
+      updateProfile,
     }),
-    [continueAsGuest, effectiveStatus, isGuest, profile, signOut, user],
+    [continueAsGuest, effectiveStatus, isGuest, profile, signOut, updateProfile, user],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
