@@ -33,10 +33,10 @@ export default function PlansPage() {
             hawker.com
           </Link>
           <Link
-            href="https://app.hawker.com"
+            href={'/subscribe' as any}
             className="rounded-full bg-[#1d1d1f] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#3a3a3c]"
           >
-            app.hawker.com
+            Start onboarding
           </Link>
         </div>
 
@@ -81,7 +81,7 @@ export default function PlansPage() {
               </ul>
 
               <Link
-                href="/shop-owner/profile"
+                href={'/subscribe' as any}
                 className={`mt-8 inline-flex w-full items-center justify-center rounded-full px-4 py-3 text-sm font-semibold transition ${
                   plan.featured
                     ? 'bg-[#f7d45a] text-[#1d1d1f] hover:bg-[#f4c641]'
@@ -101,7 +101,7 @@ export default function PlansPage() {
               <h2 className="mt-2 text-2xl font-bold tracking-tight">Talk to us about larger food halls</h2>
             </div>
             <Link
-              href="/shop-owner/profile"
+              href={'/subscribe' as any}
               className="inline-flex items-center justify-center rounded-full bg-[#f7d45a] px-5 py-3 text-sm font-semibold text-[#1d1d1f] transition hover:bg-[#f4c641]"
             >
               Book a demo

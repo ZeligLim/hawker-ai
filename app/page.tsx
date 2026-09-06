@@ -40,11 +40,11 @@ export default function LandingPage() {
           </nav>
 
           <div className="flex items-center gap-2">
-            <Link href="https://app.hawker.com" className="rounded-full border border-[#1d1d1f]/15 px-4 py-2 text-sm font-medium text-[#1d1d1f] transition hover:border-[#1d1d1f]/35">
-              app.hawker.com
+            <Link href={'/plans' as any} className="rounded-full border border-[#1d1d1f]/15 px-4 py-2 text-sm font-medium text-[#1d1d1f] transition hover:border-[#1d1d1f]/35">
+              Plans
             </Link>
-            <Link href={'/plans' as any} className="rounded-full bg-[#1d1d1f] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#3a3a3c]">
-              Subscribe
+            <Link href={'/subscribe' as any} className="rounded-full bg-[#1d1d1f] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#3a3a3c]">
+              Start free
             </Link>
           </div>
         </header>
@@ -62,11 +62,11 @@ export default function LandingPage() {
             </p>
 
             <div className="mt-8 flex flex-wrap gap-3">
-              <Link href={'/plans' as any} className="rounded-full bg-[#1d1d1f] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#3a3a3c]">
+              <Link href={'/subscribe' as any} className="rounded-full bg-[#1d1d1f] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#3a3a3c]">
                 Start free trial
               </Link>
-              <Link href="https://app.hawker.com" className="rounded-full border border-[#1d1d1f]/15 bg-white px-5 py-3 text-sm font-semibold text-[#1d1d1f] transition hover:border-[#1d1d1f]/35">
-                Explore app.hawker.com
+              <Link href={'/plans' as any} className="rounded-full border border-[#1d1d1f]/15 bg-white px-5 py-3 text-sm font-semibold text-[#1d1d1f] transition hover:border-[#1d1d1f]/35">
+                View plans
               </Link>
             </div>
 
