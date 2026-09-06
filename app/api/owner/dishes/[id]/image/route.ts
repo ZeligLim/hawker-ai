@@ -12,13 +12,38 @@ export async function POST(request: NextRequest, context: { params: Promise<{ id
   if (dishError) return NextResponse.json({ error: dishError.message }, { status: 500 });
   if (!dish) return NextResponse.json({ error: 'Dish not found.' }, { status: 404 });
 
+  let isAuthorized = false;
   const { data: membership } = await auth.client
     .from('merchant_memberships')
     .select('food_outlet_id')
     .eq('user_id', auth.user.id)
     .eq('food_outlet_id', dish.food_outlet_id)
     .maybeSingle();
-  if (!membership) return NextResponse.json({ error: 'You are not authorized for this stall.' }, { status: 403 });
+
+  if (membership) {
+    isAuthorized = true;
+  } else {
+    const { data: outlet } = await auth.client
+      .from('food_outlets')
+      .select('restaurant_id')
+      .eq('id', dish.food_outlet_id)
+      .maybeSingle();
+
+    if (outlet?.restaurant_id) {
+      const { data: restMembership } = await auth.client
+        .from('restaurant_memberships')
+        .select('id, role')
+        .eq('user_id', auth.user.id)
+        .eq('restaurant_id', outlet.restaurant_id)
+        .maybeSingle();
+
+      if (restMembership && ['owner', 'manager'].includes(restMembership.role)) {
+        isAuthorized = true;
+      }
+    }
+  }
+
+  if (!isAuthorized) return NextResponse.json({ error: 'You are not authorized for this stall.' }, { status: 403 });
 
   const formData = await request.formData();
   const file = formData.get('file');

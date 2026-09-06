@@ -112,39 +112,48 @@ export default function OwnerDishEditorPage() {
       spiceLevels,
     };
     const token = (await supabase?.auth.getSession())?.data.session?.access_token;
-    if (token && dish.foodOutletId) {
-      const payload = {
-        ...(isNew ? { foodOutletId: dish.foodOutletId } : {}),
-        name: saved.name, description: saved.description, price: saved.price,
-        isVegetarian: saved.vegetarian, spiceLevel: saved.spiceLevels, isAvailable: saved.available,
-        tags: saved.tags, customizations: saved.customizations,
-      };
-      const response = await fetch(isNew ? '/api/owner/dishes' : `/api/owner/dishes/${dish.id}`, {
-        method: isNew ? 'POST' : 'PATCH',
-        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-      if (!response.ok) {
-        setError('Unable to save this dish. Please try again.');
+    if (!token) {
+      setError('Please sign in to save this dish.');
+      setIsSaving(false);
+      return;
+    }
+    if (!dish.foodOutletId) {
+      setError('No booth assigned. Please join a booth with an invite code before adding dishes.');
+      setIsSaving(false);
+      return;
+    }
+
+    const payload = {
+      ...(isNew ? { foodOutletId: dish.foodOutletId } : {}),
+      name: saved.name, description: saved.description, price: saved.price,
+      isVegetarian: saved.vegetarian, spiceLevel: saved.spiceLevels, isAvailable: saved.available,
+      tags: saved.tags, customizations: saved.customizations,
+    };
+    const response = await fetch(isNew ? '/api/owner/dishes' : `/api/owner/dishes/${dish.id}`, {
+      method: isNew ? 'POST' : 'PATCH',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (!response.ok) {
+      const errPayload = await response.json().catch(() => ({}));
+      setError(errPayload.error || 'Unable to save this dish. Please try again.');
+      setIsSaving(false);
+      return;
+    }
+    const result = await response.json() as { dish?: { id: string } };
+    const savedId = result.dish?.id ?? dish.id;
+    if (pendingPhoto) {
+      const formData = new FormData();
+      formData.append('file', pendingPhoto);
+      const imageResponse = await fetch(`/api/owner/dishes/${savedId}/image`, { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: formData });
+      if (!imageResponse.ok) {
+        setError('Dish saved, but the image upload failed.');
         setIsSaving(false);
         return;
       }
-      const result = await response.json() as { dish?: { id: string } };
-      const savedId = result.dish?.id ?? dish.id;
-      if (pendingPhoto) {
-        const formData = new FormData();
-        formData.append('file', pendingPhoto);
-        const imageResponse = await fetch(`/api/owner/dishes/${savedId}/image`, { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: formData });
-        if (!imageResponse.ok) {
-          setError('Dish saved, but the image upload failed.');
-          setIsSaving(false);
-          return;
-        }
-      }
-      router.replace('/owner/menu' as any);
-      return;
     }
-    setError('Please sign in to save this dish.');
+    router.replace('/owner/menu' as any);
+    return;
     setIsSaving(false);
   };
 

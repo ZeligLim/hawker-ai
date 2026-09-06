@@ -55,7 +55,7 @@ export default function ChangePasswordPage() {
           </Link>
           <section className="mt-5 rounded-[26px] bg-white p-4 shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
             <h1 className="text-2xl font-semibold tracking-[-0.05em]">Sign in to change your password</h1>
-            <Link href="/auth" className="mt-5 inline-flex w-full items-center justify-center rounded-full bg-[#111827] px-4 py-3 text-sm font-semibold text-white">
+            <Link href="/auth?redirect=/profile/settings/password" className="mt-5 inline-flex w-full items-center justify-center rounded-full bg-[#111827] px-4 py-3 text-sm font-semibold text-white">
               Sign in
             </Link>
           </section>

@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Edit3, Plus } from 'lucide-react';
+import { Edit3, Plus, UtensilsCrossed } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase/client';
 
@@ -13,6 +13,8 @@ type OwnerDish = {
   available: boolean;
   vegetarian?: boolean;
   imageUrl?: string;
+  description?: string;
+  tags?: string[];
   customizations?: {
     large: { enabled: boolean; price: number };
     egg: { enabled: boolean; price: number };
@@ -22,6 +24,7 @@ type OwnerDish = {
 
 export default function OwnerMenuPage() {
   const [dishes, setDishes] = useState<OwnerDish[]>([]);
+  const [foodOutletIds, setFoodOutletIds] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -36,30 +39,58 @@ export default function OwnerMenuPage() {
         }
         return;
       }
-      const response = await fetch('/api/owner/dishes', { headers: { Authorization: `Bearer ${token}` } });
-      if (!response.ok) {
-        if (active) setError('Unable to load your menu from the backend. Please try again.');
-        if (active) setIsLoading(false);
-        return;
+
+      try {
+        const response = await fetch('/api/owner/dishes', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (!response.ok) {
+          const errPayload = (await response.json().catch(() => ({}))) as { error?: string };
+          if (active) {
+            setError(errPayload.error || 'Unable to load your menu from the backend. Please try again.');
+            setIsLoading(false);
+          }
+          return;
+        }
+
+        const payload = (await response.json()) as {
+          dishes?: Array<Record<string, unknown>>;
+          foodOutletIds?: string[];
+        };
+
+        if (active) {
+          setFoodOutletIds(payload.foodOutletIds ?? []);
+          if (Array.isArray(payload.dishes)) {
+            setDishes(
+              payload.dishes.map((dish) => ({
+                id: String(dish.id),
+                name: String(dish.name ?? ''),
+                category: 'Main course',
+                price: Number(dish.price ?? 0),
+                available: Boolean(dish.is_available),
+                imageUrl: typeof dish.image_url === 'string' ? dish.image_url : undefined,
+                vegetarian: Boolean(dish.is_vegetarian),
+                description: typeof dish.description === 'string' ? dish.description : undefined,
+                tags: Array.isArray(dish.tags) ? dish.tags.map(String) : [],
+              })),
+            );
+          }
+          setError('');
+          setIsLoading(false);
+        }
+      } catch {
+        if (active) {
+          setError('Network error. Unable to load your menu.');
+          setIsLoading(false);
+        }
       }
-      const payload = await response.json() as { dishes?: Array<Record<string, unknown>> };
-      if (active && Array.isArray(payload.dishes)) {
-        setDishes(payload.dishes.map((dish) => ({
-          id: String(dish.id),
-          name: String(dish.name ?? ''),
-          category: 'Main course',
-          price: Number(dish.price ?? 0),
-          available: Boolean(dish.is_available),
-          imageUrl: typeof dish.image_url === 'string' ? dish.image_url : undefined,
-          vegetarian: Boolean(dish.is_vegetarian),
-          description: typeof dish.description === 'string' ? dish.description : undefined,
-          tags: Array.isArray(dish.tags) ? dish.tags.map(String) : [],
-        })));
-      }
-      if (active) setIsLoading(false);
     };
+
     void loadBackendDishes();
-    return () => { active = false; };
+    return () => {
+      active = false;
+    };
   }, []);
 
   const toggleAvailability = async (id: string) => {
@@ -76,6 +107,7 @@ export default function OwnerMenuPage() {
     });
     if (!response.ok) setError('Availability could not be saved. Please try again.');
   };
+
   return (
     <main className="min-h-screen bg-[#f5f5f7] px-4 pb-32 pt-5 text-[#1d1d1f]">
       <div className="mx-auto max-w-[760px]">
@@ -85,30 +117,96 @@ export default function OwnerMenuPage() {
               <h1 className="mt-1 text-3xl font-semibold tracking-[-0.06em]">Menu</h1>
             </div>
           </div>
-          <Link href={'/owner/menu/new' as any} className="inline-flex items-center gap-2 rounded-full bg-[#111827] px-4 py-3 text-xs font-semibold text-white">
+          <Link
+            href={'/owner/menu/new' as any}
+            className="inline-flex items-center gap-2 rounded-full bg-[#111827] px-4 py-3 text-xs font-semibold text-white shadow-sm hover:bg-black transition-colors"
+          >
             <Plus className="h-4 w-4" /> Add dish
           </Link>
         </header>
 
-        <p className="mt-4 text-sm text-[#6e6e73]">Turn availability off when a dish is sold out. Customers will see the change immediately.</p>
-        {error ? <p className="mt-3 text-sm text-[#9f1239]">{error}</p> : null}
+        <p className="mt-4 text-sm text-[#6e6e73]">
+          Turn availability off when a dish is sold out. Customers will see the change immediately.
+        </p>
+
+        {error ? (
+          <div className="mt-4 rounded-[18px] border border-[#fecaca] bg-[#fff1f2] p-4 text-sm text-[#9f1239]">
+            {error}
+          </div>
+        ) : null}
 
         <section className="mt-5 space-y-3">
-          {isLoading ? <div className="rounded-[24px] bg-white p-8 text-center text-sm text-[#6e6e73]">Loading menu...</div> : null}
+          {isLoading ? (
+            <div className="rounded-[24px] bg-white p-8 text-center text-sm text-[#6e6e73]">Loading menu...</div>
+          ) : null}
+
+          {!isLoading && dishes.length === 0 && !error ? (
+            <div className="rounded-[24px] bg-white p-8 text-center shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
+              <UtensilsCrossed className="mx-auto h-8 w-8 text-[#86868b] mb-3" />
+              <h3 className="text-base font-semibold text-[#1d1d1f]">No dishes on your menu yet</h3>
+              <p className="mt-1 text-xs text-[#6e6e73] max-w-sm mx-auto">
+                {foodOutletIds.length === 0
+                  ? 'You have not joined a booth yet. Use an invitation code to link your account, or add a dish below.'
+                  : 'Add your first dish to start receiving table-side customer orders.'}
+              </p>
+              <div className="mt-5 flex flex-wrap justify-center gap-3">
+                <Link
+                  href={'/owner/menu/new' as any}
+                  className="rounded-full bg-[#111827] px-4 py-2 text-xs font-semibold text-white hover:bg-black transition-colors"
+                >
+                  Add your first dish
+                </Link>
+                {foodOutletIds.length === 0 && (
+                  <Link
+                    href="/booths/join"
+                    className="rounded-full border border-black/15 bg-white px-4 py-2 text-xs font-semibold text-[#1d1d1f] hover:bg-black/[0.04] transition-colors"
+                  >
+                    Join booth with code
+                  </Link>
+                )}
+              </div>
+            </div>
+          ) : null}
+
           {dishes.map((dish) => (
-            <article key={dish.id} className="flex items-center justify-between gap-4 rounded-[22px] bg-white p-4 shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
+            <article
+              key={dish.id}
+              className="flex items-center justify-between gap-4 rounded-[22px] bg-white p-4 shadow-[0_12px_26px_rgba(15,23,42,0.04)]"
+            >
               <Link href={`/owner/menu/${dish.id}` as any} className="flex min-w-0 flex-1 items-center gap-3">
-                {dish.imageUrl ? <img src={dish.imageUrl} alt="" className="h-12 w-12 rounded-[14px] object-cover" /> : null}
+                {dish.imageUrl ? (
+                  <img src={dish.imageUrl} alt="" className="h-12 w-12 rounded-[14px] object-cover" />
+                ) : null}
                 <div className="min-w-0">
-                <h2 className="truncate text-base font-semibold">{dish.name}</h2>
-                <p className="mt-1 text-xs text-[#6e6e73]">{dish.category} · RM {dish.price.toFixed(2)}{dish.vegetarian ? ' · Vegetarian' : ''}</p>
+                  <h2 className="truncate text-base font-semibold">{dish.name}</h2>
+                  <p className="mt-1 text-xs text-[#6e6e73]">
+                    {dish.category} · RM {dish.price.toFixed(2)}
+                    {dish.vegetarian ? ' · Vegetarian' : ''}
+                  </p>
                 </div>
               </Link>
-              <Link href={`/owner/menu/${dish.id}` as any} className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#f5f5f7] text-[#1d1d1f]" aria-label={`Edit ${dish.name}`}>
+              <Link
+                href={`/owner/menu/${dish.id}` as any}
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#f5f5f7] text-[#1d1d1f] hover:bg-black/[0.06] transition-colors"
+                aria-label={`Edit ${dish.name}`}
+              >
                 <Edit3 className="h-4 w-4" />
               </Link>
-              <button type="button" role="switch" aria-checked={dish.available} onClick={() => toggleAvailability(dish.id)} className={`relative h-7 w-12 shrink-0 rounded-full transition ${dish.available ? 'bg-emerald-500' : 'bg-[#d1d5db]'}`} aria-label={`${dish.name} ${dish.available ? 'available' : 'unavailable'}`}>
-                <span className={`absolute top-1 h-5 w-5 rounded-full bg-white shadow-sm transition ${dish.available ? 'left-6' : 'left-1'}`} />
+              <button
+                type="button"
+                role="switch"
+                aria-checked={dish.available}
+                onClick={() => toggleAvailability(dish.id)}
+                className={`relative h-7 w-12 shrink-0 rounded-full transition ${
+                  dish.available ? 'bg-emerald-500' : 'bg-[#d1d5db]'
+                }`}
+                aria-label={`${dish.name} ${dish.available ? 'available' : 'unavailable'}`}
+              >
+                <span
+                  className={`absolute top-1 h-5 w-5 rounded-full bg-white shadow-sm transition ${
+                    dish.available ? 'left-6' : 'left-1'
+                  }`}
+                />
               </button>
             </article>
           ))}

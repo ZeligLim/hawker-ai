@@ -4,6 +4,12 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
 import { usePathname, useRouter } from 'next/navigation';
 import type { User } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase/client';
+import {
+  clearAuthRedirect,
+  resolveAuthRedirect,
+  resolveUserDestination,
+  saveAuthRedirect,
+} from '@/lib/auth-redirect';
 
 export type AuthStatus = 'loading' | 'authenticated' | 'unauthenticated';
 
@@ -19,8 +25,8 @@ type AuthContextValue = {
   user: User | null;
   profile: AuthUser | null;
   isGuest: boolean;
-  continueAsGuest: () => Promise<void>;
-  signInWithGoogle: () => Promise<void>;
+  continueAsGuest: (customRedirect?: string) => Promise<void>;
+  signInWithGoogle: (customRedirect?: string) => Promise<void>;
   signInWithEmail: (email: string, password: string) => Promise<'signed-in' | 'activation-sent'>;
   signUpWithEmail: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
@@ -32,7 +38,22 @@ type AuthContextValue = {
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
-const publicRoutes = ['/auth', '/auth/callback', '/auth/forgot-password', '/auth/reset-password'];
+const publicRoutes = [
+  '/',
+  '/plans',
+  '/subscribe',
+  '/home',
+  '/menu',
+  '/shop',
+  '/results',
+  '/scan',
+  '/profile',
+  '/booths/join',
+  '/auth',
+  '/auth/callback',
+  '/auth/forgot-password',
+  '/auth/reset-password',
+];
 
 function getAppUrl() {
   return process.env.NEXT_PUBLIC_APP_URL ?? (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000');
@@ -136,11 +157,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const isPublicRoute = publicRoutes.some((route) => pathname === route || pathname.startsWith(`${route}/`));
 
     if (effectiveStatus === 'unauthenticated' && !isPublicRoute) {
-      router.replace('/auth' as any);
+      const returnUrl = pathname + (typeof window !== 'undefined' ? window.location.search : '');
+      saveAuthRedirect(returnUrl);
+      router.replace(`/auth?redirect=${encodeURIComponent(returnUrl)}` as any);
     }
 
     if (effectiveStatus === 'authenticated' && user && isPublicRoute && pathname.startsWith('/auth')) {
-      router.replace('/' as any);
+      const searchRedirect = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('redirect') : null;
+      void resolveUserDestination(supabase, user, searchRedirect).then((destination) => {
+        router.replace(destination as any);
+      });
     }
   }, [effectiveStatus, isGuest, pathname, router, user]);
 
@@ -157,15 +183,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, [isGuest, user]);
 
-  const continueAsGuest = useCallback(async () => {
+  const continueAsGuest = useCallback(async (customRedirect?: string) => {
     setIsGuest(true);
     if (typeof window !== 'undefined') {
       window.localStorage.setItem('hawker-guest-mode', 'true');
     }
-    router.replace('/' as any);
+    const target = resolveAuthRedirect(customRedirect);
+    router.replace(target as any);
   }, [router]);
 
-  const signInWithGoogle = async () => {
+  const signInWithGoogle = async (customRedirect?: string) => {
     const client = supabase;
     if (!client) throw new Error('Supabase is not configured. Please add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.');
 
@@ -174,7 +201,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       window.localStorage.setItem('hawker-guest-mode', 'false');
     }
 
-    const redirectUrl = `${getAppUrl()}/auth/callback`;
+    const redirectTarget = resolveAuthRedirect(customRedirect);
+    saveAuthRedirect(redirectTarget);
+
+    const redirectUrl = `${getAppUrl()}/auth/callback?redirect=${encodeURIComponent(redirectTarget)}`;
 
     const { error } = await client.auth.signInWithOAuth({
       provider: 'google',

@@ -1437,7 +1437,7 @@ export default function LandingPage() {
               <p className="font-semibold text-[#1d1d1f] mb-3">Merchants</p>
               <ul className="space-y-2.5">
                 <li><Link href="/booths/join" className="hover:text-[#1d1d1f] transition-colors">Join an Existing Booth</Link></li>
-                <li><Link href="/auth" className="hover:text-[#1d1d1f] transition-colors">Merchant Sign In</Link></li>
+                <li><Link href="/auth?redirect=/owner" className="hover:text-[#1d1d1f] transition-colors">Merchant Sign In</Link></li>
                 <li><a href="#features" className="hover:text-[#1d1d1f] transition-colors">Menu Customisations</a></li>
                 <li><a href="#features" className="hover:text-[#1d1d1f] transition-colors">Sold-out 86 Controls</a></li>
               </ul>

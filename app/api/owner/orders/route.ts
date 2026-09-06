@@ -11,7 +11,27 @@ export async function GET(request: NextRequest) {
     .eq('user_id', auth.user.id);
   if (membershipError) return NextResponse.json({ error: membershipError.message }, { status: 500 });
 
-  const outletIds = memberships?.map((membership) => membership.food_outlet_id) ?? [];
+  const directOutletIds = memberships?.map((membership) => membership.food_outlet_id).filter(Boolean) ?? [];
+
+  // Also include booths belonging to restaurants where user is an owner/manager
+  const { data: restaurantMemberships } = await auth.client
+    .from('restaurant_memberships')
+    .select('restaurant_id')
+    .eq('user_id', auth.user.id);
+
+  const restaurantIds = restaurantMemberships?.map((r) => r.restaurant_id).filter(Boolean) ?? [];
+  let shopOutletIds: string[] = [];
+
+  if (restaurantIds.length > 0) {
+    const { data: shopOutlets } = await auth.client
+      .from('food_outlets')
+      .select('id')
+      .in('restaurant_id', restaurantIds);
+
+    shopOutletIds = shopOutlets?.map((o) => o.id).filter(Boolean) ?? [];
+  }
+
+  const outletIds = Array.from(new Set([...directOutletIds, ...shopOutletIds]));
   if (outletIds.length === 0) return NextResponse.json({ orders: [] });
 
   const { data, error } = await auth.client

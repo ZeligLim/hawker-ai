@@ -192,7 +192,7 @@ export default function ProfilePage() {
           <section className="rounded-[26px] bg-white p-4 shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
             <h1 className="text-3xl font-semibold tracking-[-0.06em]">Sign in</h1>
             <p className="mt-3 text-sm text-[#6e6e73]">Save your favourite hawker picks and revisit your recent orders in one place.</p>
-            <Link href="/auth" className="mt-5 inline-flex w-full items-center justify-center rounded-full bg-[#111827] px-4 py-3 text-sm font-medium text-white">
+            <Link href="/auth?redirect=/profile" className="mt-5 inline-flex w-full items-center justify-center rounded-full bg-[#111827] px-4 py-3 text-sm font-medium text-white">
               Sign in
             </Link>
           </section>
@@ -208,7 +208,7 @@ export default function ProfilePage() {
           <section className="rounded-[26px] bg-white p-4 shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
             <h1 className="text-3xl font-semibold tracking-[-0.06em]">Sign in</h1>
             <p className="mt-3 text-sm text-[#6e6e73]">Save your favourite hawker picks and revisit your recent orders in one place.</p>
-            <Link href="/auth" className="mt-5 inline-flex w-full items-center justify-center rounded-full bg-[#111827] px-4 py-3 text-sm font-medium text-white">
+            <Link href="/auth?redirect=/profile" className="mt-5 inline-flex w-full items-center justify-center rounded-full bg-[#111827] px-4 py-3 text-sm font-medium text-white">
               Sign in
             </Link>
           </section>

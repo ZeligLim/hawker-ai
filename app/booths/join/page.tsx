@@ -62,7 +62,7 @@ export default function JoinBoothPage() {
         <div className="mx-auto max-w-[480px] rounded-[26px] bg-white p-5 shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
           <h1 className="text-3xl font-semibold tracking-[-0.06em]">Join a booth</h1>
           <p className="mt-3 text-sm text-[#6e6e73]">Sign in to redeem a booth invite and access the booth owner dashboard.</p>
-          <Link href="/auth" className="mt-5 inline-flex w-full items-center justify-center rounded-full bg-[#111827] px-4 py-3 text-sm font-medium text-white">
+          <Link href="/auth?redirect=/booths/join" className="mt-5 inline-flex w-full items-center justify-center rounded-full bg-[#111827] px-4 py-3 text-sm font-medium text-white">
             Sign in
           </Link>
         </div>

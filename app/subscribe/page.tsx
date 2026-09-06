@@ -142,7 +142,7 @@ export default function SubscribePage() {
             </Link>
             <span className="text-black/10 hidden sm:inline">|</span>
             <Link
-              href="/auth"
+              href="/auth?redirect=/subscribe"
               className="text-[#86868b] hover:text-[#1d1d1f] transition-colors"
             >
               Sign In

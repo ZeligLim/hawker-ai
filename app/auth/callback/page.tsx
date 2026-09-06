@@ -4,6 +4,11 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { LoaderCircle } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
+import {
+  clearAuthRedirect,
+  resolveUserDestination,
+  sanitizeRedirectPath,
+} from '@/lib/auth-redirect';
 
 export default function AuthCallbackPage() {
   const router = useRouter();
@@ -15,6 +20,7 @@ export default function AuthCallbackPage() {
       const code = params.get('code');
       const error = params.get('error');
       const errorDescription = params.get('error_description');
+      const redirectQuery = sanitizeRedirectPath(params.get('redirect'));
 
       if (error) {
         setMessage(errorDescription ?? 'Google sign-in was cancelled or failed.');
@@ -28,16 +34,24 @@ export default function AuthCallbackPage() {
         return;
       }
 
+      let sessionUser = null;
+
       if (code) {
-        const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
+        const { data, error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
         if (exchangeError) {
           setMessage(exchangeError.message || 'Unable to finish Google sign-in.');
           setTimeout(() => router.replace('/auth' as any), 1500);
           return;
         }
+        sessionUser = data.session?.user ?? null;
+      } else {
+        const { data: sessionData } = await supabase.auth.getSession();
+        sessionUser = sessionData.session?.user ?? null;
       }
 
-      router.replace('/' as any);
+      const destination = await resolveUserDestination(supabase, sessionUser, redirectQuery);
+      clearAuthRedirect();
+      router.replace(destination as any);
     };
 
     void handleCallback();
