@@ -1,7 +1,6 @@
 'use client';
 
-import Link from 'next/link';
-import { Building2, Save } from 'lucide-react';
+import { Save } from 'lucide-react';
 
 export default function ShopOwnerProfilePage() {
   return (
@@ -37,11 +36,6 @@ export default function ShopOwnerProfilePage() {
             <Save className="h-4 w-4" /> Save changes
           </button>
         </section>
-
-        <div className="mt-6 flex gap-3">
-          <Link href={'/shop-owner' as any} className="rounded-full bg-[#111827] px-4 py-2.5 text-sm font-semibold text-white">Dashboard</Link>
-          <Link href={'/shop-owner/booths' as any} className="rounded-full bg-[#f5f5f7] px-4 py-2.5 text-sm font-semibold text-[#1d1d1f]">Booths</Link>
-        </div>
       </div>
     </main>
   );

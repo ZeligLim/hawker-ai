@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { BarChart3, Building2, CalendarRange, Store, Users } from 'lucide-react';
+import { CalendarRange, Store, Users } from 'lucide-react';
 
 const stats = [
   { label: 'Total sales', value: 'RM 4,280', detail: '+12.4% vs last month' },
@@ -16,10 +16,8 @@ const booths = [
 ];
 
 const quickLinks = [
-  { label: 'Dashboard', href: '/shop-owner', icon: BarChart3 },
   { label: 'Booths', href: '/shop-owner/booths', icon: Store },
-  { label:'Analytics', href:'/shop-owner/analytics', icon: CalendarRange },
-  { label: 'Profile', href: '/shop-owner/profile', icon: Building2 },
+  { label: 'Analytics', href: '/shop-owner/analytics', icon: CalendarRange },
 ];
 
 export default function ShopOwnerPage() {
@@ -32,7 +30,7 @@ export default function ShopOwnerPage() {
           </div>
         </header>
 
-        <nav className="mt-6 grid gap-3 sm:grid-cols-4">
+        <nav className="mt-6 grid gap-3 sm:grid-cols-2">
           {quickLinks.map(({ label, href, icon: Icon }) => (
             <Link key={label} href={href as any} className="rounded-[18px] bg-white p-3 shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
               <Icon className="h-5 w-5 text-[#6e6e73]" />

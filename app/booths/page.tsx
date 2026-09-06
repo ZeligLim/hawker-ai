@@ -12,6 +12,7 @@ export default function BoothsPage() {
   const saveBooth = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!editing) return;
+
     setBoothList((current) => current.map((booth) => (booth.id === editing.id ? editing : booth)));
     setEditing(null);
   };
