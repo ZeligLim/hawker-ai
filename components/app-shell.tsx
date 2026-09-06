@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ClipboardList, House, Menu, Store, UserRound } from 'lucide-react';
+import { ClipboardList, House, Menu, Store } from 'lucide-react';
 
 function HomeIcon({ active }: { active: boolean }) {
   return <House className="h-[18px] w-[18px]" strokeWidth={1.8} fill={active ? 'currentColor' : 'none'} />;
@@ -20,23 +20,19 @@ function OrdersIcon({ active }: { active: boolean }) {
   return <ClipboardList className="h-[18px] w-[18px]" strokeWidth={1.8} fill={active ? 'currentColor' : 'none'} />;
 }
 
-function ProfileIcon({ active }: { active: boolean }) {
-  return <UserRound className="h-[18px] w-[18px]" strokeWidth={1.8} fill={active ? 'currentColor' : 'none'} />;
-}
-
 const navItems = [
   { href: '/', label: 'Home', icon: HomeIcon },
   { href: '/menu', label: 'Menu', icon: MenuIcon },
   { href: '/shop', label: 'Shop', icon: ShopIcon },
   { href: '/orders', label: 'Orders', icon: OrdersIcon },
-  { href: '/profile', label: 'Profile', icon: ProfileIcon },
 ];
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isAuthRoute = pathname.startsWith('/auth');
+  const isOwnerRoute = pathname === '/booths' || pathname.startsWith('/booths/') || pathname === '/analytics' || pathname.startsWith('/analytics/');
 
-  if (isAuthRoute) {
+  if (isAuthRoute || isOwnerRoute) {
     return <>{children}</>;
   }
 
@@ -44,7 +40,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <>
       {children}
       <nav className="fixed inset-x-0 bottom-0 z-20 mx-auto max-w-[430px] bg-[#f7f7f7]/95 px-2 py-2 backdrop-blur-xl sm:max-w-[480px] lg:max-w-[960px] lg:rounded-t-[22px] lg:bg-white/95 lg:px-4">
-        <div className="grid grid-cols-5 gap-1">
+        <div className="grid grid-cols-4 gap-1">
           {navItems.map(({ href, label, icon: Icon }) => {
             const active = pathname === href;
 

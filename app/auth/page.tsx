@@ -32,7 +32,7 @@ export default function AuthPage() {
     try {
       if (mode === 'signin') {
         await signInWithEmail(email.trim(), password);
-        router.replace('/profile');
+        router.replace('/');
         return;
       }
 
