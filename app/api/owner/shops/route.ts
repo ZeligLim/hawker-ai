@@ -54,3 +54,52 @@ export async function GET(request: NextRequest) {
 
   return NextResponse.json({ shops });
 }
+
+export async function POST(request: NextRequest) {
+  const auth = await requireRequestUser(request);
+  if (!auth.client || !auth.user) {
+    return NextResponse.json({ error: auth.error }, { status: 401 });
+  }
+
+  const body = await request.json().catch(() => null);
+  const name = typeof body?.name === 'string' ? body.name.trim() : '';
+  const address = typeof body?.address === 'string' ? body.address.trim() : 'Address not set';
+
+  if (!name) {
+    return NextResponse.json({ error: 'Shop name is required.' }, { status: 400 });
+  }
+
+  const slug = (typeof body?.slug === 'string' ? body.slug.trim() : name)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '') || 'shop';
+
+  const { data: restaurant, error: insertRestaurantError } = await auth.client
+    .from('restaurants')
+    .insert({
+      name,
+      slug,
+      address,
+      lat: typeof body?.lat === 'number' ? body.lat : 0,
+      lng: typeof body?.lng === 'number' ? body.lng : 0,
+    })
+    .select('id, name, slug, address, lat, lng, created_at')
+    .single();
+
+  if (insertRestaurantError || !restaurant) {
+    return NextResponse.json({ error: insertRestaurantError?.message ?? 'Could not create this shop.' }, { status: 500 });
+  }
+
+  const { error: membershipError } = await auth.client.from('restaurant_memberships').insert({
+    user_id: auth.user.id,
+    restaurant_id: restaurant.id,
+    role: 'owner',
+    invited_by: null,
+  });
+
+  if (membershipError) {
+    return NextResponse.json({ error: membershipError.message }, { status: 500 });
+  }
+
+  return NextResponse.json({ shop: restaurant, status: 'created' }, { status: 201 });
+}
