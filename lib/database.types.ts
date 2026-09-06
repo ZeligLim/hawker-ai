@@ -32,6 +32,11 @@ export type Database = {
         Insert: Omit<Database['public']['Tables']['merchant_memberships']['Row'], 'created_at'> & { created_at?: string };
         Update: Partial<Database['public']['Tables']['merchant_memberships']['Insert']>; Relationships: [];
       };
+      booth_invitations: {
+        Row: { id: string; food_outlet_id: string; created_by: string; token_hash: string; expires_at: string; used_at: string | null; used_by: string | null; created_at: string };
+        Insert: Omit<Database['public']['Tables']['booth_invitations']['Row'], 'id' | 'created_at' | 'used_at' | 'used_by'> & { id?: string; created_at?: string; used_at?: string | null; used_by?: string | null };
+        Update: Partial<Database['public']['Tables']['booth_invitations']['Insert']>; Relationships: [];
+      };
       merchant_handles: {
         Row: { id: string; food_outlet_id: string; handle: string; display_name: string; created_at: string };
         Insert: Omit<Database['public']['Tables']['merchant_handles']['Row'], 'id' | 'created_at'> & { id?: string; created_at?: string };
