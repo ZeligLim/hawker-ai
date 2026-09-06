@@ -37,6 +37,7 @@ Complete the booth invitation lifecycle by generating hashed invite tokens from 
 - `lib/database.types.ts` provides checked-in Supabase `Database` types; the linked remote project currently has no applied schema, so `supabase gen types --linked` returns an empty schema
 - `merchant_handles` migration and seed data provide public example handles: `@pakmat_nasilemak`, `@currymecorner`, and `@char_kwayteowstall`
 - Restored the profile tab in the regular customer bottom navigation and the standalone booth-owner navigation so the user can access profile/account settings again in both app shells
+- Redesigned public landing page (`/`) with Apple design aesthetic: frosted glass navigation, cinematic hero typography, interactive Studio Display product showcase (Food Court Operator OS, Stall Kitchen Display, Diner QR Experience), problem/solution contrast, bento feature grid, interactive deterministic AI food intelligence simulation, booth invite code demo, dual operator/stall solutions, Apple-style pricing tiers, and global footer
 
 ## Current Architecture
 - Frontend: Next.js App Router, TypeScript, React, Tailwind

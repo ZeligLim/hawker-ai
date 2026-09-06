@@ -1,290 +1,251 @@
-You are the lead architect for this project.
+You are the lead product engineer and UI/UX engineer for the Hawker project.
+
+We are now expanding Hawker from the internal application into a complete SaaS product.
 
 ## Source of Truth
 
-Before doing anything, read:
+Before making changes, read:
 
 ```text
 docs/agent-context.md
+docs/saas-architecture.md
 ```
 
-Also inspect the existing:
-- Supabase migrations
-- database schema
-- RLS policies
-- authentication implementation
-- merchant/owner APIs
-- owner UI
-- relevant TypeScript types
-- existing documentation
+Also inspect the existing application, authentication, Supabase schema, owner dashboard, APIs, and routing.
 
-Do NOT start coding yet.
+Do not blindly rebuild anything that already exists.
 
 ---
 
-# Objective
+# PRODUCT VISION
 
-We are evolving Hawker into a multi-tenant SaaS platform.
+Hawker is a SaaS platform for hawker centres / food courts and their booth owners.
 
-The core business hierarchy is:
-
-```text
-Shop / Restaurant
-├── Booth A
-├── Booth B
-└── Booth C
-```
-
-There are two important ownership scopes:
-
-### Shop Owner
-
-A shop owner owns/manages the overall hawker shop.
-
-They need to be able to:
-
-- Create/manage the shop
-- Create/manage booths
-- Invite booth owners
-- Manage booth members
-- View all booth orders
-- View shop-wide sales
-- View sales by booth
-- Manage shop profile
-- Manage the SaaS subscription
-
-### Booth Owner
-
-A booth owner manages an individual food outlet/booth.
-
-They need to be able to:
-
-- Manage their booth
-- Manage their menu
-- Manage dish availability
-- Upload dish images
-- View/manage booth orders
-- View booth analytics
-
-### Important
-
-A person can be BOTH:
+The core hierarchy is:
 
 ```text
-Shop Owner
-+
-Booth Owner
+Hawker SaaS
+│
+└── Shop / Restaurant
+      │
+      ├── Booth A
+      ├── Booth B
+      └── Booth C
 ```
 
-For example:
+A Shop Owner manages the overall shop.
 
-```text
-Alice
-├── Shop Owner of ABC Hawker Centre
-└── Booth Owner of "Alice Noodles"
-```
+A Booth Owner manages an individual booth.
 
-Therefore, do NOT design `shop_owner` and `booth_owner` as mutually exclusive global user roles.
-
-Permissions must be scoped to the shop and/or booth.
+One user can have both roles.
 
 ---
 
-# Current Architecture
+# DOMAIN ARCHITECTURE
 
-The existing project already has:
-
-- Supabase Auth
-- PostgreSQL
-- RLS
-- restaurants
-- food_outlets
-- merchant_memberships
-- orders
-- merchant_orders
-- order_items
-- owner APIs
-- owner UI
-
-Do not replace the existing architecture blindly.
-
-First determine what can be reused and what needs to change.
-
----
-
-# Required Design
-
-Design the architecture for the following.
-
-## 1. Shop / Restaurant
-
-Determine whether the existing `restaurants` table can represent the SaaS tenant/shop.
-
-Document:
-
-- ownership
-- shop profile
-- shop status
-- subscription relationship
-- creation flow
-- who is allowed to modify it
-
----
-
-## 2. Booth / Food Outlet
-
-Determine whether the existing `food_outlets` table should represent booths.
-
-Document:
+The intended production domain structure is:
 
 ```text
-restaurant
-    ↓
-food_outlet
+hawker.com
 ```
 
-A booth must belong to exactly one shop.
+Public marketing and acquisition website.
 
-Document:
+```text
+app.hawker.com
+```
 
-- booth ownership
-- booth members
-- booth status
-- menu ownership
-- order ownership
+Authenticated SaaS application.
+
+The conceptual routing is:
+
+```text
+hawker.com
+├── /
+├── /features
+├── /pricing
+├── /about
+├── /contact
+├── /login
+└── /signup
+
+app.hawker.com
+├── /dashboard
+├── /booths
+├── /orders
+├── /menu
+├── /analytics
+├── /settings
+└── /billing
+```
+
+IMPORTANT:
+
+Do NOT create a second repository or completely separate application yet.
+
+Keep this as one Next.js codebase unless the existing architecture makes that impossible.
+
+The domains can initially point to the same Vercel project.
+
+Use domain-aware routing/middleware only where necessary.
+
+Do not introduce unnecessary complexity.
 
 ---
 
-# 3. Membership Model
+# PHASE 1 — AUDIT CURRENT APPLICATION
 
-Design whether we should replace or extend the current `merchant_memberships`.
+Before coding:
 
-Preferred conceptual model:
+1. Inspect the current Next.js routing structure.
+2. Inspect the existing owner application.
+3. Inspect authentication.
+4. Inspect Supabase configuration.
+5. Inspect `docs/saas-architecture.md`.
+6. Inspect existing UI components.
+7. Inspect Tailwind configuration.
+8. Inspect any existing landing page.
+9. Inspect environment variables.
+10. Inspect Vercel deployment assumptions.
 
-```text
-restaurant_memberships
-    user_id
-    restaurant_id
-    role
+Determine the cleanest way to introduce the marketing website without breaking the existing customer or owner application.
 
-food_outlet_memberships
-    user_id
-    food_outlet_id
-    role
-```
-
-However, DO NOT automatically implement this.
-
-First inspect the existing schema and determine whether:
-
-1. `merchant_memberships` can safely support both scopes
-2. it should be migrated
-3. it should be replaced
-4. another design is better
-
-Explain the tradeoffs.
-
-The design must support:
-
-```text
-User A
-└── Shop Owner of Shop X
-
-User B
-└── Booth Owner of Booth 1
-
-User C
-├── Shop Owner of Shop X
-└── Booth Owner of Booth 2
-```
+Do not remove existing functionality.
 
 ---
 
-# 4. Shop Owner Permissions
+# PHASE 2 — MARKETING WEBSITE
 
-Define exactly what a shop owner can do.
+Build a professional SaaS marketing website at the public root.
 
-At minimum:
+The homepage should feel like a real startup SaaS product, not a university project.
+
+## Hero Section
+
+The first viewport should immediately communicate the product.
+
+Recommended messaging:
 
 ```text
-Shop
-├── View dashboard
-├── View analytics
-├── Manage shop profile
-├── Create booth
-├── Edit booth
-├── Delete/deactivate booth
-├── Generate booth invitation
-├── Manage booth members
-├── View booth orders
-└── View shop-wide orders
+Run your hawker centre smarter.
 ```
 
-Also determine whether shop owners should automatically have access to every booth's:
+Supporting text:
 
-- menu
-- dishes
-- orders
-- analytics
+```text
+Manage booths, menus, orders and sales from one simple platform.
+```
 
-Explain the recommended V1 behavior.
+Primary CTA:
+
+```text
+Start free
+```
+
+Secondary CTA:
+
+```text
+See how it works
+```
+
+Do not blindly copy this wording if you can improve it.
+
+The messaging should clearly communicate:
+
+- Who Hawker is for
+- What problem it solves
+- What the product does
+- Why the user should try it
 
 ---
 
-# 5. Booth Owner Permissions
+# PRODUCT VISUAL
 
-Define exactly what a booth owner can do.
+The homepage should show the actual Hawker product.
 
-At minimum:
+Do NOT fill the page with generic stock photos.
+
+Use realistic product UI mockups/screenshots/components showing:
 
 ```text
-Booth
-├── View dashboard
-├── Manage menu
-├── Create dishes
-├── Edit dishes
-├── Change availability
-├── Upload images
-├── View orders
-├── Update order status
-└── View booth analytics
+Hawker Dashboard
+
+Revenue
+Orders
+Active Booths
+
+Booth performance
+Recent orders
+Sales analytics
 ```
 
-A booth owner MUST NOT be able to access another booth's data.
+The product should visually demonstrate that Hawker is a real operating system for a hawker centre.
+
+Prefer reusable React components for the product mockup rather than static images.
 
 ---
 
-# 6. Shop Owner Also Being Booth Owner
+# PROBLEM SECTION
 
-Explicitly design this case.
+Explain the problems hawker-centre operators currently face.
 
-Example:
+Examples:
 
 ```text
-Alice
-Shop Owner → ABC Hawker Centre
-Booth Owner → Noodle Stall
+Too many separate systems.
+
+Booth owners manage things manually.
+
+Orders are difficult to track.
+
+Sales data is fragmented.
+
+Owners don't have a clear view of every booth.
 ```
 
-When Alice enters the application:
+Keep this concise.
 
-- She should have one account.
-- She should not need separate accounts.
-- The application should determine her permissions from database memberships.
-- She should be able to access shop-level functionality.
-- She should also be able to operate her booth.
-
-Recommend how the UI should handle this.
-
-Prefer a single "Owner/Merchant Mode" rather than separate "Shop Owner Mode" and "Booth Owner Mode" toggles.
+Focus on business pain rather than technical features.
 
 ---
 
-# 7. Booth Invitation System
+# SOLUTION SECTION
 
-We need a system where a shop owner can create a booth and invite a booth owner.
+Introduce Hawker as the unified solution.
 
-Example:
+Show:
+
+```text
+One platform
+     │
+ ┌───┼────┬────────┐
+ ↓   ↓    ↓        ↓
+Booths Menu Orders Analytics
+```
+
+Explain how everything connects.
+
+---
+
+# HOW IT WORKS
+
+Create a simple 3–4 step flow:
+
+```text
+01
+Create your hawker centre
+
+02
+Add your booths
+
+03
+Invite booth owners
+
+04
+Manage everything from one dashboard
+```
+
+Include a visual explanation of the invitation flow:
 
 ```text
 Shop Owner
@@ -293,87 +254,216 @@ Create Booth
     ↓
 Generate Invite
     ↓
-X7K9-PQ2M
+Booth Owner
     ↓
-Booth Owner enters token
-    ↓
-Booth Owner joins booth
+Join Booth
 ```
-
-Design a secure invitation system.
-
-Preferred conceptual table:
-
-```text
-booth_invitations
-    id
-    food_outlet_id
-    created_by
-    token_hash
-    expires_at
-    used_at
-    used_by
-    created_at
-```
-
-But inspect the existing schema before deciding.
-
-Requirements:
-
-- Tokens should expire.
-- Tokens should preferably be single-use.
-- Do not store plaintext invitation tokens if unnecessary.
-- A shop owner can revoke an invitation.
-- A shop owner can generate a new invitation.
-- A token must only grant access to the intended booth.
-- A random person must not be able to join a booth by guessing tokens.
-- Joining must create the correct booth membership.
-- Existing shop ownership must be checked before generating invitations.
-
-Also consider whether QR-code invitations should be supported later.
-
-Do NOT implement QR generation yet unless required architecturally.
 
 ---
 
-# 8. Subscription Architecture
+# FEATURES
 
-Hawker will eventually be a SaaS product.
+Create a strong feature section.
 
-The subscription belongs to the:
+At minimum:
+
+### Multi-Booth Management
+
+Manage all booths from one place.
+
+### Menu Management
+
+Booth owners can manage dishes, availability and images.
+
+### Order Management
+
+See and manage orders across booths.
+
+### Analytics
+
+Understand sales and booth performance.
+
+### Owner Management
+
+Control who has access to each booth.
+
+### AI-Powered Discovery
+
+Explain the existing AI-powered natural-language food search.
+
+Do NOT claim that AI has direct database access.
+
+Preserve the existing architecture:
 
 ```text
-Shop / Restaurant
+User query
+ ↓
+OpenRouter
+ ↓
+Validated SearchIntent
+ ↓
+Deterministic SearchService
+ ↓
+Supabase
 ```
 
-NOT the individual booth owner.
+---
+
+# SHOP OWNER SECTION
+
+Create a dedicated section showing the Shop Owner experience.
+
+Example:
+
+```text
+Everything your hawker centre needs.
+
+✓ Manage multiple booths
+✓ Invite booth owners
+✓ View all orders
+✓ Track revenue
+✓ Compare booth performance
+✓ Manage members
+```
+
+Show a dashboard mockup.
+
+CTA:
+
+```text
+Start managing your hawker centre
+```
+
+---
+
+# BOOTH OWNER SECTION
+
+Explain the booth-owner experience.
+
+```text
+Your booth. Your menu. Your orders.
+
+✓ Manage dishes
+✓ Update availability
+✓ Upload food images
+✓ Manage orders
+✓ Track performance
+```
+
+CTA:
+
+```text
+Join a booth
+```
+
+---
+
+# AI SECTION
+
+Hawker should have an AI differentiator.
+
+Explain the customer experience:
+
+```text
+"Where can I get something spicy with chicken and rice?"
+
+        ↓
+
+Hawker understands the intent
+
+        ↓
+
+Relevant dishes
+```
+
+Keep the explanation understandable to non-technical customers.
+
+Do not oversell AI.
+
+---
+
+# PRICING PAGE
+
+Create:
+
+```text
+hawker.com/pricing
+```
+
+The pricing page must be designed for conversion.
+
+Use 2–3 plans maximum for V1.
+
+Do NOT invent final prices if pricing has not been decided.
+
+Use clearly marked placeholder pricing if necessary.
+
+Example structure:
+
+```text
+Starter
+For small operators
+
+RM XX / month
+
+✓ Booth management
+✓ Menu management
+✓ Order management
+✓ Basic analytics
+
+[Start free]
+```
+
+```text
+Business
+For growing hawker centres
+
+RM XX / month
+
+✓ Everything in Starter
+✓ Multiple booths
+✓ Advanced analytics
+✓ Staff management
+✓ Priority support
+
+[Start free]
+```
+
+If a free trial is supported, clearly communicate its duration.
+
+The pricing page should also explain:
+
+- monthly billing
+- annual billing if supported
+- number of booths
+- included features
+- what happens when a subscription ends
+
+Do not implement billing logic until the subscription architecture is approved.
+
+---
+
+# SUBSCRIPTION ARCHITECTURE
+
+The subscription belongs to:
+
+```text
+Restaurant / Shop
+```
+
+NOT:
+
+```text
+User
+```
+
+and NOT:
+
+```text
+Booth
+```
 
 Conceptually:
-
-```text
-Restaurant
-    ↓
-Subscription
-```
-
-Design how we should represent:
-
-- subscription status
-- plan
-- billing customer ID
-- subscription ID
-- trial
-- active
-- cancelled
-- past_due
-
-Do NOT implement a payment provider yet unless absolutely necessary.
-
-Instead, design the database boundary so a provider such as Stripe can be added later.
-
-Explain where subscription authorization should happen.
-
-For example:
 
 ```text
 User
@@ -385,385 +475,504 @@ Restaurant
 Subscription
 ```
 
----
+A shop owner pays for the shop.
 
-# 9. RLS Security
-
-This is extremely important.
-
-Design the RLS model for:
-
-- restaurants
-- food_outlets
-- memberships
-- booth invitations
-- dishes
-- orders
-- merchant_orders
-- order_items
-- subscriptions
-
-Rules must ensure:
-
-### Shop owner
-
-Can access data belonging to shops they own/manage.
-
-### Booth owner
-
-Can access only data belonging to booths they are authorized to manage.
-
-### Customer
-
-Can only access their own customer data/orders where appropriate.
-
-### Unauthenticated user
-
-Cannot access protected merchant data.
-
-### AI
-
-Must NOT receive direct database authorization.
-
-Keep the existing architecture:
-
-```text
-User
- ↓
-API
- ↓
-Supabase Auth
- ↓
-RLS
- ↓
-Database
-```
-
-Do not introduce service-role access into browser code.
+Booth owners do not independently subscribe to the booth.
 
 ---
 
-# 10. SaaS Onboarding Flow
+# SIGNUP FLOW
 
-Design the recommended onboarding flow.
+The primary CTA from the marketing website should lead into a Shop Owner onboarding flow.
 
-### Shop owner
-
-```text
-Marketing Website
-        ↓
-Sign Up
-        ↓
-Create Shop
-        ↓
-Choose Subscription
-        ↓
-Shop Dashboard
-        ↓
-Create Booth
-        ↓
-Generate Booth Invite
-```
-
-### Booth owner
+Recommended:
 
 ```text
-Sign Up / Login
-        ↓
-Enter Booth Invite Token
-        ↓
-Validate Token
-        ↓
-Join Booth
-        ↓
-Booth Dashboard
+hawker.com
+      ↓
+Start free
+      ↓
+Sign up
+      ↓
+Create your shop
+      ↓
+Choose plan / trial
+      ↓
+Shop dashboard
 ```
 
-Also design what happens if:
+Do not require the user to understand the database structure.
 
-- user already has an account
-- user already belongs to another booth
-- invitation expires
-- invitation is already used
-- user is already a booth member
-- user is already a shop owner
-- shop subscription is inactive
+The onboarding should feel like:
+
+```text
+Welcome to Hawker
+
+Let's set up your hawker centre.
+
+Shop name: __________
+
+[Continue]
+```
+
+Then:
+
+```text
+Add your first booth
+
+Booth name: __________
+
+[Create booth]
+```
+
+Then:
+
+```text
+Your booth is ready.
+
+Invite your booth owner:
+
+[X7K9-PQ2M]
+
+[Copy invitation]
+```
 
 ---
 
-# 11. UI Architecture
+# BOOTH OWNER FLOW
 
-Recommend the application navigation.
+A booth owner should have a separate onboarding path:
 
-Current owner application has:
+```text
+Login / Sign up
+      ↓
+Join a booth
+      ↓
+Enter invitation code
+      ↓
+Validate invitation
+      ↓
+Create booth membership
+      ↓
+Booth dashboard
+```
+
+Do not create a separate account type.
+
+The same Supabase Auth system should be used.
+
+---
+
+# APP DOMAIN
+
+The authenticated product should eventually live at:
+
+```text
+app.hawker.com
+```
+
+The marketing site should remain:
+
+```text
+hawker.com
+```
+
+The application should have:
 
 ```text
 Dashboard
+Booths
 Orders
 Menu
-Profile
+Analytics
+Settings
+Billing
 ```
 
-We now need to support both shop-level and booth-level functionality.
+Use the existing owner application where possible.
 
-Propose a clean V1 navigation.
-
-Preferred direction:
-
-```text
-Owner
-├── Dashboard
-├── Booths
-├── Orders
-├── Menu
-├── Analytics
-└── Settings
-```
-
-But determine the best structure based on the existing UI.
-
-A shop owner should be able to select a booth and enter its booth-level management interface.
-
-Do NOT create multiple accounts or duplicate applications.
+Do not rebuild existing owner functionality.
 
 ---
 
-# 12. API Architecture
+# BILLING
 
-Inspect the existing APIs.
+Do not implement production billing in this phase unless explicitly instructed.
 
-Determine which APIs can remain unchanged and which new APIs are needed.
+Prepare the architecture for Stripe.
 
-Potential examples:
+Recommended future flow:
 
 ```text
-/api/owner/shop
-/api/owner/booths
-/api/owner/booths/[id]
-/api/owner/booths/[id]/invite
-/api/owner/booths/join
-/api/owner/members
-/api/owner/analytics
+Pricing Page
+     ↓
+Stripe Checkout
+     ↓
+Payment
+     ↓
+Stripe Webhook
+     ↓
+Supabase
+     ↓
+Restaurant subscription updated
+     ↓
+App checks subscription status
 ```
 
-Do not blindly create these exact routes.
+Stripe Checkout and webhook-based subscription synchronization are consistent with current Vercel SaaS patterns. citeturn0search1turn0search4
 
-Design the cleanest API structure based on the existing project.
-
-For every proposed endpoint document:
-
-- HTTP method
-- purpose
-- authentication requirement
-- authorization requirement
-- input
-- output
-- database operations
-- RLS considerations
+Do not put Stripe secret keys in client-side code.
 
 ---
 
-# 13. Database Migration Strategy
+# BILLING PAGE
 
-This is an existing application.
-
-Do NOT destroy or recreate the database.
-
-Design a safe migration strategy from the current schema.
-
-Document:
+Prepare the authenticated application for:
 
 ```text
-Current schema
-      ↓
-Migration 005
-      ↓
-Migration 006
-      ↓
-...
-      ↓
-New SaaS architecture
+app.hawker.com/billing
 ```
 
-Explain:
-
-- tables to add
-- tables to modify
-- columns to add
-- indexes
-- foreign keys
-- constraints
-- RLS policy changes
-- data migration requirements
-- backwards compatibility
-
-Pay particular attention to the existing:
+It should eventually show:
 
 ```text
-merchant_memberships
+Current plan
+Subscription status
+Price
+Billing interval
+Next billing date
+
+[Manage subscription]
 ```
 
-Do not remove it until you understand all current code using it.
+A Stripe Customer Portal can eventually handle billing management.
 
-Search the repository for every reference.
+Do not implement this unless the current task specifically requires it.
 
 ---
 
-# 14. Authorization Rules
+# DOMAIN / ROUTING
 
-Create a clear permission matrix.
+Design the application so it can support:
 
-Example:
+```text
+hawker.com
+app.hawker.com
+```
 
-| Action | Shop Owner | Booth Owner | Customer |
-|---|---|---|---|
-| View shop | Yes | If authorized | Public where appropriate |
-| Edit shop | Yes | No | No |
-| Create booth | Yes | No | No |
-| Manage booth | Yes | Own booth | No |
-| Manage menu | Yes* | Own booth | No |
-| View orders | Yes* | Own booth | Own orders |
-| Update orders | Yes* | Own booth | No |
-| Manage members | Yes | No | No |
-| Generate invite | Yes | No | No |
-| Join booth | No/optional | Yes | No |
-| Manage subscription | Yes | No | No |
+without duplicating the application.
 
-Replace `*` with the exact recommended behavior.
+Do not implement wildcard tenant domains yet.
+
+Do not create:
+
+```text
+shop1.hawker.com
+shop2.hawker.com
+```
+
+yet.
+
+That is a future feature.
 
 ---
 
-# 15. Documentation Output
+# DESIGN DIRECTION
 
-Do NOT write application code yet.
+The design should feel:
 
-Instead create/update:
+- Modern
+- Premium
+- Clean
+- Malaysian
+- Food/business oriented
+- SaaS-quality
+- Trustworthy
 
-```text
-docs/saas-architecture.md
-```
+Avoid:
 
-The document must contain:
+- generic AI landing-page aesthetics
+- excessive gradients
+- excessive animations
+- fake testimonials
+- fake customer logos
+- fake statistics
+- stock-photo overload
+- unnecessary glassmorphism
 
-1. Current architecture assessment
-2. Proposed architecture
-3. Entity relationship model
-4. Membership model
-5. Permission model
-6. Invitation-token design
-7. Subscription design
-8. RLS model
-9. API design
-10. UI/navigation design
-11. Onboarding flows
-12. Migration strategy
-13. Security considerations
-14. Open questions
-15. Recommended implementation order
-
-Also update:
-
-```text
-docs/agent-context.md
-```
-
-with a concise summary of the new approved architecture, but ONLY after the design is complete.
+Use the actual product UI as the primary visual asset.
 
 ---
 
-# 16. Important Engineering Rules
+# RESPONSIVE DESIGN
 
-Do NOT:
+The marketing site must work on:
 
-- rewrite the entire application
+- Desktop
+- Tablet
+- Mobile
+
+The SaaS application must continue working on desktop and mobile.
+
+---
+
+# SEO
+
+Implement proper metadata for:
+
+```text
+hawker.com
+hawker.com/features
+hawker.com/pricing
+```
+
+Include:
+
+- title
+- description
+- Open Graph metadata
+- appropriate canonical URLs
+- sitemap consideration
+- robots configuration
+
+Do not make unsupported SEO claims.
+
+---
+
+# PERFORMANCE
+
+The marketing pages should be optimized for fast loading.
+
+Prefer:
+
+- Server Components where appropriate
+- optimized images
+- minimal JavaScript
+- reusable components
+- no unnecessary client-side state
+
+---
+
+# ANALYTICS
+
+Do not install analytics yet unless an existing analytics system is already present.
+
+Instead, identify where future conversion events should be tracked:
+
+```text
+Landing page viewed
+CTA clicked
+Pricing viewed
+Signup started
+Signup completed
+Trial started
+Subscription started
+```
+
+Document these events for future implementation.
+
+---
+
+# IMPLEMENTATION STRATEGY
+
+Do NOT build the entire SaaS billing system in one task.
+
+Implement in phases.
+
+### Phase 1
+
+Marketing homepage.
+
+### Phase 2
+
+Features page.
+
+### Phase 3
+
+Pricing page UI.
+
+### Phase 4
+
+Signup/onboarding flow.
+
+### Phase 5
+
+Domain-aware routing for:
+
+```text
+hawker.com
+app.hawker.com
+```
+
+### Phase 6
+
+Stripe subscription integration.
+
+### Phase 7
+
+Billing management.
+
+Each phase should be independently testable.
+
+---
+
+# IMPORTANT
+
+Before coding, inspect the existing application.
+
+Do not:
+
+- destroy existing routes
 - replace Supabase
-- replace the existing auth system
-- create separate user accounts for shop and booth owners
+- replace authentication
+- rewrite the owner dashboard
+- create a second repository
+- expose secret keys
+- implement fake payment processing
+- hardcode subscription authorization
 - use localStorage for authorization
-- put service-role keys in frontend code
-- let AI directly query the database
-- create a giant migration without inspecting dependencies
-- delete existing tables without a migration plan
-- implement payments yet
-- implement QR generation yet
-- build the entire SaaS in one step
+- create fake testimonials or statistics
 
-DO:
+The marketing website is the acquisition layer.
 
-- inspect first
-- reuse existing architecture
-- preserve working functionality
-- make authorization database-driven
-- use RLS as a security boundary
-- keep shop and booth permissions separate
-- support one user having multiple memberships
-- make the architecture extensible
-- keep V1 simple
+The application is the product layer.
+
+The architecture should clearly separate these concerns while keeping the codebase maintainable.
 
 ---
 
-# 17. Final Deliverable
+# FIRST TASK
 
-At the end, report:
+For this task, ONLY implement the first phase:
 
-### Current Architecture
+## Build the Hawker marketing homepage.
 
-What exists today.
+Do NOT implement Stripe.
 
-### Recommended Architecture
+Do NOT implement subscription payments.
 
-What should change.
+Do NOT redesign the existing owner application.
 
-### Database Changes
+Do NOT implement app.hawker.com routing yet unless it is required to prevent conflicts.
 
-Exact tables/columns/migrations required.
-
-### Authorization
-
-Exact membership and permission model.
-
-### Invitation System
-
-Exact token lifecycle.
-
-### Subscription
-
-Exact relationship between shop and subscription.
-
-### UI
-
-Recommended navigation and flows.
-
-### API
-
-Required endpoints.
-
-### Migration Plan
-
-Ordered implementation phases.
-
-### Risks
-
-Anything that could break existing functionality.
-
-### Implementation Order
-
-Give a numbered sequence such as:
+Build a polished, production-quality homepage at:
 
 ```text
-Phase 1 — Database foundation
-Phase 2 — Membership migration
-Phase 3 — RLS
-Phase 4 — Shop management
-Phase 5 — Booth management
-Phase 6 — Invitations
-Phase 7 — Owner UI
-Phase 8 — Subscription foundation
-Phase 9 — Testing
+/
 ```
 
-Then STOP.
+The homepage should include:
 
-Do not implement any of the phases yet.
+1. Navigation
+2. Hero
+3. Product dashboard visual
+4. Problem
+5. Solution
+6. How it works
+7. Features
+8. Shop Owner section
+9. Booth Owner section
+10. AI discovery section
+11. Pricing teaser
+12. Final CTA
+13. Footer
 
-Wait for my approval before writing code.
+All CTAs should be wired to sensible existing or placeholder routes without creating fake functionality.
+
+After implementation:
+
+- run typecheck
+- run lint
+- run production build
+- verify existing application routes still work
+- verify authentication is not broken
+- verify mobile responsiveness
+- check for console errors
+
+Then commit the changes.
+
+Report:
+
+- files changed
+- routes added
+- components created
+- validation results
+- any remaining TODOs
+
+Do not proceed to Stripe or subscription implementation after this phase.
+
+Important architecture clarification before you continue:
+
+The intended Hawker architecture is:
+
+```text
+hawker.com
+→ PUBLIC MARKETING WEBSITE
+→ used to explain and sell Hawker
+→ pricing
+→ features
+→ signup/login entry points
+
+app.hawker.com
+→ AUTHENTICATED SAAS WEB APP
+→ used by shop owners, booth owners and customers
+```
+
+For the Next.js codebase, organize the application conceptually using route groups like:
+
+```text
+app/
+├── (marketing)/
+│   ├── page.tsx
+│   ├── pricing/
+│   ├── features/
+│   ├── about/
+│   └── contact/
+│
+└── (app)/
+    ├── dashboard/
+    ├── booths/
+    ├── orders/
+    ├── menu/
+    ├── analytics/
+    ├── settings/
+    └── billing/
+```
+
+Important:
+
+- `(marketing)` represents the public `hawker.com` experience.
+- `(app)` represents the authenticated `app.hawker.com` experience.
+- These are Next.js route groups; the parentheses do NOT appear in the URL.
+- Do not expose the authenticated SaaS pages as part of the marketing navigation.
+- Do not create a second repository just for this.
+- Keep both experiences in the current Next.js project for now.
+- The eventual production domains are:
+  - `hawker.com` → marketing
+  - `app.hawker.com` → SaaS application
+
+Use domain-aware middleware/routing where necessary to map the two domains to the appropriate route groups.
+
+Before changing the existing routing structure, inspect the current repository and preserve all existing working routes and functionality.
+
+Do not implement the domain routing yet unless necessary for the current task. First establish the correct route architecture and make sure the marketing and application concerns are cleanly separated.
+
+The product architecture should ultimately be:
+
+```text
+hawker.com
+    │
+    ├── Home
+    ├── Features
+    ├── Pricing
+    ├── About
+    └── Start Free
+            │
+            ↓
+    app.hawker.com/signup
+            │
+            ↓
+    app.hawker.com/dashboard
+```
+
+Do not start Stripe/payment implementation yet.
