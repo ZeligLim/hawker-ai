@@ -36,6 +36,7 @@ Add the shop-level membership model required for the SaaS architecture: `restaur
 - Owner orders now load from `/api/owner/orders` and advance status through `/api/owner/orders/[id]`
 - `lib/database.types.ts` provides checked-in Supabase `Database` types; the linked remote project currently has no applied schema, so `supabase gen types --linked` returns an empty schema
 - `merchant_handles` migration and seed data provide public example handles: `@pakmat_nasilemak`, `@currymecorner`, and `@char_kwayteowstall`
+- Restored the profile tab in the regular customer bottom navigation and the standalone booth-owner navigation so the user can access profile/account settings again in both app shells
 
 ## Current Architecture
 - Frontend: Next.js App Router, TypeScript, React, Tailwind

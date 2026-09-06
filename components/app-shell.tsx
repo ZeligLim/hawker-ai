@@ -25,6 +25,7 @@ const navItems = [
   { href: '/menu', label: 'Menu', icon: MenuIcon },
   { href: '/shop', label: 'Shop', icon: ShopIcon },
   { href: '/orders', label: 'Orders', icon: OrdersIcon },
+  { href: '/profile', label: 'Profile', icon: UserRound },
 ];
 
 const ownerNavItems = [
@@ -117,7 +118,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <>
       {children}
       <nav className="fixed inset-x-0 bottom-0 z-20 mx-auto max-w-[430px] bg-[#f7f7f7]/95 px-2 py-2 backdrop-blur-xl sm:max-w-[480px] lg:max-w-[960px] lg:rounded-t-[22px] lg:bg-white/95 lg:px-4">
-        <div className="grid grid-cols-4 gap-1">
+        <div className="grid grid-cols-5 gap-1">
           {navItems.map(({ href, label, icon: Icon }) => {
             const active = pathname === href;
 
