@@ -2,9 +2,11 @@
 
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { useMemo } from 'react';
+import { useEffect, useState } from 'react';
+import { supabase } from '@/lib/supabase/client';
 
 type OrderRecord = {
+  id: string;
   dish: string;
   place: string;
   price: number;
@@ -14,23 +16,111 @@ type OrderRecord = {
 
 const storageKey = 'hawker-profile';
 
+function formatOrderDate(value: string | null | undefined) {
+  if (!value) return 'Today';
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return 'Today';
+
+  return new Intl.DateTimeFormat('en-SG', {
+    month: 'short',
+    day: 'numeric',
+  }).format(date);
+}
+
+function deriveCategory(label: string): OrderRecord['category'] {
+  if (/tea|drink|juice|milk/i.test(label)) return 'Drinks';
+  if (/cendol|dessert|sweet|cake|ice/i.test(label)) return 'Desserts';
+  return 'Main course';
+}
+
+function mapOrderPayload(payload: any, targetId: string): OrderRecord | null {
+  const orders = Array.isArray(payload?.orders) ? payload.orders : [];
+  const direct = orders.find((entry: any) => String(entry?.id ?? '').toLowerCase() === targetId.toLowerCase());
+  if (!direct) return null;
+
+  const orderItems = Array.isArray(direct.merchant_orders)
+    ? direct.merchant_orders.flatMap((merchant: any) => (Array.isArray(merchant.order_items) ? merchant.order_items : []))
+    : [];
+
+  const firstItem = orderItems[0];
+  const label = firstItem?.dish_name ?? 'Hawker order';
+
+  return {
+    id: String(direct.id),
+    dish: label,
+    place: Array.isArray(direct.merchant_orders) && direct.merchant_orders.length > 0 ? direct.merchant_orders[0]?.food_outlet_id ?? 'Hawker Centre' : 'Hawker Centre',
+    price: Number(direct.total ?? 0),
+    date: formatOrderDate(direct.created_at),
+    category: deriveCategory(label),
+  };
+}
+
 export default function OrderDetailPage() {
   const params = useParams<{ id: string }>();
+  const [order, setOrder] = useState<OrderRecord | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const order = useMemo<OrderRecord | null>(() => {
-    if (typeof window === 'undefined') return null;
+  useEffect(() => {
+    const targetId = decodeURIComponent((params.id ?? '').trim());
 
-    const savedRaw = window.localStorage.getItem(storageKey);
-    if (!savedRaw) return null;
+    const fallbackLocalOrder = () => {
+      if (typeof window === 'undefined') return null;
 
-    try {
-      const saved = JSON.parse(savedRaw) as { orders?: OrderRecord[] };
-      const targetId = (params.id ?? '').trim();
-      return (saved.orders ?? []).find((entry) => `${entry.place}-${entry.date}-${entry.dish}` === decodeURIComponent(targetId)) ?? null;
-    } catch {
-      return null;
-    }
+      const savedRaw = window.localStorage.getItem(storageKey);
+      if (!savedRaw) return null;
+
+      try {
+        const saved = JSON.parse(savedRaw) as { orders?: OrderRecord[] };
+        return (saved.orders ?? []).find((entry) => entry.id === targetId) ?? null;
+      } catch {
+        return null;
+      }
+    };
+
+    const loadOrder = async () => {
+      setIsLoading(true);
+
+      if (supabase) {
+        const { data: sessionData } = await supabase.auth.getSession();
+        if (sessionData.session?.access_token) {
+          const response = await fetch('/api/orders', {
+            headers: {
+              Authorization: `Bearer ${sessionData.session.access_token}`,
+            },
+          });
+
+          if (response.ok) {
+            const payload = (await response.json().catch(() => ({}))) as { orders?: unknown[] };
+            const nextOrder = mapOrderPayload(payload, targetId);
+            if (nextOrder) {
+              setOrder(nextOrder);
+              setIsLoading(false);
+              return;
+            }
+          }
+        }
+      }
+
+      const fallbackOrder = fallbackLocalOrder();
+      setOrder(fallbackOrder);
+      setIsLoading(false);
+    };
+
+    void loadOrder();
   }, [params.id]);
+
+  if (isLoading) {
+    return (
+      <main className="min-h-screen bg-[#f5f5f7] px-4 pb-28 pt-5 text-[#1d1d1f]">
+        <div className="mx-auto max-w-[430px]">
+          <div className="rounded-[26px] bg-white p-4 shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
+            <p className="text-sm text-[#6e6e73]">Loading your order…</p>
+          </div>
+        </div>
+      </main>
+    );
+  }
 
   if (!order) {
     return (

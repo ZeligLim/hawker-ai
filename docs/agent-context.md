@@ -1,10 +1,10 @@
 # Current Project Context
 
 ## Current Phase
-Phase 1: QR table-linking and table-aware customer ordering flow
+Phase 2: customer order history and real profile detail flow
 
 ## Current Feature
-Add a real table-linking flow so the customer can connect to a table QR code or table reference, store that context locally, and see it reflected across the home and checkout experience. This phase also prepares the app for customer order-history integration by keeping the table/session state explicit.
+Connect the profile experience to the authenticated `/api/orders` endpoint and surface the resulting order metadata in the profile list and detail screen. This keeps the customer journey grounded in backend data while preserving a local fallback when the remote session is unavailable.
 
 ## Completed
 - Next.js App Router foundation initialized
@@ -53,8 +53,8 @@ Add a real table-linking flow so the customer can connect to a table QR code or 
 
 ## Known Issues
 - Password recovery depends on Supabase Auth email configuration
-- Customer order history remains to be connected to the authenticated order API in the profile experience
+- Merchant membership provisioning is still a controlled admin follow-up rather than a public customer flow
 - Production credentials are still required for live Supabase/OpenRouter operations
 
 ## Next Task
-Next: connect the profile experience to `/api/orders`, surface real order detail pages, then provision merchant memberships through a controlled admin flow.
+Next: provision merchant memberships through a controlled admin flow and then validate the complete customer/merchant lifecycle end-to-end.

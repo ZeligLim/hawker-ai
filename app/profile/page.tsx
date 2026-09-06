@@ -2,11 +2,12 @@
 
 import Link from 'next/link';
 import { LogOut, Settings } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { useAuth } from '@/components/auth-provider';
+import { supabase } from '@/lib/supabase/client';
 
 type OrderRecord = {
+  id: string;
   dish: string;
   place: string;
   price: number;
@@ -21,10 +22,10 @@ type ProfileState = {
 };
 
 const defaultOrders: OrderRecord[] = [
-  { dish: 'Nasi Lemak', place: 'Ah Seng Chicken Rice', price: 8.5, date: 'Today', category: 'Main course' },
-  { dish: 'Teh Tarik', place: 'Penang Corner', price: 3.5, date: 'Yesterday', category: 'Drinks' },
-  { dish: 'Curry Mee', place: 'Curry House', price: 12, date: '2 days ago', category: 'Main course' },
-  { dish: 'Cendol', place: 'Green Garden Vegetarian', price: 5, date: 'Last week', category: 'Desserts' },
+  { id: 'fallback-1', dish: 'Nasi Lemak', place: 'Ah Seng Chicken Rice', price: 8.5, date: 'Today', category: 'Main course' },
+  { id: 'fallback-2', dish: 'Teh Tarik', place: 'Penang Corner', price: 3.5, date: 'Yesterday', category: 'Drinks' },
+  { id: 'fallback-3', dish: 'Curry Mee', place: 'Curry House', price: 12, date: '2 days ago', category: 'Main course' },
+  { id: 'fallback-4', dish: 'Cendol', place: 'Green Garden Vegetarian', price: 5, date: 'Last week', category: 'Desserts' },
 ];
 
 const defaultProfileState: ProfileState = {
@@ -34,7 +35,6 @@ const defaultProfileState: ProfileState = {
 };
 
 const storageKey = 'hawker-profile';
-const modeStorageKey = 'hawker-user-mode';
 
 function readStoredProfile(): Partial<ProfileState> | null {
   if (typeof window === 'undefined') return null;
@@ -49,13 +49,54 @@ function readStoredProfile(): Partial<ProfileState> | null {
   }
 }
 
+function formatOrderDate(value: string | null | undefined) {
+  if (!value) return 'Today';
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return 'Today';
+
+  return new Intl.DateTimeFormat('en-SG', {
+    month: 'short',
+    day: 'numeric',
+  }).format(date);
+}
+
+function deriveCategory(label: string): OrderRecord['category'] {
+  if (/tea|drink|juice|milk/i.test(label)) return 'Drinks';
+  if (/cendol|dessert|sweet|cake|ice/i.test(label)) return 'Desserts';
+  return 'Main course';
+}
+
+function mapOrderPayload(payload: any): OrderRecord[] {
+  if (!Array.isArray(payload?.orders)) return [];
+
+  return payload.orders
+    .map((entry: any) => {
+      const orderItems = Array.isArray(entry?.merchant_orders) ? entry.merchant_orders.flatMap((merchant: any) => Array.isArray(merchant.order_items) ? merchant.order_items : []) : [];
+      const firstItem = orderItems[0];
+      const label = firstItem?.dish_name ?? 'Hawker order';
+      const amount = Number(entry?.total ?? 0);
+      const stallName = Array.isArray(entry?.merchant_orders) && entry.merchant_orders.length > 0 ? entry.merchant_orders[0]?.food_outlet_id ?? 'Hawker Centre' : 'Hawker Centre';
+      return {
+        id: String(entry?.id ?? `${stallName}-${entry?.created_at ?? Date.now()}`),
+        dish: label,
+        place: stallName,
+        price: Number.isFinite(amount) ? amount : 0,
+        date: formatOrderDate(entry?.created_at),
+        category: deriveCategory(label),
+      };
+    })
+    .filter((order: OrderRecord) => Boolean(order.id));
+}
+
 export default function ProfilePage() {
-  const router = useRouter();
   const { status, profile: authProfile, isGuest, signOut } = useAuth();
   const [profile, setProfile] = useState<ProfileState>(defaultProfileState);
   const [isMounted, setIsMounted] = useState(false);
-  const [isOwnerMode, setIsOwnerMode] = useState(false);
   const [isSignOutDialogOpen, setIsSignOutDialogOpen] = useState(false);
+  const { name, orders } = profile;
+  const signedIn = status === 'authenticated' && !isGuest && Boolean(authProfile);
+  const displayName = authProfile?.displayName ?? name;
 
   useEffect(() => {
     const restoreProfile = () => {
@@ -77,13 +118,48 @@ export default function ProfilePage() {
     queueMicrotask(() => {
       setIsMounted(true);
       restoreProfile();
-      setIsOwnerMode(window.localStorage.getItem(modeStorageKey) === 'owner');
     });
   }, []);
 
-  const { name, orders } = profile;
-  const signedIn = status === 'authenticated' && !isGuest && Boolean(authProfile);
-  const displayName = authProfile?.displayName ?? name;
+  useEffect(() => {
+    const loadRemoteOrders = async () => {
+      if (!supabase || status !== 'authenticated' || isGuest) return;
+
+      const { data: sessionData } = await supabase.auth.getSession();
+      if (!sessionData.session?.access_token) return;
+
+      const response = await fetch('/api/orders', {
+        headers: {
+          Authorization: `Bearer ${sessionData.session.access_token}`,
+        },
+      });
+
+      if (!response.ok) return;
+
+      const payload = (await response.json().catch(() => ({}))) as { orders?: unknown[] };
+      const remoteOrders = mapOrderPayload(payload);
+      if (remoteOrders.length === 0) return;
+
+      setProfile((current) => ({
+        ...current,
+        orders: remoteOrders,
+      }));
+
+      if (typeof window !== 'undefined') {
+        window.localStorage.setItem(
+          storageKey,
+          JSON.stringify({
+            name: displayName,
+            signedIn,
+            orders: remoteOrders,
+          }),
+        );
+      }
+    };
+
+    void loadRemoteOrders();
+  }, [isGuest, status]);
+
   const initials = displayName
     .split(/\s+/)
     .filter(Boolean)
@@ -103,19 +179,11 @@ export default function ProfilePage() {
   const orderLinks = useMemo(
     () =>
       orders.map((order) => ({
-        id: `${order.place}-${order.date}-${order.dish}`,
+        id: order.id,
         order,
       })),
     [orders],
   );
-
-  const handleModeChange = (ownerMode: boolean) => {
-    setIsOwnerMode(ownerMode);
-    window.localStorage.setItem(modeStorageKey, ownerMode ? 'owner' : 'customer');
-    if (ownerMode) {
-      router.push('/owner' as any);
-    }
-  };
 
   if (!isMounted) {
     return (
@@ -189,23 +257,6 @@ export default function ProfilePage() {
                 </div>
               </div>
             ) : null}
-            <section className="mt-4 rounded-[22px] bg-white p-4 shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <p className="text-sm font-semibold text-[#1d1d1f]">Hawker owner mode</p>
-                  <p className="mt-1 text-xs text-[#6e6e73]">Switch between ordering and managing a stall</p>
-                </div>
-                <button
-                  type="button"
-                  role="switch"
-                  aria-checked={isOwnerMode}
-                  onClick={() => handleModeChange(!isOwnerMode)}
-                  className={`relative h-7 w-12 rounded-full transition ${isOwnerMode ? 'bg-[#111827]' : 'bg-[#d1d5db]'}`}
-                >
-                  <span className={`absolute top-1 h-5 w-5 rounded-full bg-white shadow-sm transition ${isOwnerMode ? 'left-6' : 'left-1'}`} />
-                </button>
-              </div>
-            </section>
           </>
         )}
 
