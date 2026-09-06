@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useState } from 'react';
 import { Pencil, X } from 'lucide-react';
 import { ShopOwnerNav } from '@/components/shop-owner-nav';
@@ -21,8 +22,13 @@ export default function BoothsPage() {
     <main className="min-h-screen bg-[#f5f5f7] px-4 py-6 text-[#1d1d1f]">
       <div className="mx-auto max-w-[960px]">
         <header className="mb-6">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#6e6e73]">Shop owner</p>
-          <h1 className="mt-1 text-3xl font-semibold tracking-[-0.06em]">Your booths</h1>
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#6e6e73]">Shop owner</p>
+              <h1 className="mt-1 text-3xl font-semibold tracking-[-0.06em]">Your booths</h1>
+            </div>
+            <Link href={'/booths/join' as any} className="rounded-full bg-[#111827] px-3 py-2 text-xs font-semibold text-white">Join booth</Link>
+          </div>
           <p className="mt-2 text-sm text-[#6e6e73]">Manage the booths connected to your shop.</p>
         </header>
         <ShopOwnerNav active="booths" />

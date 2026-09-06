@@ -1,10 +1,10 @@
 # Current Project Context
 
 ## Current Phase
-Phase 4: shop profile and booth management
+Phase 5: booth invitation and join flow
 
 ## Current Feature
-Add real shop profile management for the shop-owner app and allow booth creation/editing through the existing restaurant-to-booth ownership model. The app keeps the single-account architecture and uses `restaurant_memberships` for shop-level access while preserving `merchant_memberships` for booth-level authorization.
+Complete the booth invitation lifecycle by generating hashed invite tokens from the shop-owner app and redeeming them from a dedicated booth join flow. The app keeps the single-account architecture and relies on `restaurant_memberships` at the shop level and `merchant_memberships` for booth-level access, with a secure token redemption process that validates expiry and single-use semantics.
 
 ## Completed
 - Next.js App Router foundation initialized
