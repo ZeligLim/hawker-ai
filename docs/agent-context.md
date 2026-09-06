@@ -1,10 +1,10 @@
 # Current Project Context
 
 ## Current Phase
-Phase 2: customer order history and real profile detail flow
+Phase 3: multi-tenant shop membership and restaurant-scoped ownership
 
 ## Current Feature
-Connect the profile experience to the authenticated `/api/orders` endpoint and surface the resulting order metadata in the profile list and detail screen. This keeps the customer journey grounded in backend data while preserving a local fallback when the remote session is unavailable.
+Add the shop-level membership model required for the SaaS architecture: `restaurant_memberships` sits alongside the existing booth-scoped `merchant_memberships`, and the shop-owner dashboard loads real restaurant + booth access from the authenticated backend before broader multi-tenant flows are expanded.
 
 ## Completed
 - Next.js App Router foundation initialized
@@ -55,6 +55,7 @@ Connect the profile experience to the authenticated `/api/orders` endpoint and s
 - Password recovery depends on Supabase Auth email configuration
 - Merchant membership provisioning is still a controlled admin follow-up rather than a public customer flow
 - Production credentials are still required for live Supabase/OpenRouter operations
+- Supabase deployment configuration must be provided in Vercel as `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY`; service-role keys are never exposed in client-side environment variables
 
 ## Next Task
 Next: provision merchant memberships through a controlled admin flow and then validate the complete customer/merchant lifecycle end-to-end.

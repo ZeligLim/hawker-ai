@@ -22,6 +22,11 @@ export type Database = {
         Insert: Omit<Database['public']['Tables']['dishes']['Row'], 'id' | 'created_at'> & { id?: string; created_at?: string };
         Update: Partial<Database['public']['Tables']['dishes']['Insert']>; Relationships: [];
       };
+      restaurant_memberships: {
+        Row: { id: string; user_id: string; restaurant_id: string; role: 'owner' | 'manager' | 'staff'; invited_by: string | null; created_at: string };
+        Insert: Omit<Database['public']['Tables']['restaurant_memberships']['Row'], 'id' | 'created_at'> & { id?: string; created_at?: string };
+        Update: Partial<Database['public']['Tables']['restaurant_memberships']['Insert']>; Relationships: [];
+      };
       merchant_memberships: {
         Row: { user_id: string; food_outlet_id: string; role: 'owner' | 'manager' | 'staff'; created_at: string };
         Insert: Omit<Database['public']['Tables']['merchant_memberships']['Row'], 'created_at'> & { created_at?: string };
