@@ -55,7 +55,7 @@ export default function AuthPage() {
           setPassword('');
           return;
         }
-        router.replace('/profile');
+        router.replace('/');
         return;
       }
 
