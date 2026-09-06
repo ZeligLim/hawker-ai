@@ -13,6 +13,10 @@ export default function OwnerProfilePage() {
     if (typeof window === 'undefined') return true;
     return window.localStorage.getItem('hawker-user-mode') !== 'customer';
   });
+  const [isShopOwnerMode, setIsShopOwnerMode] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return window.localStorage.getItem('hawker-shop-owner-mode') === 'true';
+  });
   const [isSignOutDialogOpen, setIsSignOutDialogOpen] = useState(false);
 
   const handleModeChange = (ownerMode: boolean) => {
@@ -20,6 +24,16 @@ export default function OwnerProfilePage() {
     window.localStorage.setItem('hawker-user-mode', ownerMode ? 'owner' : 'customer');
     if (!ownerMode) {
       router.push('/' as any);
+    }
+  };
+
+  const handleShopOwnerToggle = (open: boolean) => {
+    setIsShopOwnerMode(open);
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem('hawker-shop-owner-mode', open ? 'true' : 'false');
+    }
+    if (open) {
+      router.push('/shop-owner' as any);
     }
   };
 
@@ -63,6 +77,22 @@ export default function OwnerProfilePage() {
               aria-label="Toggle hawker owner mode"
             >
               <span className={`absolute top-1 h-5 w-5 rounded-full bg-white shadow-sm transition ${isOwnerMode ? 'left-6' : 'left-1'}`} />
+            </button>
+          </div>
+          <div className="mt-3 flex items-center justify-between rounded-[18px] bg-[#f5f5f7] px-4 py-3">
+            <div>
+              <p className="text-sm font-semibold">Shop owner app</p>
+              <p className="mt-1 text-xs text-[#6e6e73]">Open the multi-booth management dashboard</p>
+            </div>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={isShopOwnerMode}
+              onClick={() => handleShopOwnerToggle(!isShopOwnerMode)}
+              className={`relative h-7 w-12 shrink-0 rounded-full transition ${isShopOwnerMode ? 'bg-[#111827]' : 'bg-[#d1d5db]'}`}
+              aria-label="Toggle shop owner app"
+            >
+              <span className={`absolute top-1 h-5 w-5 rounded-full bg-white shadow-sm transition ${isShopOwnerMode ? 'left-6' : 'left-1'}`} />
             </button>
           </div>
           <button type="button" onClick={() => setIsSignOutDialogOpen(true)} className="mt-3 flex w-full items-center justify-center gap-2 rounded-full bg-[#111827] px-4 py-3 text-sm font-semibold text-white">

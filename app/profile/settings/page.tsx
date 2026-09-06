@@ -6,6 +6,8 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/components/auth-provider';
 
+const modeStorageKey = 'hawker-user-mode';
+
 export default function ProfileSettingsPage() {
   const router = useRouter();
   const { status, profile, isGuest, updateProfile } = useAuth();
@@ -13,10 +15,36 @@ export default function ProfileSettingsPage() {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [isSaving, setIsSaving] = useState(false);
+  const [isOwnerMode, setIsOwnerMode] = useState<boolean>(() =>
+    typeof window !== 'undefined' && window.localStorage.getItem(modeStorageKey) === 'owner',
+  );
+  const [isShopOwnerMode, setIsShopOwnerMode] = useState<boolean>(() =>
+    typeof window !== 'undefined' && window.localStorage.getItem('hawker-shop-owner-mode') === 'true',
+  );
 
   useEffect(() => {
     queueMicrotask(() => setName(profile?.displayName ?? ''));
   }, [profile?.displayName]);
+
+  const handleOwnerModeToggle = (ownerMode: boolean) => {
+    setIsOwnerMode(ownerMode);
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem(modeStorageKey, ownerMode ? 'owner' : 'customer');
+    }
+    if (ownerMode) {
+      router.push('/owner' as any);
+    }
+  };
+
+  const handleShopOwnerToggle = (open: boolean) => {
+    setIsShopOwnerMode(open);
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem('hawker-shop-owner-mode', open ? 'true' : 'false');
+    }
+    if (open) {
+      router.push('/shop-owner' as any);
+    }
+  };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -73,6 +101,36 @@ export default function ProfileSettingsPage() {
               <span>Change password</span>
               <span aria-hidden="true">→</span>
             </Link>
+            <div className="mt-4 flex items-center justify-between gap-3 rounded-[16px] bg-[#f5f5f7] px-3 py-3">
+              <div>
+                <p className="text-sm font-medium text-[#1d1d1f]">Hawker owner mode</p>
+                <p className="mt-1 text-xs text-[#6e6e73]">Switch to the stall dashboard</p>
+              </div>
+              <button
+                type="button"
+                role="switch"
+                aria-checked={isOwnerMode}
+                onClick={() => handleOwnerModeToggle(!isOwnerMode)}
+                className={`relative h-7 w-12 rounded-full transition ${isOwnerMode ? 'bg-[#111827]' : 'bg-[#d1d5db]'}`}
+              >
+                <span className={`absolute top-1 h-5 w-5 rounded-full bg-white shadow-sm transition ${isOwnerMode ? 'left-6' : 'left-1'}`} />
+              </button>
+            </div>
+            <div className="mt-3 flex items-center justify-between gap-3 rounded-[16px] bg-[#f5f5f7] px-3 py-3">
+              <div>
+                <p className="text-sm font-medium text-[#1d1d1f]">Shop owner app</p>
+                <p className="mt-1 text-xs text-[#6e6e73]">Open the multi-booth management dashboard</p>
+              </div>
+              <button
+                type="button"
+                role="switch"
+                aria-checked={isShopOwnerMode}
+                onClick={() => handleShopOwnerToggle(!isShopOwnerMode)}
+                className={`relative h-7 w-12 rounded-full transition ${isShopOwnerMode ? 'bg-[#111827]' : 'bg-[#d1d5db]'}`}
+              >
+                <span className={`absolute top-1 h-5 w-5 rounded-full bg-white shadow-sm transition ${isShopOwnerMode ? 'left-6' : 'left-1'}`} />
+              </button>
+            </div>
             {error ? <p className="mt-3 text-sm text-[#9f1239]">{error}</p> : null}
             {message ? <p className="mt-3 text-sm text-[#166534]">{message}</p> : null}
             <button type="submit" disabled={isSaving} className="mt-5 flex w-full items-center justify-center rounded-full bg-[#111827] px-4 py-3 text-sm font-semibold text-white disabled:opacity-60">
