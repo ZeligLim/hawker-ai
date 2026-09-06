@@ -25,7 +25,7 @@ function NavigationIcon({ Icon, active }: { Icon: any; active: boolean }) {
 }
 
 const navItems = [
-  { href: '/', label: 'Home', icon: HomeIcon },
+  { href: '/home', label: 'Home', icon: HomeIcon },
   { href: '/menu', label: 'Menu', icon: MenuIcon },
   { href: '/shop', label: 'Shop', icon: ShopIcon },
   { href: '/orders', label: 'Orders', icon: OrdersIcon },
