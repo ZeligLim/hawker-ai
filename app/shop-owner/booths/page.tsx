@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Pencil, Plus, Store, X } from 'lucide-react';
 
 type Booth = {
@@ -21,23 +21,31 @@ export default function ShopOwnerBoothsPage() {
   const [shops, setShops] = useState<ShopMembership[]>([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<Booth | null>(null);
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [newBooth, setNewBooth] = useState({ name: '', restaurantId: '' });
   const [generatedTokens, setGeneratedTokens] = useState<Record<string, string>>({});
 
-  useEffect(() => {
-    const loadShops = async () => {
-      try {
-        const response = await fetch('/api/owner/shops');
-        const payload = (await response.json()) as { shops?: ShopMembership[] };
-        setShops(payload.shops ?? []);
-      } catch {
-        setShops([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    void loadShops();
+  const loadShops = useCallback(async () => {
+    try {
+      const response = await fetch('/api/owner/shops');
+      const payload = (await response.json()) as { shops?: ShopMembership[] };
+      setShops(payload.shops ?? []);
+      const defaultRestaurantId = payload.shops?.[0]?.id ?? '';
+      setNewBooth((current) => ({ ...current, restaurantId: current.restaurantId || defaultRestaurantId }));
+    } catch {
+      setShops([]);
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      void loadShops();
+    }, 0);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [loadShops]);
 
   const boothList = shops.flatMap((shop) =>
     shop.booths.map((booth) => ({
@@ -47,10 +55,54 @@ export default function ShopOwnerBoothsPage() {
     })),
   );
 
-  const handleSave = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSave = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!editing) return;
-    setEditing(null);
+
+    try {
+      const response = await fetch(`/api/owner/booths/${editing.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: editing.name }),
+      });
+
+      const payload = (await response.json()) as { error?: string };
+      if (!response.ok) {
+        throw new Error(payload.error ?? 'Unable to update booth.');
+      }
+
+      setEditing(null);
+      await loadShops();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleCreateBooth = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!newBooth.name.trim() || !newBooth.restaurantId) return;
+
+    try {
+      const response = await fetch('/api/owner/booths', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: newBooth.name,
+          restaurantId: newBooth.restaurantId,
+        }),
+      });
+
+      const payload = (await response.json()) as { error?: string };
+      if (!response.ok) {
+        throw new Error(payload.error ?? 'Unable to create booth.');
+      }
+
+      setIsCreateOpen(false);
+      setNewBooth({ name: '', restaurantId: shops[0]?.id ?? '' });
+      await loadShops();
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const generateInvite = async (boothId: string) => {
@@ -83,7 +135,7 @@ export default function ShopOwnerBoothsPage() {
           <div>
             <h1 className="text-3xl font-semibold tracking-[-0.06em]">Booths</h1>
           </div>
-          <button type="button" className="inline-flex items-center gap-2 rounded-full bg-[#111827] px-4 py-2.5 text-sm font-semibold text-white">
+          <button type="button" onClick={() => setIsCreateOpen(true)} className="inline-flex items-center gap-2 rounded-full bg-[#111827] px-4 py-2.5 text-sm font-semibold text-white">
             <Plus className="h-4 w-4" /> Add booth
           </button>
         </header>
@@ -145,6 +197,45 @@ export default function ShopOwnerBoothsPage() {
           )}
         </section>
       </div>
+
+      {isCreateOpen ? (
+        <div className="fixed inset-0 z-30 flex items-end justify-center bg-[#111827]/35 p-4 sm:items-center">
+          <form onSubmit={handleCreateBooth} className="w-full max-w-md rounded-[24px] bg-white p-5 shadow-xl">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-semibold">Create booth</h2>
+              <button type="button" aria-label="Close create booth form" onClick={() => setIsCreateOpen(false)}>
+                <X className="h-5 w-5 text-[#6e6e73]" />
+              </button>
+            </div>
+
+            <label className="mt-5 block text-sm font-medium">
+              Shop
+              <select
+                value={newBooth.restaurantId}
+                onChange={(event) => setNewBooth({ ...newBooth, restaurantId: event.target.value })}
+                className="mt-2 w-full rounded-[14px] bg-[#f5f5f7] px-3 py-2.5 outline-none"
+              >
+                {shops.length === 0 ? <option value="">No shops available</option> : shops.map((shop) => (
+                  <option key={shop.id} value={shop.id}>{shop.name}</option>
+                ))}
+              </select>
+            </label>
+
+            <label className="mt-4 block text-sm font-medium">
+              Booth name
+              <input
+                value={newBooth.name}
+                onChange={(event) => setNewBooth({ ...newBooth, name: event.target.value })}
+                className="mt-2 w-full rounded-[14px] bg-[#f5f5f7] px-3 py-2.5 outline-none ring-1 ring-transparent focus:ring-[#cbd5e1]"
+              />
+            </label>
+
+            <button type="submit" className="mt-5 w-full rounded-full bg-[#111827] px-4 py-3 text-sm font-semibold text-white">
+              Create booth
+            </button>
+          </form>
+        </div>
+      ) : null}
 
       {editing ? (
         <div className="fixed inset-0 z-30 flex items-end justify-center bg-[#111827]/35 p-4 sm:items-center">

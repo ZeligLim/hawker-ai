@@ -1,10 +1,10 @@
 # Current Project Context
 
 ## Current Phase
-Phase 3: multi-tenant shop membership and restaurant-scoped ownership
+Phase 4: shop profile and booth management
 
 ## Current Feature
-Add the shop-level membership model required for the SaaS architecture: `restaurant_memberships` sits alongside the existing booth-scoped `merchant_memberships`, and the shop-owner dashboard loads real restaurant + booth access from the authenticated backend before broader multi-tenant flows are expanded.
+Add real shop profile management for the shop-owner app and allow booth creation/editing through the existing restaurant-to-booth ownership model. The app keeps the single-account architecture and uses `restaurant_memberships` for shop-level access while preserving `merchant_memberships` for booth-level authorization.
 
 ## Completed
 - Next.js App Router foundation initialized
