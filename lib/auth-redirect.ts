@@ -152,13 +152,13 @@ export async function resolveUserDestination(
   if (client && user) {
     try {
       // Check restaurant (shop) memberships
-      const { data: restaurantMemberships } = await client
+      const { data: restaurantMemberships, error: restErr } = await client
         .from('restaurant_memberships')
         .select('id')
         .eq('user_id', user.id)
         .limit(1);
 
-      if (restaurantMemberships && restaurantMemberships.length > 0) {
+      if (!restErr && restaurantMemberships && restaurantMemberships.length > 0) {
         if (typeof window !== 'undefined') {
           window.localStorage.setItem('hawker-shop-owner-mode', 'true');
         }
@@ -166,13 +166,13 @@ export async function resolveUserDestination(
       }
 
       // Check merchant (booth) memberships
-      const { data: merchantMemberships } = await client
+      const { data: merchantMemberships, error: merchErr } = await client
         .from('merchant_memberships')
-        .select('id')
+        .select('food_outlet_id')
         .eq('user_id', user.id)
         .limit(1);
 
-      if (merchantMemberships && merchantMemberships.length > 0) {
+      if (!merchErr && merchantMemberships && merchantMemberships.length > 0) {
         if (typeof window !== 'undefined') {
           window.localStorage.setItem('hawker-user-mode', 'owner');
         }

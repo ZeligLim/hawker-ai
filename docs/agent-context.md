@@ -34,7 +34,8 @@ Complete the booth invitation lifecycle by generating hashed invite tokens from 
 - Customer checkout now calls `/api/orders` with the authenticated Supabase access token and clears the cart only after the atomic order RPC succeeds
 - Owner order retrieval is available at `/api/owner/orders`, scoped to every stall membership belonging to the authenticated user
 - Owner orders now load from `/api/owner/orders` and advance status through `/api/owner/orders/[id]`
-- `lib/database.types.ts` provides checked-in Supabase `Database` types; the linked remote project currently has no applied schema, so `supabase gen types --linked` returns an empty schema
+- Applied all migrations (001 through 007) and seed data to the remote Supabase database; all core tables, RLS policies, and RPCs are active
+- Added defensive fallbacks in `api/owner/dishes` and `api/owner/orders` to gracefully handle schema cache timing and missing tables without crashing the application
 - `merchant_handles` migration and seed data provide public example handles: `@pakmat_nasilemak`, `@currymecorner`, and `@char_kwayteowstall`
 - Restored the profile tab in the regular customer bottom navigation and the standalone booth-owner navigation so the user can access profile/account settings again in both app shells
 - Redesigned public landing page (`/`) with Apple design aesthetic: frosted glass navigation, cinematic hero typography, interactive Studio Display product showcase (Food Court Operator OS, Stall Kitchen Display, Diner QR Experience), problem/solution contrast, bento feature grid, interactive deterministic AI food intelligence simulation, booth invite code demo, dual operator/stall solutions, Apple-style pricing tiers, and global footer

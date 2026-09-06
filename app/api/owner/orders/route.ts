@@ -5,13 +5,19 @@ export async function GET(request: NextRequest) {
   const auth = await requireRequestUser(request);
   if (!auth.client || !auth.user) return NextResponse.json({ error: auth.error }, { status: 401 });
 
-  const { data: memberships, error: membershipError } = await auth.client
-    .from('merchant_memberships')
-    .select('food_outlet_id')
-    .eq('user_id', auth.user.id);
-  if (membershipError) return NextResponse.json({ error: membershipError.message }, { status: 500 });
+  let directOutletIds: string[] = [];
+  try {
+    const { data: memberships, error: membershipError } = await auth.client
+      .from('merchant_memberships')
+      .select('food_outlet_id')
+      .eq('user_id', auth.user.id);
 
-  const directOutletIds = memberships?.map((membership) => membership.food_outlet_id).filter(Boolean) ?? [];
+    if (!membershipError && memberships) {
+      directOutletIds = memberships.map((membership) => membership.food_outlet_id).filter(Boolean);
+    }
+  } catch {
+    // ignore
+  }
 
   // Also include booths belonging to restaurants where user is an owner/manager
   const { data: restaurantMemberships } = await auth.client

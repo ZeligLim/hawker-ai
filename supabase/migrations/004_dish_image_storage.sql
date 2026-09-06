@@ -20,11 +20,11 @@ CREATE POLICY "Members can update dish images"
   TO authenticated
   USING (
     bucket_id = 'dish-images'
-    AND owner_id = auth.uid()
+    AND owner_id = (auth.uid())::text
   )
   WITH CHECK (
     bucket_id = 'dish-images'
-    AND owner_id = auth.uid()
+    AND owner_id = (auth.uid())::text
   );
 
 CREATE POLICY "Anyone can view dish images"
