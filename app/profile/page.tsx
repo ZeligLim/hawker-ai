@@ -178,8 +178,8 @@ export default function ProfilePage() {
 
   const orderLinks = useMemo(
     () =>
-      orders.map((order) => ({
-        id: order.id,
+      orders.map((order, index) => ({
+        id: `${order.id}-${index}`,
         order,
       })),
     [orders],
