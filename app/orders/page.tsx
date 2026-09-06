@@ -3,11 +3,13 @@
 import Link from 'next/link';
 import { Settings2 } from 'lucide-react';
 import { useMemo, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { CustomizationCard } from '@/components/customization-card';
 import { useAuth } from '@/components/auth-provider';
 import { buildCartSummary, updateCartItemCustomization, updateCartItemQuantity, useCartItems, type CartItem } from '@/lib/order/cart';
 import { getDishCustomization } from '@/lib/order/customizations';
 import { supabase } from '@/lib/supabase/client';
+import { formatTableLabel, getCurrentTableSession } from '@/lib/table-session';
 
 const directory = [
   { name: 'Ah Seng Chicken Rice', open: true, items: 12, eta: '10 min' },
@@ -19,9 +21,11 @@ const directory = [
 export default function OrdersPage() {
   const { cartItems, setCartItems } = useCartItems();
   const { status, isGuest } = useAuth();
+  const router = useRouter();
   const [customizingItem, setCustomizingItem] = useState<CartItem | null>(null);
   const [checkoutState, setCheckoutState] = useState<'idle' | 'submitting' | 'success'>('idle');
   const [checkoutError, setCheckoutError] = useState('');
+  const [tableLabel] = useState(() => formatTableLabel(getCurrentTableSession().tableNumber));
 
   const orderItems = useMemo(
     () =>
@@ -134,7 +138,9 @@ export default function OrdersPage() {
           <div className="mt-5 rounded-[22px] bg-[#111827] p-4 text-white shadow-[0_16px_32px_rgba(17,24,39,0.18)]">
             <div className="flex items-center justify-between text-xs uppercase tracking-[0.16em] text-white/70">
               <span>Current order</span>
-              <span>Table 12</span>
+              <button type="button" onClick={() => router.push('/scan' as any)} className="text-white underline-offset-4 hover:underline">
+                {tableLabel}
+              </button>
             </div>
             <div className="mt-3 flex items-end justify-between gap-3">
               <div>

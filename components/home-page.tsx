@@ -2,12 +2,14 @@
 
 import Link from 'next/link';
 import { Leaf, Plus } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useMemo, useState } from 'react';
 import { HawkerSearchBar } from '@/components/hawker-search-bar';
 import { CustomizationCard } from '@/components/customization-card';
 import { addItemToCart, getDishQuantity, removeCartItem, updateCartItemQuantity, useCartItems } from '@/lib/order/cart';
 import { getDishCustomization } from '@/lib/order/customizations';
 import { fallbackDishes } from '@/lib/search/fallback-data';
+import { formatTableLabel, getCurrentTableSession } from '@/lib/table-session';
 
 type FeaturedDish = {
   id: string;
@@ -70,6 +72,8 @@ export function HomePage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [results, setResults] = useState<FeaturedDish[]>([]);
+  const [tableLabel] = useState(() => formatTableLabel(getCurrentTableSession().tableNumber));
+  const router = useRouter();
   const { cartItems, setCartItems } = useCartItems();
   const [customizingDish, setCustomizingDish] = useState<FeaturedDish | null>(null);
 
@@ -205,9 +209,9 @@ export function HomePage() {
               </div>
               <p className="text-sm font-medium text-[#1d1d1f]">Setia Hawker Centre</p>
             </div>
-            <span className="rounded-full bg-white px-2 py-1 text-sm font-semibold text-[#1d1d1f] shadow-[0_4px_12px_rgba(15,23,42,0.04)]">
-              Table 12
-            </span>
+            <button type="button" onClick={() => router.push('/scan' as any)} className="rounded-full bg-white px-2 py-1 text-sm font-semibold text-[#1d1d1f] shadow-[0_4px_12px_rgba(15,23,42,0.04)]">
+              {tableLabel}
+            </button>
           </div>
 
           <HawkerSearchBar

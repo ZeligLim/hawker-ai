@@ -1,10 +1,10 @@
 # Current Project Context
 
 ## Current Phase
-Backend integration: typed Supabase clients and owner UI migration
+Phase 1: QR table-linking and table-aware customer ordering flow
 
 ## Current Feature
-Build the first customer-facing Hawker home page with table context, natural-language search entry, featured dishes, stall discovery, and mobile bottom navigation. The search interaction remains fully on the home screen, and a dedicated menu page now exists for browsing the broader hawker offering by category.
+Add a real table-linking flow so the customer can connect to a table QR code or table reference, store that context locally, and see it reflected across the home and checkout experience. This phase also prepares the app for customer order-history integration by keeping the table/session state explicit.
 
 ## Completed
 - Next.js App Router foundation initialized
@@ -53,8 +53,8 @@ Build the first customer-facing Hawker home page with table context, natural-lan
 
 ## Known Issues
 - Password recovery depends on Supabase Auth email configuration
-- Customer order history and QR/table-session scanning are still pending UI integration
+- Customer order history remains to be connected to the authenticated order API in the profile experience
 - Production credentials are still required for live Supabase/OpenRouter operations
 
 ## Next Task
-Next: add QR/table-session scanning and customer order history, then provision merchant memberships through a controlled admin flow.
+Next: connect the profile experience to `/api/orders`, surface real order detail pages, then provision merchant memberships through a controlled admin flow.
