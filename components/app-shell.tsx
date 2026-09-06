@@ -50,9 +50,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const isAuthRoute = pathname.startsWith('/auth');
   const isOwnerRoute = pathname.startsWith('/owner');
   const isShopOwnerRoute = pathname.startsWith('/shop-owner');
+  const isMarketingRoute = pathname === '/' || pathname === '/plans' || pathname === '/subscribe';
   const isStandaloneOwnerRoute = pathname === '/booths' || pathname.startsWith('/booths/') || pathname === '/analytics' || pathname.startsWith('/analytics/');
 
-  if (isAuthRoute || isStandaloneOwnerRoute) {
+  if (isAuthRoute || isMarketingRoute || isStandaloneOwnerRoute) {
     return <>{children}</>;
   }
 
@@ -60,17 +61,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     return (
       <>
         {children}
-        <nav className="fixed inset-x-0 bottom-0 z-20 mx-auto max-w-[430px] bg-[#f7f7f7]/95 px-2 py-2 backdrop-blur-xl sm:max-w-[480px] lg:max-w-[960px] lg:rounded-t-[22px] lg:bg-white/95 lg:px-4">
-          <div className="grid grid-cols-3 gap-1">
+        <nav className="fixed inset-x-0 bottom-0 z-20 mx-auto max-w-[430px] px-2 pb-3 sm:max-w-[480px] lg:max-w-[960px]">
+          <div className="grid grid-cols-3 gap-1 rounded-full bg-[#f7f7f7]/95 p-1.5 shadow-[0_8px_24px_rgba(17,17,17,0.08)] backdrop-blur-xl lg:bg-white/95">
             {shopOwnerNavItems.map(({ href, label, icon: Icon }) => {
               const active = pathname === href || pathname.startsWith(`${href}/`);
-
+ 
               return (
                 <Link
                   key={label}
                   href={href as any}
-                  className={`flex items-center justify-center rounded-[14px] px-2 py-2 transition ${
-                    active ? 'text-[#1d1d1f]' : 'text-[#6e6e73]'
+                  className={`flex items-center justify-center rounded-full px-2 py-2 transition ${
+                    active ? 'bg-white text-[#1d1d1f] shadow-sm' : 'text-[#6e6e73]'
                   }`}
                   aria-label={label}
                   aria-current={active ? 'page' : undefined}
@@ -91,17 +92,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     return (
       <>
         {children}
-        <nav className="fixed inset-x-0 bottom-0 z-20 mx-auto max-w-[430px] bg-[#f7f7f7]/95 px-2 py-2 backdrop-blur-xl sm:max-w-[480px] lg:max-w-[960px] lg:rounded-t-[22px] lg:bg-white/95 lg:px-4">
-          <div className="grid grid-cols-4 gap-1">
+        <nav className="fixed inset-x-0 bottom-0 z-20 mx-auto max-w-[430px] px-2 pb-3 sm:max-w-[480px] lg:max-w-[960px]">
+          <div className="grid grid-cols-4 gap-1 rounded-full bg-[#f7f7f7]/95 p-1.5 shadow-[0_8px_24px_rgba(17,17,17,0.08)] backdrop-blur-xl lg:bg-white/95">
             {ownerNavItems.map(({ href, label, icon: Icon }) => {
               const active = pathname === href || pathname.startsWith(`${href}/`);
-
+ 
               return (
                 <Link
                   key={label}
                   href={href as any}
-                  className={`flex items-center justify-center rounded-[14px] px-2 py-2 transition ${
-                    active ? 'text-[#1d1d1f]' : 'text-[#6e6e73]'
+                  className={`flex items-center justify-center rounded-full px-2 py-2 transition ${
+                    active ? 'bg-white text-[#1d1d1f] shadow-sm' : 'text-[#6e6e73]'
                   }`}
                   aria-label={label}
                   aria-current={active ? 'page' : undefined}
@@ -121,17 +122,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <>
       {children}
-      <nav className="fixed inset-x-0 bottom-0 z-20 mx-auto max-w-[430px] bg-[#f7f7f7]/95 px-2 py-2 backdrop-blur-xl sm:max-w-[480px] lg:max-w-[960px] lg:rounded-t-[22px] lg:bg-white/95 lg:px-4">
-        <div className="grid grid-cols-5 gap-1">
+      <nav className="fixed inset-x-0 bottom-0 z-20 mx-auto max-w-[430px] px-2 pb-3 sm:max-w-[480px] lg:max-w-[960px]">
+        <div className="grid grid-cols-5 gap-1 rounded-full bg-[#f7f7f7]/95 p-1.5 shadow-[0_8px_24px_rgba(17,17,17,0.08)] backdrop-blur-xl lg:bg-white/95">
           {navItems.map(({ href, label, icon: Icon }) => {
             const active = pathname === href;
-
+ 
             return (
               <Link
                 key={label}
                 href={href as any}
-                className={`flex items-center justify-center rounded-[14px] px-2 py-2 transition ${
-                  active ? 'text-[#1d1d1f]' : 'text-[#6e6e73]'
+                className={`flex items-center justify-center rounded-full px-2 py-2 transition ${
+                  active ? 'bg-white text-[#1d1d1f] shadow-sm' : 'text-[#6e6e73]'
                 }`}
                 aria-label={label}
                 aria-current={active ? 'page' : undefined}
