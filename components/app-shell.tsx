@@ -20,6 +20,10 @@ function OrdersIcon({ active }: { active: boolean }) {
   return <ClipboardList className="h-[18px] w-[18px]" strokeWidth={1.8} fill={active ? 'currentColor' : 'none'} />;
 }
 
+function NavigationIcon({ Icon, active }: { Icon: any; active: boolean }) {
+  return <Icon className="h-[18px] w-[18px]" strokeWidth={1.8} fill={active ? 'currentColor' : 'none'} />;
+}
+
 const navItems = [
   { href: '/', label: 'Home', icon: HomeIcon },
   { href: '/menu', label: 'Menu', icon: MenuIcon },
@@ -133,7 +137,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 aria-current={active ? 'page' : undefined}
               >
                 <span className={`flex h-8 w-8 items-center justify-center ${active ? 'text-[#1d1d1f]' : 'text-[#6e6e73]'}`}>
-                  <Icon active={active} />
+                  <NavigationIcon Icon={Icon} active={active} />
                 </span>
               </Link>
             );
