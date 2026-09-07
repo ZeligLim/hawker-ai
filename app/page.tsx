@@ -39,7 +39,6 @@ export default function LandingPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeShowcaseTab, setActiveShowcaseTab] = useState<'operator' | 'kitchen' | 'customer'>('operator');
   const [activeAiIndex, setActiveAiIndex] = useState(0);
-  const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly');
   const [copiedInvite, setCopiedInvite] = useState(false);
 
   const handleCopyCode = () => {
@@ -107,8 +106,8 @@ export default function LandingPage() {
         <span>Introducing Hawker OS 2.0</span>
         <span className="mx-2 text-white/40">•</span>
         <span className="text-white/80">The complete operating system for modern food halls & hawker centres.</span>
-        <Link href="/plans" className="ml-2 inline-flex items-center text-[#2997ff] hover:underline font-semibold">
-          Explore plans <ChevronRight className="w-3 h-3 ml-0.5 inline" />
+        <Link href="/pricing" className="ml-2 inline-flex items-center text-[#2997ff] hover:underline font-semibold">
+          Explore pricing <ChevronRight className="w-3 h-3 ml-0.5 inline" />
         </Link>
       </div>
 
@@ -160,7 +159,7 @@ export default function LandingPage() {
               Sign In
             </Link>
             <Link
-              href={`/subscribe?cycle=${billingCycle}`}
+              href="/subscribe"
               className="text-xs font-medium text-white bg-[#0071e3] hover:bg-[#0077ed] px-3.5 py-1.5 rounded-full shadow-[0_1px_2px_rgba(0,0,0,0.08)] transition-all hover:shadow"
             >
               Start Free
@@ -213,14 +212,14 @@ export default function LandingPage() {
               onClick={() => setMobileMenuOpen(false)}
               className="block py-2 text-sm font-medium text-[#1d1d1f] border-b border-black/[0.04]"
             >
-              Pricing Plans
+              Pricing
             </a>
             <div className="pt-2 flex flex-col gap-2">
               <Link
-                href={`/subscribe?cycle=${billingCycle}`}
+                href="/subscribe"
                 className="w-full text-center py-2.5 rounded-full text-sm font-semibold text-white bg-[#0071e3]"
               >
-                Start Free Trial
+                Start Free
               </Link>
               <div className="grid grid-cols-2 gap-2">
                 <Link
@@ -268,10 +267,10 @@ export default function LandingPage() {
           {/* Apple Call to Actions */}
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3.5">
             <Link
-              href={`/subscribe?cycle=${billingCycle}`}
+              href="/subscribe"
               className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-3 rounded-full text-sm font-medium text-white bg-[#0071e3] hover:bg-[#0077ed] transition-all shadow-[0_2px_10px_rgba(0,113,227,0.25)] hover:shadow-[0_4px_16px_rgba(0,113,227,0.35)]"
             >
-              Start 14-day free trial
+              Get started for free
               <ArrowRight className="w-4 h-4 ml-2" />
             </Link>
             <a
@@ -285,7 +284,7 @@ export default function LandingPage() {
 
           {/* Apple Micro Footnote */}
           <p className="mt-4 text-xs text-[#86868b]">
-            0% stall commission &bull; Flat RM 0.50 diner platform fee &bull; 1-tap automated out-of-stock refunds
+            Zero monthly subscriptions &bull; Small cut from payments &bull; 1-tap automated out-of-stock refunds
           </p>
 
           {/* High-level Apple Metric Strip */}
@@ -1163,7 +1162,7 @@ export default function LandingPage() {
 
               <div className="mt-8 pt-6 border-t border-black/[0.06]">
                 <Link
-                  href={`/subscribe?plan=pro&cycle=${billingCycle}`}
+                  href="/subscribe"
                   className="w-full inline-flex items-center justify-center py-3 rounded-full text-sm font-semibold bg-[#1d1d1f] text-white hover:bg-black transition-colors"
                 >
                   Start as Venue Operator
@@ -1215,221 +1214,166 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── PRICING TEASER (Apple Studio Tier Cards) ── */}
-      <section id="pricing" className="py-20 sm:py-28 bg-white border-t border-black/[0.06]">
+      {/* ── APPLE-STYLE PRICING SECTION (Transaction-Based / No Subscriptions) ── */}
+      <section id="pricing" className="py-24 sm:py-32 bg-white border-t border-black/[0.06]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-2xl mx-auto text-center mb-12">
+          <div className="max-w-3xl mx-auto text-center mb-16">
             <p className="text-xs font-semibold tracking-wider uppercase text-[#0071e3] mb-3">
-              Simple & Transparent
+              Simple, Pay-As-You-Grow Pricing
             </p>
             <h2 className="text-3xl sm:text-5xl font-semibold tracking-[-0.03em] text-[#1d1d1f]">
-              Plans for stalls of every size.
+              Zero monthly subscriptions. We only win when you sell.
             </h2>
-            <p className="mt-4 text-base sm:text-lg text-[#6e6e73]">
-              0% transaction commission on stalls, a flat RM 0.50 diner platform fee, and instant out-of-stock eWallet refunds.
+            <p className="mt-4 text-base sm:text-lg text-[#6e6e73] leading-relaxed">
+              No tier limits, no upfront software fees, and no terminal rentals. Everything is completely free to set up—we simply take a small, transparent cut from processed payments.
             </p>
-
-            {/* Billing Cycle Toggle */}
-            <div className="mt-6 inline-flex items-center p-1 bg-[#f5f5f7] rounded-full border border-black/[0.06]">
-              <button
-                onClick={() => setBillingCycle('monthly')}
-                className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all ${
-                  billingCycle === 'monthly'
-                    ? 'bg-white text-[#1d1d1f] shadow-sm'
-                    : 'text-[#6e6e73] hover:text-[#1d1d1f]'
-                }`}
-              >
-                Monthly
-              </button>
-              <button
-                onClick={() => setBillingCycle('annual')}
-                className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all ${
-                  billingCycle === 'annual'
-                    ? 'bg-white text-[#1d1d1f] shadow-sm'
-                    : 'text-[#6e6e73] hover:text-[#1d1d1f]'
-                }`}
-              >
-                Annual <span className="text-[#30d158] font-bold ml-1">Save 20%</span>
-              </button>
-            </div>
           </div>
 
           <div className="grid md:grid-cols-3 gap-6 lg:gap-8 items-stretch">
-            {/* Plan 1: Starter */}
+            {/* Pillar 1: 100% Free Platform */}
             <div className="bg-[#fbfbfd] p-7 sm:p-8 rounded-[32px] border border-black/[0.08] shadow-sm flex flex-col justify-between">
               <div>
-                <div className="flex items-center justify-between">
-                  <p className="text-base font-semibold text-[#1d1d1f]">Starter</p>
-                  <span className="text-[11px] font-semibold text-[#0071e3] bg-[#0071e3]/10 px-2 py-0.5 rounded-md">
-                    Up to 3 booths
-                  </span>
+                <div className="w-10 h-10 rounded-2xl bg-[#0071e3]/10 text-[#0071e3] flex items-center justify-center mb-5">
+                  <Building2 className="w-5 h-5" />
                 </div>
-                <p className="text-xs text-[#86868b] mt-1">For single stalls and boutique food courts.</p>
-                <div className="mt-5 flex items-baseline gap-1">
-                  <span className="text-4xl font-bold tracking-tight text-[#1d1d1f]">
-                    {billingCycle === 'annual' ? 'RM 79' : 'RM 99'}
-                  </span>
-                  <span className="text-xs text-[#86868b]">/month</span>
+                <h3 className="text-xl font-semibold text-[#1d1d1f]">Free Forever Platform</h3>
+                <p className="text-xs text-[#86868b] mt-1">For every hawker centre, food hall, and street market.</p>
+
+                <div className="mt-6 flex items-baseline gap-1">
+                  <span className="text-4xl font-bold tracking-tight text-[#1d1d1f]">RM 0</span>
+                  <span className="text-xs text-[#86868b]">/ month</span>
                 </div>
-                {billingCycle === 'annual' ? (
-                  <p className="text-[11px] text-[#30d158] font-semibold mt-1">
-                    Billed annually (RM 948/yr) &bull; Save RM 240
-                  </p>
-                ) : (
-                  <p className="text-[11px] text-[#86868b] mt-1">Billed monthly &bull; 14-day free trial</p>
-                )}
+                <p className="text-[11px] text-[#30d158] font-semibold mt-1">Zero monthly software invoices</p>
 
                 <ul className="mt-6 space-y-3 text-xs text-[#515154]">
                   <li className="flex items-center gap-2.5">
                     <Check className="w-4 h-4 text-[#30d158] shrink-0" />
-                    <span>0% stall commission (keep 100%)</span>
+                    <span>Unlimited food stalls & booths</span>
                   </li>
                   <li className="flex items-center gap-2.5">
                     <Check className="w-4 h-4 text-[#30d158] shrink-0" />
-                    <span>Flat RM 0.50 diner fee</span>
+                    <span>Unlimited QR table codes & digital menus</span>
                   </li>
                   <li className="flex items-center gap-2.5">
                     <Check className="w-4 h-4 text-[#30d158] shrink-0" />
-                    <span>1-tap sold-out eWallet refunds</span>
+                    <span>Zero hardware lock-in (use any phone/tablet)</span>
                   </li>
                   <li className="flex items-center gap-2.5">
                     <Check className="w-4 h-4 text-[#30d158] shrink-0" />
-                    <span>Digital menu & QR ordering</span>
-                  </li>
-                  <li className="flex items-center gap-2.5">
-                    <Check className="w-4 h-4 text-[#30d158] shrink-0" />
-                    <span>Standard mobile kitchen view</span>
+                    <span>No setup costs or annual commitments</span>
                   </li>
                 </ul>
               </div>
 
               <div className="mt-8">
                 <Link
-                  href={`/subscribe?plan=starter&cycle=${billingCycle}`}
+                  href="/subscribe"
                   className="w-full inline-flex items-center justify-center py-2.5 rounded-full text-xs font-semibold bg-[#1d1d1f] text-white hover:bg-black transition-colors"
                 >
-                  Start free trial
+                  Get started for free
                 </Link>
               </div>
             </div>
 
-            {/* Plan 2: Business (Featured) */}
+            {/* Pillar 2: Transaction Cut (Featured Center) */}
             <div className="bg-[#1d1d1f] text-white p-7 sm:p-8 rounded-[32px] shadow-xl flex flex-col justify-between relative overflow-hidden">
               <div className="absolute top-4 right-5">
                 <span className="px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase bg-[#0071e3] text-white">
-                  Most Popular
+                  Payment Cut
                 </span>
               </div>
               <div>
-                <div className="flex items-center gap-2">
-                  <p className="text-base font-semibold text-white">Food Hall Pro</p>
-                  <span className="text-[11px] font-semibold text-white bg-white/20 px-2 py-0.5 rounded-md">
-                    Up to 15 booths
-                  </span>
+                <div className="w-10 h-10 rounded-2xl bg-white/10 text-white flex items-center justify-center mb-5">
+                  <CreditCard className="w-5 h-5 text-[#2997ff]" />
                 </div>
-                <p className="text-xs text-white/60 mt-1">For bustling hawker centres & food courts.</p>
-                <div className="mt-5 flex items-baseline gap-1">
-                  <span className="text-4xl font-bold tracking-tight text-white">
-                    {billingCycle === 'annual' ? 'RM 199' : 'RM 249'}
-                  </span>
-                  <span className="text-xs text-white/60">/month</span>
+                <h3 className="text-xl font-semibold text-white">Pay As You Sell</h3>
+                <p className="text-xs text-white/60 mt-1">We take a small cut directly from payments.</p>
+
+                <div className="mt-6 flex items-baseline gap-1.5">
+                  <span className="text-3xl sm:text-4xl font-bold tracking-tight text-white">Small Cut</span>
+                  <span className="text-xs text-white/60">/ transaction</span>
                 </div>
-                {billingCycle === 'annual' ? (
-                  <p className="text-[11px] text-[#30d158] font-semibold mt-1">
-                    Billed annually (RM 2,388/yr) &bull; Save RM 600
-                  </p>
-                ) : (
-                  <p className="text-[11px] text-white/60 mt-1">Billed monthly &bull; 14-day free trial</p>
-                )}
+                <p className="text-[11px] text-[#30d158] font-semibold mt-1">No orders = RM 0.00 platform fee</p>
 
                 <ul className="mt-6 space-y-3 text-xs text-[#d2d2d7]">
                   <li className="flex items-center gap-2.5">
                     <Check className="w-4 h-4 text-[#30d158] shrink-0" />
-                    <span>0% stall commission & flat 50 sen diner fee</span>
+                    <span>Transparent cut from payment gateway</span>
                   </li>
                   <li className="flex items-center gap-2.5">
                     <Check className="w-4 h-4 text-[#30d158] shrink-0" />
-                    <span>1-tap sold-out eWallet refunds</span>
+                    <span>Direct automated bank / eWallet payouts</span>
                   </li>
                   <li className="flex items-center gap-2.5">
                     <Check className="w-4 h-4 text-[#30d158] shrink-0" />
-                    <span>Multi-stall single checkout cart</span>
+                    <span>1-tap automated sold-out eWallet refunds</span>
                   </li>
                   <li className="flex items-center gap-2.5">
                     <Check className="w-4 h-4 text-[#30d158] shrink-0" />
-                    <span>OpenRouter AI Food Discovery</span>
+                    <span>Automated tenant sales reconciliation</span>
                   </li>
                   <li className="flex items-center gap-2.5">
                     <Check className="w-4 h-4 text-[#30d158] shrink-0" />
-                    <span>Real-time operator revenue telemetry</span>
-                  </li>
-                  <li className="flex items-center gap-2.5">
-                    <Check className="w-4 h-4 text-[#30d158] shrink-0" />
-                    <span>Cryptographic booth invite generator</span>
+                    <span>No financial risk during quiet or off-peak days</span>
                   </li>
                 </ul>
               </div>
 
               <div className="mt-8">
                 <Link
-                  href={`/subscribe?plan=pro&cycle=${billingCycle}`}
+                  href="/subscribe"
                   className="w-full inline-flex items-center justify-center py-2.5 rounded-full text-xs font-semibold bg-[#0071e3] text-white hover:bg-[#0077ed] transition-colors shadow-lg"
                 >
-                  Start 14-day trial
+                  Activate Venue Now
                 </Link>
               </div>
             </div>
 
-            {/* Plan 3: Enterprise */}
+            {/* Pillar 3: All Features Unlocked */}
             <div className="bg-[#fbfbfd] p-7 sm:p-8 rounded-[32px] border border-black/[0.08] shadow-sm flex flex-col justify-between">
               <div>
-                <div className="flex items-center justify-between">
-                  <p className="text-base font-semibold text-[#1d1d1f]">Enterprise Venue</p>
-                  <span className="text-[11px] font-semibold text-[#0071e3] bg-[#0071e3]/10 px-2 py-0.5 rounded-md">
-                    Unlimited booths
-                  </span>
+                <div className="w-10 h-10 rounded-2xl bg-[#30d158]/10 text-[#30d158] flex items-center justify-center mb-5">
+                  <Sparkles className="w-5 h-5 text-[#30d158]" />
                 </div>
-                <p className="text-xs text-[#86868b] mt-1">For multi-floor halls & commercial markets.</p>
-                <div className="mt-5 flex items-baseline gap-1">
-                  <span className="text-4xl font-bold tracking-tight text-[#1d1d1f]">
-                    {billingCycle === 'annual' ? 'RM 479' : 'RM 599'}
-                  </span>
-                  <span className="text-xs text-[#86868b]">/month</span>
+                <h3 className="text-xl font-semibold text-[#1d1d1f]">All Features Included</h3>
+                <p className="text-xs text-[#86868b] mt-1">Every premium capability, zero tier gating.</p>
+
+                <div className="mt-6 flex items-baseline gap-1">
+                  <span className="text-4xl font-bold tracking-tight text-[#1d1d1f]">100%</span>
+                  <span className="text-xs text-[#86868b]">features unlocked</span>
                 </div>
-                {billingCycle === 'annual' ? (
-                  <p className="text-[11px] text-[#30d158] font-semibold mt-1">
-                    Billed annually (RM 5,748/yr) &bull; Save RM 1,440
-                  </p>
-                ) : (
-                  <p className="text-[11px] text-[#86868b] mt-1">Billed monthly &bull; 14-day free trial</p>
-                )}
+                <p className="text-[11px] text-[#0071e3] font-semibold mt-1">No feature paywalls</p>
 
                 <ul className="mt-6 space-y-3 text-xs text-[#515154]">
                   <li className="flex items-center gap-2.5">
                     <Check className="w-4 h-4 text-[#30d158] shrink-0" />
-                    <span>Unlimited booths & stalls</span>
+                    <span>Multi-stall unified checkout basket</span>
                   </li>
                   <li className="flex items-center gap-2.5">
                     <Check className="w-4 h-4 text-[#30d158] shrink-0" />
-                    <span>Dedicated onboarding engineer</span>
+                    <span>Real-time kitchen display screens (KDS)</span>
                   </li>
                   <li className="flex items-center gap-2.5">
                     <Check className="w-4 h-4 text-[#30d158] shrink-0" />
-                    <span>Custom financial export & ERP sync</span>
+                    <span>OpenRouter AI natural language search</span>
                   </li>
                   <li className="flex items-center gap-2.5">
                     <Check className="w-4 h-4 text-[#30d158] shrink-0" />
-                    <span>99.9% uptime SLA guarantee</span>
+                    <span>Cryptographic booth invite keys</span>
+                  </li>
+                  <li className="flex items-center gap-2.5">
+                    <Check className="w-4 h-4 text-[#30d158] shrink-0" />
+                    <span>Live gross revenue & tenancy telemetry</span>
                   </li>
                 </ul>
               </div>
 
               <div className="mt-8">
                 <Link
-                  href={`/subscribe?plan=enterprise&cycle=${billingCycle}`}
+                  href="/pricing"
                   className="w-full inline-flex items-center justify-center py-2.5 rounded-full text-xs font-semibold border border-black/15 bg-white text-[#1d1d1f] hover:bg-black/[0.04] transition-colors"
                 >
-                  Start 14-day trial
+                  Explore pricing details
                 </Link>
               </div>
             </div>
@@ -1447,21 +1391,21 @@ export default function LandingPage() {
             Transform your food hall today.
           </h2>
           <p className="mt-5 text-base sm:text-xl text-[#a1a1a6] max-w-2xl mx-auto leading-relaxed">
-            Eliminate long queues, empower independent stall owners, and run your venue with effortless software.
+            Eliminate long queues, empower independent stall owners, and run your venue with effortless software. Zero subscription fees.
           </p>
 
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-3.5">
             <Link
-              href={`/subscribe?cycle=${billingCycle}`}
+              href="/subscribe"
               className="w-full sm:w-auto px-8 py-3.5 rounded-full text-sm font-semibold bg-[#0071e3] text-white hover:bg-[#0077ed] transition-all shadow-[0_4px_20px_rgba(0,113,227,0.35)]"
             >
-              Start 14-day free trial
+              Get started for free
             </Link>
             <Link
-              href="/plans"
+              href="/pricing"
               className="w-full sm:w-auto px-7 py-3.5 rounded-full text-sm font-semibold bg-white/10 hover:bg-white/15 text-white border border-white/10 transition-all"
             >
-              View detailed pricing
+              See how the payment cut works
             </Link>
           </div>
 
@@ -1493,7 +1437,7 @@ export default function LandingPage() {
                 <li><a href="#features" className="hover:text-[#1d1d1f] transition-colors">Kitchen Display (KDS)</a></li>
                 <li><a href="#features" className="hover:text-[#1d1d1f] transition-colors">Multi-Stall QR Cart</a></li>
                 <li><a href="#intelligence" className="hover:text-[#1d1d1f] transition-colors">AI Discovery Engine</a></li>
-                <li><Link href="/plans" className="hover:text-[#1d1d1f] transition-colors">Pricing & Plans</Link></li>
+                <li><Link href="/pricing" className="hover:text-[#1d1d1f] transition-colors">Pricing & Model</Link></li>
               </ul>
             </div>
 

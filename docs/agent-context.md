@@ -57,9 +57,13 @@ Complete the booth invitation lifecycle by generating hashed invite tokens from 
   - Added 1-Tap `Item Sold Out / Refund` button next to each line item with confirmation modal, instant gateway refund, and live dish inventory disabling
 - Updated public landing page (`app/page.tsx`) to highlight the 0% hawker commission, flat RM 0.50 diner fee, and 1-tap automated out-of-stock eWallet refunds in the hero, interactive product showcase tabs, and pricing tiers
 - Synchronized billing cycle (`cycle` / `billing`) and plan selection (`plan`) query parameters across all landing page navigation, hero CTA, role CTAs, and pricing tier cards
-- Refactored `/subscribe` page to read URL query parameters inside a React `<Suspense>` boundary, dynamically initializing plan and billing cycle without cascading render side effects
-- Modernized `/plans` page with Apple aesthetic, interactive Monthly/Annual discount toggle (Save 20%), Malaysian Ringgit pricing (Starter RM 99/79, Food Hall Pro RM 249/199, Enterprise RM 599/479), side-by-side feature comparison matrix, and transparent FAQ
-- Added `/pricing` route alias and whitelisted it in `components/app-shell.tsx` and `components/auth-provider.tsx` to prevent 404s and redirect issues
+- Refactored `/subscribe` onboarding wizard from subscription tiers to a streamlined Pay-As-You-Grow onboarding flow:
+  - Step 1: Venue profile registration with matching input heights
+  - Step 2: Settlement & Platform Cut (RM 0.00 / month forever, transparent transaction cut, choice of Diner Platform Fee vs Venue-Absorbed Cut, and bank settlement account configuration for DuitNow/FAST payouts)
+  - Step 3: First stall setup and booth slot assignment
+  - Step 4: Instant cryptographic activation token generation with direct dashboard routing
+- Modernized `/plans` and `/pricing` to highlight the 100% Free Forever platform (RM 0.00 / month, RM 0.00 setup, small cut per transaction, direct bank payouts) with comparison against legacy POS systems and complete FAQs
+- Updated landing page (`/`) to eliminate all monthly subscription plans (Starter, Pro, Enterprise) and billing toggles, replacing them with 3 Pay-As-You-Grow pillars: Free Forever Platform, Pay As You Sell, and 100% Features Unlocked
 
 ## Current Architecture
 - Frontend: Next.js App Router, TypeScript, React, Tailwind
@@ -67,11 +71,12 @@ Complete the booth invitation lifecycle by generating hashed invite tokens from 
 - Backend: route handlers, deterministic `SearchService`, and payment refund handlers
 - Database: Supabase/PostgreSQL with raw SQL migrations (001-008), generated-style TypeScript types, RLS, and fallback data paths
 - Security: AI never touches SQL or database access directly; merchant isolation verified via memberships before processing refunds
+- Monetization: Zero monthly software subscriptions; platform revenue is generated via a transparent payment cut on processed orders
 
 ## Important Decisions
 - AI output is validated with Zod before it can affect backend logic
 - Search remains deterministic and database-backed when credentials are present
-- Platform Monetization: Transparent flat RM 0.50 per-order diner fee, with 0% transaction commission on stalls so hawkers keep 100% of their dish earnings
+- Platform Monetization: No monthly RM software subscriptions. Transparent cut taken from transactions; configurable between diner platform fee (flat RM 0.50) and merchant payout deduction
 - Refunds: When an item is sold out, hawker triggers 1-tap refund from kitchen ticket; customer receives automated eWallet refund and dish is marked unavailable automatically
 - Kitchen ticket privacy: Customer platform fee line item is strictly omitted from merchant kitchen tickets
 
@@ -80,4 +85,4 @@ Complete the booth invitation lifecycle by generating hashed invite tokens from 
 - Live Stripe/HitPay/Curlec transactions require live API credentials in production; local sandbox fallback provides smooth development and demo testing
 
 ## Next Task
-Next: Run end-to-end user checkout and verify realtime multi-stall kitchen routing and sold-out refund synchronization.
+- End-to-end user checkout and verify realtime multi-stall kitchen routing and sold-out refund synchronization.

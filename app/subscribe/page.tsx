@@ -2,10 +2,8 @@
 
 import { useState, Suspense } from 'react';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
 import {
   Check,
-  ChevronRight,
   ChevronDown,
   ArrowRight,
   ArrowLeft,
@@ -16,8 +14,6 @@ import {
   Clock,
   Copy,
   CheckCircle2,
-  CreditCard,
-  Users,
   KeyRound,
   BadgePercent,
   LoaderCircle,
@@ -25,91 +21,25 @@ import {
 import { useAuth } from '@/components/auth-provider';
 import { supabase } from '@/lib/supabase/client';
 
-interface PlanTier {
-  id: string;
-  name: string;
-  monthlyPrice: number;
-  annualPrice: number;
-  description: string;
-  maxBooths: string;
-  featured?: boolean;
-  features: string[];
-}
-
-const plans: PlanTier[] = [
-  {
-    id: 'starter',
-    name: 'Starter',
-    monthlyPrice: 99,
-    annualPrice: 79,
-    description: 'Ideal for boutique food courts and pop-up street markets.',
-    maxBooths: 'Up to 3 booths',
-    features: [
-      '0% stall transaction commission (keep 100%)',
-      'Flat RM 0.50 diner platform fee',
-      '1-tap sold-out eWallet refunds',
-      'Digital menu & QR table ordering',
-      'Stall kitchen display system',
-      'Basic sales & order summaries',
-      'Standard customer mobile ordering',
-    ],
-  },
-  {
-    id: 'pro',
-    name: 'Food Hall Pro',
-    monthlyPrice: 249,
-    annualPrice: 199,
-    description: 'Designed for bustling hawker centres & full-scale food halls.',
-    maxBooths: 'Up to 15 booths',
-    featured: true,
-    features: [
-      'Everything in Starter',
-      'Up to 15 concurrent booth slots',
-      'Multi-stall unified checkout basket',
-      'OpenRouter AI Food Discovery',
-      'Real-time operator revenue telemetry',
-      'Single-click cryptographic booth invites',
-      'Automated tenant rent split reporting',
-    ],
-  },
-  {
-    id: 'enterprise',
-    name: 'Enterprise Venue',
-    monthlyPrice: 599,
-    annualPrice: 479,
-    description: 'For multi-level commercial venues and large culinary complexes.',
-    maxBooths: 'Unlimited booths',
-    features: [
-      'Everything in Food Hall Pro',
-      'Unlimited booths & stall profiles',
-      'Custom POS & accounting ERP export',
-      'Dedicated on-site onboarding engineer',
-      '99.9% uptime SLA guarantee',
-    ],
-  },
+const platformHighlights = [
+  '0% stall transaction commission (hawkers keep 100%)',
+  'Unlimited stalls & QR table codes',
+  'Multi-stall unified checkout basket',
+  'Real-time mobile Kitchen Display (KDS)',
+  '1-tap sold-out eWallet refunds',
+  'OpenRouter AI culinary natural search',
+  'Direct bank / eWallet automated payouts',
+  'Single-click cryptographic booth invites',
 ];
 
 function SubscribeContent() {
-  const searchParams = useSearchParams();
-  const urlPlan = searchParams.get('plan');
-  const urlCycle = searchParams.get('cycle') || searchParams.get('billing');
-
   const { status, profile, isGuest } = useAuth();
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1);
-  const [overrideCycle, setOverrideCycle] = useState<'monthly' | 'annual' | null>(null);
-  const [overridePlanId, setOverridePlanId] = useState<string | null>(null);
-
-  const billingCycle = overrideCycle ?? (urlCycle === 'annual' ? 'annual' : 'monthly');
-  const selectedPlanId =
-    overridePlanId ?? (urlPlan && ['starter', 'pro', 'enterprise'].includes(urlPlan) ? urlPlan : 'pro');
-
-  const setBillingCycle = (cycle: 'monthly' | 'annual') => setOverrideCycle(cycle);
-  const setSelectedPlanId = (id: string) => setOverridePlanId(id);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionError, setSubmissionError] = useState<string | null>(null);
 
-  // Form states
+  // Form states - Step 1
   const [venueName, setVenueName] = useState('Lot 10 Hutong Food Hall');
   const [operatorName, setOperatorName] = useState('Tan Wei Ming');
   const [email, setEmail] = useState('operator@hutong.com.my');
@@ -117,18 +47,21 @@ function SubscribeContent() {
   const [city, setCity] = useState('Kuala Lumpur');
   const [stallCount, setStallCount] = useState('6-15 stalls');
 
-  // First Booth states
+  // Monetization & Payout states - Step 2
+  const [feePayer, setFeePayer] = useState<'CUSTOMER' | 'MERCHANT'>('CUSTOMER');
+  const [bankName, setBankName] = useState('Maybank');
+  const [bankAccountNumber, setBankAccountNumber] = useState('5140 1234 5678');
+  const [accountHolder, setAccountHolder] = useState('Lot 10 Hutong Sdn Bhd');
+
+  // First Booth states - Step 3
   const [firstStallName, setFirstStallName] = useState('Ah Fatt Hainanese Chicken Rice');
   const [firstStallCategory, setFirstStallCategory] = useState('Chicken Rice & Roast Meats');
   const [firstStallSlot, setFirstStallSlot] = useState('Booth #01');
 
-  // Generated Invite Code state
+  // Generated Invite Code state - Step 4
   const [copiedCode, setCopiedCode] = useState(false);
   const [generatedInviteToken, setGeneratedInviteToken] = useState<string | null>(null);
   const generatedCode = generatedInviteToken || 'HKR-8F92-KL';
-
-  const selectedPlan = plans.find((p) => p.id === selectedPlanId) || plans[1];
-  const currentPrice = billingCycle === 'annual' ? selectedPlan.annualPrice : selectedPlan.monthlyPrice;
 
   const handleCopyInvite = () => {
     navigator.clipboard?.writeText(generatedCode);
@@ -239,8 +172,8 @@ function SubscribeContent() {
           </Link>
 
           <div className="flex items-center gap-4 text-xs font-medium">
-            <Link href="/plans" className="text-[#86868b] hover:text-[#1d1d1f] transition-colors hidden sm:inline">
-              Compare All Plans
+            <Link href="/pricing" className="text-[#86868b] hover:text-[#1d1d1f] transition-colors hidden sm:inline">
+              Pricing & Model
             </Link>
             <span className="text-black/10 hidden sm:inline">|</span>
             <Link
@@ -301,7 +234,7 @@ function SubscribeContent() {
               >
                 {currentStep > 2 ? <Check className="w-3.5 h-3.5" /> : '2'}
               </span>
-              <span className="hidden sm:inline">Plan</span>
+              <span className="hidden sm:inline">Settlement & Fees</span>
             </div>
 
             <div className={`h-[1px] flex-1 mx-2 sm:mx-3 ${currentStep >= 3 ? 'bg-[#0071e3]' : 'bg-black/[0.1]'}`} />
@@ -467,115 +400,179 @@ function SubscribeContent() {
                 </div>
 
                 <div className="pt-4 flex items-center justify-between border-t border-black/[0.06]">
-                  <span className="text-xs text-[#86868b]">14 days free &bull; No charge today</span>
+                  <span className="text-xs text-[#86868b]">Zero software bills &bull; RM 0 today</span>
                   <button
                     onClick={handleNext}
                     className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-xs font-semibold bg-[#0071e3] text-white hover:bg-[#0077ed] transition-all shadow-sm"
                   >
-                    Continue to Plan Selection
+                    Continue to Payout & Fee Setup
                     <ArrowRight className="w-3.5 h-3.5" />
                   </button>
                 </div>
               </div>
             )}
 
-            {/* ── STEP 2: CHOOSE PLAN ── */}
+            {/* ── STEP 2: SETTLEMENT & FEES ── */}
             {currentStep === 2 && (
               <div className="space-y-6">
                 <div>
                   <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0071e3]/10 text-[#0071e3] text-xs font-semibold mb-3">
                     <BadgePercent className="w-3.5 h-3.5" />
-                    Step 2 of 4 &bull; Choose Your Plan
+                    Step 2 of 4 &bull; Settlement & Platform Cut
                   </div>
                   <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-[#1d1d1f]">
-                    Select the plan that fits your venue.
+                    Zero monthly fees. Pay only when you sell.
                   </h1>
                   <p className="mt-2 text-sm text-[#6e6e73] leading-relaxed">
-                    Enjoy a full 14-day free trial on any tier. You won&apos;t be billed today and you can modify your plan at any time.
+                    Hawker charges zero monthly subscription fees. We take a transparent cut directly from payment transactions.
                   </p>
                 </div>
 
-                {/* Billing Cycle Switcher */}
-                <div className="flex items-center justify-center pt-2">
-                  <div className="inline-flex items-center p-1 bg-[#f5f5f7] rounded-full border border-black/[0.06]">
-                    <button
-                      type="button"
-                      onClick={() => setBillingCycle('monthly')}
-                      className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all ${
-                        billingCycle === 'monthly'
-                          ? 'bg-white text-[#1d1d1f] shadow-sm'
-                          : 'text-[#6e6e73] hover:text-[#1d1d1f]'
-                      }`}
-                    >
-                      Billed Monthly
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setBillingCycle('annual')}
-                      className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all ${
-                        billingCycle === 'annual'
-                          ? 'bg-white text-[#1d1d1f] shadow-sm'
-                          : 'text-[#6e6e73] hover:text-[#1d1d1f]'
-                      }`}
-                    >
-                      Billed Annually <span className="text-[#30d158] font-bold ml-1">Save 20%</span>
-                    </button>
+                {/* 3-Pillar Economics Banner */}
+                <div className="grid sm:grid-cols-3 gap-3 p-4 rounded-2xl bg-[#f5f5f7] border border-black/[0.06]">
+                  <div className="text-center sm:text-left space-y-0.5">
+                    <p className="text-[11px] uppercase tracking-wider text-[#86868b] font-semibold">Monthly Software</p>
+                    <p className="text-base font-bold text-[#30d158]">RM 0.00 / mo</p>
+                    <p className="text-[10px] text-[#6e6e73]">Free forever platform</p>
+                  </div>
+                  <div className="text-center sm:text-left space-y-0.5">
+                    <p className="text-[11px] uppercase tracking-wider text-[#86868b] font-semibold">Hardware POS</p>
+                    <p className="text-base font-bold text-[#1d1d1f]">RM 0.00</p>
+                    <p className="text-[10px] text-[#6e6e73]">Bring your own devices</p>
+                  </div>
+                  <div className="text-center sm:text-left space-y-0.5">
+                    <p className="text-[11px] uppercase tracking-wider text-[#86868b] font-semibold">Monetization</p>
+                    <p className="text-base font-bold text-[#0071e3]">Payment Cut</p>
+                    <p className="text-[10px] text-[#6e6e73]">Deducted at checkout</p>
                   </div>
                 </div>
 
-                {/* Plan Tier Selection List */}
-                <div className="space-y-3.5 pt-2">
-                  {plans.map((plan) => {
-                    const price = billingCycle === 'annual' ? plan.annualPrice : plan.monthlyPrice;
-                    const isSelected = selectedPlanId === plan.id;
+                {/* Fee Payer Configuration */}
+                <div className="space-y-3 pt-1">
+                  <label className="block text-xs font-semibold text-[#1d1d1f]">
+                    Platform Fee Settlement Strategy
+                  </label>
 
-                    return (
-                      <div
-                        key={plan.id}
-                        onClick={() => setSelectedPlanId(plan.id)}
-                        className={`p-4 sm:p-5 rounded-2xl border-2 cursor-pointer transition-all ${
-                          isSelected
-                            ? 'border-[#0071e3] bg-[#0071e3]/[0.02] shadow-sm'
-                            : 'border-black/[0.08] bg-white hover:border-black/20'
-                        }`}
-                      >
-                        <div className="flex items-start justify-between gap-4">
-                          <div className="flex items-start gap-3">
-                            <div
-                              className={`w-5 h-5 rounded-full border flex items-center justify-center mt-0.5 shrink-0 transition-colors ${
-                                isSelected
-                                  ? 'border-[#0071e3] bg-[#0071e3] text-white'
-                                  : 'border-black/20 bg-white'
-                              }`}
-                            >
-                              {isSelected && <Check className="w-3 h-3" />}
-                            </div>
-                            <div>
-                              <div className="flex items-center gap-2">
-                                <h3 className="text-base font-semibold text-[#1d1d1f]">{plan.name}</h3>
-                                {plan.featured && (
-                                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#0071e3] text-white">
-                                    Recommended
-                                  </span>
-                                )}
-                              </div>
-                              <p className="text-xs text-[#6e6e73] mt-0.5">{plan.description}</p>
-                              <span className="inline-block mt-2 text-[11px] font-semibold text-[#0071e3] bg-[#0071e3]/10 px-2 py-0.5 rounded-md">
-                                {plan.maxBooths}
-                              </span>
-                            </div>
-                          </div>
-
-                          <div className="text-right shrink-0">
-                            <span className="text-xl sm:text-2xl font-bold text-[#1d1d1f] tracking-tight">
-                              RM {price}
+                  <div className="grid sm:grid-cols-2 gap-3.5">
+                    <div
+                      onClick={() => setFeePayer('CUSTOMER')}
+                      className={`p-4 rounded-2xl border-2 cursor-pointer transition-all ${
+                        feePayer === 'CUSTOMER'
+                          ? 'border-[#0071e3] bg-[#0071e3]/[0.02] shadow-sm'
+                          : 'border-black/[0.08] bg-white hover:border-black/20'
+                      }`}
+                    >
+                      <div className="flex items-start gap-3">
+                        <div
+                          className={`w-5 h-5 rounded-full border flex items-center justify-center mt-0.5 shrink-0 transition-colors ${
+                            feePayer === 'CUSTOMER'
+                              ? 'border-[#0071e3] bg-[#0071e3] text-white'
+                              : 'border-black/20 bg-white'
+                          }`}
+                        >
+                          {feePayer === 'CUSTOMER' && <Check className="w-3 h-3" />}
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <h3 className="text-sm font-semibold text-[#1d1d1f]">Diner Service Fee</h3>
+                            <span className="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider bg-[#30d158]/15 text-[#30d158]">
+                              Recommended
                             </span>
-                            <span className="text-xs text-[#86868b] block">/month</span>
                           </div>
+                          <p className="text-xs text-[#6e6e73] mt-1 leading-relaxed">
+                            Diners pay a flat RM 0.50 platform fee at checkout. Hawkers keep 100% of dish prices.
+                          </p>
                         </div>
                       </div>
-                    );
-                  })}
+                    </div>
+
+                    <div
+                      onClick={() => setFeePayer('MERCHANT')}
+                      className={`p-4 rounded-2xl border-2 cursor-pointer transition-all ${
+                        feePayer === 'MERCHANT'
+                          ? 'border-[#0071e3] bg-[#0071e3]/[0.02] shadow-sm'
+                          : 'border-black/[0.08] bg-white hover:border-black/20'
+                      }`}
+                    >
+                      <div className="flex items-start gap-3">
+                        <div
+                          className={`w-5 h-5 rounded-full border flex items-center justify-center mt-0.5 shrink-0 transition-colors ${
+                            feePayer === 'MERCHANT'
+                              ? 'border-[#0071e3] bg-[#0071e3] text-white'
+                              : 'border-black/20 bg-white'
+                          }`}
+                        >
+                          {feePayer === 'MERCHANT' && <Check className="w-3 h-3" />}
+                        </div>
+                        <div>
+                          <h3 className="text-sm font-semibold text-[#1d1d1f]">Venue-Absorbed Cut</h3>
+                          <p className="text-xs text-[#6e6e73] mt-1 leading-relaxed">
+                            Platform cut is deducted directly from payouts. Diners see zero added service fee at checkout.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Bank Account Settlement Details */}
+                <div className="space-y-4 pt-2 border-t border-black/[0.06]">
+                  <div>
+                    <h3 className="text-xs font-semibold text-[#1d1d1f]">Direct Payout Settlement Account</h3>
+                    <p className="text-xs text-[#6e6e73] mt-0.5">
+                      Net stall sales will be transferred directly to this account via DuitNow / FAST bank transfer.
+                    </p>
+                  </div>
+
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-semibold text-[#1d1d1f] mb-1.5">
+                        Settlement Bank / Provider
+                      </label>
+                      <div className="relative">
+                        <select
+                          value={bankName}
+                          onChange={(e) => setBankName(e.target.value)}
+                          className="w-full h-[46px] appearance-none rounded-2xl border border-black/10 bg-white px-4 pr-10 text-sm text-[#1d1d1f] outline-none focus:border-[#0071e3] focus:ring-4 focus:ring-[#0071e3]/10 shadow-[0_1px_2px_rgba(0,0,0,0.04)] transition-all cursor-pointer"
+                        >
+                          <option value="Maybank">Malayan Banking Berhad (Maybank)</option>
+                          <option value="CIMB Bank">CIMB Bank Berhad</option>
+                          <option value="Public Bank">Public Bank Berhad</option>
+                          <option value="Hong Leong Bank">Hong Leong Bank Berhad</option>
+                          <option value="RHB Bank">RHB Bank Berhad</option>
+                          <option value="AmBank">AmBank Berhad</option>
+                          <option value="Touch 'n Go Biz">Touch &apos;n Go eWallet Biz</option>
+                        </select>
+                        <ChevronDown className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-[#86868b]" />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-[#1d1d1f] mb-1.5">
+                        Bank Account Number / DuitNow ID
+                      </label>
+                      <input
+                        type="text"
+                        value={bankAccountNumber}
+                        onChange={(e) => setBankAccountNumber(e.target.value)}
+                        placeholder="e.g. 5140 1234 5678"
+                        className="w-full h-[46px] rounded-2xl border border-black/10 bg-white px-4 py-3 text-sm text-[#1d1d1f] outline-none focus:border-[#0071e3] focus:ring-4 focus:ring-[#0071e3]/10 shadow-[0_1px_2px_rgba(0,0,0,0.04)] transition-all placeholder:text-[#86868b]"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-[#1d1d1f] mb-1.5">
+                      Account Holder Legal Name
+                    </label>
+                    <input
+                      type="text"
+                      value={accountHolder}
+                      onChange={(e) => setAccountHolder(e.target.value)}
+                      placeholder="e.g. Lot 10 Hutong Sdn Bhd"
+                      className="w-full h-[46px] rounded-2xl border border-black/10 bg-white px-4 py-3 text-sm text-[#1d1d1f] outline-none focus:border-[#0071e3] focus:ring-4 focus:ring-[#0071e3]/10 shadow-[0_1px_2px_rgba(0,0,0,0.04)] transition-all placeholder:text-[#86868b]"
+                    />
+                  </div>
                 </div>
 
                 <div className="pt-4 flex items-center justify-between border-t border-black/[0.06]">
@@ -703,14 +700,13 @@ function SubscribeContent() {
                 <div>
                   <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#30d158]/15 text-[#30d158] text-xs font-semibold mb-3">
                     <CheckCircle2 className="w-3.5 h-3.5" />
-                    Setup Complete &bull; 14-Day Trial Active
+                    Setup Complete &bull; Free Forever Platform
                   </div>
                   <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-[#1d1d1f]">
                     Welcome to Hawker.
                   </h1>
                   <p className="mt-2 text-sm text-[#6e6e73] leading-relaxed">
-                    <strong className="text-[#1d1d1f]">{venueName}</strong> has been initialized with the{' '}
-                    <strong className="text-[#0071e3]">{selectedPlan.name}</strong> plan. Your first booth slot is ready for activation.
+                    <strong className="text-[#1d1d1f]">{venueName}</strong> has been initialized on Hawker&apos;s Pay-As-You-Grow model. Your first booth slot is ready for activation.
                   </p>
                 </div>
 
@@ -791,27 +787,29 @@ function SubscribeContent() {
           <aside className="bg-white rounded-[32px] p-6 sm:p-8 border border-black/[0.06] shadow-[0_4px_24px_rgba(0,0,0,0.03)] space-y-6">
             <div>
               <p className="text-[11px] font-semibold uppercase tracking-wider text-[#86868b]">
-                Subscription Overview
+                Model Overview
               </p>
               <h2 className="text-xl font-semibold tracking-tight text-[#1d1d1f] mt-1">
-                {selectedPlan.name}
+                Pay-As-You-Grow Platform
               </h2>
-              <p className="text-xs text-[#6e6e73] mt-0.5">{selectedPlan.description}</p>
+              <p className="text-xs text-[#6e6e73] mt-0.5">
+                100% free software access with zero monthly bills or terminal hardware leases.
+              </p>
             </div>
 
             {/* Trial Billing Ledger */}
             <div className="bg-[#f5f5f7] p-4 rounded-2xl space-y-2.5 text-xs">
               <div className="flex items-center justify-between text-[#6e6e73]">
-                <span>14-Day Full Free Trial</span>
-                <span className="font-semibold text-[#30d158]">RM 0.00</span>
+                <span>Monthly Software Fee</span>
+                <span className="font-semibold text-[#30d158]">RM 0.00 / mo</span>
               </div>
               <div className="flex items-center justify-between text-[#6e6e73]">
-                <span>
-                  {billingCycle === 'annual' ? 'Annual Plan (Billed after 14 days)' : 'Monthly Plan (Billed after 14 days)'}
-                </span>
-                <span className="font-semibold text-[#1d1d1f]">
-                  RM {currentPrice} / mo {billingCycle === 'annual' && `(RM ${currentPrice * 12}/yr)`}
-                </span>
+                <span>POS Hardware & Terminal Leases</span>
+                <span className="font-semibold text-[#1d1d1f]">RM 0.00 (BYO)</span>
+              </div>
+              <div className="flex items-center justify-between text-[#6e6e73]">
+                <span>Monetization</span>
+                <span className="font-semibold text-[#0071e3]">Small cut per transaction</span>
               </div>
               <div className="pt-2 border-t border-black/[0.06] flex items-center justify-between font-bold text-sm text-[#1d1d1f]">
                 <span>Due Today</span>
@@ -821,9 +819,9 @@ function SubscribeContent() {
 
             {/* Plan Features Included */}
             <div>
-              <p className="text-xs font-semibold text-[#1d1d1f] mb-3">Included in this plan:</p>
+              <p className="text-xs font-semibold text-[#1d1d1f] mb-3">Included in every venue:</p>
               <ul className="space-y-2.5 text-xs text-[#515154]">
-                {selectedPlan.features.map((feat) => (
+                {platformHighlights.map((feat) => (
                   <li key={feat} className="flex items-start gap-2.5">
                     <Check className="w-4 h-4 text-[#30d158] shrink-0 mt-0.5" />
                     <span>{feat}</span>
@@ -836,7 +834,7 @@ function SubscribeContent() {
             <div className="pt-4 border-t border-black/[0.06] space-y-2 text-[11px] text-[#86868b]">
               <div className="flex items-center gap-2">
                 <ShieldCheck className="w-3.5 h-3.5 text-[#30d158]" />
-                <span>Zero setup fees &bull; Cancel anytime with 1 click</span>
+                <span>Zero monthly software bills &bull; Cancel or pause anytime</span>
               </div>
               <div className="flex items-center gap-2">
                 <Clock className="w-3.5 h-3.5 text-[#0071e3]" />
