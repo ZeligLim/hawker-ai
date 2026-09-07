@@ -83,40 +83,8 @@ export async function GET(request: NextRequest) {
 
     let allOutletIds = Array.from(new Set([...directOutletIds, ...shopOutletIds]));
 
-    // 3. If user has no booth memberships yet, auto-link to the first available outlet in the database
+    // If user has no booth or shop memberships, return empty list
     if (allOutletIds.length === 0) {
-      try {
-        const { data: firstOutlet } = await auth.client
-          .from('food_outlets')
-          .select('id')
-          .limit(1)
-          .maybeSingle();
-
-        if (firstOutlet?.id) {
-          await auth.client.from('merchant_memberships').insert({
-            user_id: auth.user.id,
-            food_outlet_id: firstOutlet.id,
-            role: 'owner',
-          });
-          allOutletIds = [firstOutlet.id];
-        }
-      } catch {
-        // ignore if insertion or query fails
-      }
-    }
-
-    // 4. If still no outlet IDs, try to return any available dishes or fallback dishes
-    if (allOutletIds.length === 0) {
-      const { data: anyDishes } = await auth.client
-        .from('dishes')
-        .select('id, food_outlet_id, name, description, price, is_vegetarian, is_halal, spice_level, protein_grams, image_url, is_available, tags, customizations, created_at')
-        .limit(10);
-
-      if (anyDishes && anyDishes.length > 0) {
-        const outletIds = Array.from(new Set(anyDishes.map((d) => d.food_outlet_id).filter(Boolean)));
-        return NextResponse.json({ dishes: anyDishes, foodOutletIds: outletIds });
-      }
-
       return NextResponse.json({ dishes: [], foodOutletIds: [] }, { status: 200 });
     }
 

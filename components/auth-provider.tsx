@@ -20,11 +20,23 @@ export type AuthUser = {
   avatarUrl: string | null;
 };
 
+export type UserRoles = {
+  isCustomer: boolean;
+  hasShopOwner: boolean;
+  hasBooth: boolean;
+  isLoading: boolean;
+  shops: Array<{ id: string; name: string; role: string }>;
+  booths: Array<{ id: string; name: string; role: string }>;
+};
+
 type AuthContextValue = {
   status: AuthStatus;
   user: User | null;
   profile: AuthUser | null;
   isGuest: boolean;
+  roles: UserRoles;
+  refreshRoles: () => Promise<void>;
+  switchMode: (mode: 'customer' | 'booth' | 'shop_owner') => void;
   continueAsGuest: (customRedirect?: string) => Promise<void>;
   signInWithGoogle: (customRedirect?: string) => Promise<void>;
   signInWithEmail: (email: string, password: string) => Promise<'signed-in' | 'activation-sent'>;
@@ -152,6 +164,85 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const effectiveStatus: AuthStatus = status === 'loading' ? 'loading' : user || isGuest ? 'authenticated' : 'unauthenticated';
 
+  const [roles, setRoles] = useState<UserRoles>({
+    isCustomer: true,
+    hasShopOwner: false,
+    hasBooth: false,
+    isLoading: true,
+    shops: [],
+    booths: [],
+  });
+
+  const refreshRoles = useCallback(async () => {
+    if (!user) {
+      setRoles({
+        isCustomer: true,
+        hasShopOwner: false,
+        hasBooth: false,
+        isLoading: false,
+        shops: [],
+        booths: [],
+      });
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/user/roles');
+      if (res.ok) {
+        const data = await res.json();
+        setRoles({
+          isCustomer: true,
+          hasShopOwner: Boolean(data.hasShopOwner),
+          hasBooth: Boolean(data.hasBooth),
+          isLoading: false,
+          shops: Array.isArray(data.shops) ? data.shops : [],
+          booths: Array.isArray(data.booths) ? data.booths : [],
+        });
+      } else {
+        setRoles((prev) => ({ ...prev, isLoading: false }));
+      }
+    } catch {
+      setRoles((prev) => ({ ...prev, isLoading: false }));
+    }
+  }, [user]);
+
+  useEffect(() => {
+    let active = true;
+    const timeoutId = window.setTimeout(() => {
+      if (active) {
+        void refreshRoles();
+      }
+    }, 0);
+    return () => {
+      active = false;
+      window.clearTimeout(timeoutId);
+    };
+  }, [refreshRoles]);
+
+  const switchMode = useCallback(
+    (mode: 'customer' | 'booth' | 'shop_owner') => {
+      if (typeof window !== 'undefined') {
+        window.localStorage.setItem('hawker-active-mode', mode);
+        if (mode === 'customer') {
+          window.localStorage.setItem('hawker-user-mode', 'customer');
+          window.localStorage.setItem('hawker-shop-owner-mode', 'false');
+          router.push('/home');
+        } else if (mode === 'booth') {
+          if (!roles.hasBooth) return;
+          window.localStorage.setItem('hawker-user-mode', 'owner');
+          window.localStorage.setItem('hawker-shop-owner-mode', 'false');
+          router.push('/owner');
+        } else if (mode === 'shop_owner') {
+          if (!roles.hasShopOwner) return;
+          window.localStorage.setItem('hawker-user-mode', 'customer');
+          window.localStorage.setItem('hawker-shop-owner-mode', 'true');
+          router.push('/shop-owner/booths');
+        }
+      }
+    },
+    [roles.hasBooth, roles.hasShopOwner, router],
+  );
+
   useEffect(() => {
     if (effectiveStatus === 'loading') return;
 
@@ -161,6 +252,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const returnUrl = pathname + (typeof window !== 'undefined' ? window.location.search : '');
       saveAuthRedirect(returnUrl);
       router.replace(`/auth?redirect=${encodeURIComponent(returnUrl)}` as any);
+      return;
     }
 
     if (effectiveStatus === 'authenticated' && user && isPublicRoute && pathname.startsWith('/auth')) {
@@ -168,8 +260,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       void resolveUserDestination(supabase, user, searchRedirect).then((destination) => {
         router.replace(destination as any);
       });
+      return;
     }
-  }, [effectiveStatus, isGuest, pathname, router, user]);
+
+    // Role-based route protection
+    if (effectiveStatus === 'authenticated' && user && !roles.isLoading) {
+      if (pathname.startsWith('/shop-owner') && !roles.hasShopOwner) {
+        router.replace('/subscribe');
+        return;
+      }
+      if (pathname.startsWith('/owner') && !roles.hasBooth) {
+        router.replace('/profile');
+        return;
+      }
+    }
+  }, [effectiveStatus, isGuest, pathname, roles.hasBooth, roles.hasShopOwner, roles.isLoading, router, user]);
 
   const profile = useMemo<AuthUser | null>(() => {
     if (!user || isGuest) return null;
@@ -339,6 +444,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       user,
       profile,
       isGuest,
+      roles,
+      refreshRoles,
+      switchMode,
       continueAsGuest,
       signInWithGoogle,
       signInWithEmail,
@@ -349,7 +457,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       updateProfile,
       changePassword,
     }),
-    [changePassword, continueAsGuest, effectiveStatus, isGuest, profile, signOut, updateProfile, user],
+    [
+      changePassword,
+      continueAsGuest,
+      effectiveStatus,
+      isGuest,
+      profile,
+      refreshRoles,
+      roles,
+      signOut,
+      switchMode,
+      updateProfile,
+      user,
+    ],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

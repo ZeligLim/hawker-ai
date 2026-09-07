@@ -35,7 +35,7 @@ const platformGuarantees = [
 ];
 
 function LaunchpadContent() {
-  const { status, profile } = useAuth();
+  const { status, profile, refreshRoles } = useAuth();
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -55,13 +55,13 @@ function LaunchpadContent() {
   const [bankAccountNumber, setBankAccountNumber] = useState('5140 1234 5678');
   const [accountHolder, setAccountHolder] = useState('Lot 10 Hutong Sdn Bhd');
 
-  // Form states - Step 3: First Stall
-  const [firstStallName, setFirstStallName] = useState('Ah Fatt Hainanese Chicken Rice');
-  const [firstStallCategory, setFirstStallCategory] = useState('Chicken Rice & Roast Meats');
-  const [firstStallSlot, setFirstStallSlot] = useState('Booth #01');
+  // Form states - Step 3: Booth Token Generation
+  const [firstStallSlot, setFirstStallSlot] = useState('Slot #01');
+  const [slotLocation, setSlotLocation] = useState('Main Floor - Counter 01');
 
   // Step 4: Generated Invite Code
   const [copiedCode, setCopiedCode] = useState(false);
+  const [copiedLink, setCopiedLink] = useState(false);
   const [generatedInviteToken, setGeneratedInviteToken] = useState<string | null>(null);
   const generatedCode = generatedInviteToken || 'HKR-8F92-KL';
 
@@ -69,6 +69,13 @@ function LaunchpadContent() {
     navigator.clipboard?.writeText(generatedCode);
     setCopiedCode(true);
     setTimeout(() => setCopiedCode(false), 2200);
+  };
+
+  const handleCopyLink = () => {
+    const origin = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000';
+    navigator.clipboard?.writeText(`${origin}/booths/join?token=${generatedCode}`);
+    setCopiedLink(true);
+    setTimeout(() => setCopiedLink(false), 2200);
   };
 
   const handleNext = async () => {
@@ -113,7 +120,7 @@ function LaunchpadContent() {
 
         const shopId = shopData.shop.id;
 
-        // 2. Create the first booth
+        // 2. Create the first booth slot
         const boothRes = await fetch('/api/owner/booths', {
           method: 'POST',
           headers: {
@@ -122,13 +129,13 @@ function LaunchpadContent() {
           },
           body: JSON.stringify({
             restaurantId: shopId,
-            name: firstStallName.trim() || 'Booth #01',
+            name: firstStallSlot.trim() || 'Slot #01',
           }),
         });
 
         const boothData = await boothRes.json().catch(() => ({}));
         if (!boothRes.ok || !boothData.booth?.id) {
-          throw new Error(boothData.error || 'Failed to provision initial booth.');
+          throw new Error(boothData.error || 'Failed to provision initial booth slot.');
         }
 
         const boothId = boothData.booth.id;
@@ -147,6 +154,11 @@ function LaunchpadContent() {
         }
 
         setGeneratedInviteToken(inviteData.token);
+        await refreshRoles();
+        if (typeof window !== 'undefined') {
+          window.localStorage.setItem('hawker-active-mode', 'shop_owner');
+          window.localStorage.setItem('hawker-shop-owner-mode', 'true');
+        }
         setCurrentStep(4);
         window.scrollTo({ top: 0, behavior: 'smooth' });
       } catch (err) {
@@ -608,56 +620,31 @@ function LaunchpadContent() {
                     onClick={handleNext}
                     className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-xs font-semibold bg-[#0071e3] text-white hover:bg-[#0077ed] transition-all shadow-sm"
                   >
-                    Configure First Stall
+                    Generate Booth Token
                     <ArrowRight className="w-3.5 h-3.5" />
                   </button>
                 </div>
               </div>
             )}
 
-            {/* ── STEP 3: FIRST STALL SETUP & LAUNCH ── */}
+            {/* ── STEP 3: BOOTH TOKEN GENERATION & VENUE LAUNCH ── */}
             {currentStep === 3 && (
               <div className="space-y-6">
                 <div>
                   <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0071e3]/10 text-[#0071e3] text-xs font-semibold mb-3">
-                    <Store className="w-3.5 h-3.5" />
-                    Stage 3 of 3 &bull; First Stall Slot
+                    <KeyRound className="w-3.5 h-3.5" />
+                    Stage 3 of 3 &bull; Generate Booth Token
                   </div>
                   <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight text-[#1d1d1f]">
-                    Add your first food stall.
+                    Generate your first booth token.
                   </h2>
                   <p className="mt-2 text-sm text-[#6e6e73] leading-relaxed">
-                    Set up your first booth slot now. Hawker will immediately generate a cryptographically secure invitation code so your stall holder can activate their kitchen display.
+                    Food hall operators do not set up individual stall brands or menus. You only generate the invitation token for a booth slot. When your vendor redeems the token link, they will name their stall and configure their live kitchen.
                   </p>
                 </div>
 
                 <div className="space-y-4 pt-2">
-                  <div>
-                    <label className="block text-xs font-semibold text-[#1d1d1f] mb-1.5">
-                      Stall or Brand Name
-                    </label>
-                    <input
-                      type="text"
-                      value={firstStallName}
-                      onChange={(e) => setFirstStallName(e.target.value)}
-                      placeholder="e.g. Ah Fatt Hainanese Chicken Rice"
-                      className="w-full h-[46px] rounded-2xl border border-black/10 bg-white px-4 py-3 text-sm text-[#1d1d1f] outline-none focus:border-[#0071e3] focus:ring-4 focus:ring-[#0071e3]/10 shadow-[0_1px_2px_rgba(0,0,0,0.04)] transition-all placeholder:text-[#86868b]"
-                    />
-                  </div>
-
                   <div className="grid sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-xs font-semibold text-[#1d1d1f] mb-1.5">
-                        Food Category / Cuisine
-                      </label>
-                      <input
-                        type="text"
-                        value={firstStallCategory}
-                        onChange={(e) => setFirstStallCategory(e.target.value)}
-                        placeholder="e.g. Chicken Rice, Roast Meats"
-                        className="w-full h-[46px] rounded-2xl border border-black/10 bg-white px-4 py-3 text-sm text-[#1d1d1f] outline-none focus:border-[#0071e3] focus:ring-4 focus:ring-[#0071e3]/10 shadow-[0_1px_2px_rgba(0,0,0,0.04)] transition-all placeholder:text-[#86868b]"
-                      />
-                    </div>
                     <div>
                       <label className="block text-xs font-semibold text-[#1d1d1f] mb-1.5">
                         Booth Slot Identifier
@@ -666,7 +653,19 @@ function LaunchpadContent() {
                         type="text"
                         value={firstStallSlot}
                         onChange={(e) => setFirstStallSlot(e.target.value)}
-                        placeholder="e.g. Booth #01"
+                        placeholder="e.g. Slot #01"
+                        className="w-full h-[46px] rounded-2xl border border-black/10 bg-white px-4 py-3 text-sm text-[#1d1d1f] outline-none focus:border-[#0071e3] focus:ring-4 focus:ring-[#0071e3]/10 shadow-[0_1px_2px_rgba(0,0,0,0.04)] transition-all placeholder:text-[#86868b]"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-[#1d1d1f] mb-1.5">
+                        Location / Counter (Optional)
+                      </label>
+                      <input
+                        type="text"
+                        value={slotLocation}
+                        onChange={(e) => setSlotLocation(e.target.value)}
+                        placeholder="e.g. Counter 1, Ground Floor"
                         className="w-full h-[46px] rounded-2xl border border-black/10 bg-white px-4 py-3 text-sm text-[#1d1d1f] outline-none focus:border-[#0071e3] focus:ring-4 focus:ring-[#0071e3]/10 shadow-[0_1px_2px_rgba(0,0,0,0.04)] transition-all placeholder:text-[#86868b]"
                       />
                     </div>
@@ -676,7 +675,7 @@ function LaunchpadContent() {
                   <div className="p-4 rounded-2xl bg-[#f5f5f7] border border-black/[0.06] flex items-start gap-3">
                     <Sparkles className="w-4 h-4 text-[#0071e3] shrink-0 mt-0.5" />
                     <p className="text-xs text-[#6e6e73] leading-relaxed">
-                      You can add more stalls, reassign booth slots, or invite other stall operators at any time from your Hawker Operator Dashboard.
+                      Launching will generate a 1-click invitation link. You can send it directly to your stall holder via WhatsApp, message, or QR code.
                     </p>
                   </div>
                 </div>
@@ -703,11 +702,11 @@ function LaunchpadContent() {
                     {isSubmitting ? (
                       <>
                         <LoaderCircle className="w-3.5 h-3.5 animate-spin" />
-                        Launching Venue...
+                        Generating Token & Launching...
                       </>
                     ) : (
                       <>
-                        Launch Food Hall for RM 0.00
+                        Launch Venue & Generate Token
                         <ArrowRight className="w-3.5 h-3.5" />
                       </>
                     )}
@@ -728,7 +727,7 @@ function LaunchpadContent() {
                     Your food hall is live on Hawker.
                   </h2>
                   <p className="mt-2 text-sm text-[#6e6e73] leading-relaxed">
-                    <strong className="text-[#1d1d1f]">{venueName}</strong> has been initialized under the Pay-As-You-Grow model. Your first booth slot ({firstStallName}) is ready for immediate kitchen activation.
+                    <strong className="text-[#1d1d1f]">{venueName}</strong> has been initialized. Your invitation token for <strong className="text-[#1d1d1f]">{firstStallSlot}</strong> has been generated and is ready to share with your stall vendor.
                   </p>
                 </div>
 
@@ -744,35 +743,47 @@ function LaunchpadContent() {
                   <div className="bg-white p-4 rounded-xl border border-black/[0.06] flex items-center justify-between gap-4">
                     <div>
                       <p className="text-[10px] text-[#86868b] uppercase tracking-wider font-semibold">
-                        {firstStallSlot} &bull; {firstStallName}
+                        {firstStallSlot} &bull; Invitation Code
                       </p>
                       <p className="text-2xl font-mono font-bold tracking-widest text-[#1d1d1f] mt-0.5">
                         {generatedCode}
                       </p>
                     </div>
 
-                    <button
-                      onClick={handleCopyInvite}
-                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-[#1d1d1f] text-white hover:bg-black transition-colors shrink-0"
-                    >
-                      {copiedCode ? (
-                        <>
-                          <CheckCircle2 className="w-3.5 h-3.5 text-[#30d158]" /> Copied
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="w-3.5 h-3.5" /> Copy Token
-                        </>
-                      )}
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={handleCopyInvite}
+                        className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold border border-black/10 bg-white text-[#1d1d1f] hover:bg-black/[0.04] transition-colors shrink-0"
+                      >
+                        {copiedCode ? (
+                          <>
+                            <CheckCircle2 className="w-3.5 h-3.5 text-[#30d158]" /> Copied
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="w-3.5 h-3.5" /> Copy Code
+                          </>
+                        )}
+                      </button>
+                      <button
+                        onClick={handleCopyLink}
+                        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-[#0071e3] text-white hover:bg-[#0077ed] transition-colors shrink-0"
+                      >
+                        {copiedLink ? (
+                          <>
+                            <CheckCircle2 className="w-3.5 h-3.5 text-white" /> Link Copied
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="w-3.5 h-3.5" /> Copy Link
+                          </>
+                        )}
+                      </button>
+                    </div>
                   </div>
 
                   <p className="text-xs text-[#6e6e73] leading-relaxed">
-                    Send this code to your stall owner. They can visit{' '}
-                    <Link href="/booths/join" className="text-[#0071e3] font-semibold hover:underline">
-                      hawker.com/booths/join
-                    </Link>{' '}
-                    to redeem the code and begin uploading their dishes.
+                    Share this invitation link with your stall vendor. When they open it, they can name their stall, configure dishes, and immediately launch their live Kitchen Display System (KDS).
                   </p>
                 </div>
 
@@ -780,7 +791,7 @@ function LaunchpadContent() {
                 <div className="pt-2 space-y-3">
                   <Link
                     href={'/shop-owner/booths' as any}
-                    className="w-full inline-flex items-center justify-center py-3.5 rounded-full text-xs font-semibold bg-[#0071e3] text-white hover:bg-[#0077ed] transition-all shadow-md gap-2"
+                    className="w-full inline-flex items-center justify-center py-3.5 rounded-full text-xs font-semibold bg-[#1d1d1f] text-white hover:bg-black transition-all shadow-md gap-2"
                   >
                     Open Food Hall Operator Dashboard
                     <ArrowRight className="w-4 h-4" />
@@ -788,7 +799,7 @@ function LaunchpadContent() {
 
                   <div className="grid sm:grid-cols-2 gap-3">
                     <Link
-                      href="/booths/join"
+                      href={`/booths/join?token=${encodeURIComponent(generatedCode)}` as any}
                       className="inline-flex items-center justify-center py-2.5 rounded-full text-xs font-semibold border border-black/15 bg-white text-[#1d1d1f] hover:bg-black/[0.04] transition-colors"
                     >
                       Test Stall Redemption Flow

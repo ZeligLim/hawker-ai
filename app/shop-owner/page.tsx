@@ -121,11 +121,20 @@ export default function ShopOwnerPage() {
           </div>
 
           <div className="rounded-[26px] bg-white p-5 shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
-            <h2 className="text-xl font-semibold tracking-[-0.04em]">Next actions</h2>
-            <div className="mt-4 space-y-3">
-              <div className="rounded-[18px] bg-[#f5f5f7] px-3 py-3 text-sm font-medium">Create a shop</div>
-              <div className="rounded-[18px] bg-[#f5f5f7] px-3 py-3 text-sm font-medium">Invite booth owners</div>
-              <div className="rounded-[18px] bg-[#f5f5f7] px-3 py-3 text-sm font-medium">View booth analytics</div>
+            <h2 className="text-xl font-semibold tracking-[-0.04em]">Quick actions</h2>
+            <div className="mt-4 space-y-2.5">
+              <Link href={'/shop-owner/booths' as any} className="flex items-center justify-between rounded-[18px] bg-[#f5f5f7] px-4 py-3 text-sm font-medium hover:bg-[#e5e5ea] transition-colors">
+                <span>Generate booth tokens</span>
+                <span className="text-xs text-[#6e6e73]">→</span>
+              </Link>
+              <Link href={'/shop-owner/analytics' as any} className="flex items-center justify-between rounded-[18px] bg-[#f5f5f7] px-4 py-3 text-sm font-medium hover:bg-[#e5e5ea] transition-colors">
+                <span>View venue analytics</span>
+                <span className="text-xs text-[#6e6e73]">→</span>
+              </Link>
+              <Link href={'/shop-owner/profile' as any} className="flex items-center justify-between rounded-[18px] bg-[#f5f5f7] px-4 py-3 text-sm font-medium hover:bg-[#e5e5ea] transition-colors">
+                <span>Food hall settings</span>
+                <span className="text-xs text-[#6e6e73]">→</span>
+              </Link>
             </div>
           </div>
         </section>

@@ -1,10 +1,18 @@
 # Current Project Context
 
 ## Current Phase
-Phase 5: booth invitation and join flow
+Phase 6: Strict Membership-Gated Role Switching & Invite-Only Booth Activation
 
 ## Current Feature
-Complete the booth invitation lifecycle by generating hashed invite tokens from the shop-owner app and redeeming them from a dedicated booth join flow. The app keeps the single-account architecture and relies on `restaurant_memberships` at the shop level and `merchant_memberships` for booth-level access, with a secure token redemption process that validates expiry and single-use semantics.
+Enforce strict separation of concerns and membership verification between Customer, Booth, and Shop Owner modes:
+1. Removed all public `/booths/join` links from the public landing page. Booth onboarding is strictly invite-only.
+2. Refactored booth slot creation: Shop owners do not create or configure stall brands/menus; they only provision booth slots and generate cryptographic invitation tokens.
+3. Booth vendors define their stall name, upload dishes, and configure their kitchen when redeeming their invitation token link (`/booths/join?token=...`).
+4. Implemented verified role switching:
+   - Customer mode: default for all users.
+   - Shop owner mode: ONLY visible if user has launched/applied for a shop owner account (`restaurant_memberships` exists).
+   - Booth account mode: ONLY visible if user has redeemed an invitation token from a shop owner (`merchant_memberships` exists).
+5. Removed arbitrary mode toggles in `/profile/settings`, `/profile`, `/owner/profile`, and `/shop-owner/profile`, replacing them with server-validated `<RoleModeSwitcher />` and route protection in `AuthProvider`.
 
 ## Completed
 - Next.js App Router foundation initialized
@@ -34,7 +42,7 @@ Complete the booth invitation lifecycle by generating hashed invite tokens from 
 - Customer checkout now calls `/api/orders` with the authenticated Supabase access token and clears the cart only after the atomic order RPC succeeds
 - Owner order retrieval is available at `/api/owner/orders`, scoped to every stall membership belonging to the authenticated user
 - Owner orders now load from `/api/owner/orders` and advance status through `/api/owner/orders/[id]`
-- Applied all migrations (001 through 007) and seed data to the remote Supabase database; all core tables, RLS policies, and RPCs are active
+- Applied all migrations (001 through 008) and seed data to the remote Supabase database; all core tables, RLS policies, and RPCs are active
 - Added defensive fallbacks in `api/owner/dishes` and `api/owner/orders` to gracefully handle schema cache timing and missing tables without crashing the application
 - `merchant_handles` migration and seed data provide public example handles: `@pakmat_nasilemak`, `@currymecorner`, and `@char_kwayteowstall`
 - Restored the profile tab in the regular customer bottom navigation and the standalone booth-owner navigation so the user can access profile/account settings again in both app shells
@@ -55,22 +63,20 @@ Complete the booth invitation lifecycle by generating hashed invite tokens from 
   - Completely omits the customer platform fee line item
   - Shows table/collection details, customizations, and stall earnings subtotal (`STALL TOTAL: RM XX.XX [PAID]`)
   - Added 1-Tap `Item Sold Out / Refund` button next to each line item with confirmation modal, instant gateway refund, and live dish inventory disabling
-- Updated public landing page (`app/page.tsx`) to highlight the 0% hawker commission, flat RM 0.50 diner fee, and 1-tap automated out-of-stock eWallet refunds in the hero, interactive product showcase tabs, and pricing tiers
-- Synchronized billing cycle (`cycle` / `billing`) and plan selection (`plan`) query parameters across all landing page navigation, hero CTA, role CTAs, and pricing tier cards
-- Refactored `/subscribe` onboarding wizard from subscription tiers to a streamlined Pay-As-You-Grow onboarding flow:
-  - Step 1: Venue profile registration with matching input heights
-  - Step 2: Settlement & Platform Cut (RM 0.00 / month forever, transparent transaction cut, choice of Diner Platform Fee vs Venue-Absorbed Cut, and bank settlement account configuration for DuitNow/FAST payouts)
-  - Step 3: First stall setup and booth slot assignment
-  - Step 4: Instant cryptographic activation token generation with direct dashboard routing
-- Modernized `/plans` and `/pricing` to highlight the 100% Free Forever platform (RM 0.00 / month, RM 0.00 setup, small cut per transaction, direct bank payouts) with comparison against legacy POS systems and complete FAQs
-- Updated landing page (`/`) to eliminate all monthly subscription plans (Starter, Pro, Enterprise) and billing toggles, replacing them with 3 Pay-As-You-Grow pillars: Free Forever Platform, Pay As You Sell, and 100% Features Unlocked
+- Removed all public `/booths/join` links from landing page (`app/page.tsx`) across top nav, mobile drawer, invitation explainer card, and footer
+- Removed unauthorized auto-insertion into `merchant_memberships` in `app/api/owner/dishes/route.ts` to strictly maintain invite-only stall kitchen access
+- Implemented `app/api/user/roles/route.ts` to verify user memberships on the server (`hasShopOwner`, `hasBooth`, `shops`, `booths`)
+- Created `components/role-mode-switcher.tsx` supporting seamless switching between Diner, Stall Kitchen, and Food Hall Operator only when verified memberships exist
+- Integrated `<RoleModeSwitcher />` across `app/profile/settings/page.tsx`, `app/profile/page.tsx`, `app/owner/profile/page.tsx`, and `app/shop-owner/profile/page.tsx`, eliminating all arbitrary toggle buttons
+- Refactored `app/subscribe/page.tsx` Stage 3 to "Generate Booth Token" so shop owners specify booth slot identifiers (e.g. `Slot #01`) rather than stall brand names or menus, and display 1-click invitation links on launch
+- Refactored `app/shop-owner/booths/page.tsx` to "Generate Booth Token" so shop owners generate cryptographically secure invitation tokens for stall slots, copyable with 1-click links (`/booths/join?token=...`)
 
 ## Current Architecture
 - Frontend: Next.js App Router, TypeScript, React, Tailwind
 - AI boundary: OpenRouter via Vercel AI SDK for `SearchIntent` extraction only
 - Backend: route handlers, deterministic `SearchService`, and payment refund handlers
 - Database: Supabase/PostgreSQL with raw SQL migrations (001-008), generated-style TypeScript types, RLS, and fallback data paths
-- Security: AI never touches SQL or database access directly; merchant isolation verified via memberships before processing refunds
+- Security: AI never touches SQL or database access directly; merchant isolation verified via memberships before processing refunds; booth activation is strictly invite-only
 - Monetization: Zero monthly software subscriptions; platform revenue is generated via a transparent payment cut on processed orders
 
 ## Important Decisions
@@ -79,7 +85,8 @@ Complete the booth invitation lifecycle by generating hashed invite tokens from 
 - Platform Monetization: No monthly RM software subscriptions. Transparent cut taken from transactions; configurable between diner platform fee (flat RM 0.50) and merchant payout deduction
 - Refunds: When an item is sold out, hawker triggers 1-tap refund from kitchen ticket; customer receives automated eWallet refund and dish is marked unavailable automatically
 - Kitchen ticket privacy: Customer platform fee line item is strictly omitted from merchant kitchen tickets
-- Business Model & Launchpad: Completely eliminated legacy subscription tiers (Starter, Food Hall Pro, Enterprise) and checkout artifacts. Centered entire landing page (#pricing) and venue launchpad (/subscribe) around "Zero monthly subscriptions. We only win when you sell.", featuring high-contrast Legacy POS vs Hawker Standard comparison, live Malaysian food court order breakdown, and instant cryptographic booth token generation.
+- Business Model & Launchpad: Completely eliminated legacy subscription tiers (Starter, Food Hall Pro, Enterprise) and checkout artifacts. Centered entire landing page (#pricing) and venue launchpad (/subscribe) around "Zero monthly subscriptions. We only win when you sell."
+- Role Separation & Strict Membership Gating: Shop owners generate tokens for booth slots; they do not configure stalls. Stall vendors redeem tokens to name their stall and set menus. Mode switcher pills are only visible when the user holds verified server-side memberships.
 
 ## Known Issues
 - Password recovery depends on Supabase Auth email configuration
@@ -87,4 +94,3 @@ Complete the booth invitation lifecycle by generating hashed invite tokens from 
 
 ## Next Task
 - End-to-end user checkout and verify realtime multi-stall kitchen routing and sold-out refund synchronization.
-

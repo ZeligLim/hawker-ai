@@ -2,6 +2,7 @@
 
 import { Save } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
+import { RoleModeSwitcher } from '@/components/role-mode-switcher';
 
 type Shop = {
   id: string;
@@ -178,6 +179,10 @@ export default function ShopOwnerProfilePage() {
             <Save className="h-4 w-4" /> {saving ? 'Saving…' : 'Save changes'}
           </button>
         </section>
+
+        <div className="mt-6">
+          <RoleModeSwitcher currentMode="shop_owner" />
+        </div>
       </div>
     </main>
   );

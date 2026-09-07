@@ -147,12 +147,6 @@ export default function LandingPage() {
           {/* Right Action Buttons */}
           <div className="hidden sm:flex items-center gap-3">
             <Link
-              href="/booths/join"
-              className="text-xs font-medium text-[#1d1d1f]/80 hover:text-[#1d1d1f] px-3 py-1.5 rounded-full hover:bg-black/[0.04] transition-all"
-            >
-              Join Booth
-            </Link>
-            <Link
               href="/auth"
               className="text-xs font-medium text-[#1d1d1f]/80 hover:text-[#1d1d1f] px-3 py-1.5 rounded-full hover:bg-black/[0.04] transition-all"
             >
@@ -221,20 +215,12 @@ export default function LandingPage() {
               >
                 Start Free
               </Link>
-              <div className="grid grid-cols-2 gap-2">
-                <Link
-                  href="/booths/join"
-                  className="text-center py-2 rounded-full text-xs font-medium border border-black/10 bg-white"
-                >
-                  Join Booth
-                </Link>
-                <Link
-                  href="/auth"
-                  className="text-center py-2 rounded-full text-xs font-medium border border-black/10 bg-white"
-                >
-                  Sign In
-                </Link>
-              </div>
+              <Link
+                href="/auth"
+                className="w-full text-center py-2 rounded-full text-xs font-medium border border-black/10 bg-white"
+              >
+                Sign In
+              </Link>
             </div>
           </div>
         )}
@@ -829,7 +815,7 @@ export default function LandingPage() {
                   No complex setup for your stall holders.
                 </h3>
                 <p className="mt-3 text-sm text-[#6e6e73] leading-relaxed">
-                  Food court operators shouldn&apos;t have to be IT administrators. When you create a booth in Hawker, you generate a cryptographically hashed invite code. The stall owner visits <span className="font-mono text-xs bg-black/[0.05] px-1.5 py-0.5 rounded">hawker.com/booths/join</span>, pastes the code, and their kitchen is live.
+                  Food court operators shouldn&apos;t have to be IT administrators. When you generate a booth token in Hawker, stall owners receive a private invitation link, name their stall, and launch their kitchen display instantly.
                 </p>
 
                 <div className="mt-6 flex flex-wrap gap-4 items-center">
@@ -874,9 +860,7 @@ export default function LandingPage() {
                 </div>
                 <div className="mt-4 flex items-center justify-between text-[11px] text-[#6e6e73]">
                   <span>Stall: Jalan Alor Char Kway Teow</span>
-                  <Link href="/booths/join" className="text-[#0071e3] font-semibold hover:underline">
-                    Test redemption flow &rsaquo;
-                  </Link>
+                  <span className="text-[#86868b] font-medium">Delivered via private invite link</span>
                 </div>
               </div>
             </div>
@@ -1201,13 +1185,9 @@ export default function LandingPage() {
               </div>
 
               <div className="mt-8 pt-6 border-t border-black/[0.06]">
-                <Link
-                  href="/booths/join"
-                  className="w-full inline-flex items-center justify-center py-3 rounded-full text-sm font-semibold border border-black/15 bg-white text-[#1d1d1f] hover:bg-black/[0.04] transition-colors"
-                >
-                  Join with Invitation Code
-                  <ChevronRight className="w-4 h-4 ml-1" />
-                </Link>
+                <div className="w-full text-center py-3 rounded-full text-xs font-medium bg-[#f5f5f7] text-[#6e6e73] border border-black/[0.04]">
+                  Private invite-only via food hall operator token
+                </div>
               </div>
             </div>
           </div>
@@ -1496,8 +1476,8 @@ export default function LandingPage() {
             <div>
               <p className="font-semibold text-[#1d1d1f] mb-3">Merchants</p>
               <ul className="space-y-2.5">
-                <li><Link href="/booths/join" className="hover:text-[#1d1d1f] transition-colors">Join an Existing Booth</Link></li>
                 <li><Link href="/auth?redirect=/owner" className="hover:text-[#1d1d1f] transition-colors">Merchant Sign In</Link></li>
+                <li><a href="#how-it-works" className="hover:text-[#1d1d1f] transition-colors">How Stalls Join (Invite Only)</a></li>
                 <li><a href="#features" className="hover:text-[#1d1d1f] transition-colors">Menu Customisations</a></li>
                 <li><a href="#features" className="hover:text-[#1d1d1f] transition-colors">Sold-out 86 Controls</a></li>
               </ul>

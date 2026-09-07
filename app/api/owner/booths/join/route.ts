@@ -51,6 +51,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ status: 'already-member', boothId: invitation.food_outlet_id });
   }
 
+  const stallName = typeof body?.stallName === 'string' ? body.stallName.trim() : typeof body?.boothName === 'string' ? body.boothName.trim() : '';
+  if (stallName) {
+    await auth.client.from('food_outlets').update({ name: stallName }).eq('id', invitation.food_outlet_id);
+  }
+
   const { error: insertError } = await auth.client.from('merchant_memberships').insert({
     user_id: auth.user.id,
     food_outlet_id: invitation.food_outlet_id,

@@ -5,6 +5,7 @@ import { LogOut, Settings } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { useAuth } from '@/components/auth-provider';
 import { supabase } from '@/lib/supabase/client';
+import { RoleModeSwitcher } from '@/components/role-mode-switcher';
 
 type OrderRecord = {
   id: string;
@@ -233,6 +234,9 @@ export default function ProfilePage() {
                 </div>
               </div>
             </section>
+            <div className="mt-4">
+              <RoleModeSwitcher currentMode="customer" />
+            </div>
             {isSignOutDialogOpen ? (
               <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/35 px-4" role="presentation">
                 <div role="dialog" aria-modal="true" aria-labelledby="sign-out-title" className="w-full max-w-[360px] rounded-[24px] bg-white p-5 shadow-[0_24px_70px_rgba(15,23,42,0.24)]">
