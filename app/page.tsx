@@ -160,7 +160,7 @@ export default function LandingPage() {
               Sign In
             </Link>
             <Link
-              href="/subscribe"
+              href={`/subscribe?cycle=${billingCycle}`}
               className="text-xs font-medium text-white bg-[#0071e3] hover:bg-[#0077ed] px-3.5 py-1.5 rounded-full shadow-[0_1px_2px_rgba(0,0,0,0.08)] transition-all hover:shadow"
             >
               Start Free
@@ -217,7 +217,7 @@ export default function LandingPage() {
             </a>
             <div className="pt-2 flex flex-col gap-2">
               <Link
-                href="/subscribe"
+                href={`/subscribe?cycle=${billingCycle}`}
                 className="w-full text-center py-2.5 rounded-full text-sm font-semibold text-white bg-[#0071e3]"
               >
                 Start Free Trial
@@ -268,7 +268,7 @@ export default function LandingPage() {
           {/* Apple Call to Actions */}
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3.5">
             <Link
-              href="/subscribe"
+              href={`/subscribe?cycle=${billingCycle}`}
               className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-3 rounded-full text-sm font-medium text-white bg-[#0071e3] hover:bg-[#0077ed] transition-all shadow-[0_2px_10px_rgba(0,113,227,0.25)] hover:shadow-[0_4px_16px_rgba(0,113,227,0.35)]"
             >
               Start 14-day free trial
@@ -1150,7 +1150,7 @@ export default function LandingPage() {
                     'Multi-booth roster & occupancy overview',
                     'Single-click cryptographic booth invite codes',
                     'Consolidated real-time gross venue revenue',
-                    'Automated rent & commission calculation',
+                    'Automated stall lease & tenancy settlement reporting',
                     'Full export of order chits and financial reports',
                   ].map((feat) => (
                     <li key={feat} className="flex items-center gap-3">
@@ -1163,7 +1163,7 @@ export default function LandingPage() {
 
               <div className="mt-8 pt-6 border-t border-black/[0.06]">
                 <Link
-                  href="/subscribe"
+                  href={`/subscribe?plan=pro&cycle=${billingCycle}`}
                   className="w-full inline-flex items-center justify-center py-3 rounded-full text-sm font-semibold bg-[#1d1d1f] text-white hover:bg-black transition-colors"
                 >
                   Start as Venue Operator
@@ -1258,14 +1258,26 @@ export default function LandingPage() {
             {/* Plan 1: Starter */}
             <div className="bg-[#fbfbfd] p-7 sm:p-8 rounded-[32px] border border-black/[0.08] shadow-sm flex flex-col justify-between">
               <div>
-                <p className="text-base font-semibold text-[#1d1d1f]">Starter</p>
-                <p className="text-xs text-[#86868b] mt-1">For single stalls and small kiosks.</p>
+                <div className="flex items-center justify-between">
+                  <p className="text-base font-semibold text-[#1d1d1f]">Starter</p>
+                  <span className="text-[11px] font-semibold text-[#0071e3] bg-[#0071e3]/10 px-2 py-0.5 rounded-md">
+                    Up to 3 booths
+                  </span>
+                </div>
+                <p className="text-xs text-[#86868b] mt-1">For single stalls and boutique food courts.</p>
                 <div className="mt-5 flex items-baseline gap-1">
                   <span className="text-4xl font-bold tracking-tight text-[#1d1d1f]">
                     {billingCycle === 'annual' ? 'RM 79' : 'RM 99'}
                   </span>
                   <span className="text-xs text-[#86868b]">/month</span>
                 </div>
+                {billingCycle === 'annual' ? (
+                  <p className="text-[11px] text-[#30d158] font-semibold mt-1">
+                    Billed annually (RM 948/yr) &bull; Save RM 240
+                  </p>
+                ) : (
+                  <p className="text-[11px] text-[#86868b] mt-1">Billed monthly &bull; 14-day free trial</p>
+                )}
 
                 <ul className="mt-6 space-y-3 text-xs text-[#515154]">
                   <li className="flex items-center gap-2.5">
@@ -1293,7 +1305,7 @@ export default function LandingPage() {
 
               <div className="mt-8">
                 <Link
-                  href="/subscribe"
+                  href={`/subscribe?plan=starter&cycle=${billingCycle}`}
                   className="w-full inline-flex items-center justify-center py-2.5 rounded-full text-xs font-semibold bg-[#1d1d1f] text-white hover:bg-black transition-colors"
                 >
                   Start free trial
@@ -1309,7 +1321,12 @@ export default function LandingPage() {
                 </span>
               </div>
               <div>
-                <p className="text-base font-semibold text-white">Food Hall Pro</p>
+                <div className="flex items-center gap-2">
+                  <p className="text-base font-semibold text-white">Food Hall Pro</p>
+                  <span className="text-[11px] font-semibold text-white bg-white/20 px-2 py-0.5 rounded-md">
+                    Up to 15 booths
+                  </span>
+                </div>
                 <p className="text-xs text-white/60 mt-1">For bustling hawker centres & food courts.</p>
                 <div className="mt-5 flex items-baseline gap-1">
                   <span className="text-4xl font-bold tracking-tight text-white">
@@ -1317,6 +1334,13 @@ export default function LandingPage() {
                   </span>
                   <span className="text-xs text-white/60">/month</span>
                 </div>
+                {billingCycle === 'annual' ? (
+                  <p className="text-[11px] text-[#30d158] font-semibold mt-1">
+                    Billed annually (RM 2,388/yr) &bull; Save RM 600
+                  </p>
+                ) : (
+                  <p className="text-[11px] text-white/60 mt-1">Billed monthly &bull; 14-day free trial</p>
+                )}
 
                 <ul className="mt-6 space-y-3 text-xs text-[#d2d2d7]">
                   <li className="flex items-center gap-2.5">
@@ -1348,7 +1372,7 @@ export default function LandingPage() {
 
               <div className="mt-8">
                 <Link
-                  href="/subscribe"
+                  href={`/subscribe?plan=pro&cycle=${billingCycle}`}
                   className="w-full inline-flex items-center justify-center py-2.5 rounded-full text-xs font-semibold bg-[#0071e3] text-white hover:bg-[#0077ed] transition-colors shadow-lg"
                 >
                   Start 14-day trial
@@ -1359,7 +1383,12 @@ export default function LandingPage() {
             {/* Plan 3: Enterprise */}
             <div className="bg-[#fbfbfd] p-7 sm:p-8 rounded-[32px] border border-black/[0.08] shadow-sm flex flex-col justify-between">
               <div>
-                <p className="text-base font-semibold text-[#1d1d1f]">Enterprise Venue</p>
+                <div className="flex items-center justify-between">
+                  <p className="text-base font-semibold text-[#1d1d1f]">Enterprise Venue</p>
+                  <span className="text-[11px] font-semibold text-[#0071e3] bg-[#0071e3]/10 px-2 py-0.5 rounded-md">
+                    Unlimited booths
+                  </span>
+                </div>
                 <p className="text-xs text-[#86868b] mt-1">For multi-floor halls & commercial markets.</p>
                 <div className="mt-5 flex items-baseline gap-1">
                   <span className="text-4xl font-bold tracking-tight text-[#1d1d1f]">
@@ -1367,6 +1396,13 @@ export default function LandingPage() {
                   </span>
                   <span className="text-xs text-[#86868b]">/month</span>
                 </div>
+                {billingCycle === 'annual' ? (
+                  <p className="text-[11px] text-[#30d158] font-semibold mt-1">
+                    Billed annually (RM 5,748/yr) &bull; Save RM 1,440
+                  </p>
+                ) : (
+                  <p className="text-[11px] text-[#86868b] mt-1">Billed monthly &bull; 14-day free trial</p>
+                )}
 
                 <ul className="mt-6 space-y-3 text-xs text-[#515154]">
                   <li className="flex items-center gap-2.5">
@@ -1390,10 +1426,10 @@ export default function LandingPage() {
 
               <div className="mt-8">
                 <Link
-                  href="/plans"
+                  href={`/subscribe?plan=enterprise&cycle=${billingCycle}`}
                   className="w-full inline-flex items-center justify-center py-2.5 rounded-full text-xs font-semibold border border-black/15 bg-white text-[#1d1d1f] hover:bg-black/[0.04] transition-colors"
                 >
-                  Compare detailed specs
+                  Start 14-day trial
                 </Link>
               </div>
             </div>
@@ -1416,7 +1452,7 @@ export default function LandingPage() {
 
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-3.5">
             <Link
-              href="/subscribe"
+              href={`/subscribe?cycle=${billingCycle}`}
               className="w-full sm:w-auto px-8 py-3.5 rounded-full text-sm font-semibold bg-[#0071e3] text-white hover:bg-[#0077ed] transition-all shadow-[0_4px_20px_rgba(0,113,227,0.35)]"
             >
               Start 14-day free trial

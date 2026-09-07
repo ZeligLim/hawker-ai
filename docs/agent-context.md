@@ -56,6 +56,10 @@ Complete the booth invitation lifecycle by generating hashed invite tokens from 
   - Shows table/collection details, customizations, and stall earnings subtotal (`STALL TOTAL: RM XX.XX [PAID]`)
   - Added 1-Tap `Item Sold Out / Refund` button next to each line item with confirmation modal, instant gateway refund, and live dish inventory disabling
 - Updated public landing page (`app/page.tsx`) to highlight the 0% hawker commission, flat RM 0.50 diner fee, and 1-tap automated out-of-stock eWallet refunds in the hero, interactive product showcase tabs, and pricing tiers
+- Synchronized billing cycle (`cycle` / `billing`) and plan selection (`plan`) query parameters across all landing page navigation, hero CTA, role CTAs, and pricing tier cards
+- Refactored `/subscribe` page to read URL query parameters inside a React `<Suspense>` boundary, dynamically initializing plan and billing cycle without cascading render side effects
+- Modernized `/plans` page with Apple aesthetic, interactive Monthly/Annual discount toggle (Save 20%), Malaysian Ringgit pricing (Starter RM 99/79, Food Hall Pro RM 249/199, Enterprise RM 599/479), side-by-side feature comparison matrix, and transparent FAQ
+- Added `/pricing` route alias and whitelisted it in `components/app-shell.tsx` and `components/auth-provider.tsx` to prevent 404s and redirect issues
 
 ## Current Architecture
 - Frontend: Next.js App Router, TypeScript, React, Tailwind

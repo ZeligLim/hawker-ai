@@ -50,7 +50,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const isAuthRoute = pathname.startsWith('/auth');
   const isOwnerRoute = pathname.startsWith('/owner');
   const isShopOwnerRoute = pathname.startsWith('/shop-owner');
-  const isMarketingRoute = pathname === '/' || pathname === '/plans' || pathname === '/subscribe';
+  const isMarketingRoute = pathname === '/' || pathname === '/plans' || pathname === '/pricing' || pathname === '/subscribe';
   const isStandaloneOwnerRoute = pathname === '/booths' || pathname.startsWith('/booths/') || pathname === '/analytics' || pathname.startsWith('/analytics/');
 
   if (isAuthRoute || isMarketingRoute || isStandaloneOwnerRoute) {

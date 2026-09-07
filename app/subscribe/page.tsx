@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import {
   Check,
   ChevronRight,
@@ -44,6 +45,9 @@ const plans: PlanTier[] = [
     description: 'Ideal for boutique food courts and pop-up street markets.',
     maxBooths: 'Up to 3 booths',
     features: [
+      '0% stall transaction commission (keep 100%)',
+      'Flat RM 0.50 diner platform fee',
+      '1-tap sold-out eWallet refunds',
       'Digital menu & QR table ordering',
       'Stall kitchen display system',
       'Basic sales & order summaries',
@@ -60,6 +64,7 @@ const plans: PlanTier[] = [
     featured: true,
     features: [
       'Everything in Starter',
+      'Up to 15 concurrent booth slots',
       'Multi-stall unified checkout basket',
       'OpenRouter AI Food Discovery',
       'Real-time operator revenue telemetry',
@@ -84,11 +89,23 @@ const plans: PlanTier[] = [
   },
 ];
 
-export default function SubscribePage() {
+function SubscribeContent() {
+  const searchParams = useSearchParams();
+  const urlPlan = searchParams.get('plan');
+  const urlCycle = searchParams.get('cycle') || searchParams.get('billing');
+
   const { status, profile, isGuest } = useAuth();
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1);
-  const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly');
-  const [selectedPlanId, setSelectedPlanId] = useState<string>('pro');
+  const [overrideCycle, setOverrideCycle] = useState<'monthly' | 'annual' | null>(null);
+  const [overridePlanId, setOverridePlanId] = useState<string | null>(null);
+
+  const billingCycle = overrideCycle ?? (urlCycle === 'annual' ? 'annual' : 'monthly');
+  const selectedPlanId =
+    overridePlanId ?? (urlPlan && ['starter', 'pro', 'enterprise'].includes(urlPlan) ? urlPlan : 'pro');
+
+  const setBillingCycle = (cycle: 'monthly' | 'annual') => setOverrideCycle(cycle);
+  const setSelectedPlanId = (id: string) => setOverridePlanId(id);
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionError, setSubmissionError] = useState<string | null>(null);
 
@@ -790,9 +807,11 @@ export default function SubscribePage() {
               </div>
               <div className="flex items-center justify-between text-[#6e6e73]">
                 <span>
-                  {billingCycle === 'annual' ? 'Annual Tier (Billed in 14 days)' : 'Monthly Tier (Billed in 14 days)'}
+                  {billingCycle === 'annual' ? 'Annual Plan (Billed after 14 days)' : 'Monthly Plan (Billed after 14 days)'}
                 </span>
-                <span className="font-semibold text-[#1d1d1f]">RM {currentPrice} / mo</span>
+                <span className="font-semibold text-[#1d1d1f]">
+                  RM {currentPrice} / mo {billingCycle === 'annual' && `(RM ${currentPrice * 12}/yr)`}
+                </span>
               </div>
               <div className="pt-2 border-t border-black/[0.06] flex items-center justify-between font-bold text-sm text-[#1d1d1f]">
                 <span>Due Today</span>
@@ -828,5 +847,22 @@ export default function SubscribePage() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function SubscribePage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-[#f5f5f7] flex items-center justify-center text-xs text-[#86868b]">
+          <div className="flex items-center gap-2">
+            <LoaderCircle className="w-4 h-4 animate-spin text-[#0071e3]" />
+            <span>Loading subscription configuration...</span>
+          </div>
+        </div>
+      }
+    >
+      <SubscribeContent />
+    </Suspense>
   );
 }

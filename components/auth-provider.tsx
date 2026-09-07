@@ -41,6 +41,7 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 const publicRoutes = [
   '/',
   '/plans',
+  '/pricing',
   '/subscribe',
   '/home',
   '/menu',
