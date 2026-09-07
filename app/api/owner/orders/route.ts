@@ -42,7 +42,33 @@ export async function GET(request: NextRequest) {
 
   const { data, error } = await auth.client
     .from('merchant_orders')
-    .select('id, order_id, food_outlet_id, status, subtotal, created_at, updated_at, order_items(id, dish_id, dish_name, unit_price, quantity, customizations, notes)')
+    .select(`
+      id,
+      order_id,
+      food_outlet_id,
+      status,
+      subtotal,
+      merchant_payout_amount,
+      payment_status,
+      refund_amount,
+      created_at,
+      updated_at,
+      orders(
+        table_session_id
+      ),
+      order_items(
+        id,
+        dish_id,
+        dish_name,
+        unit_price,
+        quantity,
+        customizations,
+        notes,
+        is_refunded,
+        refund_amount,
+        refund_reason
+      )
+    `)
     .in('food_outlet_id', outletIds)
     .order('created_at', { ascending: false });
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });

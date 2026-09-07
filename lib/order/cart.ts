@@ -64,15 +64,28 @@ export type MerchantGroup = {
   subtotal: number;
 };
 
+export type CartFeeConfig = {
+  feePayer?: 'CUSTOMER' | 'MERCHANT';
+  platformFeeFixed?: number;
+  platformFeePercent?: number;
+};
+
 export type CartSummary = {
   items: CartItem[];
   merchantGroups: MerchantGroup[];
   subtotal: number;
   serviceFee: number;
+  platformFeeAmount: number;
+  subtotalAmount: number;
+  totalAmount: number;
+  merchantPayoutAmount: number;
+  feePayer: 'CUSTOMER' | 'MERCHANT';
   total: number;
 };
 
-const SERVICE_FEE_RATE = 0.05;
+export const DEFAULT_PLATFORM_FEE_FIXED = 0.50;
+export const DEFAULT_PLATFORM_FEE_PERCENT = 0.0000;
+
 
 export function addItemToCart(
   items: CartItem[],
@@ -142,7 +155,7 @@ export function getDishQuantity(items: CartItem[], dishId: string, stallId?: str
   );
 }
 
-export function buildCartSummary(items: CartItem[]): CartSummary {
+export function buildCartSummary(items: CartItem[], feeConfig?: CartFeeConfig): CartSummary {
   const merchantGroups = items.reduce<Record<string, MerchantGroup>>((groups, item) => {
     const key = item.stallId;
     if (!groups[key]) {
@@ -162,15 +175,42 @@ export function buildCartSummary(items: CartItem[]): CartSummary {
 
   const merchantGroupsList = Object.values(merchantGroups).sort((left, right) => left.stallName.localeCompare(right.stallName));
 
-  const subtotal = items.reduce((total, item) => total + item.price * item.quantity, 0);
-  const serviceFee = Number((subtotal * SERVICE_FEE_RATE).toFixed(2));
+  const subtotal = Number(items.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2));
+  
+  const feePayer = feeConfig?.feePayer ?? 'CUSTOMER';
+  const feeFixed = feeConfig?.platformFeeFixed ?? DEFAULT_PLATFORM_FEE_FIXED;
+  const feePercent = feeConfig?.platformFeePercent ?? DEFAULT_PLATFORM_FEE_PERCENT;
+
+  // Platform fee is fixed 0.50 + (subtotal * percent) when cart has items
+  const platformFee = items.length > 0 ? Number((feeFixed + (subtotal * feePercent)).toFixed(2)) : 0;
+
+  // If fee_payer is CUSTOMER:
+  // - subtotal_amount = sum of items
+  // - platform_fee_amount = fixed + subtotal * percent
+  // - total_amount = subtotal + platform_fee
+  // - merchant_payout_amount = subtotal
+  // If fee_payer is MERCHANT:
+  // - total_amount = subtotal
+  // - merchant_payout_amount = subtotal - platform_fee
+  const total = feePayer === 'CUSTOMER'
+    ? Number((subtotal + platformFee).toFixed(2))
+    : subtotal;
+
+  const merchantPayout = feePayer === 'MERCHANT'
+    ? Math.max(0, Number((subtotal - platformFee).toFixed(2)))
+    : subtotal;
 
   return {
     items,
     merchantGroups: merchantGroupsList,
-    subtotal: Number(subtotal.toFixed(2)),
-    serviceFee,
-    total: Number((subtotal + serviceFee).toFixed(2)),
+    subtotal,
+    serviceFee: platformFee,
+    platformFeeAmount: platformFee,
+    subtotalAmount: subtotal,
+    totalAmount: total,
+    merchantPayoutAmount: merchantPayout,
+    feePayer,
+    total,
   };
 }
 

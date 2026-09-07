@@ -285,7 +285,7 @@ export default function LandingPage() {
 
           {/* Apple Micro Footnote */}
           <p className="mt-4 text-xs text-[#86868b]">
-            No credit card required &bull; 15-minute quick setup &bull; Compatible with all phones & tablets
+            0% stall commission &bull; Flat RM 0.50 diner platform fee &bull; 1-tap automated out-of-stock refunds
           </p>
 
           {/* High-level Apple Metric Strip */}
@@ -545,11 +545,22 @@ export default function LandingPage() {
                         </span>
                       </div>
                       <div className="mt-3 space-y-2 border-y border-black/[0.06] py-3 text-xs">
-                        <div className="font-medium text-[#1d1d1f]">
-                          <p className="font-bold text-sm">1x Seafood Fried Hor Fun</p>
-                          <p className="text-[11px] text-[#0071e3] font-semibold mt-0.5">&bull; Egg Gravy on Side</p>
-                          <p className="text-[11px] text-[#6e6e73]">&bull; Pickled Green Chilies</p>
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="font-medium text-[#1d1d1f]">
+                            <p className="font-bold text-sm">1x Seafood Fried Hor Fun</p>
+                            <p className="text-[11px] text-[#0071e3] font-semibold mt-0.5">&bull; Egg Gravy on Side</p>
+                            <p className="text-[11px] text-[#6e6e73]">&bull; Pickled Green Chilies</p>
+                          </div>
+                          <button className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-rose-50 text-rose-700 border border-rose-200 shrink-0 hover:bg-rose-100">
+                            Sold Out / Refund
+                          </button>
                         </div>
+                      </div>
+                      <div className="mt-2.5 flex items-center justify-between text-xs">
+                        <span className="text-[11px] font-bold text-[#1d1d1f]">STALL TOTAL: RM 15.50</span>
+                        <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                          PAID (0% Cut)
+                        </span>
                       </div>
                       <button className="mt-3 w-full py-2 rounded-xl text-xs font-semibold bg-[#1d1d1f] text-white hover:bg-black transition-colors">
                         Move to Wok
@@ -564,10 +575,21 @@ export default function LandingPage() {
                         </span>
                       </div>
                       <div className="mt-3 space-y-2 border-y border-black/[0.06] py-3 text-xs">
-                        <div className="font-medium text-[#1d1d1f]">
-                          <p className="font-bold text-sm">3x Black Sauce Fried Carrot Cake</p>
-                          <p className="text-[11px] text-[#6e6e73] mt-0.5">&bull; Mild Spicy, extra chives</p>
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="font-medium text-[#1d1d1f]">
+                            <p className="font-bold text-sm">3x Black Sauce Fried Carrot Cake</p>
+                            <p className="text-[11px] text-[#6e6e73] mt-0.5">&bull; Mild Spicy, extra chives</p>
+                          </div>
+                          <button className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-rose-50 text-rose-700 border border-rose-200 shrink-0 hover:bg-rose-100">
+                            Sold Out / Refund
+                          </button>
                         </div>
+                      </div>
+                      <div className="mt-2.5 flex items-center justify-between text-xs">
+                        <span className="text-[11px] font-bold text-[#1d1d1f]">STALL TOTAL: RM 24.00</span>
+                        <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                          PAID (0% Cut)
+                        </span>
                       </div>
                       <button className="mt-3 w-full py-2 rounded-xl text-xs font-semibold bg-black/[0.05] text-[#1d1d1f] hover:bg-black/[0.1] transition-colors">
                         Accept Order
@@ -587,15 +609,15 @@ export default function LandingPage() {
                       </div>
                       <div>
                         <p className="text-xs font-bold text-[#1d1d1f]">Table 12 &bull; Lot 10 Hutong</p>
-                        <p className="text-[10px] text-[#86868b]">3 diners viewing menu</p>
+                        <p className="text-[10px] text-[#86868b]">Receipt &bull; Verified Payment</p>
                       </div>
                     </div>
                     <span className="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-[#30d158]/10 text-[#30d158]">
-                      Active Session
+                      PAID via eWallet
                     </span>
                   </div>
 
-                  <div className="bg-[#f5f5f7] p-3 rounded-2xl space-y-2 text-xs">
+                  <div className="bg-[#f5f5f7] p-3.5 rounded-2xl space-y-2 text-xs">
                     <p className="font-semibold text-[11px] text-[#86868b] uppercase tracking-wider">
                       Multi-Stall Cart (1 Order, 2 Kitchens)
                     </p>
@@ -607,17 +629,25 @@ export default function LandingPage() {
                       <span>1x Iced White Coffee (Booth 14)</span>
                       <span className="font-bold text-[#1d1d1f]">RM 4.80</span>
                     </div>
+                    <div className="pt-2 border-t border-black/[0.06] flex items-center justify-between text-xs text-[#6e6e73]">
+                      <span>Subtotal</span>
+                      <span className="font-medium text-[#1d1d1f]">RM 20.30</span>
+                    </div>
+                    <div className="flex items-center justify-between text-xs text-[#6e6e73]">
+                      <span>Platform Fee (Flat Diner Fee)</span>
+                      <span className="font-medium text-[#1d1d1f]">RM 0.50</span>
+                    </div>
                     <div className="pt-2 border-t border-black/[0.06] flex items-center justify-between font-bold text-sm">
-                      <span>Total Amount</span>
-                      <span className="text-[#0071e3]">RM 20.30</span>
+                      <span>Total Paid</span>
+                      <span className="text-[#0071e3]">RM 20.80</span>
                     </div>
                   </div>
 
                   <button className="w-full py-3 rounded-full text-xs font-bold bg-[#1d1d1f] text-white shadow-md hover:bg-black transition-colors flex items-center justify-center gap-2">
-                    <CreditCard className="w-4 h-4" /> Pay with Apple Pay / Touch &apos;n Go
+                    <CreditCard className="w-4 h-4" /> Paid via Apple Pay / Touch &apos;n Go QR
                   </button>
                   <p className="text-center text-[10px] text-[#86868b]">
-                    Instant dispatch to both stalls. Zero app installation.
+                    0% hawker cut &bull; 1-Tap out-of-stock refunds direct to eWallet &bull; No app download
                   </p>
                 </div>
               )}
@@ -1196,7 +1226,7 @@ export default function LandingPage() {
               Plans for stalls of every size.
             </h2>
             <p className="mt-4 text-base sm:text-lg text-[#6e6e73]">
-              All plans include unlimited customer orders, 0% commission on cash, and instant QR generation.
+              0% transaction commission on stalls, a flat RM 0.50 diner platform fee, and instant out-of-stock eWallet refunds.
             </p>
 
             {/* Billing Cycle Toggle */}
@@ -1240,7 +1270,15 @@ export default function LandingPage() {
                 <ul className="mt-6 space-y-3 text-xs text-[#515154]">
                   <li className="flex items-center gap-2.5">
                     <Check className="w-4 h-4 text-[#30d158] shrink-0" />
-                    <span>Up to 2 booth profiles</span>
+                    <span>0% stall commission (keep 100%)</span>
+                  </li>
+                  <li className="flex items-center gap-2.5">
+                    <Check className="w-4 h-4 text-[#30d158] shrink-0" />
+                    <span>Flat RM 0.50 diner fee</span>
+                  </li>
+                  <li className="flex items-center gap-2.5">
+                    <Check className="w-4 h-4 text-[#30d158] shrink-0" />
+                    <span>1-tap sold-out eWallet refunds</span>
                   </li>
                   <li className="flex items-center gap-2.5">
                     <Check className="w-4 h-4 text-[#30d158] shrink-0" />
@@ -1249,10 +1287,6 @@ export default function LandingPage() {
                   <li className="flex items-center gap-2.5">
                     <Check className="w-4 h-4 text-[#30d158] shrink-0" />
                     <span>Standard mobile kitchen view</span>
-                  </li>
-                  <li className="flex items-center gap-2.5">
-                    <Check className="w-4 h-4 text-[#30d158] shrink-0" />
-                    <span>Basic sales summary</span>
                   </li>
                 </ul>
               </div>
@@ -1287,7 +1321,11 @@ export default function LandingPage() {
                 <ul className="mt-6 space-y-3 text-xs text-[#d2d2d7]">
                   <li className="flex items-center gap-2.5">
                     <Check className="w-4 h-4 text-[#30d158] shrink-0" />
-                    <span>Up to 15 concurrent booth slots</span>
+                    <span>0% stall commission & flat 50 sen diner fee</span>
+                  </li>
+                  <li className="flex items-center gap-2.5">
+                    <Check className="w-4 h-4 text-[#30d158] shrink-0" />
+                    <span>1-tap sold-out eWallet refunds</span>
                   </li>
                   <li className="flex items-center gap-2.5">
                     <Check className="w-4 h-4 text-[#30d158] shrink-0" />

@@ -42,26 +42,38 @@ Complete the booth invitation lifecycle by generating hashed invite tokens from 
 - Refactored subscription onboarding page (`/subscribe`) to Apple-style 4-step guided setup: venue registration, interactive plan selector (Starter, Pro, Enterprise with monthly/annual discount toggle), first stall provisioning, and activation key generator with 1-click invitation copy and dashboard routing
 - Added `lib/auth-redirect.ts` with contextual return routing (`resolveAuthRedirect`, `resolveUserDestination`, `saveAuthRedirect`) so users signing in return to where they came from (customer app `/home` or `/profile`, shop-owner app `/shop-owner/booths`, or booth app `/owner`) rather than hardcoded `/`
 - Fixed booth menu loading (`/api/owner/dishes`) by resolving both `merchant_memberships` and `restaurant_memberships`, preventing PostgREST `.in('food_outlet_id', [])` syntax errors, auto-linking initial booths for testing, and rendering a graceful empty state in `/owner/menu`
+- Applied Supabase migration `008_monetization_and_refunds.sql` supporting fair platform monetization:
+  - Added `fee_payer` ('CUSTOMER' | 'MERCHANT', default 'CUSTOMER'), `platform_fee_fixed` (default RM 0.50), and `platform_fee_percent` to `food_outlets` and `restaurants`
+  - Added `subtotal_amount`, `platform_fee_amount`, `total_amount`, `merchant_payout_amount`, `payment_status` ('PAID', 'PARTIALLY_REFUNDED', 'FULLY_REFUNDED', 'FAILED'), `refund_amount`, and `payment_intent_id` to `orders` and `merchant_orders`
+  - Added `is_refunded`, `refund_amount`, and `refund_reason` to `order_items`
+  - Updated `create_order_with_items` atomic database RPC with backwards-compatible defaults
+- Implemented Payment Gateway refund handler (`lib/payment/refund.ts`) with Stripe, HitPay, Curlec API support and sandbox DuitNow QR simulation fallback
+- Created Out-of-Stock Sold Out Refund API (`POST /api/owner/orders/[id]/refund`) that securely calculates line item refunds, executes payment gateway refund, updates DB records, auto-disables the dish (`dishes.is_available = false`), and broadcasts real-time `order_refunded` events to the customer channel
+- Updated Cart Engine (`lib/order/cart.ts`) to compute dynamic platform fees (default RM 0.50 flat fee) and merchant payouts (100% of dish revenue kept by stall under customer fee mode)
+- Created interactive `CustomerReceipt` component (`components/customer-receipt.tsx`) showing detailed breakdowns: Subtotal, Platform Fee (RM 0.50), Total Paid with `[PAID via eWallet / DuitNow QR]` badge, real-time sold-out item strikes with `[Item Sold Out - Refunded: -RM X.XX]`, and adjusted totals
+- Re-architected Merchant Kitchen Ticket stream (`app/owner/orders/page.tsx`):
+  - Completely omits the customer platform fee line item
+  - Shows table/collection details, customizations, and stall earnings subtotal (`STALL TOTAL: RM XX.XX [PAID]`)
+  - Added 1-Tap `Item Sold Out / Refund` button next to each line item with confirmation modal, instant gateway refund, and live dish inventory disabling
+- Updated public landing page (`app/page.tsx`) to highlight the 0% hawker commission, flat RM 0.50 diner fee, and 1-tap automated out-of-stock eWallet refunds in the hero, interactive product showcase tabs, and pricing tiers
 
 ## Current Architecture
 - Frontend: Next.js App Router, TypeScript, React, Tailwind
 - AI boundary: OpenRouter via Vercel AI SDK for `SearchIntent` extraction only
-- Backend: route handlers and deterministic `SearchService`
-- Database: Supabase/PostgreSQL with raw SQL migrations, generated-style TypeScript types, RLS, and fallback data paths
-- Security: AI never touches SQL or database access directly
+- Backend: route handlers, deterministic `SearchService`, and payment refund handlers
+- Database: Supabase/PostgreSQL with raw SQL migrations (001-008), generated-style TypeScript types, RLS, and fallback data paths
+- Security: AI never touches SQL or database access directly; merchant isolation verified via memberships before processing refunds
 
 ## Important Decisions
 - AI output is validated with Zod before it can affect backend logic
 - Search remains deterministic and database-backed when credentials are present
-- Fallback data keeps the app usable when Supabase or OpenRouter credentials are absent
-- Cart state remains client-side for this milestone while the customer-facing product experience is refined
-- Home and search flow prioritize a premium consumer-app feel over dashboard-like layouts
+- Platform Monetization: Transparent flat RM 0.50 per-order diner fee, with 0% transaction commission on stalls so hawkers keep 100% of their dish earnings
+- Refunds: When an item is sold out, hawker triggers 1-tap refund from kitchen ticket; customer receives automated eWallet refund and dish is marked unavailable automatically
+- Kitchen ticket privacy: Customer platform fee line item is strictly omitted from merchant kitchen tickets
 
 ## Known Issues
 - Password recovery depends on Supabase Auth email configuration
-- Merchant membership provisioning is still a controlled admin follow-up rather than a public customer flow
-- Production credentials are still required for live Supabase/OpenRouter operations
-- Supabase deployment configuration must be provided in Vercel as `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY`; service-role keys are never exposed in client-side environment variables
+- Live Stripe/HitPay/Curlec transactions require live API credentials in production; local sandbox fallback provides smooth development and demo testing
 
 ## Next Task
-Next: provision merchant memberships through a controlled admin flow and then validate the complete customer/merchant lifecycle end-to-end.
+Next: Run end-to-end user checkout and verify realtime multi-stall kitchen routing and sold-out refund synchronization.

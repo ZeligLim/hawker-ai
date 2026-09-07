@@ -1,33 +1,53 @@
 'use client';
 
 import Link from 'next/link';
-import { Check, Clock3, PackageCheck } from 'lucide-react';
+import { Check, Clock3, PackageCheck, AlertCircle, RefreshCw, XCircle, ChevronRight, CheckCircle2 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { supabase } from '@/lib/supabase/client';
 
 type OrderStatus = 'New' | 'Preparing' | 'Ready' | 'Completed';
 
+type TicketItem = {
+  id: string;
+  dishId?: string;
+  name: string;
+  unitPrice: number;
+  quantity: number;
+  customizations?: string[];
+  notes?: string;
+  isRefunded?: boolean;
+  refundAmount?: number;
+};
+
 type OwnerOrder = {
   id: string;
-  backendId?: string;
+  backendId: string;
+  orderId: string;
   table: string;
   time: string;
-  items: string[];
-  total: number;
+  items: TicketItem[];
+  stallSubtotal: number;
+  merchantPayout: number;
+  refundAmount: number;
+  paymentStatus: string;
   status: OrderStatus;
 };
 
-const initialOrders: OwnerOrder[] = [
-  { id: '#1042', table: 'Table 12', time: '2 min ago', items: ['Nasi Lemak × 2', 'Teh Tarik × 1'], total: 20.5, status: 'New' },
-  { id: '#1041', table: 'Table 6', time: '8 min ago', items: ['Curry Mee × 1', 'Kopi O × 1'], total: 15, status: 'Preparing' },
-  { id: '#1040', table: 'Table 3', time: '22 min ago', items: ['Chicken Rice × 2'], total: 17, status: 'Ready' },
-  { id: '#1039', table: 'Takeaway', time: '41 min ago', items: ['Cendol × 1'], total: 5, status: 'Completed' },
-];
-
 const statusOrder: OrderStatus[] = ['New', 'Preparing', 'Ready', 'Completed'];
-const storageKey = 'hawker-owner-orders';
-const backendStatus: Record<string, OrderStatus> = { waiting: 'New', accepted: 'New', preparing: 'Preparing', ready: 'Ready', served: 'Completed', cancelled: 'Completed' };
-const nextBackendStatus: Record<OrderStatus, string> = { New: 'preparing', Preparing: 'ready', Ready: 'served', Completed: 'served' };
+const backendStatus: Record<string, OrderStatus> = {
+  waiting: 'New',
+  accepted: 'New',
+  preparing: 'Preparing',
+  ready: 'Ready',
+  served: 'Completed',
+  cancelled: 'Completed',
+};
+const nextBackendStatus: Record<OrderStatus, string> = {
+  New: 'preparing',
+  Preparing: 'ready',
+  Ready: 'served',
+  Completed: 'served',
+};
 
 function nextStatus(status: OrderStatus) {
   const index = statusOrder.indexOf(status);
@@ -35,122 +55,391 @@ function nextStatus(status: OrderStatus) {
 }
 
 export default function OwnerOrdersPage() {
-  const [orders, setOrders] = useState<OwnerOrder[]>(() => {
-    if (typeof window === 'undefined') return initialOrders;
-    const stored = window.localStorage.getItem(storageKey);
-    if (!stored) return initialOrders;
-    try {
-      const parsed = JSON.parse(stored) as OwnerOrder[];
-      return Array.isArray(parsed) ? parsed : initialOrders;
-    } catch {
-      window.localStorage.removeItem(storageKey);
-      return initialOrders;
-    }
-  });
+  const [orders, setOrders] = useState<OwnerOrder[]>([]);
   const [filter, setFilter] = useState<'active' | 'completed'>('active');
   const [error, setError] = useState('');
+  const [actionSuccess, setActionSuccess] = useState<string | null>(null);
+  const [refundingItemId, setRefundingItemId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   useEffect(() => {
     let active = true;
-    const loadOrders = async () => {
-      const token = (await supabase?.auth.getSession())?.data.session?.access_token;
-      if (!token) return;
-      const response = await fetch('/api/owner/orders', { headers: { Authorization: `Bearer ${token}` } });
-      if (!response.ok) {
-        if (active) setError('Unable to load live orders. Showing saved local orders.');
+
+    const fetchOrders = async () => {
+      if (!supabase) {
+        if (active) setLoading(false);
         return;
       }
-      const payload = await response.json() as { orders?: Array<{ id: string; status: string; subtotal: number; created_at: string; order_items?: Array<{ dish_name: string; quantity: number }> }> };
-      if (active && Array.isArray(payload.orders)) {
-        setOrders(payload.orders.map((order) => ({
-          id: `#${order.id.slice(0, 6).toUpperCase()}`,
-          backendId: order.id,
-          table: 'Table session',
-          time: new Date(order.created_at).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }),
-          items: (order.order_items ?? []).map((item) => `${item.dish_name} × ${item.quantity}`),
-          total: Number(order.subtotal),
-          status: backendStatus[order.status] ?? 'New',
-        })));
+      const session = (await supabase.auth.getSession())?.data.session;
+      if (!session?.access_token) {
+        if (active) setLoading(false);
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/owner/orders', {
+          headers: { Authorization: `Bearer ${session.access_token}` },
+        });
+
+        if (!response.ok) {
+          if (active) {
+            setError('Unable to load live orders.');
+            setLoading(false);
+          }
+          return;
+        }
+
+        const payload = (await response.json()) as { orders?: any[] };
+        if (active && Array.isArray(payload.orders)) {
+          setOrders(
+            payload.orders.map((mo: any) => {
+              const rawItems: TicketItem[] = Array.isArray(mo.order_items)
+                ? mo.order_items.map((i: any) => ({
+                    id: i.id,
+                    dishId: i.dish_id,
+                    name: i.dish_name,
+                    unitPrice: Number(i.unit_price ?? 0),
+                    quantity: Number(i.quantity ?? 1),
+                    customizations: Array.isArray(i.customizations) ? i.customizations : [],
+                    notes: i.notes ?? '',
+                    isRefunded: Boolean(i.is_refunded),
+                    refundAmount: Number(i.refund_amount ?? 0),
+                  }))
+                : [];
+
+              const subtotal = Number(mo.subtotal ?? 0);
+              const refund = Number(mo.refund_amount ?? 0);
+              const payout = Number(mo.merchant_payout_amount ?? Math.max(0, subtotal - refund));
+
+              return {
+                id: `#${(mo.order_id || mo.id).slice(0, 6).toUpperCase()}`,
+                backendId: mo.id,
+                orderId: mo.order_id,
+                table: mo.orders?.table_session_id ? `Table Session` : 'Counter / Table',
+                time: new Date(mo.created_at).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }),
+                items: rawItems,
+                stallSubtotal: subtotal,
+                merchantPayout: payout,
+                refundAmount: refund,
+                paymentStatus: mo.payment_status ?? 'PAID',
+                status: backendStatus[mo.status] ?? 'New',
+              };
+            })
+          );
+        }
+      } catch {
+        if (active) setError('Connection error while fetching orders.');
+      } finally {
+        if (active) setLoading(false);
       }
     };
-    void loadOrders();
-    return () => { active = false; };
-  }, []);
+
+    void fetchOrders();
+
+    // Subscribe to realtime merchant orders
+    if (!supabase) return;
+    const channel = supabase
+      .channel('owner-kitchen-orders')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'merchant_orders' },
+        () => {
+          void fetchOrders();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      active = false;
+      supabase?.removeChannel(channel);
+    };
+  }, [refreshTrigger]);
 
   const visibleOrders = useMemo(
     () => orders.filter((order) => (filter === 'active' ? order.status !== 'Completed' : order.status === 'Completed')),
-    [filter, orders],
+    [filter, orders]
   );
 
-  const advanceOrder = async (id: string) => {
-    setOrders((current) => {
-      const next = current.map((order) => (order.id === id ? { ...order, status: nextStatus(order.status) } : order));
-      window.localStorage.setItem(storageKey, JSON.stringify(next));
-      return next;
-    });
-    const order = orders.find((item) => item.id === id);
-    if (!order) return;
-    const token = (await supabase?.auth.getSession())?.data.session?.access_token;
-    const backendId = order.backendId;
+  const advanceOrder = async (backendId: string, currentStatus: OrderStatus) => {
+    if (!supabase) return;
+    const nextSt = nextStatus(currentStatus);
+    const backendSt = nextBackendStatus[currentStatus];
+
+    setOrders((current) =>
+      current.map((order) => (order.backendId === backendId ? { ...order, status: nextSt } : order))
+    );
+
+    const token = (await supabase.auth.getSession())?.data.session?.access_token;
     if (!token) return;
-    if (!backendId) return;
+
     const response = await fetch(`/api/owner/orders/${backendId}`, {
       method: 'PATCH',
       headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ status: nextBackendStatus[order.status] }),
+      body: JSON.stringify({ status: backendSt }),
     });
-    if (!response.ok) setError('Order status could not be saved. Please try again.');
+
+    if (!response.ok) {
+      setError('Order status could not be saved. Please try again.');
+      setRefreshTrigger((c) => c + 1);
+    }
+  };
+
+  // 1-Tap Item Sold Out & Refund Flow
+  const handleItemSoldOut = async (order: OwnerOrder, item: TicketItem) => {
+    if (!supabase) return;
+    const confirmMessage = `Mark "${item.name}" as Sold Out and issue an automatic refund of RM ${(item.unitPrice * item.quantity).toFixed(2)} to the customer?`;
+    if (!window.confirm(confirmMessage)) return;
+
+    setRefundingItemId(item.id);
+    setError('');
+
+    try {
+      const token = (await supabase.auth.getSession())?.data.session?.access_token;
+      if (!token) throw new Error('Not authenticated.');
+
+      const response = await fetch(`/api/owner/orders/${order.backendId}/refund`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          item_ids: [item.id],
+          reason: 'Item Sold Out',
+        }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error ?? 'Refund failed.');
+      }
+
+      setActionSuccess(
+        `✓ "${item.name}" marked SOLD OUT. RM ${data.refundAmount.toFixed(2)} refunded to customer and dish turned unavailable.`
+      );
+      setTimeout(() => setActionSuccess(null), 6000);
+
+      setRefreshTrigger((c) => c + 1);
+    } catch (err: any) {
+      setError(err.message || 'Failed to refund sold-out item.');
+    } finally {
+      setRefundingItemId(null);
+    }
   };
 
   return (
-    <main className="min-h-screen bg-[#f5f5f7] px-4 pb-32 pt-5 text-[#1d1d1f]">
+    <main className="min-h-screen bg-[#f5f5f7] px-4 pb-32 pt-6 text-[#1d1d1f]">
       <div className="mx-auto max-w-[760px]">
-        <header className="flex items-center gap-3">
+        <header className="flex items-center justify-between">
           <div>
-            <h1 className="mt-1 text-3xl font-semibold tracking-[-0.06em]">Orders</h1>
+            <span className="text-[11px] font-bold uppercase tracking-wider text-[#0071e3]">
+              Live Kitchen Ticket Stream
+            </span>
+            <h1 className="mt-1 text-3xl font-semibold tracking-[-0.04em]">Kitchen Tickets</h1>
           </div>
+          <button
+            type="button"
+            onClick={() => setRefreshTrigger((c) => c + 1)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-black/10 text-xs font-semibold text-[#1d1d1f] hover:bg-black/5 shadow-sm"
+          >
+            <RefreshCw className="w-3.5 h-3.5" /> Refresh
+          </button>
         </header>
 
-        <div className="mt-6 grid grid-cols-2 rounded-[18px] bg-white p-1 shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
+        {/* Filter Tabs */}
+        <div className="mt-5 grid grid-cols-2 rounded-[18px] bg-white p-1 shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
           {(['active', 'completed'] as const).map((option) => (
-            <button key={option} type="button" onClick={() => setFilter(option)} className={`rounded-[14px] px-4 py-3 text-sm font-semibold capitalize ${filter === option ? 'bg-[#111827] text-white' : 'text-[#6e6e73]'}`}>
-              {option} orders
+            <button
+              key={option}
+              type="button"
+              onClick={() => setFilter(option)}
+              className={`rounded-[14px] px-4 py-2.5 text-xs font-semibold capitalize transition-all ${
+                filter === option ? 'bg-[#111827] text-white shadow-sm' : 'text-[#6e6e73]'
+              }`}
+            >
+              {option} tickets
             </button>
           ))}
         </div>
-        {error ? <p className="mt-3 text-sm text-[#9f1239]">{error}</p> : null}
 
-        <section className="mt-4 space-y-3">
-          {visibleOrders.length === 0 ? (
-            <div className="rounded-[24px] bg-white p-8 text-center shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
-              <PackageCheck className="mx-auto h-8 w-8 text-[#6e6e73]" />
-              <p className="mt-3 text-sm font-medium">No {filter} orders</p>
+        {/* Notification alerts */}
+        {actionSuccess ? (
+          <div className="mt-4 p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-xs font-medium text-emerald-800 flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+            <span>{actionSuccess}</span>
+          </div>
+        ) : null}
+
+        {error ? (
+          <div className="mt-4 p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-xs font-medium text-rose-800 flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+            <span>{error}</span>
+          </div>
+        ) : null}
+
+        {/* Tickets Section */}
+        <section className="mt-5 space-y-4">
+          {loading ? (
+            <div className="rounded-[24px] bg-white p-8 text-center text-xs text-[#6e6e73] shadow-sm">
+              Loading kitchen tickets…
             </div>
-          ) : visibleOrders.map((order) => (
-            <article key={order.id} className="rounded-[24px] bg-white p-4 shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <h2 className="text-lg font-semibold">{order.id}</h2>
-                  <p className="mt-1 text-xs text-[#6e6e73]">{order.table} · {order.time}</p>
-                </div>
-                <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${order.status === 'New' ? 'bg-amber-100 text-amber-800' : order.status === 'Preparing' ? 'bg-blue-100 text-blue-800' : order.status === 'Ready' ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-700'}`}>
-                  {order.status}
-                </span>
-              </div>
-              <div className="mt-4 space-y-2">
-                {order.items.map((item) => <p key={item} className="text-sm text-[#4b5563]">{item}</p>)}
-              </div>
-              <div className="mt-4 flex items-center justify-between gap-3 border-t border-[#f0f0f2] pt-3">
-                <span className="text-sm font-semibold">RM {order.total.toFixed(2)}</span>
-                {order.status !== 'Completed' ? (
-                  <button type="button" onClick={() => advanceOrder(order.id)} className="inline-flex items-center gap-2 rounded-full bg-[#111827] px-4 py-2.5 text-xs font-semibold text-white">
-                    {order.status === 'Ready' ? <Check className="h-4 w-4" /> : <Clock3 className="h-4 w-4" />}
-                    Mark {nextStatus(order.status).toLowerCase()}
-                  </button>
-                ) : null}
-              </div>
-            </article>
-          ))}
+          ) : visibleOrders.length === 0 ? (
+            <div className="rounded-[24px] bg-white p-10 text-center shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
+              <PackageCheck className="mx-auto h-8 w-8 text-[#86868b]" />
+              <p className="mt-3 text-sm font-medium text-[#1d1d1f]">No {filter} tickets</p>
+              <p className="text-xs text-[#86868b] mt-1">Orders dispatched by diners will appear here in real time.</p>
+            </div>
+          ) : (
+            visibleOrders.map((order) => {
+              const hasRefund = order.refundAmount > 0;
+              return (
+                <article
+                  key={order.backendId}
+                  className="rounded-[26px] bg-white p-5 shadow-[0_14px_30px_rgba(15,23,42,0.04)] border border-black/[0.04]"
+                >
+                  {/* Ticket Header: Table & Time */}
+                  <div className="flex items-start justify-between gap-3 border-b border-black/[0.05] pb-3.5">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-base font-bold tracking-tight text-[#1d1d1f]">
+                          {order.id}
+                        </span>
+                        <span className="px-2.5 py-0.5 rounded-full bg-[#111827] text-white text-[11px] font-semibold">
+                          {order.table}
+                        </span>
+                      </div>
+                      <p className="mt-1 text-xs text-[#6e6e73]">
+                        Received at {order.time}
+                      </p>
+                    </div>
+
+                    <div className="text-right">
+                      <span
+                        className={`inline-block rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider ${
+                          order.status === 'New'
+                            ? 'bg-amber-100 text-amber-800'
+                            : order.status === 'Preparing'
+                            ? 'bg-blue-100 text-blue-800'
+                            : order.status === 'Ready'
+                            ? 'bg-emerald-100 text-emerald-800'
+                            : 'bg-slate-100 text-slate-700'
+                        }`}
+                      >
+                        {order.status}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Line Items with 1-Tap Sold Out Refund */}
+                  <div className="mt-4 space-y-3">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-[#86868b]">
+                      Kitchen Line Items
+                    </p>
+
+                    <div className="divide-y divide-black/[0.04]">
+                      {order.items.map((item) => {
+                        const lineTotal = item.unitPrice * item.quantity;
+                        const isRefundingThis = refundingItemId === item.id;
+
+                        return (
+                          <div key={item.id} className="py-2.5 first:pt-0 last:pb-0 flex items-start justify-between gap-3">
+                            <div className="flex-1">
+                              <div className="flex items-baseline gap-2">
+                                <span className="text-sm font-bold text-[#1d1d1f]">
+                                  {item.quantity}×
+                                </span>
+                                <span
+                                  className={`text-sm font-semibold ${
+                                    item.isRefunded ? 'line-through text-[#86868b]' : 'text-[#1d1d1f]'
+                                  }`}
+                                >
+                                  {item.name}
+                                </span>
+                              </div>
+
+                              {item.customizations && item.customizations.length > 0 ? (
+                                <p className="text-xs text-[#6e6e73] ml-5 mt-0.5">
+                                  {item.customizations.join(', ')}
+                                </p>
+                              ) : null}
+
+                              {item.notes ? (
+                                <p className="text-xs text-amber-900 bg-amber-50 px-2 py-0.5 rounded-md inline-block ml-5 mt-1">
+                                  Note: {item.notes}
+                                </p>
+                              ) : null}
+
+                              {item.isRefunded ? (
+                                <p className="text-[11px] font-semibold text-rose-600 ml-5 mt-1">
+                                  [SOLD OUT - REFUNDED -RM {lineTotal.toFixed(2)}]
+                                </p>
+                              ) : null}
+                            </div>
+
+                            {/* 1-Tap Out-of-Stock Sold Out Refund Button */}
+                            <div className="text-right shrink-0 flex items-center gap-2">
+                              <span
+                                className={`text-xs font-semibold ${
+                                  item.isRefunded ? 'line-through text-[#86868b]' : 'text-[#1d1d1f]'
+                                }`}
+                              >
+                                RM {lineTotal.toFixed(2)}
+                              </span>
+
+                              {!item.isRefunded && order.status !== 'Completed' ? (
+                                <button
+                                  type="button"
+                                  onClick={() => void handleItemSoldOut(order, item)}
+                                  disabled={isRefundingThis}
+                                  title="Mark item sold out & trigger customer refund"
+                                  className="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 transition-colors disabled:opacity-50"
+                                >
+                                  {isRefundingThis ? 'Refunding…' : 'Item Sold Out / Refund'}
+                                </button>
+                              ) : null}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Hawker Earnings Subtotal (Customer Platform Fee OMITTED) */}
+                  <div className="mt-4 pt-3.5 border-t border-black/[0.06] flex items-center justify-between">
+                    <div>
+                      <p className="text-[11px] font-bold uppercase tracking-wider text-[#86868b]">
+                        Stall Payout (0% Commission)
+                      </p>
+                      <p className="text-sm font-bold text-[#1d1d1f]">
+                        STALL TOTAL: RM {order.merchantPayout.toFixed(2)}{' '}
+                        <span className="text-[10px] font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                          [PAID]
+                        </span>
+                      </p>
+                      {hasRefund ? (
+                        <p className="text-[11px] text-rose-600">
+                          (Original: RM {order.stallSubtotal.toFixed(2)} &bull; Refunded: -RM {order.refundAmount.toFixed(2)})
+                        </p>
+                      ) : null}
+                    </div>
+
+                    {order.status !== 'Completed' ? (
+                      <button
+                        type="button"
+                        onClick={() => advanceOrder(order.backendId, order.status)}
+                        className="inline-flex items-center gap-1.5 rounded-full bg-[#111827] px-4 py-2.5 text-xs font-semibold text-white shadow-sm hover:bg-black transition-colors"
+                      >
+                        {order.status === 'Ready' ? <Check className="h-3.5 w-3.5" /> : <Clock3 className="h-3.5 w-3.5" />}
+                        Mark {nextStatus(order.status)}
+                      </button>
+                    ) : null}
+                  </div>
+                </article>
+              );
+            })
+          )}
         </section>
       </div>
     </main>

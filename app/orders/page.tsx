@@ -9,14 +9,8 @@ import { useAuth } from '@/components/auth-provider';
 import { buildCartSummary, updateCartItemCustomization, updateCartItemQuantity, useCartItems, type CartItem } from '@/lib/order/cart';
 import { getDishCustomization } from '@/lib/order/customizations';
 import { supabase } from '@/lib/supabase/client';
+import { CustomerReceipt, type ReceiptData } from '@/components/customer-receipt';
 import { formatTableLabel, getCurrentTableSession } from '@/lib/table-session';
-
-const directory = [
-  { name: 'Ah Seng Chicken Rice', open: true, items: 12, eta: '10 min' },
-  { name: 'Penang Corner', open: true, items: 9, eta: '12 min' },
-  { name: 'Green Garden Vegetarian', open: true, items: 11, eta: '8 min' },
-  { name: 'Curry House', open: false, items: 8, eta: 'Closed' },
-];
 
 export default function OrdersPage() {
   const { cartItems, setCartItems } = useCartItems();
@@ -26,6 +20,7 @@ export default function OrdersPage() {
   const [checkoutState, setCheckoutState] = useState<'idle' | 'submitting' | 'success'>('idle');
   const [checkoutError, setCheckoutError] = useState('');
   const [tableLabel] = useState(() => formatTableLabel(getCurrentTableSession().tableNumber));
+  const [placedReceipt, setPlacedReceipt] = useState<ReceiptData | null>(null);
 
   const orderItems = useMemo(
     () =>
@@ -87,6 +82,8 @@ export default function OrdersPage() {
       return;
     }
 
+    const paymentIntentId = `pi_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+
     const response = await fetch('/api/orders', {
       method: 'POST',
       headers: {
@@ -94,11 +91,16 @@ export default function OrdersPage() {
         Authorization: `Bearer ${sessionData.session.access_token}`,
       },
       body: JSON.stringify({
-        tableSessionId: null,
+        tableSessionId: getCurrentTableSession().tableId ?? null,
         subtotal: summary.subtotal,
         serviceFee: summary.serviceFee,
         total: summary.total,
-        paymentReference: `mock-${Date.now()}`,
+        subtotalAmount: summary.subtotal,
+        platformFeeAmount: summary.serviceFee,
+        totalAmount: summary.total,
+        merchantPayoutAmount: summary.merchantPayoutAmount,
+        paymentReference: paymentIntentId,
+        paymentIntentId,
         items: cartItems.map((item) => ({
           dishId: item.dishId,
           stallId: item.stallId,
@@ -111,16 +113,70 @@ export default function OrdersPage() {
       }),
     });
 
-    const payload = (await response.json().catch(() => ({}))) as { error?: string; orderId?: string };
+    const payload = (await response.json().catch(() => ({}))) as {
+      error?: string;
+      orderId?: string;
+      paymentIntentId?: string;
+    };
+
     if (!response.ok) {
       setCheckoutState('idle');
       setCheckoutError(payload.error ?? 'Unable to place your order.');
       return;
     }
 
+    setPlacedReceipt({
+      id: payload.orderId ?? `ord_${Date.now()}`,
+      tableLabel,
+      venueName: cartItems[0]?.restaurantName ?? 'Hawker Centre',
+      subtotal: summary.subtotal,
+      serviceFee: summary.serviceFee,
+      total: summary.total,
+      paymentStatus: 'PAID',
+      refundAmount: 0,
+      paymentIntentId: payload.paymentIntentId ?? paymentIntentId,
+      createdAt: new Date().toISOString(),
+      items: cartItems.map((item) => ({
+        id: item.id,
+        dishId: item.dishId,
+        name: item.name,
+        price: item.price,
+        quantity: item.quantity,
+        customizations: item.customizations ?? [],
+        notes: item.notes ?? '',
+        isRefunded: false,
+        refundAmount: 0,
+      })),
+    });
+
     setCartItems([]);
     setCheckoutState('success');
   };
+
+  if (placedReceipt) {
+    return (
+      <main className="min-h-screen bg-[#f5f5f7] px-4 pb-28 pt-8 text-[#1d1d1f]">
+        <div className="mx-auto max-w-[480px]">
+          <div className="mb-6 text-center">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold border border-emerald-200">
+              ✓ Order placed successfully
+            </span>
+          </div>
+
+          <CustomerReceipt initialData={placedReceipt} onBack={() => setPlacedReceipt(null)} />
+
+          <div className="mt-6 flex justify-center gap-3">
+            <Link
+              href="/"
+              className="rounded-full bg-[#111827] px-5 py-2.5 text-xs font-semibold text-white shadow-sm hover:bg-black transition-colors"
+            >
+              Order more items
+            </Link>
+          </div>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-[#f5f5f7] px-4 pb-28 pt-5 text-[#1d1d1f]">
@@ -145,12 +201,20 @@ export default function OrdersPage() {
             <div className="mt-3 flex items-end justify-between gap-3">
               <div>
                 <p className="text-2xl font-semibold tracking-[-0.06em]">RM {summary.total.toFixed(2)}</p>
-                <p className="mt-1 text-sm text-white/75">
+                <p className="mt-0.5 text-xs text-white/70">
+                  Subtotal RM {summary.subtotal.toFixed(2)} + Fee RM {summary.serviceFee.toFixed(2)}
+                </p>
+                <p className="mt-1 text-xs text-white/80">
                   {cartItems.reduce((count, item) => count + item.quantity, 0)} items from {summary.merchantGroups.length} stalls
                 </p>
               </div>
-              <button type="button" onClick={() => void checkout()} disabled={checkoutState === 'submitting' || checkoutState === 'success'} className="rounded-full bg-white px-3.5 py-2 text-xs font-semibold text-[#111827] disabled:opacity-60">
-                {checkoutState === 'submitting' ? 'Placing...' : checkoutState === 'success' ? 'Placed' : 'Checkout'}
+              <button
+                type="button"
+                onClick={() => void checkout()}
+                disabled={checkoutState === 'submitting' || checkoutState === 'success' || cartItems.length === 0}
+                className="rounded-full bg-white px-4 py-2 text-xs font-semibold text-[#111827] disabled:opacity-60 shadow-sm"
+              >
+                {checkoutState === 'submitting' ? 'Placing...' : checkoutState === 'success' ? 'Placed' : `Checkout RM ${summary.total.toFixed(2)}`}
               </button>
             </div>
             {checkoutError ? <p className="mt-3 text-xs text-rose-200">{checkoutError}</p> : null}
@@ -223,6 +287,28 @@ export default function OrdersPage() {
               </div>
             ))}
           </div>
+
+          {cartItems.length > 0 ? (
+            <div className="mt-4 pt-4 border-t border-black/[0.06] space-y-2">
+              <div className="flex justify-between text-xs text-[#6e6e73]">
+                <span>Subtotal ({cartItems.reduce((count, item) => count + item.quantity, 0)} items)</span>
+                <span className="font-medium text-[#1d1d1f]">RM {summary.subtotal.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between text-xs text-[#6e6e73]">
+                <span className="flex items-center gap-1.5">
+                  Platform / Service Fee
+                  <span className="text-[10px] text-[#86868b] bg-black/[0.04] px-1.5 py-0.5 rounded font-medium">
+                    Flat Diner Fee
+                  </span>
+                </span>
+                <span className="font-medium text-[#1d1d1f]">RM {summary.serviceFee.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between text-sm font-semibold text-[#1d1d1f] pt-2 border-t border-dashed border-black/10">
+                <span>Total Amount</span>
+                <span className="text-base text-[#1d1d1f]">RM {summary.total.toFixed(2)}</span>
+              </div>
+            </div>
+          ) : null}
         </section>
 
         {customizingItem ? (
