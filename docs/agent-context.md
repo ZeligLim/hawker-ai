@@ -79,6 +79,7 @@ Complete the booth invitation lifecycle by generating hashed invite tokens from 
 - Platform Monetization: No monthly RM software subscriptions. Transparent cut taken from transactions; configurable between diner platform fee (flat RM 0.50) and merchant payout deduction
 - Refunds: When an item is sold out, hawker triggers 1-tap refund from kitchen ticket; customer receives automated eWallet refund and dish is marked unavailable automatically
 - Kitchen ticket privacy: Customer platform fee line item is strictly omitted from merchant kitchen tickets
+- Business Model & Launchpad: Completely eliminated legacy subscription tiers (Starter, Food Hall Pro, Enterprise) and checkout artifacts. Centered entire landing page (#pricing) and venue launchpad (/subscribe) around "Zero monthly subscriptions. We only win when you sell.", featuring high-contrast Legacy POS vs Hawker Standard comparison, live Malaysian food court order breakdown, and instant cryptographic booth token generation.
 
 ## Known Issues
 - Password recovery depends on Supabase Auth email configuration
@@ -86,3 +87,4 @@ Complete the booth invitation lifecycle by generating hashed invite tokens from 
 
 ## Next Task
 - End-to-end user checkout and verify realtime multi-stall kitchen routing and sold-out refund synchronization.
+

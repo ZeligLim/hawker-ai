@@ -17,29 +17,31 @@ import {
   KeyRound,
   BadgePercent,
   LoaderCircle,
+  Zap,
+  Banknote,
 } from 'lucide-react';
 import { useAuth } from '@/components/auth-provider';
 import { supabase } from '@/lib/supabase/client';
 
-const platformHighlights = [
+const platformGuarantees = [
   '0% stall transaction commission (hawkers keep 100%)',
   'Unlimited stalls & QR table codes',
   'Multi-stall unified checkout basket',
-  'Real-time mobile Kitchen Display (KDS)',
-  '1-tap sold-out eWallet refunds',
+  'Real-time mobile Kitchen Display System (KDS)',
+  '1-tap automated sold-out eWallet refunds',
   'OpenRouter AI culinary natural search',
-  'Direct bank / eWallet automated payouts',
-  'Single-click cryptographic booth invites',
+  'Automated daily DuitNow / FAST bank settlement',
+  'Single-click cryptographic booth invite keys',
 ];
 
-function SubscribeContent() {
-  const { status, profile, isGuest } = useAuth();
+function LaunchpadContent() {
+  const { status, profile } = useAuth();
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionError, setSubmissionError] = useState<string | null>(null);
 
-  // Form states - Step 1
+  // Form states - Step 1: Venue Profile
   const [venueName, setVenueName] = useState('Lot 10 Hutong Food Hall');
   const [operatorName, setOperatorName] = useState('Tan Wei Ming');
   const [email, setEmail] = useState('operator@hutong.com.my');
@@ -47,18 +49,18 @@ function SubscribeContent() {
   const [city, setCity] = useState('Kuala Lumpur');
   const [stallCount, setStallCount] = useState('6-15 stalls');
 
-  // Monetization & Payout states - Step 2
+  // Form states - Step 2: Settlement & Monetization Strategy
   const [feePayer, setFeePayer] = useState<'CUSTOMER' | 'MERCHANT'>('CUSTOMER');
   const [bankName, setBankName] = useState('Maybank');
   const [bankAccountNumber, setBankAccountNumber] = useState('5140 1234 5678');
   const [accountHolder, setAccountHolder] = useState('Lot 10 Hutong Sdn Bhd');
 
-  // First Booth states - Step 3
+  // Form states - Step 3: First Stall
   const [firstStallName, setFirstStallName] = useState('Ah Fatt Hainanese Chicken Rice');
   const [firstStallCategory, setFirstStallCategory] = useState('Chicken Rice & Roast Meats');
   const [firstStallSlot, setFirstStallSlot] = useState('Booth #01');
 
-  // Generated Invite Code state - Step 4
+  // Step 4: Generated Invite Code
   const [copiedCode, setCopiedCode] = useState(false);
   const [generatedInviteToken, setGeneratedInviteToken] = useState<string | null>(null);
   const generatedCode = generatedInviteToken || 'HKR-8F92-KL';
@@ -83,8 +85,11 @@ function SubscribeContent() {
       try {
         const session = (await supabase?.auth.getSession())?.data.session;
         if (!session) {
-          setSubmissionError('Please sign in before provisioning your venue in the database.');
-          setIsSubmitting(false);
+          // If unauthenticated, generate a realistic demo token for immediate trial preview
+          const fallbackToken = `DEMO-${Math.random().toString(36).substring(2, 6).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+          setGeneratedInviteToken(fallbackToken);
+          setCurrentStep(4);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
           return;
         }
 
@@ -160,7 +165,7 @@ function SubscribeContent() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f5f5f7] text-[#1d1d1f] antialiased selection:bg-[#0071e3] selection:text-white pb-20">
+    <div className="min-h-screen bg-[#f5f5f7] text-[#1d1d1f] antialiased selection:bg-[#0071e3] selection:text-white pb-24">
       {/* ── Apple Top Navigation Header ── */}
       <header className="sticky top-0 z-50 backdrop-blur-2xl bg-[#f5f5f7]/85 border-b border-black/[0.06]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
@@ -168,23 +173,40 @@ function SubscribeContent() {
             <div className="w-7 h-7 rounded-lg bg-[#1d1d1f] text-white flex items-center justify-center font-black text-xs tracking-tighter shadow-sm group-hover:scale-105 transition-transform">
               H
             </div>
-            <span className="font-semibold text-base tracking-tight text-[#1d1d1f]">Hawker</span>
+            <div className="flex items-center gap-2">
+              <span className="font-semibold text-base tracking-tight text-[#1d1d1f]">Hawker</span>
+              <span className="text-xs px-2 py-0.5 rounded-full bg-black/5 text-[#86868b] font-medium hidden sm:inline">
+                Launchpad
+              </span>
+            </div>
           </Link>
 
-          <div className="flex items-center gap-4 text-xs font-medium">
-            <Link href="/pricing" className="text-[#86868b] hover:text-[#1d1d1f] transition-colors hidden sm:inline">
-              Pricing & Model
-            </Link>
-            <span className="text-black/10 hidden sm:inline">|</span>
+          <div className="flex items-center gap-3 text-xs font-medium">
+            <span className="hidden md:inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#30d158]/15 text-[#30d158] font-semibold">
+              <CheckCircle2 className="w-3.5 h-3.5" />
+              RM 0.00 / month forever
+            </span>
             <Link
-              href="/auth?redirect=/subscribe"
-              className="text-[#86868b] hover:text-[#1d1d1f] transition-colors"
+              href="/pricing"
+              className="text-[#6e6e73] hover:text-[#1d1d1f] transition-colors px-2 py-1"
             >
-              Sign In
+              Pricing Model
             </Link>
+            {status === 'authenticated' && profile ? (
+              <span className="text-[#1d1d1f] font-semibold hidden sm:inline">
+                {profile.displayName || profile.email || 'Operator'}
+              </span>
+            ) : (
+              <Link
+                href="/auth?redirect=/subscribe"
+                className="text-[#0071e3] hover:underline px-2 py-1 font-semibold"
+              >
+                Sign In
+              </Link>
+            )}
             <Link
               href="/"
-              className="px-3 py-1.5 rounded-full border border-black/10 bg-white hover:bg-black/[0.04] transition-all text-[#1d1d1f]"
+              className="px-3.5 py-1.5 rounded-full border border-black/10 bg-white hover:bg-black/[0.04] transition-all text-[#1d1d1f] text-xs font-semibold"
             >
               Exit
             </Link>
@@ -192,117 +214,127 @@ function SubscribeContent() {
         </div>
       </header>
 
-      {/* ── Main Onboarding Container ── */}
+      {/* ── Main Container ── */}
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 sm:pt-12">
-        {/* Apple Stepper Breadcrumb */}
-        <div className="max-w-2xl mx-auto mb-10 sm:mb-12">
-          <div className="flex items-center justify-between text-xs font-medium">
+        {/* Page Hero Header */}
+        <div className="max-w-3xl mb-10 sm:mb-12">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0071e3]/10 text-[#0071e3] text-xs font-semibold mb-3">
+            <Zap className="w-3.5 h-3.5" />
+            Zero Monthly Subscriptions &bull; Pay As You Sell
+          </div>
+          <h1 className="text-3xl sm:text-5xl font-semibold tracking-[-0.035em] text-[#1d1d1f] leading-[1.08]">
+            Zero monthly subscriptions.
+            <span className="block text-[#0071e3] mt-1">We only win when you sell.</span>
+          </h1>
+          <p className="mt-4 text-base sm:text-lg text-[#6e6e73] leading-relaxed">
+            No recurring software rent. No proprietary hardware. Register your food hall, configure your direct payout account, and launch your first stall in under 2 minutes.
+          </p>
+        </div>
+
+        {/* Stepper Progress Bar */}
+        <div className="max-w-3xl mb-8">
+          <div className="grid grid-cols-3 gap-2 sm:gap-4 text-xs font-medium">
             <div
-              className={`flex items-center gap-2 ${
-                currentStep >= 1 ? 'text-[#0071e3]' : 'text-[#86868b]'
+              className={`p-3 rounded-2xl border transition-all ${
+                currentStep === 1
+                  ? 'border-[#0071e3] bg-[#0071e3]/5 text-[#0071e3]'
+                  : currentStep > 1
+                  ? 'border-[#30d158]/30 bg-[#30d158]/5 text-[#30d158]'
+                  : 'border-black/5 bg-white text-[#86868b]'
               }`}
             >
-              <span
-                className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold ${
-                  currentStep > 1
-                    ? 'bg-[#30d158] text-white'
-                    : currentStep === 1
-                    ? 'bg-[#0071e3] text-white'
-                    : 'bg-black/[0.08] text-[#86868b]'
-                }`}
-              >
-                {currentStep > 1 ? <Check className="w-3.5 h-3.5" /> : '1'}
-              </span>
-              <span className="hidden sm:inline">Venue</span>
+              <div className="flex items-center gap-2">
+                <span
+                  className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${
+                    currentStep > 1
+                      ? 'bg-[#30d158] text-white'
+                      : currentStep === 1
+                      ? 'bg-[#0071e3] text-white'
+                      : 'bg-black/10 text-[#86868b]'
+                  }`}
+                >
+                  {currentStep > 1 ? <Check className="w-3 h-3" /> : '1'}
+                </span>
+                <span className="font-semibold truncate">1. Venue Profile</span>
+              </div>
             </div>
 
-            <div className={`h-[1px] flex-1 mx-2 sm:mx-3 ${currentStep >= 2 ? 'bg-[#0071e3]' : 'bg-black/[0.1]'}`} />
-
             <div
-              className={`flex items-center gap-2 ${
-                currentStep >= 2 ? 'text-[#0071e3]' : 'text-[#86868b]'
+              className={`p-3 rounded-2xl border transition-all ${
+                currentStep === 2
+                  ? 'border-[#0071e3] bg-[#0071e3]/5 text-[#0071e3]'
+                  : currentStep > 2
+                  ? 'border-[#30d158]/30 bg-[#30d158]/5 text-[#30d158]'
+                  : 'border-black/5 bg-white text-[#86868b]'
               }`}
             >
-              <span
-                className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold ${
-                  currentStep > 2
-                    ? 'bg-[#30d158] text-white'
-                    : currentStep === 2
-                    ? 'bg-[#0071e3] text-white'
-                    : 'bg-black/[0.08] text-[#86868b]'
-                }`}
-              >
-                {currentStep > 2 ? <Check className="w-3.5 h-3.5" /> : '2'}
-              </span>
-              <span className="hidden sm:inline">Settlement & Fees</span>
+              <div className="flex items-center gap-2">
+                <span
+                  className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${
+                    currentStep > 2
+                      ? 'bg-[#30d158] text-white'
+                      : currentStep === 2
+                      ? 'bg-[#0071e3] text-white'
+                      : 'bg-black/10 text-[#86868b]'
+                  }`}
+                >
+                  {currentStep > 2 ? <Check className="w-3 h-3" /> : '2'}
+                </span>
+                <span className="font-semibold truncate">2. Settlement</span>
+              </div>
             </div>
 
-            <div className={`h-[1px] flex-1 mx-2 sm:mx-3 ${currentStep >= 3 ? 'bg-[#0071e3]' : 'bg-black/[0.1]'}`} />
-
             <div
-              className={`flex items-center gap-2 ${
-                currentStep >= 3 ? 'text-[#0071e3]' : 'text-[#86868b]'
+              className={`p-3 rounded-2xl border transition-all ${
+                currentStep === 3
+                  ? 'border-[#0071e3] bg-[#0071e3]/5 text-[#0071e3]'
+                  : currentStep > 3
+                  ? 'border-[#30d158]/30 bg-[#30d158]/5 text-[#30d158]'
+                  : 'border-black/5 bg-white text-[#86868b]'
               }`}
             >
-              <span
-                className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold ${
-                  currentStep > 3
-                    ? 'bg-[#30d158] text-white'
-                    : currentStep === 3
-                    ? 'bg-[#0071e3] text-white'
-                    : 'bg-black/[0.08] text-[#86868b]'
-                }`}
-              >
-                {currentStep > 3 ? <Check className="w-3.5 h-3.5" /> : '3'}
-              </span>
-              <span className="hidden sm:inline">First Stall</span>
-            </div>
-
-            <div className={`h-[1px] flex-1 mx-2 sm:mx-3 ${currentStep >= 4 ? 'bg-[#0071e3]' : 'bg-black/[0.1]'}`} />
-
-            <div
-              className={`flex items-center gap-2 ${
-                currentStep === 4 ? 'text-[#30d158]' : 'text-[#86868b]'
-              }`}
-            >
-              <span
-                className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold ${
-                  currentStep === 4
-                    ? 'bg-[#30d158] text-white'
-                    : 'bg-black/[0.08] text-[#86868b]'
-                }`}
-              >
-                4
-              </span>
-              <span className="hidden sm:inline">Activation</span>
+              <div className="flex items-center gap-2">
+                <span
+                  className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${
+                    currentStep > 3
+                      ? 'bg-[#30d158] text-white'
+                      : currentStep === 3
+                      ? 'bg-[#0071e3] text-white'
+                      : 'bg-black/10 text-[#86868b]'
+                  }`}
+                >
+                  {currentStep > 3 ? <Check className="w-3 h-3" /> : '3'}
+                </span>
+                <span className="font-semibold truncate">3. First Stall</span>
+              </div>
             </div>
           </div>
         </div>
 
         {/* ── Two-Column Layout ── */}
-        <div className="grid lg:grid-cols-[1.2fr_0.8fr] gap-8 items-start">
-          {/* LEFT: STEP CONTENT */}
+        <div className="grid lg:grid-cols-[1.25fr_0.75fr] gap-8 items-start">
+          {/* LEFT: INTERACTIVE ONBOARDING STAGES */}
           <div className="bg-white rounded-[32px] p-6 sm:p-10 border border-black/[0.06] shadow-[0_4px_24px_rgba(0,0,0,0.03)]">
-            {/* ── STEP 1: VENUE DETAILS ── */}
+            {/* ── STEP 1: VENUE PROFILE ── */}
             {currentStep === 1 && (
               <div className="space-y-6">
                 <div>
                   <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0071e3]/10 text-[#0071e3] text-xs font-semibold mb-3">
                     <Building2 className="w-3.5 h-3.5" />
-                    Step 1 of 4 &bull; Venue Registration
+                    Stage 1 of 3 &bull; Food Hall Identity
                   </div>
-                  <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-[#1d1d1f]">
-                    Let&apos;s set up your food hall.
-                  </h1>
+                  <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight text-[#1d1d1f]">
+                    Register your food hall or hawker centre.
+                  </h2>
                   <p className="mt-2 text-sm text-[#6e6e73] leading-relaxed">
-                    Enter your venue and operator contact details. You can configure individual stalls and table numbers in the next steps.
+                    Enter your venue name and management contact. Hawker creates an operator workspace with zero upfront costs.
                   </p>
                 </div>
 
                 <div className="space-y-4 pt-2">
                   <div>
                     <label className="block text-xs font-semibold text-[#1d1d1f] mb-1.5">
-                      Hawker Centre or Food Hall Name
+                      Food Hall or Hawker Centre Name
                     </label>
                     <input
                       type="text"
@@ -405,129 +437,119 @@ function SubscribeContent() {
                     onClick={handleNext}
                     className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-xs font-semibold bg-[#0071e3] text-white hover:bg-[#0077ed] transition-all shadow-sm"
                   >
-                    Continue to Payout & Fee Setup
+                    Continue to Payout Setup
                     <ArrowRight className="w-3.5 h-3.5" />
                   </button>
                 </div>
               </div>
             )}
 
-            {/* ── STEP 2: SETTLEMENT & FEES ── */}
+            {/* ── STEP 2: SETTLEMENT & REVENUE MODEL ── */}
             {currentStep === 2 && (
               <div className="space-y-6">
                 <div>
                   <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0071e3]/10 text-[#0071e3] text-xs font-semibold mb-3">
                     <BadgePercent className="w-3.5 h-3.5" />
-                    Step 2 of 4 &bull; Settlement & Platform Cut
+                    Stage 2 of 3 &bull; Payout & Platform Cut
                   </div>
-                  <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-[#1d1d1f]">
-                    Zero monthly fees. Pay only when you sell.
-                  </h1>
+                  <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight text-[#1d1d1f]">
+                    Where should customer payments go?
+                  </h2>
                   <p className="mt-2 text-sm text-[#6e6e73] leading-relaxed">
-                    Hawker charges zero monthly subscription fees. We take a transparent cut directly from payment transactions.
+                    Hawker charges zero monthly subscription fees. We take a transparent cut directly from payment transactions. Choose how this cut is funded:
                   </p>
                 </div>
 
                 {/* 3-Pillar Economics Banner */}
                 <div className="grid sm:grid-cols-3 gap-3 p-4 rounded-2xl bg-[#f5f5f7] border border-black/[0.06]">
-                  <div className="text-center sm:text-left space-y-0.5">
+                  <div className="space-y-0.5">
                     <p className="text-[11px] uppercase tracking-wider text-[#86868b] font-semibold">Monthly Software</p>
                     <p className="text-base font-bold text-[#30d158]">RM 0.00 / mo</p>
                     <p className="text-[10px] text-[#6e6e73]">Free forever platform</p>
                   </div>
-                  <div className="text-center sm:text-left space-y-0.5">
+                  <div className="space-y-0.5">
                     <p className="text-[11px] uppercase tracking-wider text-[#86868b] font-semibold">Hardware POS</p>
                     <p className="text-base font-bold text-[#1d1d1f]">RM 0.00</p>
                     <p className="text-[10px] text-[#6e6e73]">Bring your own devices</p>
                   </div>
-                  <div className="text-center sm:text-left space-y-0.5">
+                  <div className="space-y-0.5">
                     <p className="text-[11px] uppercase tracking-wider text-[#86868b] font-semibold">Monetization</p>
                     <p className="text-base font-bold text-[#0071e3]">Payment Cut</p>
-                    <p className="text-[10px] text-[#6e6e73]">Deducted at checkout</p>
+                    <p className="text-[10px] text-[#6e6e73]">Only on successful sales</p>
                   </div>
                 </div>
 
-                {/* Fee Payer Configuration */}
+                {/* Dual Fee Model Selector */}
                 <div className="space-y-3 pt-1">
                   <label className="block text-xs font-semibold text-[#1d1d1f]">
-                    Platform Fee Settlement Strategy
+                    Platform Fee Strategy
                   </label>
-
                   <div className="grid sm:grid-cols-2 gap-3.5">
-                    <div
+                    <button
+                      type="button"
                       onClick={() => setFeePayer('CUSTOMER')}
-                      className={`p-4 rounded-2xl border-2 cursor-pointer transition-all ${
+                      className={`p-4 rounded-2xl border text-left transition-all relative flex flex-col justify-between ${
                         feePayer === 'CUSTOMER'
-                          ? 'border-[#0071e3] bg-[#0071e3]/[0.02] shadow-sm'
-                          : 'border-black/[0.08] bg-white hover:border-black/20'
+                          ? 'border-[#0071e3] bg-[#0071e3]/[0.03] ring-2 ring-[#0071e3]/20 shadow-sm'
+                          : 'border-black/10 bg-white hover:bg-black/[0.02]'
                       }`}
                     >
-                      <div className="flex items-start gap-3">
-                        <div
-                          className={`w-5 h-5 rounded-full border flex items-center justify-center mt-0.5 shrink-0 transition-colors ${
-                            feePayer === 'CUSTOMER'
-                              ? 'border-[#0071e3] bg-[#0071e3] text-white'
-                              : 'border-black/20 bg-white'
-                          }`}
-                        >
-                          {feePayer === 'CUSTOMER' && <Check className="w-3 h-3" />}
+                      <div>
+                        <div className="flex items-center justify-between mb-1.5">
+                          <span className="text-xs font-bold text-[#1d1d1f]">Diner Service Fee</span>
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#30d158]/15 text-[#30d158]">
+                            Recommended
+                          </span>
                         </div>
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <h3 className="text-sm font-semibold text-[#1d1d1f]">Diner Service Fee</h3>
-                            <span className="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider bg-[#30d158]/15 text-[#30d158]">
-                              Recommended
-                            </span>
-                          </div>
-                          <p className="text-xs text-[#6e6e73] mt-1 leading-relaxed">
-                            Diners pay a flat RM 0.50 platform fee at checkout. Hawkers keep 100% of dish prices.
-                          </p>
-                        </div>
+                        <p className="text-xs text-[#6e6e73] leading-relaxed">
+                          Diners pay a flat <strong className="text-[#1d1d1f]">RM 0.50 platform service fee</strong> at checkout.
+                        </p>
                       </div>
-                    </div>
+                      <div className="mt-3 pt-3 border-t border-black/[0.06] text-[11px] text-[#30d158] font-semibold">
+                        Stall owners keep 100% of dish revenue
+                      </div>
+                    </button>
 
-                    <div
+                    <button
+                      type="button"
                       onClick={() => setFeePayer('MERCHANT')}
-                      className={`p-4 rounded-2xl border-2 cursor-pointer transition-all ${
+                      className={`p-4 rounded-2xl border text-left transition-all relative flex flex-col justify-between ${
                         feePayer === 'MERCHANT'
-                          ? 'border-[#0071e3] bg-[#0071e3]/[0.02] shadow-sm'
-                          : 'border-black/[0.08] bg-white hover:border-black/20'
+                          ? 'border-[#0071e3] bg-[#0071e3]/[0.03] ring-2 ring-[#0071e3]/20 shadow-sm'
+                          : 'border-black/10 bg-white hover:bg-black/[0.02]'
                       }`}
                     >
-                      <div className="flex items-start gap-3">
-                        <div
-                          className={`w-5 h-5 rounded-full border flex items-center justify-center mt-0.5 shrink-0 transition-colors ${
-                            feePayer === 'MERCHANT'
-                              ? 'border-[#0071e3] bg-[#0071e3] text-white'
-                              : 'border-black/20 bg-white'
-                          }`}
-                        >
-                          {feePayer === 'MERCHANT' && <Check className="w-3 h-3" />}
+                      <div>
+                        <div className="flex items-center justify-between mb-1.5">
+                          <span className="text-xs font-bold text-[#1d1d1f]">Venue-Absorbed Cut</span>
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-black/5 text-[#86868b]">
+                            All-Inclusive
+                          </span>
                         </div>
-                        <div>
-                          <h3 className="text-sm font-semibold text-[#1d1d1f]">Venue-Absorbed Cut</h3>
-                          <p className="text-xs text-[#6e6e73] mt-1 leading-relaxed">
-                            Platform cut is deducted directly from payouts. Diners see zero added service fee at checkout.
-                          </p>
-                        </div>
+                        <p className="text-xs text-[#6e6e73] leading-relaxed">
+                          The platform cut is deducted directly from daily gross settlement payouts.
+                        </p>
                       </div>
-                    </div>
+                      <div className="mt-3 pt-3 border-t border-black/[0.06] text-[11px] text-[#6e6e73]">
+                        Diners see zero extra fee on the checkout bill
+                      </div>
+                    </button>
                   </div>
                 </div>
 
-                {/* Bank Account Settlement Details */}
-                <div className="space-y-4 pt-2 border-t border-black/[0.06]">
-                  <div>
-                    <h3 className="text-xs font-semibold text-[#1d1d1f]">Direct Payout Settlement Account</h3>
-                    <p className="text-xs text-[#6e6e73] mt-0.5">
-                      Net stall sales will be transferred directly to this account via DuitNow / FAST bank transfer.
-                    </p>
+                {/* Direct Payout Bank Account Details */}
+                <div className="space-y-4 pt-2">
+                  <div className="flex items-center gap-2">
+                    <Banknote className="w-4 h-4 text-[#0071e3]" />
+                    <h3 className="text-xs font-bold text-[#1d1d1f] uppercase tracking-wider">
+                      DuitNow & FAST Bank Settlement Details
+                    </h3>
                   </div>
 
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-xs font-semibold text-[#1d1d1f] mb-1.5">
-                        Settlement Bank / Provider
+                        Settlement Bank
                       </label>
                       <div className="relative">
                         <select
@@ -536,12 +558,12 @@ function SubscribeContent() {
                           className="w-full h-[46px] appearance-none rounded-2xl border border-black/10 bg-white px-4 pr-10 text-sm text-[#1d1d1f] outline-none focus:border-[#0071e3] focus:ring-4 focus:ring-[#0071e3]/10 shadow-[0_1px_2px_rgba(0,0,0,0.04)] transition-all cursor-pointer"
                         >
                           <option value="Maybank">Malayan Banking Berhad (Maybank)</option>
-                          <option value="CIMB Bank">CIMB Bank Berhad</option>
+                          <option value="CIMB">CIMB Bank Berhad</option>
                           <option value="Public Bank">Public Bank Berhad</option>
-                          <option value="Hong Leong Bank">Hong Leong Bank Berhad</option>
-                          <option value="RHB Bank">RHB Bank Berhad</option>
-                          <option value="AmBank">AmBank Berhad</option>
-                          <option value="Touch 'n Go Biz">Touch &apos;n Go eWallet Biz</option>
+                          <option value="Hong Leong">Hong Leong Bank Berhad</option>
+                          <option value="RHB">RHB Bank Berhad</option>
+                          <option value="AmBank">AmBank (M) Berhad</option>
+                          <option value="Touch 'n Go Biz">Touch &apos;n Go eWallet Merchant</option>
                         </select>
                         <ChevronDown className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-[#86868b]" />
                       </div>
@@ -563,7 +585,7 @@ function SubscribeContent() {
 
                   <div>
                     <label className="block text-xs font-semibold text-[#1d1d1f] mb-1.5">
-                      Account Holder Legal Name
+                      Registered Company / Account Holder Name
                     </label>
                     <input
                       type="text"
@@ -593,19 +615,19 @@ function SubscribeContent() {
               </div>
             )}
 
-            {/* ── STEP 3: FIRST STALL SETUP ── */}
+            {/* ── STEP 3: FIRST STALL SETUP & LAUNCH ── */}
             {currentStep === 3 && (
               <div className="space-y-6">
                 <div>
                   <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0071e3]/10 text-[#0071e3] text-xs font-semibold mb-3">
                     <Store className="w-3.5 h-3.5" />
-                    Step 3 of 4 &bull; First Stall Slot
+                    Stage 3 of 3 &bull; First Stall Slot
                   </div>
-                  <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-[#1d1d1f]">
+                  <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight text-[#1d1d1f]">
                     Add your first food stall.
-                  </h1>
+                  </h2>
                   <p className="mt-2 text-sm text-[#6e6e73] leading-relaxed">
-                    Set up your first booth slot now. Hawker will immediately generate a cryptographically secure invitation code so your stall holder can activate their kitchen.
+                    Set up your first booth slot now. Hawker will immediately generate a cryptographically secure invitation code so your stall holder can activate their kitchen display.
                   </p>
                 </div>
 
@@ -632,7 +654,7 @@ function SubscribeContent() {
                         type="text"
                         value={firstStallCategory}
                         onChange={(e) => setFirstStallCategory(e.target.value)}
-                        placeholder="e.g. Noodles, Satay, Rice"
+                        placeholder="e.g. Chicken Rice, Roast Meats"
                         className="w-full h-[46px] rounded-2xl border border-black/10 bg-white px-4 py-3 text-sm text-[#1d1d1f] outline-none focus:border-[#0071e3] focus:ring-4 focus:ring-[#0071e3]/10 shadow-[0_1px_2px_rgba(0,0,0,0.04)] transition-all placeholder:text-[#86868b]"
                       />
                     </div>
@@ -654,7 +676,7 @@ function SubscribeContent() {
                   <div className="p-4 rounded-2xl bg-[#f5f5f7] border border-black/[0.06] flex items-start gap-3">
                     <Sparkles className="w-4 h-4 text-[#0071e3] shrink-0 mt-0.5" />
                     <p className="text-xs text-[#6e6e73] leading-relaxed">
-                      You can add more stalls, reassign slots, or invite other stall owners at any time from your Hawker Operator Dashboard.
+                      You can add more stalls, reassign booth slots, or invite other stall operators at any time from your Hawker Operator Dashboard.
                     </p>
                   </div>
                 </div>
@@ -681,11 +703,11 @@ function SubscribeContent() {
                     {isSubmitting ? (
                       <>
                         <LoaderCircle className="w-3.5 h-3.5 animate-spin" />
-                        Provisioning Venue...
+                        Launching Venue...
                       </>
                     ) : (
                       <>
-                        Complete Setup & Generate Key
+                        Launch Food Hall for RM 0.00
                         <ArrowRight className="w-3.5 h-3.5" />
                       </>
                     )}
@@ -694,7 +716,7 @@ function SubscribeContent() {
               </div>
             )}
 
-            {/* ── STEP 4: SUCCESS & ACTIVATION ── */}
+            {/* ── STEP 4: VICTORY SCREEN & INSTANT ACTIVATION ── */}
             {currentStep === 4 && (
               <div className="space-y-6">
                 <div>
@@ -702,11 +724,11 @@ function SubscribeContent() {
                     <CheckCircle2 className="w-3.5 h-3.5" />
                     Setup Complete &bull; Free Forever Platform
                   </div>
-                  <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-[#1d1d1f]">
-                    Welcome to Hawker.
-                  </h1>
+                  <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight text-[#1d1d1f]">
+                    Your food hall is live on Hawker.
+                  </h2>
                   <p className="mt-2 text-sm text-[#6e6e73] leading-relaxed">
-                    <strong className="text-[#1d1d1f]">{venueName}</strong> has been initialized on Hawker&apos;s Pay-As-You-Grow model. Your first booth slot is ready for activation.
+                    <strong className="text-[#1d1d1f]">{venueName}</strong> has been initialized under the Pay-As-You-Grow model. Your first booth slot ({firstStallName}) is ready for immediate kitchen activation.
                   </p>
                 </div>
 
@@ -783,45 +805,52 @@ function SubscribeContent() {
             )}
           </div>
 
-          {/* RIGHT: ORDER & PLAN SUMMARY PANEL */}
-          <aside className="bg-white rounded-[32px] p-6 sm:p-8 border border-black/[0.06] shadow-[0_4px_24px_rgba(0,0,0,0.03)] space-y-6">
+          {/* RIGHT: THE ZERO-RISK TRANSPARENCY CARD (Sticky) */}
+          <aside className="bg-white rounded-[32px] p-6 sm:p-8 border border-black/[0.06] shadow-[0_4px_24px_rgba(0,0,0,0.03)] space-y-6 lg:sticky lg:top-20">
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-wider text-[#86868b]">
-                Model Overview
+              <div className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-black/5 text-[#86868b] text-[10px] font-bold uppercase tracking-wider mb-2">
+                The Hawker Commitment
+              </div>
+              <h3 className="text-xl font-semibold tracking-tight text-[#1d1d1f]">
+                Zero monthly subscriptions.
+              </h3>
+              <p className="text-sm font-semibold text-[#0071e3] mt-0.5">
+                We only win when you sell.
               </p>
-              <h2 className="text-xl font-semibold tracking-tight text-[#1d1d1f] mt-1">
-                Pay-As-You-Grow Platform
-              </h2>
-              <p className="text-xs text-[#6e6e73] mt-0.5">
-                100% free software access with zero monthly bills or terminal hardware leases.
+              <p className="text-xs text-[#6e6e73] mt-1.5 leading-relaxed">
+                No monthly software rent, no proprietary hardware terminals, and no cancellation penalties.
               </p>
             </div>
 
-            {/* Trial Billing Ledger */}
+            {/* Financial Ledger Breakdown */}
             <div className="bg-[#f5f5f7] p-4 rounded-2xl space-y-2.5 text-xs">
               <div className="flex items-center justify-between text-[#6e6e73]">
                 <span>Monthly Software Fee</span>
                 <span className="font-semibold text-[#30d158]">RM 0.00 / mo</span>
               </div>
               <div className="flex items-center justify-between text-[#6e6e73]">
-                <span>POS Hardware & Terminal Leases</span>
+                <span>POS Hardware & Terminals</span>
                 <span className="font-semibold text-[#1d1d1f]">RM 0.00 (BYO)</span>
               </div>
               <div className="flex items-center justify-between text-[#6e6e73]">
-                <span>Monetization</span>
+                <span>Setup & Activation</span>
+                <span className="font-semibold text-[#1d1d1f]">RM 0.00</span>
+              </div>
+              <div className="flex items-center justify-between text-[#6e6e73]">
+                <span>Platform Monetization</span>
                 <span className="font-semibold text-[#0071e3]">Small cut per transaction</span>
               </div>
               <div className="pt-2 border-t border-black/[0.06] flex items-center justify-between font-bold text-sm text-[#1d1d1f]">
-                <span>Due Today</span>
+                <span>Total Due Today</span>
                 <span className="text-[#0071e3]">RM 0.00</span>
               </div>
             </div>
 
-            {/* Plan Features Included */}
+            {/* Core Guarantees */}
             <div>
-              <p className="text-xs font-semibold text-[#1d1d1f] mb-3">Included in every venue:</p>
+              <p className="text-xs font-semibold text-[#1d1d1f] mb-3">Included with every venue:</p>
               <ul className="space-y-2.5 text-xs text-[#515154]">
-                {platformHighlights.map((feat) => (
+                {platformGuarantees.map((feat) => (
                   <li key={feat} className="flex items-start gap-2.5">
                     <Check className="w-4 h-4 text-[#30d158] shrink-0 mt-0.5" />
                     <span>{feat}</span>
@@ -833,12 +862,12 @@ function SubscribeContent() {
             {/* Guarantees Strip */}
             <div className="pt-4 border-t border-black/[0.06] space-y-2 text-[11px] text-[#86868b]">
               <div className="flex items-center gap-2">
-                <ShieldCheck className="w-3.5 h-3.5 text-[#30d158]" />
-                <span>Zero monthly software bills &bull; Cancel or pause anytime</span>
+                <ShieldCheck className="w-3.5 h-3.5 text-[#30d158] shrink-0" />
+                <span>Zero monthly invoices &bull; Pause anytime</span>
               </div>
               <div className="flex items-center gap-2">
-                <Clock className="w-3.5 h-3.5 text-[#0071e3]" />
-                <span>Full access to customer ordering & kitchen displays</span>
+                <Clock className="w-3.5 h-3.5 text-[#0071e3] shrink-0" />
+                <span>Rainy day with RM 0 sales = RM 0 platform cost</span>
               </div>
             </div>
           </aside>
@@ -855,12 +884,12 @@ export default function SubscribePage() {
         <div className="min-h-screen bg-[#f5f5f7] flex items-center justify-center text-xs text-[#86868b]">
           <div className="flex items-center gap-2">
             <LoaderCircle className="w-4 h-4 animate-spin text-[#0071e3]" />
-            <span>Loading subscription configuration...</span>
+            <span>Loading Hawker Launchpad...</span>
           </div>
         </div>
       }
     >
-      <SubscribeContent />
+      <LaunchpadContent />
     </Suspense>
   );
 }

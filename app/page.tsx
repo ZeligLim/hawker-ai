@@ -1214,168 +1214,210 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── APPLE-STYLE PRICING SECTION (Transaction-Based / No Subscriptions) ── */}
-      <section id="pricing" className="py-24 sm:py-32 bg-white border-t border-black/[0.06]">
+      {/* ── THE ZERO SUBSCRIPTION PHILOSOPHY & PRICING SECTION ── */}
+      <section id="pricing" className="py-24 sm:py-32 bg-white border-t border-black/[0.06] overflow-hidden">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-3xl mx-auto text-center mb-16">
-            <p className="text-xs font-semibold tracking-wider uppercase text-[#0071e3] mb-3">
-              Simple, Pay-As-You-Grow Pricing
-            </p>
-            <h2 className="text-3xl sm:text-5xl font-semibold tracking-[-0.03em] text-[#1d1d1f]">
-              Zero monthly subscriptions. We only win when you sell.
+          {/* Main Headline */}
+          <div className="max-w-3xl mx-auto text-center mb-16 sm:mb-20">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0071e3]/10 text-[#0071e3] text-xs font-semibold mb-4">
+              <Zap className="w-3.5 h-3.5" />
+              A Radically Fair Business Model
+            </div>
+            <h2 className="text-3xl sm:text-5xl lg:text-6xl font-semibold tracking-[-0.035em] text-[#1d1d1f] leading-[1.08]">
+              Zero monthly subscriptions.
+              <span className="block text-[#0071e3] mt-1">We only win when you sell.</span>
             </h2>
-            <p className="mt-4 text-base sm:text-lg text-[#6e6e73] leading-relaxed">
-              No tier limits, no upfront software fees, and no terminal rentals. Everything is completely free to set up—we simply take a small, transparent cut from processed payments.
+            <p className="mt-5 text-base sm:text-lg text-[#6e6e73] leading-relaxed max-w-2xl mx-auto">
+              Traditional restaurant POS vendors lock food halls into RM 300–800 monthly software rent, RM 5,000 proprietary hardware, and 3-year lock-ins. Hawker throws out the subscription model entirely.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6 lg:gap-8 items-stretch">
-            {/* Pillar 1: 100% Free Platform */}
-            <div className="bg-[#fbfbfd] p-7 sm:p-8 rounded-[32px] border border-black/[0.08] shadow-sm flex flex-col justify-between">
+          {/* The High-Contrast Comparison Matrix */}
+          <div className="grid lg:grid-cols-2 gap-8 items-stretch mb-16">
+            {/* The Legacy Extortion Model */}
+            <div className="rounded-[36px] bg-[#f5f5f7] p-8 sm:p-10 border border-black/[0.06] flex flex-col justify-between">
               <div>
-                <div className="w-10 h-10 rounded-2xl bg-[#0071e3]/10 text-[#0071e3] flex items-center justify-center mb-5">
-                  <Building2 className="w-5 h-5" />
+                <div className="flex items-center justify-between mb-6">
+                  <span className="px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-black/5 text-[#86868b]">
+                    Legacy POS & SaaS
+                  </span>
+                  <span className="text-xs font-semibold text-red-600 flex items-center gap-1">
+                    <X className="w-3.5 h-3.5" /> Extraction Model
+                  </span>
                 </div>
-                <h3 className="text-xl font-semibold text-[#1d1d1f]">Free Forever Platform</h3>
-                <p className="text-xs text-[#86868b] mt-1">For every hawker centre, food hall, and street market.</p>
 
-                <div className="mt-6 flex items-baseline gap-1">
-                  <span className="text-4xl font-bold tracking-tight text-[#1d1d1f]">RM 0</span>
-                  <span className="text-xs text-[#86868b]">/ month</span>
+                <h3 className="text-2xl font-semibold text-[#1d1d1f] tracking-tight">
+                  You pay whether you make money or not.
+                </h3>
+                <p className="mt-2 text-xs sm:text-sm text-[#6e6e73] leading-relaxed">
+                  Traditional software vendors treat food court operators as captive rent-payers, extracting high recurring fees regardless of weather or diner footfall.
+                </p>
+
+                <div className="mt-8 space-y-4">
+                  <div className="p-4 rounded-2xl bg-white border border-black/[0.04] flex items-start gap-3">
+                    <div className="w-7 h-7 rounded-xl bg-red-100 text-red-600 flex items-center justify-center shrink-0 mt-0.5 text-xs font-bold">
+                      RM
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-[#1d1d1f]">RM 300 – RM 800 / month per stall</p>
+                      <p className="text-xs text-[#6e6e73] mt-0.5">Heavy recurring invoices billed every 30 days like digital rent.</p>
+                    </div>
+                  </div>
+
+                  <div className="p-4 rounded-2xl bg-white border border-black/[0.04] flex items-start gap-3">
+                    <div className="w-7 h-7 rounded-xl bg-red-100 text-red-600 flex items-center justify-center shrink-0 mt-0.5 text-xs font-bold">
+                      POS
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-[#1d1d1f]">RM 3,500 – RM 8,000 upfront terminals</p>
+                      <p className="text-xs text-[#6e6e73] mt-0.5">Bulky, proprietary hardware terminals with expensive warranty leases.</p>
+                    </div>
+                  </div>
+
+                  <div className="p-4 rounded-2xl bg-white border border-black/[0.04] flex items-start gap-3">
+                    <div className="w-7 h-7 rounded-xl bg-red-100 text-red-600 flex items-center justify-center shrink-0 mt-0.5 text-xs font-bold">
+                      0
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-[#1d1d1f]">Quiet or rainy day with zero sales?</p>
+                      <p className="text-xs text-[#6e6e73] mt-0.5">You still pay full software rent. All downside risk is pushed onto the operator.</p>
+                    </div>
+                  </div>
                 </div>
-                <p className="text-[11px] text-[#30d158] font-semibold mt-1">Zero monthly software invoices</p>
-
-                <ul className="mt-6 space-y-3 text-xs text-[#515154]">
-                  <li className="flex items-center gap-2.5">
-                    <Check className="w-4 h-4 text-[#30d158] shrink-0" />
-                    <span>Unlimited food stalls & booths</span>
-                  </li>
-                  <li className="flex items-center gap-2.5">
-                    <Check className="w-4 h-4 text-[#30d158] shrink-0" />
-                    <span>Unlimited QR table codes & digital menus</span>
-                  </li>
-                  <li className="flex items-center gap-2.5">
-                    <Check className="w-4 h-4 text-[#30d158] shrink-0" />
-                    <span>Zero hardware lock-in (use any phone/tablet)</span>
-                  </li>
-                  <li className="flex items-center gap-2.5">
-                    <Check className="w-4 h-4 text-[#30d158] shrink-0" />
-                    <span>No setup costs or annual commitments</span>
-                  </li>
-                </ul>
               </div>
 
-              <div className="mt-8">
-                <Link
-                  href="/subscribe"
-                  className="w-full inline-flex items-center justify-center py-2.5 rounded-full text-xs font-semibold bg-[#1d1d1f] text-white hover:bg-black transition-colors"
-                >
-                  Get started for free
-                </Link>
+              <div className="mt-8 pt-6 border-t border-black/[0.06] text-xs text-[#86868b]">
+                Locked 24–36 month contracts with punitive early termination penalties.
               </div>
             </div>
 
-            {/* Pillar 2: Transaction Cut (Featured Center) */}
-            <div className="bg-[#1d1d1f] text-white p-7 sm:p-8 rounded-[32px] shadow-xl flex flex-col justify-between relative overflow-hidden">
-              <div className="absolute top-4 right-5">
-                <span className="px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase bg-[#0071e3] text-white">
-                  Payment Cut
+            {/* The Hawker Standard (Hero Card) */}
+            <div className="rounded-[36px] bg-[#1d1d1f] text-white p-8 sm:p-10 shadow-2xl flex flex-col justify-between relative overflow-hidden">
+              <div className="absolute -top-24 -right-24 w-80 h-80 rounded-full bg-[#0071e3]/20 blur-3xl pointer-events-none" />
+
+              <div>
+                <div className="flex items-center justify-between mb-6">
+                  <span className="px-3.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-[#30d158]/20 text-[#30d158] border border-[#30d158]/30">
+                    The Hawker Standard
+                  </span>
+                  <span className="text-xs font-semibold text-[#30d158] flex items-center gap-1">
+                    <CheckCircle2 className="w-3.5 h-3.5" /> 100% Aligned
+                  </span>
+                </div>
+
+                <h3 className="text-2xl sm:text-3xl font-semibold text-white tracking-tight">
+                  RM 0.00 until an order is served.
+                </h3>
+                <p className="mt-2 text-xs sm:text-sm text-[#a1a1a6] leading-relaxed">
+                  We believe software should be free infrastructure. We only take a transparent cut directly from transactions when you actually make sales.
+                </p>
+
+                <div className="mt-8 space-y-4">
+                  <div className="p-4 rounded-2xl bg-white/[0.06] border border-white/10 flex items-start gap-3">
+                    <div className="w-7 h-7 rounded-xl bg-[#30d158]/20 text-[#30d158] flex items-center justify-center shrink-0 mt-0.5 text-xs font-bold">
+                      RM
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-white">RM 0.00 / month forever</p>
+                      <p className="text-xs text-[#a1a1a6] mt-0.5">Unlimited food stalls, unlimited menus, unlimited tables. Zero software bills.</p>
+                    </div>
+                  </div>
+
+                  <div className="p-4 rounded-2xl bg-white/[0.06] border border-white/10 flex items-start gap-3">
+                    <div className="w-7 h-7 rounded-xl bg-[#0071e3]/20 text-[#2997ff] flex items-center justify-center shrink-0 mt-0.5 text-xs font-bold">
+                      BYO
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-white">RM 0.00 hardware lock-in</p>
+                      <p className="text-xs text-[#a1a1a6] mt-0.5">Kitchen display screens and ordering run on any iPad, Android tablet, or smartphone.</p>
+                    </div>
+                  </div>
+
+                  <div className="p-4 rounded-2xl bg-white/[0.06] border border-white/10 flex items-start gap-3">
+                    <div className="w-7 h-7 rounded-xl bg-[#30d158]/20 text-[#30d158] flex items-center justify-center shrink-0 mt-0.5 text-xs font-bold">
+                      0
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-white">Quiet or rainy day with zero sales?</p>
+                      <p className="text-xs text-[#a1a1a6] mt-0.5">Your platform fee is RM 0.00. We share your business reality—we only win when you win.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-8 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <span className="text-xs text-[#a1a1a6]">
+                  Zero lock-in contracts &bull; 100% free to start today
+                </span>
+                <Link
+                  href="/subscribe"
+                  className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3 rounded-full text-xs font-semibold bg-[#0071e3] text-white hover:bg-[#0077ed] transition-all shadow-lg hover:shadow-[#0071e3]/25"
+                >
+                  Launch Your Food Hall for RM 0
+                  <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          {/* Interactive 'How The Transaction Cut Works' Breakdown Banner */}
+          <div className="rounded-[36px] bg-[#fbfbfd] p-8 sm:p-10 border border-black/[0.08] shadow-sm">
+            <div className="max-w-2xl mb-8">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-[#0071e3]">
+                Transparent Fee Breakdown
+              </span>
+              <h3 className="text-xl sm:text-2xl font-semibold text-[#1d1d1f] tracking-tight mt-1">
+                How a real RM 15.00 order works at your food hall.
+              </h3>
+              <p className="text-xs sm:text-sm text-[#6e6e73] mt-1.5 leading-relaxed">
+                By default, diners pay a flat RM 0.50 platform service fee at checkout. Stall owners keep 100% of their dish revenue, and payouts are automatically deposited into your bank account.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-4 gap-4">
+              <div className="p-5 rounded-2xl bg-white border border-black/[0.06]">
+                <p className="text-[11px] font-semibold text-[#86868b] uppercase tracking-wider">1. Customer Basket</p>
+                <p className="text-xl font-bold text-[#1d1d1f] mt-1">RM 15.00</p>
+                <p className="text-xs text-[#6e6e73] mt-1">Chicken Rice (RM 10) + Iced Kopi (RM 5) across 2 stalls.</p>
+              </div>
+
+              <div className="p-5 rounded-2xl bg-white border border-black/[0.06]">
+                <p className="text-[11px] font-semibold text-[#0071e3] uppercase tracking-wider">2. Diner Platform Fee</p>
+                <p className="text-xl font-bold text-[#0071e3] mt-1">+ RM 0.50</p>
+                <p className="text-xs text-[#6e6e73] mt-1">Paid by diner at checkout. Powers real-time KDS & AI search.</p>
+              </div>
+
+              <div className="p-5 rounded-2xl bg-white border border-[#30d158]/30 bg-[#30d158]/[0.02]">
+                <p className="text-[11px] font-semibold text-[#30d158] uppercase tracking-wider">3. Hawkers Keep</p>
+                <p className="text-xl font-bold text-[#30d158] mt-1">RM 15.00 (100%)</p>
+                <p className="text-xs text-[#6e6e73] mt-1">Zero stall commission. Hawkers retain every sen of dish sales.</p>
+              </div>
+
+              <div className="p-5 rounded-2xl bg-white border border-black/[0.06]">
+                <p className="text-[11px] font-semibold text-[#86868b] uppercase tracking-wider">4. Automated Payout</p>
+                <p className="text-xl font-bold text-[#1d1d1f] mt-1">Daily / Instant</p>
+                <p className="text-xs text-[#6e6e73] mt-1">Settled directly via DuitNow / FAST bank transfer.</p>
+              </div>
+            </div>
+
+            <div className="mt-8 pt-6 border-t border-black/[0.06] flex flex-wrap items-center justify-between gap-4 text-xs text-[#6e6e73]">
+              <div className="flex flex-wrap items-center gap-4 sm:gap-6">
+                <span className="flex items-center gap-1.5 font-medium text-[#1d1d1f]">
+                  <Check className="w-4 h-4 text-[#30d158]" /> 1-Tap Out-of-Stock Refunds
+                </span>
+                <span className="flex items-center gap-1.5 font-medium text-[#1d1d1f]">
+                  <Check className="w-4 h-4 text-[#30d158]" /> Multi-Stall Unified Checkout
+                </span>
+                <span className="flex items-center gap-1.5 font-medium text-[#1d1d1f]">
+                  <Check className="w-4 h-4 text-[#30d158]" /> OpenRouter AI Culinary Search
                 </span>
               </div>
-              <div>
-                <div className="w-10 h-10 rounded-2xl bg-white/10 text-white flex items-center justify-center mb-5">
-                  <CreditCard className="w-5 h-5 text-[#2997ff]" />
-                </div>
-                <h3 className="text-xl font-semibold text-white">Pay As You Sell</h3>
-                <p className="text-xs text-white/60 mt-1">We take a small cut directly from payments.</p>
-
-                <div className="mt-6 flex items-baseline gap-1.5">
-                  <span className="text-3xl sm:text-4xl font-bold tracking-tight text-white">Small Cut</span>
-                  <span className="text-xs text-white/60">/ transaction</span>
-                </div>
-                <p className="text-[11px] text-[#30d158] font-semibold mt-1">No orders = RM 0.00 platform fee</p>
-
-                <ul className="mt-6 space-y-3 text-xs text-[#d2d2d7]">
-                  <li className="flex items-center gap-2.5">
-                    <Check className="w-4 h-4 text-[#30d158] shrink-0" />
-                    <span>Transparent cut from payment gateway</span>
-                  </li>
-                  <li className="flex items-center gap-2.5">
-                    <Check className="w-4 h-4 text-[#30d158] shrink-0" />
-                    <span>Direct automated bank / eWallet payouts</span>
-                  </li>
-                  <li className="flex items-center gap-2.5">
-                    <Check className="w-4 h-4 text-[#30d158] shrink-0" />
-                    <span>1-tap automated sold-out eWallet refunds</span>
-                  </li>
-                  <li className="flex items-center gap-2.5">
-                    <Check className="w-4 h-4 text-[#30d158] shrink-0" />
-                    <span>Automated tenant sales reconciliation</span>
-                  </li>
-                  <li className="flex items-center gap-2.5">
-                    <Check className="w-4 h-4 text-[#30d158] shrink-0" />
-                    <span>No financial risk during quiet or off-peak days</span>
-                  </li>
-                </ul>
-              </div>
-
-              <div className="mt-8">
-                <Link
-                  href="/subscribe"
-                  className="w-full inline-flex items-center justify-center py-2.5 rounded-full text-xs font-semibold bg-[#0071e3] text-white hover:bg-[#0077ed] transition-colors shadow-lg"
-                >
-                  Activate Venue Now
-                </Link>
-              </div>
-            </div>
-
-            {/* Pillar 3: All Features Unlocked */}
-            <div className="bg-[#fbfbfd] p-7 sm:p-8 rounded-[32px] border border-black/[0.08] shadow-sm flex flex-col justify-between">
-              <div>
-                <div className="w-10 h-10 rounded-2xl bg-[#30d158]/10 text-[#30d158] flex items-center justify-center mb-5">
-                  <Sparkles className="w-5 h-5 text-[#30d158]" />
-                </div>
-                <h3 className="text-xl font-semibold text-[#1d1d1f]">All Features Included</h3>
-                <p className="text-xs text-[#86868b] mt-1">Every premium capability, zero tier gating.</p>
-
-                <div className="mt-6 flex items-baseline gap-1">
-                  <span className="text-4xl font-bold tracking-tight text-[#1d1d1f]">100%</span>
-                  <span className="text-xs text-[#86868b]">features unlocked</span>
-                </div>
-                <p className="text-[11px] text-[#0071e3] font-semibold mt-1">No feature paywalls</p>
-
-                <ul className="mt-6 space-y-3 text-xs text-[#515154]">
-                  <li className="flex items-center gap-2.5">
-                    <Check className="w-4 h-4 text-[#30d158] shrink-0" />
-                    <span>Multi-stall unified checkout basket</span>
-                  </li>
-                  <li className="flex items-center gap-2.5">
-                    <Check className="w-4 h-4 text-[#30d158] shrink-0" />
-                    <span>Real-time kitchen display screens (KDS)</span>
-                  </li>
-                  <li className="flex items-center gap-2.5">
-                    <Check className="w-4 h-4 text-[#30d158] shrink-0" />
-                    <span>OpenRouter AI natural language search</span>
-                  </li>
-                  <li className="flex items-center gap-2.5">
-                    <Check className="w-4 h-4 text-[#30d158] shrink-0" />
-                    <span>Cryptographic booth invite keys</span>
-                  </li>
-                  <li className="flex items-center gap-2.5">
-                    <Check className="w-4 h-4 text-[#30d158] shrink-0" />
-                    <span>Live gross revenue & tenancy telemetry</span>
-                  </li>
-                </ul>
-              </div>
-
-              <div className="mt-8">
-                <Link
-                  href="/pricing"
-                  className="w-full inline-flex items-center justify-center py-2.5 rounded-full text-xs font-semibold border border-black/15 bg-white text-[#1d1d1f] hover:bg-black/[0.04] transition-colors"
-                >
-                  Explore pricing details
-                </Link>
-              </div>
+              <Link
+                href="/pricing"
+                className="font-semibold text-[#0071e3] hover:underline inline-flex items-center gap-1"
+              >
+                Learn more about our payment mechanics <ChevronRight className="w-3.5 h-3.5" />
+              </Link>
             </div>
           </div>
         </div>
