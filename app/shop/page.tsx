@@ -1,13 +1,38 @@
 import Link from 'next/link';
+import { supabase } from '@/lib/supabase/client';
 
-const shops = [
-  { name: 'Ah Seng Chicken Rice', description: 'Chicken rice, roasted meats & noodles', eta: '10 min', busy: 'Busy' },
-  { name: 'Penang Corner', description: 'Penang favourites', eta: '12 min', busy: 'Moderate' },
-  { name: 'Curry House', description: 'Curry noodles & rice dishes', eta: 'Closed', busy: 'Closed' },
-  { name: 'Green Garden Vegetarian', description: 'Vegetarian staples', eta: '8 min', busy: 'Quiet' },
-];
+export const dynamic = 'force-dynamic';
 
-export default function ShopPage() {
+export default async function ShopPage() {
+  let shops: Array<{
+    id: string;
+    name: string;
+    slug: string;
+    description: string;
+    eta: string;
+    busy: string;
+  }> = [];
+
+  if (supabase) {
+    const { data: outlets } = await supabase
+      .from('food_outlets')
+      .select('id, name, restaurant_id, restaurants(name, slug)');
+
+    if (outlets && outlets.length > 0) {
+      shops = outlets.map((outlet: any) => {
+        const slug = outlet.restaurants?.slug || outlet.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        return {
+          id: outlet.id,
+          name: outlet.name,
+          slug,
+          description: `${outlet.restaurants?.name ?? 'Hawker Stall'} · Local specialty`,
+          eta: '10 min',
+          busy: 'Open',
+        };
+      });
+    }
+  }
+
   return (
     <main className="min-h-screen bg-[#f5f5f7] px-4 pb-28 pt-5 text-[#1d1d1f]">
       <div className="mx-auto max-w-[430px] sm:max-w-[480px] lg:max-w-[960px]">

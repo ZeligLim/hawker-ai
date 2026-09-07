@@ -15,7 +15,7 @@ export type FallbackDish = {
 
 export const fallbackDishes: FallbackDish[] = [
   {
-    id: 'fallback-nasi-lemak',
+    id: '00000000-0000-4000-8000-000000000001',
     name: 'Nasi Lemak',
     restaurantName: 'Nasi Lemak Pak Mat',
     stallName: 'Kedai Nasi Lemak Pak Mat',
@@ -27,7 +27,7 @@ export const fallbackDishes: FallbackDish[] = [
     ingredients: ['Rice', 'Coconut milk', 'Egg', 'Chili'],
   },
   {
-    id: 'fallback-curry-mee',
+    id: '00000000-0000-4000-8000-000000000002',
     name: 'Curry Mee',
     restaurantName: 'Curry Mee Corner',
     stallName: 'Curry Mee Corner Stall',
@@ -39,7 +39,7 @@ export const fallbackDishes: FallbackDish[] = [
     ingredients: ['Noodles', 'Coconut milk', 'Prawns', 'Chili'],
   },
   {
-    id: 'fallback-char-kway-teow',
+    id: '00000000-0000-4000-8000-000000000003',
     name: 'Char Kway Teow',
     restaurantName: 'Char Kway Teow Stall',
     stallName: 'Char Kway Teow Stall 1',
@@ -51,7 +51,7 @@ export const fallbackDishes: FallbackDish[] = [
     ingredients: ['Flat rice noodles', 'Egg', 'Bean sprouts', 'Cockles'],
   },
   {
-    id: 'fallback-veggie-curry',
+    id: '00000000-0000-4000-8000-000000000004',
     name: 'Vegetarian Curry Laksa',
     restaurantName: 'Hawker Street Social',
     stallName: 'Vegetarian Corner',
@@ -63,7 +63,7 @@ export const fallbackDishes: FallbackDish[] = [
     ingredients: ['Laksa noodles', 'Tofu', 'Coconut milk', 'Chili'],
   },
   {
-    id: 'fallback-mee-goreng',
+    id: '00000000-0000-4000-8000-000000000005',
     name: 'Mee Goreng',
     restaurantName: 'Mamak Junction',
     stallName: 'Mamak Junction 2',
@@ -152,6 +152,7 @@ export function getFallbackMatches(filters: SearchFilters): SearchResult[] {
 
       return {
         id: dish.id,
+        stallId: '00000000-0000-4000-8000-000000000000',
         name: dish.name,
         restaurantName: dish.restaurantName,
         stallName: dish.stallName,

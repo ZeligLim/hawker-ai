@@ -5,6 +5,7 @@ import Link from 'next/link';
 import {
   Check,
   ChevronRight,
+  ChevronDown,
   ArrowRight,
   ArrowLeft,
   Building2,
@@ -18,7 +19,10 @@ import {
   Users,
   KeyRound,
   BadgePercent,
+  LoaderCircle,
 } from 'lucide-react';
+import { useAuth } from '@/components/auth-provider';
+import { supabase } from '@/lib/supabase/client';
 
 interface PlanTier {
   id: string;
@@ -81,9 +85,12 @@ const plans: PlanTier[] = [
 ];
 
 export default function SubscribePage() {
+  const { status, profile, isGuest } = useAuth();
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1);
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly');
   const [selectedPlanId, setSelectedPlanId] = useState<string>('pro');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submissionError, setSubmissionError] = useState<string | null>(null);
 
   // Form states
   const [venueName, setVenueName] = useState('Lot 10 Hutong Food Hall');
@@ -100,20 +107,98 @@ export default function SubscribePage() {
 
   // Generated Invite Code state
   const [copiedCode, setCopiedCode] = useState(false);
-  const generatedCode = 'HKR-8F92-KL';
+  const [generatedInviteToken, setGeneratedInviteToken] = useState<string | null>(null);
+  const generatedCode = generatedInviteToken || 'HKR-8F92-KL';
 
   const selectedPlan = plans.find((p) => p.id === selectedPlanId) || plans[1];
   const currentPrice = billingCycle === 'annual' ? selectedPlan.annualPrice : selectedPlan.monthlyPrice;
 
   const handleCopyInvite = () => {
+    navigator.clipboard?.writeText(generatedCode);
     setCopiedCode(true);
     setTimeout(() => setCopiedCode(false), 2200);
   };
 
-  const handleNext = () => {
-    if (currentStep < 4) {
+  const handleNext = async () => {
+    setSubmissionError(null);
+
+    if (currentStep < 3) {
       setCurrentStep((prev) => (prev + 1) as any);
       window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
+    if (currentStep === 3) {
+      setIsSubmitting(true);
+      try {
+        const session = (await supabase?.auth.getSession())?.data.session;
+        if (!session) {
+          setSubmissionError('Please sign in before provisioning your venue in the database.');
+          setIsSubmitting(false);
+          return;
+        }
+
+        // 1. Create restaurant shop
+        const shopRes = await fetch('/api/owner/shops', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({
+            name: venueName.trim() || 'Food Hall',
+            address: `${city.trim() || 'Kuala Lumpur'}, Malaysia`,
+          }),
+        });
+
+        const shopData = await shopRes.json().catch(() => ({}));
+        if (!shopRes.ok || !shopData.shop?.id) {
+          throw new Error(shopData.error || 'Failed to create venue in database.');
+        }
+
+        const shopId = shopData.shop.id;
+
+        // 2. Create the first booth
+        const boothRes = await fetch('/api/owner/booths', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({
+            restaurantId: shopId,
+            name: firstStallName.trim() || 'Booth #01',
+          }),
+        });
+
+        const boothData = await boothRes.json().catch(() => ({}));
+        if (!boothRes.ok || !boothData.booth?.id) {
+          throw new Error(boothData.error || 'Failed to provision initial booth.');
+        }
+
+        const boothId = boothData.booth.id;
+
+        // 3. Generate cryptographic invite code
+        const inviteRes = await fetch(`/api/owner/booths/${boothId}/invite`, {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${session.access_token}`,
+          },
+        });
+
+        const inviteData = await inviteRes.json().catch(() => ({}));
+        if (!inviteRes.ok || !inviteData.token) {
+          throw new Error(inviteData.error || 'Failed to generate cryptographic invite token.');
+        }
+
+        setGeneratedInviteToken(inviteData.token);
+        setCurrentStep(4);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } catch (err) {
+        setSubmissionError(err instanceof Error ? err.message : 'Unable to complete venue setup.');
+      } finally {
+        setIsSubmitting(false);
+      }
     }
   };
 
@@ -274,7 +359,7 @@ export default function SubscribePage() {
                       value={venueName}
                       onChange={(e) => setVenueName(e.target.value)}
                       placeholder="e.g. Lot 10 Hutong Food Hall"
-                      className="w-full rounded-2xl border border-black/10 bg-white px-4 py-3 text-sm text-[#1d1d1f] outline-none focus:border-[#0071e3] focus:ring-4 focus:ring-[#0071e3]/10 shadow-[0_1px_2px_rgba(0,0,0,0.04)] transition-all placeholder:text-[#86868b]"
+                      className="w-full h-[46px] rounded-2xl border border-black/10 bg-white px-4 py-3 text-sm text-[#1d1d1f] outline-none focus:border-[#0071e3] focus:ring-4 focus:ring-[#0071e3]/10 shadow-[0_1px_2px_rgba(0,0,0,0.04)] transition-all placeholder:text-[#86868b]"
                     />
                   </div>
 
@@ -288,7 +373,7 @@ export default function SubscribePage() {
                         value={operatorName}
                         onChange={(e) => setOperatorName(e.target.value)}
                         placeholder="e.g. Tan Wei Ming"
-                        className="w-full rounded-2xl border border-black/10 bg-white px-4 py-3 text-sm text-[#1d1d1f] outline-none focus:border-[#0071e3] focus:ring-4 focus:ring-[#0071e3]/10 shadow-[0_1px_2px_rgba(0,0,0,0.04)] transition-all placeholder:text-[#86868b]"
+                        className="w-full h-[46px] rounded-2xl border border-black/10 bg-white px-4 py-3 text-sm text-[#1d1d1f] outline-none focus:border-[#0071e3] focus:ring-4 focus:ring-[#0071e3]/10 shadow-[0_1px_2px_rgba(0,0,0,0.04)] transition-all placeholder:text-[#86868b]"
                       />
                     </div>
                     <div>
@@ -300,7 +385,7 @@ export default function SubscribePage() {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="e.g. operator@hutong.com.my"
-                        className="w-full rounded-2xl border border-black/10 bg-white px-4 py-3 text-sm text-[#1d1d1f] outline-none focus:border-[#0071e3] focus:ring-4 focus:ring-[#0071e3]/10 shadow-[0_1px_2px_rgba(0,0,0,0.04)] transition-all placeholder:text-[#86868b]"
+                        className="w-full h-[46px] rounded-2xl border border-black/10 bg-white px-4 py-3 text-sm text-[#1d1d1f] outline-none focus:border-[#0071e3] focus:ring-4 focus:ring-[#0071e3]/10 shadow-[0_1px_2px_rgba(0,0,0,0.04)] transition-all placeholder:text-[#86868b]"
                       />
                     </div>
                   </div>
@@ -315,26 +400,29 @@ export default function SubscribePage() {
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
                         placeholder="+60 12-345 6789"
-                        className="w-full rounded-2xl border border-black/10 bg-white px-4 py-3 text-sm text-[#1d1d1f] outline-none focus:border-[#0071e3] focus:ring-4 focus:ring-[#0071e3]/10 shadow-[0_1px_2px_rgba(0,0,0,0.04)] transition-all placeholder:text-[#86868b]"
+                        className="w-full h-[46px] rounded-2xl border border-black/10 bg-white px-4 py-3 text-sm text-[#1d1d1f] outline-none focus:border-[#0071e3] focus:ring-4 focus:ring-[#0071e3]/10 shadow-[0_1px_2px_rgba(0,0,0,0.04)] transition-all placeholder:text-[#86868b]"
                       />
                     </div>
                     <div>
                       <label className="block text-xs font-semibold text-[#1d1d1f] mb-1.5">
                         City / State
                       </label>
-                      <select
-                        value={city}
-                        onChange={(e) => setCity(e.target.value)}
-                        className="w-full rounded-2xl border border-black/10 bg-white px-4 py-3 text-sm text-[#1d1d1f] outline-none focus:border-[#0071e3] focus:ring-4 focus:ring-[#0071e3]/10 shadow-[0_1px_2px_rgba(0,0,0,0.04)] transition-all"
-                      >
-                        <option value="Kuala Lumpur">Kuala Lumpur</option>
-                        <option value="Petaling Jaya / Selangor">Petaling Jaya / Selangor</option>
-                        <option value="George Town / Penang">George Town / Penang</option>
-                        <option value="Johor Bahru">Johor Bahru</option>
-                        <option value="Ipoh / Perak">Ipoh / Perak</option>
-                        <option value="Melaka">Melaka</option>
-                        <option value="Other">Other Region</option>
-                      </select>
+                      <div className="relative">
+                        <select
+                          value={city}
+                          onChange={(e) => setCity(e.target.value)}
+                          className="w-full h-[46px] appearance-none rounded-2xl border border-black/10 bg-white px-4 pr-10 text-sm text-[#1d1d1f] outline-none focus:border-[#0071e3] focus:ring-4 focus:ring-[#0071e3]/10 shadow-[0_1px_2px_rgba(0,0,0,0.04)] transition-all cursor-pointer"
+                        >
+                          <option value="Kuala Lumpur">Kuala Lumpur</option>
+                          <option value="Petaling Jaya / Selangor">Petaling Jaya / Selangor</option>
+                          <option value="George Town / Penang">George Town / Penang</option>
+                          <option value="Johor Bahru">Johor Bahru</option>
+                          <option value="Ipoh / Perak">Ipoh / Perak</option>
+                          <option value="Melaka">Melaka</option>
+                          <option value="Other">Other Region</option>
+                        </select>
+                        <ChevronDown className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-[#86868b]" />
+                      </div>
                     </div>
                   </div>
 
@@ -517,7 +605,7 @@ export default function SubscribePage() {
                       value={firstStallName}
                       onChange={(e) => setFirstStallName(e.target.value)}
                       placeholder="e.g. Ah Fatt Hainanese Chicken Rice"
-                      className="w-full rounded-2xl border border-black/10 bg-white px-4 py-3 text-sm text-[#1d1d1f] outline-none focus:border-[#0071e3] focus:ring-4 focus:ring-[#0071e3]/10 shadow-[0_1px_2px_rgba(0,0,0,0.04)] transition-all placeholder:text-[#86868b]"
+                      className="w-full h-[46px] rounded-2xl border border-black/10 bg-white px-4 py-3 text-sm text-[#1d1d1f] outline-none focus:border-[#0071e3] focus:ring-4 focus:ring-[#0071e3]/10 shadow-[0_1px_2px_rgba(0,0,0,0.04)] transition-all placeholder:text-[#86868b]"
                     />
                   </div>
 
@@ -531,7 +619,7 @@ export default function SubscribePage() {
                         value={firstStallCategory}
                         onChange={(e) => setFirstStallCategory(e.target.value)}
                         placeholder="e.g. Noodles, Satay, Rice"
-                        className="w-full rounded-2xl border border-black/10 bg-white px-4 py-3 text-sm text-[#1d1d1f] outline-none focus:border-[#0071e3] focus:ring-4 focus:ring-[#0071e3]/10 shadow-[0_1px_2px_rgba(0,0,0,0.04)] transition-all placeholder:text-[#86868b]"
+                        className="w-full h-[46px] rounded-2xl border border-black/10 bg-white px-4 py-3 text-sm text-[#1d1d1f] outline-none focus:border-[#0071e3] focus:ring-4 focus:ring-[#0071e3]/10 shadow-[0_1px_2px_rgba(0,0,0,0.04)] transition-all placeholder:text-[#86868b]"
                       />
                     </div>
                     <div>
@@ -543,7 +631,7 @@ export default function SubscribePage() {
                         value={firstStallSlot}
                         onChange={(e) => setFirstStallSlot(e.target.value)}
                         placeholder="e.g. Booth #01"
-                        className="w-full rounded-2xl border border-black/10 bg-white px-4 py-3 text-sm text-[#1d1d1f] outline-none focus:border-[#0071e3] focus:ring-4 focus:ring-[#0071e3]/10 shadow-[0_1px_2px_rgba(0,0,0,0.04)] transition-all placeholder:text-[#86868b]"
+                        className="w-full h-[46px] rounded-2xl border border-black/10 bg-white px-4 py-3 text-sm text-[#1d1d1f] outline-none focus:border-[#0071e3] focus:ring-4 focus:ring-[#0071e3]/10 shadow-[0_1px_2px_rgba(0,0,0,0.04)] transition-all placeholder:text-[#86868b]"
                       />
                     </div>
                   </div>
@@ -557,19 +645,36 @@ export default function SubscribePage() {
                   </div>
                 </div>
 
+                {submissionError && (
+                  <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-xs font-medium text-red-700">
+                    {submissionError}
+                  </div>
+                )}
+
                 <div className="pt-4 flex items-center justify-between border-t border-black/[0.06]">
                   <button
                     onClick={handleBack}
-                    className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-full text-xs font-semibold text-[#6e6e73] hover:text-[#1d1d1f] transition-colors"
+                    disabled={isSubmitting}
+                    className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-full text-xs font-semibold text-[#6e6e73] hover:text-[#1d1d1f] transition-colors disabled:opacity-50"
                   >
                     <ArrowLeft className="w-3.5 h-3.5" /> Back
                   </button>
                   <button
                     onClick={handleNext}
-                    className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-xs font-semibold bg-[#0071e3] text-white hover:bg-[#0077ed] transition-all shadow-sm"
+                    disabled={isSubmitting}
+                    className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-xs font-semibold bg-[#0071e3] text-white hover:bg-[#0077ed] transition-all shadow-sm disabled:opacity-70"
                   >
-                    Complete Setup & Generate Key
-                    <ArrowRight className="w-3.5 h-3.5" />
+                    {isSubmitting ? (
+                      <>
+                        <LoaderCircle className="w-3.5 h-3.5 animate-spin" />
+                        Provisioning Venue...
+                      </>
+                    ) : (
+                      <>
+                        Complete Setup & Generate Key
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </>
+                    )}
                   </button>
                 </div>
               </div>

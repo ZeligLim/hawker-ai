@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { Leaf, Plus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { HawkerSearchBar } from '@/components/hawker-search-bar';
 import { CustomizationCard } from '@/components/customization-card';
 import { addItemToCart, getDishQuantity, removeCartItem, updateCartItemQuantity, useCartItems } from '@/lib/order/cart';
@@ -13,6 +13,7 @@ import { formatTableLabel, getCurrentTableSession } from '@/lib/table-session';
 
 type FeaturedDish = {
   id: string;
+  stallId?: string;
   name: string;
   restaurantName: string;
   stallName: string;
@@ -72,15 +73,61 @@ export function HomePage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [results, setResults] = useState<FeaturedDish[]>([]);
+  const [initialDishes, setInitialDishes] = useState<FeaturedDish[]>([]);
   const [tableLabel] = useState(() => formatTableLabel(getCurrentTableSession().tableNumber));
   const router = useRouter();
   const { cartItems, setCartItems } = useCartItems();
   const [customizingDish, setCustomizingDish] = useState<FeaturedDish | null>(null);
 
+  useEffect(() => {
+    let active = true;
+    const fetchInitial = async () => {
+      try {
+        const res = await fetch('/api/outlets');
+        if (!res.ok) return;
+        const data = await res.json();
+        if (!active || !Array.isArray(data.outlets)) return;
+
+        const loaded: FeaturedDish[] = [];
+        for (const outlet of data.outlets) {
+          const restaurantName = outlet.restaurants?.name || outlet.name;
+          for (const dish of outlet.dishes ?? []) {
+            if (dish.is_available === false) continue;
+            loaded.push({
+              id: dish.id,
+              stallId: outlet.id,
+              name: dish.name,
+              restaurantName,
+              stallName: outlet.name,
+              price: Number(dish.price),
+              isVegetarian: Boolean(dish.is_vegetarian),
+              isHalal: Boolean(dish.is_halal),
+              spiceLevel: Number(dish.spice_level ?? 0),
+              proteinGrams: Number(dish.protein_grams ?? 0),
+            });
+            if (loaded.length >= 6) break;
+          }
+          if (loaded.length >= 6) break;
+        }
+        if (loaded.length > 0 && active) {
+          setInitialDishes(loaded);
+        }
+      } catch {
+        // gracefully handle
+      }
+    };
+    void fetchInitial();
+    return () => {
+      active = false;
+    };
+  }, []);
+
   const featuredDishes = useMemo<FeaturedDish[]>(() => {
     if (results.length > 0) return results;
+    if (initialDishes.length > 0) return initialDishes;
     return fallbackDishes.slice(0, 4).map((dish) => ({
       id: dish.id,
+      stallId: '00000000-0000-4000-8000-000000000000',
       name: dish.name,
       restaurantName: dish.restaurantName,
       stallName: dish.stallName,
@@ -90,7 +137,7 @@ export function HomePage() {
       spiceLevel: dish.spiceLevel,
       proteinGrams: dish.proteinGrams,
     }));
-  }, [results]);
+  }, [results, initialDishes]);
 
   const handleSearch = async (nextQuery: string) => {
     const trimmed = nextQuery.trim();
@@ -114,6 +161,7 @@ export function HomePage() {
 
       const nextResults = (payload.results ?? []).map((dish: any) => ({
         id: dish.id,
+        stallId: dish.stallId,
         name: dish.name,
         restaurantName: dish.restaurantName,
         stallName: dish.stallName,
@@ -150,7 +198,7 @@ export function HomePage() {
       if (!matchingItem) {
         if (delta <= 0) return currentItems;
 
-        const stallId = `${dish.restaurantName}:${dish.stallName}`.replace(/[^a-z0-9]+/gi, '-').toLowerCase();
+        const stallId = dish.stallId || `${dish.restaurantName}:${dish.stallName}`.replace(/[^a-z0-9]+/gi, '-').toLowerCase();
         return addItemToCart(currentItems, {
           dishId: dish.id,
           name: dish.name,
@@ -181,7 +229,7 @@ export function HomePage() {
   };
 
   const confirmCustomization = (dish: FeaturedDish, selection: { options: { id: string; label: string; price: number }[]; price: number }) => {
-    const stallId = `${dish.restaurantName}:${dish.stallName}`.replace(/[^a-z0-9]+/gi, '-').toLowerCase();
+    const stallId = dish.stallId || `${dish.restaurantName}:${dish.stallName}`.replace(/[^a-z0-9]+/gi, '-').toLowerCase();
     setCartItems((currentItems) =>
       addItemToCart(currentItems, {
         dishId: dish.id,

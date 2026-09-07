@@ -20,7 +20,7 @@ export default function ScanTablePage() {
     const label = formatTableLabel(tableNumber);
 
     try {
-      if (tableId && supabase) {
+      if (supabase) {
         const { data: sessionData } = await supabase.auth.getSession();
         if (sessionData.session?.access_token) {
           const response = await fetch('/api/table-sessions', {
@@ -29,15 +29,22 @@ export default function ScanTablePage() {
               'Content-Type': 'application/json',
               Authorization: `Bearer ${sessionData.session.access_token}`,
             },
-            body: JSON.stringify({ tableId }),
+            body: JSON.stringify({
+              tableId: tableId || undefined,
+              tableNumber: tableNumber || undefined,
+            }),
           });
 
           if (response.ok) {
-            const payload = (await response.json().catch(() => ({}))) as { table?: { table_number?: string } };
+            const payload = (await response.json().catch(() => ({}))) as {
+              session?: { id: string; hawker_table_id: string };
+              table?: { id: string; table_number?: string };
+            };
             const sessionTable = payload.table?.table_number ?? tableNumber;
-            setCurrentTableSession(sessionTable, tableId);
+            const resolvedTableId = payload.table?.id ?? tableId;
+            setCurrentTableSession(sessionTable, resolvedTableId);
             setStatus('success');
-            setMessage(`Table session linked to ${formatTableLabel(sessionTable)}.`);
+            setMessage(`Table session linked to ${formatTableLabel(sessionTable)} in database.`);
             return;
           }
         }

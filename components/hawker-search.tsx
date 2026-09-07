@@ -79,7 +79,7 @@ export function HawkerSearch({ initialQuery = 'I want a vegetarian meal under RM
   };
 
   const handleAddToCart = (dish: SearchResult) => {
-    const stallId = `${dish.restaurantName}:${dish.stallName}`.replace(/[^a-z0-9]+/gi, '-').toLowerCase();
+    const stallId = dish.stallId || `${dish.restaurantName}:${dish.stallName}`.replace(/[^a-z0-9]+/gi, '-').toLowerCase();
     setCheckoutMessage(null);
     setCartItems((currentItems) =>
       addItemToCart(currentItems, {
@@ -96,11 +96,7 @@ export function HawkerSearch({ initialQuery = 'I want a vegetarian meal under RM
 
   const handleCheckout = () => {
     if (cartItems.length === 0) return;
-
-    setCheckoutMessage(
-      `Order placed for ${cartSummary.merchantGroups.length} stall${cartSummary.merchantGroups.length === 1 ? '' : 's'} · total RM ${cartSummary.total.toFixed(2)}`,
-    );
-    setCartItems([]);
+    router.push('/orders' as any);
   };
 
   const handleUpdateQuantity = (itemId: string, quantity: number) => {

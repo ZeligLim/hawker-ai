@@ -11,3 +11,5 @@ npm-debug.log*
 .vercel
 AGENTS.md
 CLAUDE.md
+.antigravitycli
+test_vertex.py

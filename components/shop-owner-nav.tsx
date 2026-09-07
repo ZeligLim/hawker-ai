@@ -5,7 +5,7 @@ export function ShopOwnerNav({ active }: { active: 'booths' | 'analytics' | 'pro
   return (
     <nav aria-label="Shop owner navigation" className="mb-6 grid grid-cols-3 gap-2 rounded-[18px] bg-white p-1.5 shadow-[0_8px_18px_rgba(15,23,42,0.04)]">
       <Link
-        href={'/booths' as any}
+        href={'/shop-owner/booths' as any}
         className={`flex items-center justify-center gap-2 rounded-[14px] px-3 py-2.5 text-sm font-semibold transition ${
           active === 'booths' ? 'bg-[#111827] text-white' : 'text-[#6e6e73] hover:bg-[#f5f5f7]'
         }`}
@@ -15,7 +15,7 @@ export function ShopOwnerNav({ active }: { active: 'booths' | 'analytics' | 'pro
         Booths
       </Link>
       <Link
-        href={'/analytics' as any}
+        href={'/shop-owner/analytics' as any}
         className={`flex items-center justify-center gap-2 rounded-[14px] px-3 py-2.5 text-sm font-semibold transition ${
           active === 'analytics' ? 'bg-[#111827] text-white' : 'text-[#6e6e73] hover:bg-[#f5f5f7]'
         }`}
@@ -25,7 +25,7 @@ export function ShopOwnerNav({ active }: { active: 'booths' | 'analytics' | 'pro
         Analytics
       </Link>
       <Link
-        href={'/profile' as any}
+        href={'/shop-owner/profile' as any}
         className={`flex items-center justify-center gap-2 rounded-[14px] px-3 py-2.5 text-sm font-semibold transition ${
           active === 'profile' ? 'bg-[#111827] text-white' : 'text-[#6e6e73] hover:bg-[#f5f5f7]'
         }`}

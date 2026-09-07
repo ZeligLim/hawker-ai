@@ -1,38 +1,60 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { supabase } from '@/lib/supabase/client';
 
 const periods = [
-  { id: 'd', label: 'Day', multiplier: 0.28 },
-  { id: 'w', label: 'Week', multiplier: 1 },
-  { id: 'm', label: 'Month', multiplier: 4.4 },
-  { id: 'y', label: 'Year', multiplier: 52.8 },
+  { id: 'd', label: 'Day' },
+  { id: 'w', label: 'Week' },
+  { id: 'm', label: 'Month' },
+  { id: 'y', label: 'Year' },
 ] as const;
-
-const boothData = [
-  { name: 'Ah Seng Chicken Rice', orders: 384, revenue: 4280 },
-  { name: 'Penang Corner', orders: 296, revenue: 3510 },
-  { name: 'Curry House', orders: 218, revenue: 2740 },
-  { name: 'Green Garden Vegetarian', orders: 257, revenue: 2980 },
-];
 
 export default function ShopOwnerAnalyticsPage() {
   const [selectedPeriod, setSelectedPeriod] = useState<(typeof periods)[number]['id']>('w');
+  const [data, setData] = useState<{
+    totalRevenue: number;
+    totalOrders: number;
+    averageTicket: number;
+    maxRevenue: number;
+    booths: Array<{ id: string; name: string; periodOrders: number; periodRevenue: number }>;
+  }>({
+    totalRevenue: 0,
+    totalOrders: 0,
+    averageTicket: 0,
+    maxRevenue: 1,
+    booths: [],
+  });
+  const [loading, setLoading] = useState(true);
 
-  const performance = useMemo(() => {
-    const multiplier = periods.find((period) => period.id === selectedPeriod)?.multiplier ?? 1;
-
-    return boothData.map((booth) => ({
-      ...booth,
-      periodOrders: Math.round(booth.orders * multiplier),
-      periodRevenue: booth.revenue * multiplier,
-    }));
+  useEffect(() => {
+    let active = true;
+    const loadAnalytics = async () => {
+      setLoading(true);
+      try {
+        const token = (await supabase?.auth.getSession())?.data.session?.access_token;
+        const res = await fetch(`/api/owner/analytics?period=${selectedPeriod}`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+        });
+        if (res.ok) {
+          const payload = await res.json();
+          if (active) {
+            setData(payload);
+          }
+        }
+      } catch {
+        // error handling
+      } finally {
+        if (active) setLoading(false);
+      }
+    };
+    void loadAnalytics();
+    return () => {
+      active = false;
+    };
   }, [selectedPeriod]);
 
-  const totalRevenue = performance.reduce((sum, booth) => sum + booth.periodRevenue, 0);
-  const totalOrders = performance.reduce((sum, booth) => sum + booth.periodOrders, 0);
-  const averageTicket = totalOrders > 0 ? totalRevenue / totalOrders : 0;
-  const maxRevenue = Math.max(...performance.map((booth) => booth.periodRevenue), 1);
+  const { totalRevenue, totalOrders, averageTicket, maxRevenue, booths } = data;
 
   return (
     <main className="min-h-screen bg-[#f5f5f7] px-4 pb-32 pt-5 text-[#1d1d1f]">
@@ -83,7 +105,9 @@ export default function ShopOwnerAnalyticsPage() {
             </div>
 
             <div className="mt-4 space-y-4">
-              {performance.map((booth) => (
+              {booths.length === 0 ? (
+                <p className="text-xs text-[#6e6e73]">No orders recorded during this period.</p>
+              ) : booths.map((booth) => (
                 <div key={booth.name}>
                   <div className="flex items-center justify-between gap-3">
                     <div>

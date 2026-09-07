@@ -21,12 +21,7 @@ type ProfileState = {
   orders: OrderRecord[];
 };
 
-const defaultOrders: OrderRecord[] = [
-  { id: 'fallback-1', dish: 'Nasi Lemak', place: 'Ah Seng Chicken Rice', price: 8.5, date: 'Today', category: 'Main course' },
-  { id: 'fallback-2', dish: 'Teh Tarik', place: 'Penang Corner', price: 3.5, date: 'Yesterday', category: 'Drinks' },
-  { id: 'fallback-3', dish: 'Curry Mee', place: 'Curry House', price: 12, date: '2 days ago', category: 'Main course' },
-  { id: 'fallback-4', dish: 'Cendol', place: 'Green Garden Vegetarian', price: 5, date: 'Last week', category: 'Desserts' },
-];
+const defaultOrders: OrderRecord[] = [];
 
 const defaultProfileState: ProfileState = {
   name: 'Guest diner',
@@ -140,21 +135,18 @@ export default function ProfilePage() {
       const remoteOrders = mapOrderPayload(payload);
       if (remoteOrders.length === 0) return;
 
-      setProfile((current) => ({
-        ...current,
-        orders: remoteOrders,
-      }));
+      setProfile((current) => {
+        const next = {
+          ...current,
+          orders: remoteOrders,
+        };
 
-      if (typeof window !== 'undefined') {
-        window.localStorage.setItem(
-          storageKey,
-          JSON.stringify({
-            name: displayName,
-            signedIn,
-            orders: remoteOrders,
-          }),
-        );
-      }
+        if (typeof window !== 'undefined') {
+          window.localStorage.setItem(storageKey, JSON.stringify(next));
+        }
+
+        return next;
+      });
     };
 
     void loadRemoteOrders();
@@ -266,22 +258,28 @@ export default function ProfilePage() {
             <span className="text-sm text-[#6e6e73]">{orders.length} orders</span>
           </div>
 
-          <div className="space-y-3">
-            {orderLinks.map(({ id, order }) => {
-              const orderHref = `/profile/order/${encodeURIComponent(id)}` as any;
+          {orders.length === 0 ? (
+            <div className="rounded-[18px] bg-[#f5f5f7] p-6 text-center text-sm text-[#6e6e73]">
+              No previous orders found. Place an order from the menu or stalls to see your history here.
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {orderLinks.map(({ id, order }) => {
+                const orderHref = `/profile/order/${encodeURIComponent(id)}` as any;
 
-              return (
-                <Link
-                  key={id}
-                  href={orderHref}
-                  className="flex items-center justify-between gap-3 rounded-[18px] border border-[#e5e7eb] bg-[#f5f5f7] p-3 text-left transition hover:border-[#d1d5db]"
-                >
-                  <span className="text-sm font-medium text-[#1d1d1f]">{order.date}</span>
-                  <span className="text-sm font-semibold text-[#1d1d1f]">RM {order.price.toFixed(2)}</span>
-                </Link>
-              );
-            })}
-          </div>
+                return (
+                  <Link
+                    key={id}
+                    href={orderHref}
+                    className="flex items-center justify-between gap-3 rounded-[18px] border border-[#e5e7eb] bg-[#f5f5f7] p-3 text-left transition hover:border-[#d1d5db]"
+                  >
+                    <span className="text-sm font-medium text-[#1d1d1f]">{order.date}</span>
+                    <span className="text-sm font-semibold text-[#1d1d1f]">RM {order.price.toFixed(2)}</span>
+                  </Link>
+                );
+              })}
+            </div>
+          )}
         </section>
 
         <section className="mt-6 rounded-[24px] bg-white p-4 shadow-[0_12px_26px_rgba(15,23,42,0.04)]">

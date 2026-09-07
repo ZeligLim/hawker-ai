@@ -36,6 +36,7 @@ export type SearchFilters = z.infer<typeof SearchFiltersSchema>;
 
 export const SearchResultSchema = z.object({
   id: z.string(),
+  stallId: z.string().optional(),
   name: z.string(),
   restaurantName: z.string(),
   stallName: z.string(),

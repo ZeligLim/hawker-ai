@@ -25,45 +25,95 @@ const categories = [
   { id: 'desserts', label: 'Desserts', icon: DessertIcon },
 ] as const;
 
-const menuItems = {
-  'main-course': [
-    { name: 'Nasi Lemak', price: 8.5, vegetarian: false },
-    { name: 'Chicken Rice', price: 7, vegetarian: false },
-    { name: 'Curry Mee', price: 12, vegetarian: false },
-    { name: 'Char Kway Teow', price: 11.5, vegetarian: false },
-    { name: 'Mee Goreng', price: 9.5, vegetarian: false },
-    { name: 'Vegetarian Curry Laksa', price: 13, vegetarian: true },
-  ],
-  drinks: [
-    { name: 'Teh Tarik', price: 3.5, vegetarian: true },
-    { name: 'Bandung', price: 3, vegetarian: true },
-    { name: 'Lime Juice', price: 4.5, vegetarian: true },
-  ],
-  desserts: [
-    { name: 'Cendol', price: 5, vegetarian: true },
-    { name: 'Kuih', price: 2.5, vegetarian: true },
-  ],
-} as const;
+type MenuItem = {
+  id: string;
+  foodOutletId: string;
+  restaurantName: string;
+  stallName: string;
+  name: string;
+  price: number;
+  vegetarian: boolean;
+  category: 'main-course' | 'drinks' | 'desserts';
+};
+
+function categorizeDish(name: string, tags: string[] = []): 'main-course' | 'drinks' | 'desserts' {
+  const text = `${name} ${tags.join(' ')}`.toLowerCase();
+  if (/tea|teh|kopi|coffee|drink|juice|bandung|water|beverage|soda|milo/i.test(text)) return 'drinks';
+  if (/cendol|dessert|sweet|ice|cake|kuih|ais/i.test(text)) return 'desserts';
+  return 'main-course';
+}
 
 export function MenuPage() {
   const [searchValue, setSearchValue] = useState('');
+  const [items, setItems] = useState<MenuItem[]>([]);
+  const [loading, setLoading] = useState(true);
   const { cartItems, setCartItems } = useCartItems();
-  const [customizingItem, setCustomizingItem] = useState<{ name: string; price: number } | null>(null);
+  const [customizingItem, setCustomizingItem] = useState<MenuItem | null>(null);
 
-  const updateQuantity = (name: string, price: number, delta: number) => {
+  useEffect(() => {
+    let active = true;
+    const loadDishes = async () => {
+      try {
+        const res = await fetch('/api/outlets');
+        if (!res.ok) return;
+        const data = await res.json();
+        if (!active || !Array.isArray(data.outlets)) return;
+
+        const loaded: MenuItem[] = [];
+        for (const outlet of data.outlets) {
+          const restaurantName = outlet.restaurants?.name || outlet.name;
+          for (const dish of outlet.dishes ?? []) {
+            if (dish.is_available === false) continue;
+            loaded.push({
+              id: dish.id,
+              foodOutletId: outlet.id,
+              restaurantName,
+              stallName: outlet.name,
+              name: dish.name,
+              price: Number(dish.price),
+              vegetarian: Boolean(dish.is_vegetarian),
+              category: categorizeDish(dish.name, dish.tags),
+            });
+          }
+        }
+        setItems(loaded);
+      } catch {
+        // network error handled gracefully
+      } finally {
+        if (active) setLoading(false);
+      }
+    };
+
+    void loadDishes();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const filteredItems = items.filter((item) =>
+    searchValue.trim() ? item.name.toLowerCase().includes(searchValue.toLowerCase().trim()) : true,
+  );
+
+  const menuItems = {
+    'main-course': filteredItems.filter((i) => i.category === 'main-course'),
+    drinks: filteredItems.filter((i) => i.category === 'drinks'),
+    desserts: filteredItems.filter((i) => i.category === 'desserts'),
+  };
+
+  const updateQuantity = (item: MenuItem, delta: number) => {
     setCartItems((currentItems) => {
-      const matchingItem = currentItems.find((item) => item.name === name);
+      const matchingItem = currentItems.find((ci) => ci.dishId === item.id);
 
       if (!matchingItem) {
         if (delta <= 0) return currentItems;
 
         return addItemToCart(currentItems, {
-          dishId: name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
-          name,
-          restaurantName: 'Setia Hawker Centre',
-          stallName: 'Menu collection',
-          stallId: 'setia-hawker-centre',
-          price,
+          dishId: item.id,
+          name: item.name,
+          restaurantName: item.restaurantName,
+          stallName: item.stallName,
+          stallId: item.foodOutletId,
+          price: item.price,
           quantity: 1,
         });
       }
@@ -77,24 +127,24 @@ export function MenuPage() {
     });
   };
 
-  const addMenuItem = (name: string, price: number) => {
-    if (getDishCustomization(name)) {
-      setCustomizingItem({ name, price });
+  const addMenuItem = (item: MenuItem) => {
+    if (getDishCustomization(item.name)) {
+      setCustomizingItem(item);
       return;
     }
-    updateQuantity(name, price, 1);
+    updateQuantity(item, 1);
   };
 
-  const confirmCustomization = (item: { name: string; price: number }, selection: { options: { id: string; label: string; price: number }[]; price: number }) => {
+  const confirmCustomization = (item: MenuItem, selection: { options: { id: string; label: string; price: number }[]; price: number }) => {
     setCartItems((currentItems) =>
       addItemToCart(currentItems, {
-        dishId: item.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+        dishId: item.id,
         customizationKey: selection.options.map((option) => option.id).sort().join('|'),
         customizations: selection.options.map((option) => option.label),
         name: item.name,
-        restaurantName: 'Setia Hawker Centre',
-        stallName: 'Menu collection',
-        stallId: 'setia-hawker-centre',
+        restaurantName: item.restaurantName,
+        stallName: item.stallName,
+        stallId: item.foodOutletId,
         price: selection.price,
         quantity: 1,
       }),
@@ -146,10 +196,10 @@ export function MenuPage() {
 
                 <div className="grid grid-cols-2 gap-3">
                   {(menuItems[id as keyof typeof menuItems] ?? []).map((item) => {
-                    const quantity = getDishQuantity(cartItems, item.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'));
+                    const quantity = getDishQuantity(cartItems, item.id);
 
                     return (
-                      <article key={item.name} className="overflow-hidden rounded-[22px] bg-white shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
+                      <article key={item.id} className="overflow-hidden rounded-[22px] bg-white shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
                         <div className="relative h-40 overflow-hidden bg-[#f3efe8]">
                           <div className="flex h-full items-center justify-center text-lg font-semibold uppercase tracking-[0.22em] text-[#5c4b1d]">
                             {item.name.split(' ')[0]}
@@ -171,7 +221,7 @@ export function MenuPage() {
                                 <button
                                   type="button"
                                   aria-label={`Decrease ${item.name} quantity`}
-                                  onClick={() => updateQuantity(item.name, item.price, -1)}
+                                  onClick={() => updateQuantity(item, -1)}
                                   className="flex h-8 w-8 items-center justify-center rounded-full bg-[#f5f5f7] text-lg font-semibold text-[#1d1d1f]"
                                 >
                                   −
@@ -180,7 +230,7 @@ export function MenuPage() {
                                 <button
                                   type="button"
                                   aria-label={`Increase ${item.name} quantity`}
-                                  onClick={() => addMenuItem(item.name, item.price)}
+                                  onClick={() => addMenuItem(item)}
                                   className="flex h-8 w-8 items-center justify-center rounded-full bg-[#1d1d1f] text-lg font-semibold text-white"
                                 >
                                   +
@@ -190,7 +240,7 @@ export function MenuPage() {
                               <div className="flex justify-end">
                                 <button
                                   type="button"
-                                  onClick={() => addMenuItem(item.name, item.price)}
+                                  onClick={() => addMenuItem(item)}
                                   className="flex h-8 w-8 items-center justify-center rounded-full bg-[#1d1d1f] text-white shadow-[0_8px_20px_rgba(15,23,42,0.18)]"
                                   aria-label={`Add ${item.name} to your order`}
                                 >

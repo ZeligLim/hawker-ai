@@ -160,6 +160,7 @@ export class SearchService {
 
         const result: SearchResult = {
           id: dish.id,
+          stallId: dish.food_outlet_id,
           name: dish.name,
           restaurantName: restaurant?.name ?? 'Unknown restaurant',
           stallName: outlet?.name ?? 'Unknown stall',

@@ -7,12 +7,15 @@ import { CustomizationCard } from '@/components/customization-card';
 import { addItemToCart, getDishQuantity, removeCartItem, updateCartItemQuantity, useCartItems } from '@/lib/order/cart';
 import { getDishCustomization } from '@/lib/order/customizations';
 
-type ShopData = {
+export type ShopData = {
+  id?: string;
+  restaurantId?: string;
+  restaurantName?: string;
   name: string;
   eta: string;
   busy: string;
   description: string;
-  dishes: ReadonlyArray<{ name: string; price: number; vegetarian: boolean }>;
+  dishes: ReadonlyArray<{ id?: string; name: string; price: number; vegetarian: boolean }>;
 };
 
 export function ShopDetailClient({ shop, slug }: { shop: ShopData; slug: string }) {
@@ -20,17 +23,19 @@ export function ShopDetailClient({ shop, slug }: { shop: ShopData; slug: string 
   const [customizingDish, setCustomizingDish] = useState<ShopData['dishes'][number] | null>(null);
 
   const updateDishQuantity = (dish: ShopData['dishes'][number], delta: number) => {
+    const targetDishId = dish.id || `${slug}:${dish.name}`;
+
     setCartItems((currentItems) => {
-      const matchingItem = currentItems.find((item) => item.dishId === `${slug}:${dish.name}`);
+      const matchingItem = currentItems.find((item) => item.dishId === targetDishId);
 
       if (!matchingItem) {
         if (delta <= 0) return currentItems;
 
-        const stallId = `${shop.name}`.replace(/[^a-z0-9]+/gi, '-').toLowerCase();
+        const stallId = shop.id || `${shop.name}`.replace(/[^a-z0-9]+/gi, '-').toLowerCase();
         return addItemToCart(currentItems, {
-          dishId: `${slug}:${dish.name}`,
+          dishId: targetDishId,
           name: dish.name,
-          restaurantName: shop.name,
+          restaurantName: shop.restaurantName ?? shop.name,
           stallName: shop.name,
           stallId,
           price: dish.price,
@@ -56,14 +61,16 @@ export function ShopDetailClient({ shop, slug }: { shop: ShopData; slug: string 
   };
 
   const confirmCustomization = (dish: ShopData['dishes'][number], selection: { options: { id: string; label: string; price: number }[]; price: number }) => {
-    const stallId = `${shop.name}`.replace(/[^a-z0-9]+/gi, '-').toLowerCase();
+    const targetDishId = dish.id || `${slug}:${dish.name}`;
+    const stallId = shop.id || `${shop.name}`.replace(/[^a-z0-9]+/gi, '-').toLowerCase();
+
     setCartItems((currentItems) =>
       addItemToCart(currentItems, {
-        dishId: `${slug}:${dish.name}`,
+        dishId: targetDishId,
         customizationKey: selection.options.map((option) => option.id).sort().join('|'),
         customizations: selection.options.map((option) => option.label),
         name: dish.name,
-        restaurantName: shop.name,
+        restaurantName: shop.restaurantName ?? shop.name,
         stallName: shop.name,
         stallId,
         price: selection.price,
