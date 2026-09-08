@@ -52,7 +52,17 @@ Phase 8: Multi-Client Platform Architecture Refactoring & Onboarding Access Gati
    - Added Sign Out button and confirmation modal to `app/shop-owner/profile/page.tsx` for food hall operators.
    - Added `/customer` to `publicRoutes` in `components/auth-provider.tsx`.
 
-5. **Automated Verification & Testing**:
+5. **Restaurant Registration RLS & Atomic Provisioning**:
+   - **Root Cause**: Table `restaurants` had RLS enabled with SELECT (`Allow public read access on restaurants`) and UPDATE (`Owners can update their restaurants`), but lacked an INSERT policy for authenticated users, resulting in PostgreSQL error `new row violates row-level security policy for table "restaurants"` upon registration.
+   - **Migration 011 (`supabase/migrations/011_restaurant_registration_rls.sql`)**:
+     1. Added `CREATE POLICY "Authenticated users can create restaurants" ON restaurants FOR INSERT TO authenticated WITH CHECK (auth.uid() IS NOT NULL);`.
+     2. Added owner DELETE policies for `restaurants` and `food_outlets`.
+     3. Implemented atomic `register_hawker_centre` PostgreSQL RPC with `SECURITY DEFINER` that creates the restaurant, assigns owner membership, and provisions initial booth slots in a single transaction.
+   - **Server Layer (`lib/supabase/server.ts` & `app/api/owner/shops/route.ts`)**:
+     - Added `createAdminClient` supporting `SUPABASE_SERVICE_ROLE_KEY` if configured.
+     - Updated `app/api/owner/shops/route.ts` to attempt the atomic RPC first, fall back to direct client insertion with user authorization, and provide actionable error messaging if migration 011 has not yet been executed in Supabase.
+
+6. **Automated Verification & Testing**:
    - `lib/auth-onboarding.test.ts`: Added unit tests verifying `resolveSignOutDestination` defaults to `'/'`, handles custom safe paths, and sanitizes malicious URLs; tested `isCustomerIntent` route classification, marketing nav role detection, dashboard visibility gating, dual-role dropdown handling, shop-only "Start Free" visibility, and `/customer` route isolation.
    - `lib/multi-client-architecture.test.ts`: Client path resolution including `/customer`, client boundaries, cross-stall isolation, cross-shop isolation, and unauthenticated redirects.
    - All 16 tests pass (`npm test`).

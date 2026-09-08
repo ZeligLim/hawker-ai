@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requireRequestUser } from '@/lib/supabase/server';
+import { requireRequestUser, createAdminClient } from '@/lib/supabase/server';
 
 export async function GET(request: NextRequest) {
   const auth = await requireRequestUser(request);
@@ -58,24 +58,22 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   const auth = await requireRequestUser(request);
-  if (!auth.client || !auth.user) {
-    return NextResponse.json({ error: auth.error }, { status: 401 });
-  }
+  if (!auth.client || !auth.user) return NextResponse.json({ error: auth.error }, { status: 401 });
 
   const body = await request.json().catch(() => null);
   const name = typeof body?.name === 'string' ? body.name.trim() : '';
-  const address = typeof body?.address === 'string' ? body.address.trim() : 'Address not set';
+  const address = typeof body?.address === 'string' ? body.address.trim() : null;
 
   if (!name) {
     return NextResponse.json({ error: 'Shop name is required.' }, { status: 400 });
   }
 
-  // Prevent duplicate shop creation: If user already owns/manages a shop, return existing
+  // Prevent multiple active shop ownerships for single user in MVP
   const { data: existingMemberships } = await auth.client
     .from('restaurant_memberships')
-    .select('restaurant_id, role, restaurants(id, name, slug, address, created_at)')
+    .select('restaurant_id, role, restaurants(name, slug, address, created_at)')
     .eq('user_id', auth.user.id)
-    .order('created_at', { ascending: false })
+    .eq('role', 'owner')
     .limit(1);
 
   if (existingMemberships && existingMemberships.length > 0) {
@@ -103,7 +101,44 @@ export async function POST(request: NextRequest) {
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '') || 'shop';
 
-  const { data: restaurant, error: insertRestaurantError } = await auth.client
+  const boothCount = typeof body?.boothCount === 'number' && body.boothCount > 0
+    ? Math.min(body.boothCount, 20)
+    : 3; // Default 3 initial empty booth slots for the food hall
+
+  const shopStatus = typeof body?.status === 'string' ? body.status : 'approved';
+
+  // 1. Attempt atomic RPC if available in Supabase
+  try {
+    const { data: rpcData, error: rpcError } = await (auth.client.rpc as any)('register_hawker_centre', {
+      p_name: name,
+      p_slug: slug,
+      p_address: address,
+      p_lat: typeof body?.lat === 'number' ? body.lat : 0,
+      p_lng: typeof body?.lng === 'number' ? body.lng : 0,
+      p_booth_count: boothCount,
+      p_status: shopStatus,
+    });
+
+    if (!rpcError && rpcData) {
+      const parsed = typeof rpcData === 'string' ? JSON.parse(rpcData) : rpcData;
+      return NextResponse.json({
+        shop: {
+          ...parsed,
+          status: parsed.status ?? shopStatus,
+          booths: [],
+        },
+        status: 'created',
+      }, { status: 201 });
+    }
+  } catch {
+    // RPC not installed or failed, proceed with direct table operations
+  }
+
+  // 2. Direct database operations using admin client if service role key is configured, otherwise user auth client
+  const adminClient = createAdminClient();
+  const dbClient = adminClient ?? auth.client;
+
+  const { data: restaurant, error: insertRestaurantError } = await dbClient
     .from('restaurants')
     .insert({
       name,
@@ -116,10 +151,14 @@ export async function POST(request: NextRequest) {
     .single();
 
   if (insertRestaurantError || !restaurant) {
-    return NextResponse.json({ error: insertRestaurantError?.message ?? 'Could not create this shop.' }, { status: 500 });
+    const isRlsError = insertRestaurantError?.message?.includes('violates row-level security policy');
+    const errorMessage = isRlsError
+      ? 'Row-level security violation on table "restaurants". Please run migration 011_restaurant_registration_rls.sql in your Supabase SQL editor.'
+      : insertRestaurantError?.message ?? 'Could not create this shop.';
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 
-  const { error: membershipError } = await auth.client.from('restaurant_memberships').insert({
+  const { error: membershipError } = await dbClient.from('restaurant_memberships').insert({
     user_id: auth.user.id,
     restaurant_id: restaurant.id,
     role: 'owner',
@@ -130,18 +169,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: membershipError.message }, { status: 500 });
   }
 
-  // Provision initial empty booth slots if specified (for venue slot management)
-  // Note: Stalls are email invite only; the shop owner is NOT assigned stall merchant membership.
-  const boothCount = typeof body?.boothCount === 'number' && body.boothCount > 0
-    ? Math.min(body.boothCount, 20)
-    : 3; // Default 3 initial empty booth slots for the food hall
-
   const initialSlots = Array.from({ length: boothCount }, (_, i) => ({
     restaurant_id: restaurant.id,
     name: `Booth Slot #${String(i + 1).padStart(2, '0')}`,
   }));
 
-  const { data: initialBooths } = await auth.client
+  const { data: initialBooths } = await dbClient
     .from('food_outlets')
     .insert(initialSlots)
     .select('id, restaurant_id, name, created_at');
@@ -149,7 +182,7 @@ export async function POST(request: NextRequest) {
   return NextResponse.json({
     shop: {
       ...restaurant,
-      status: typeof body?.status === 'string' ? body.status : 'approved',
+      status: shopStatus,
       booths: initialBooths || [],
     },
     status: 'created',
