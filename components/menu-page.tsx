@@ -160,7 +160,7 @@ export function MenuPage() {
   return (
     <main className="min-h-screen bg-[#f5f5f7] text-[#1d1d1f]">
       <div className="mx-auto min-h-screen w-full max-w-md sm:max-w-xl md:max-w-3xl lg:max-w-5xl px-4 pb-32 pt-5 sm:px-6">
-        <div className="lg:rounded-[32px] lg:border lg:border-black/[0.04] lg:bg-white lg:p-6 lg:shadow-[0_24px_60px_rgba(15,23,42,0.06)]">
+        <div>
           <div className="sticky top-0 z-10 bg-transparent pb-3 pt-1">
             <HawkerSearchBar
               placeholder="Search the menu"

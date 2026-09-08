@@ -275,6 +275,31 @@ export type Database = {
         };
         Returns: string;
       };
+      claim_booth_invitation: {
+        Args: {
+          p_token_hash: string;
+          p_stall_name?: string | null;
+        };
+        Returns: Json;
+      };
+      get_booth_invitation_details: {
+        Args: {
+          p_token_hash: string;
+        };
+        Returns: Json;
+      };
+      register_hawker_centre: {
+        Args: {
+          p_name: string;
+          p_slug?: string | null;
+          p_address: string;
+          p_lat?: number;
+          p_lng?: number;
+          p_booth_count?: number;
+          p_status?: string;
+        };
+        Returns: Json;
+      };
     };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;

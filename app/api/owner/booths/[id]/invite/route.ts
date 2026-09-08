@@ -17,8 +17,8 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   const body = await request.json().catch(() => null);
   const email = typeof body?.email === 'string' ? body.email.trim().toLowerCase() : '';
 
-  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    return NextResponse.json({ error: 'A valid email address is required to send a setup link.' }, { status: 400 });
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return NextResponse.json({ error: 'Please enter a valid email address.' }, { status: 400 });
   }
 
   const { data: outlet, error: outletError } = await auth.client
@@ -53,35 +53,39 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
   const adminClient = createAdminClient() ?? auth.client;
 
-  // Check if this email is already an active member of this booth
-  const { data: existingMember } = await adminClient
-    .from('merchant_memberships')
-    .select('user_id')
-    .eq('food_outlet_id', outlet.id)
-    .eq('email', email)
-    .maybeSingle();
+  if (email) {
+    // Check if this email is already an active member of this booth
+    const { data: existingMember } = await adminClient
+      .from('merchant_memberships')
+      .select('user_id')
+      .eq('food_outlet_id', outlet.id)
+      .eq('email', email)
+      .maybeSingle();
 
-  if (existingMember) {
-    return NextResponse.json({ error: `${email} is already an active manager/staff of this stall.` }, { status: 400 });
+    if (existingMember) {
+      return NextResponse.json({ error: `${email} is already an active manager/staff of this stall.` }, { status: 400 });
+    }
   }
 
   const token = randomBytes(18).toString('base64url');
   const tokenHash = createHash('sha256').update(token).digest('hex');
   const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24 * 7).toISOString();
 
-  // Invalidate any older pending invitations for this email on this booth
-  await adminClient
-    .from('booth_invitations')
-    .delete()
-    .eq('food_outlet_id', outlet.id)
-    .eq('invited_email', email);
+  if (email) {
+    // Invalidate any older pending invitations for this email on this booth
+    await adminClient
+      .from('booth_invitations')
+      .delete()
+      .eq('food_outlet_id', outlet.id)
+      .eq('invited_email', email);
+  }
 
   const { error: insertError } = await adminClient.from('booth_invitations').insert({
     food_outlet_id: outlet.id,
     created_by: auth.user.id,
     token_hash: tokenHash,
     expires_at: expiresAt,
-    invited_email: email,
+    invited_email: email || null,
   });
 
   if (insertError) {
@@ -90,6 +94,20 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
   const origin = request.nextUrl.origin || 'http://localhost:3000';
   const setupLink = `${origin}/booths/join?token=${token}`;
+
+  if (!email) {
+    return NextResponse.json({
+      boothId: outlet.id,
+      token,
+      setupLink,
+      expiresAt,
+      status: 'generated',
+      delivered: false,
+      simulated: false,
+      provider: 'direct',
+      message: 'Setup link generated successfully.',
+    }, { status: 201 });
+  }
 
   // Dispatch real email via Resend, SMTP, or local preview simulation
   const emailResult = await sendStallInvitationEmail({

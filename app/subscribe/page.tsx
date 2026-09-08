@@ -63,15 +63,17 @@ function LaunchpadContent() {
   const [copiedCode, setCopiedCode] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
   const [generatedInviteToken, setGeneratedInviteToken] = useState<string | null>(null);
-  const generatedCode = generatedInviteToken || 'HKR-8F92-KL';
+  const generatedCode = generatedInviteToken || '';
 
   const handleCopyInvite = () => {
+    if (!generatedCode) return;
     navigator.clipboard?.writeText(generatedCode);
     setCopiedCode(true);
     setTimeout(() => setCopiedCode(false), 2200);
   };
 
   const handleCopyLink = () => {
+    if (!generatedCode) return;
     const origin = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000';
     navigator.clipboard?.writeText(`${origin}/booths/join?token=${generatedCode}`);
     setCopiedLink(true);
@@ -144,6 +146,7 @@ function LaunchpadContent() {
         const inviteRes = await fetch(`/api/owner/booths/${boothId}/invite`, {
           method: 'POST',
           headers: {
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${session.access_token}`,
           },
         });

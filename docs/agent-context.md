@@ -193,12 +193,26 @@ Phase 8: Multi-Client Platform Architecture Refactoring & Onboarding Access Gati
     - Dispatches email and returns `{ delivered, simulated, provider, setupLink, message }`.
   - Updated `app/shop-owner/booths/page.tsx` UI feedback banner: displays green check badge (`CheckCircle2`) when email is delivered via Resend/SMTP or link copy badge when simulated in dev mode.
   - Documented configuration options in `.env.example`.
+- **Booth Invitation Token Redemption & RLS Fix**:
+  - Diagnosed root cause of "This invitation is invalid or expired": invited vendors lack prior membership in `booth_invitations` and `merchant_memberships`, causing RLS to return empty sets when authenticated via `anon` key without service role key in local environments.
+  - Created migration `013_booth_invitation_redemption.sql`:
+    - Added `claim_booth_invitation(p_token_hash, p_stall_name)` RPC with `SECURITY DEFINER` for atomic, server-authorized token validation, email match verification, stall naming, and `merchant_memberships` enrollment.
+    - Added `get_booth_invitation_details(p_token_hash)` RPC for instant token metadata preview.
+    - Updated RLS policies on `booth_invitations` (allowing invitee/active token inspection) and `merchant_memberships` (allowing authenticated user self-enrollment upon valid claim).
+    - Pushed migration directly to remote Supabase via `npx supabase db push`.
+  - Updated `app/api/owner/booths/join/route.ts` to call `claim_booth_invitation` RPC with fallback to direct queries.
+  - Updated `app/booths/join/page.tsx` to automatically extract tokens from pasted URLs, live-preview the assigned food hall venue and booth name, and display email mismatch warning if logged in with a different account.
+  - Fixed `app/api/owner/booths/[id]/invite/route.ts` to support both email-gated invitations and open setup tokens, and eliminated dummy `HKR-8F92-KL` fallback from `app/subscribe/page.tsx`.
+- **Home & Menu Page Background Div Color Harmonization**:
+  - Removed container `lg:bg-white` wrapping divs in `components/home-page.tsx` and `components/menu-page.tsx`.
+  - Ensured all views consistently inherit the neutral `#f5f5f7` canvas across mobile, tablet, and desktop viewports without jarring card borders.
+  - Styled the venue table header pill on `/home` into a crisp `bg-white border border-black/[0.06] shadow-xs` element matching dish cards and search bars.
 
 ## Current Architecture
 - Frontend: Next.js App Router, TypeScript, React, Tailwind
 - AI boundary: OpenRouter via Vercel AI SDK for `SearchIntent` extraction only
 - Backend: route handlers, deterministic `SearchService`, and payment refund handlers
-- Database: Supabase/PostgreSQL with raw SQL migrations (001-008), generated-style TypeScript types, RLS, and fallback data paths
+- Database: Supabase/PostgreSQL with raw SQL migrations (001-013), generated-style TypeScript types, RLS, and fallback data paths
 - Security: AI never touches SQL or database access directly; merchant isolation verified via memberships before processing refunds; booth activation is strictly invite-only
 - Monetization: Zero monthly software subscriptions; platform revenue is generated via a transparent payment cut on processed orders
 
