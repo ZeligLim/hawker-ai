@@ -31,10 +31,64 @@ export async function GET(request: NextRequest) {
     booths = data ?? [];
   }
 
-  const boothsByRestaurant = new Map<string, Array<{ id: string; name: string }>>();
+  const adminClient = createAdminClient() ?? auth.client;
+  const boothIds = booths.map((b) => b.id);
+  const membersByBooth = new Map<string, Array<{ userId: string; email: string; role: string; createdAt: string }>>();
+  const invitationsByBooth = new Map<string, Array<{ id: string; email: string; expiresAt: string; createdAt: string }>>();
+
+  if (boothIds.length > 0) {
+    const { data: memberRows } = await adminClient
+      .from('merchant_memberships')
+      .select('user_id, food_outlet_id, role, email, created_at')
+      .in('food_outlet_id', boothIds);
+
+    memberRows?.forEach((row) => {
+      const list = membersByBooth.get(row.food_outlet_id) ?? [];
+      list.push({
+        userId: row.user_id,
+        email: row.email ?? '',
+        role: row.role,
+        createdAt: row.created_at,
+      });
+      membersByBooth.set(row.food_outlet_id, list);
+    });
+
+    const { data: inviteRows } = await adminClient
+      .from('booth_invitations')
+      .select('id, food_outlet_id, invited_email, expires_at, created_at')
+      .in('food_outlet_id', boothIds)
+      .is('used_at', null)
+      .gt('expires_at', new Date().toISOString());
+
+    inviteRows?.forEach((row) => {
+      const list = invitationsByBooth.get(row.food_outlet_id) ?? [];
+      list.push({
+        id: row.id,
+        email: row.invited_email ?? '',
+        expiresAt: row.expires_at,
+        createdAt: row.created_at,
+      });
+      invitationsByBooth.set(row.food_outlet_id, list);
+    });
+  }
+
+  const boothsByRestaurant = new Map<
+    string,
+    Array<{
+      id: string;
+      name: string;
+      members: Array<{ userId: string; email: string; role: string; createdAt: string }>;
+      invitations: Array<{ id: string; email: string; expiresAt: string; createdAt: string }>;
+    }>
+  >();
   booths.forEach((booth) => {
     const existing = boothsByRestaurant.get(booth.restaurant_id) ?? [];
-    existing.push({ id: booth.id, name: booth.name });
+    existing.push({
+      id: booth.id,
+      name: booth.name,
+      members: membersByBooth.get(booth.id) ?? [],
+      invitations: invitationsByBooth.get(booth.id) ?? [],
+    });
     boothsByRestaurant.set(booth.restaurant_id, existing);
   });
 

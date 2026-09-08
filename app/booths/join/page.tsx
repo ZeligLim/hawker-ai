@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useState } from 'react';
 import { useAuth } from '@/components/auth-provider';
 import { Store, KeyRound, ArrowRight, LoaderCircle, CheckCircle2 } from 'lucide-react';
+import { authenticatedFetch } from '@/lib/supabase/client';
 
 function JoinBoothContent() {
   const router = useRouter();
@@ -27,7 +28,7 @@ function JoinBoothContent() {
     setMessage(null);
 
     try {
-      const response = await fetch('/api/owner/booths/join', {
+      const response = await authenticatedFetch('/api/owner/booths/join', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

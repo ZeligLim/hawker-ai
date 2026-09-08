@@ -63,10 +63,32 @@ Phase 8: Multi-Client Platform Architecture Refactoring & Onboarding Access Gati
      - Added `createAdminClient` supporting `SUPABASE_SERVICE_ROLE_KEY` if configured.
      - Updated `app/api/owner/shops/route.ts` to attempt the atomic RPC first, fall back to direct client insertion with user authorization, and provide actionable error messaging if migration 011 has not yet been executed in Supabase.
 
-6. **Automated Verification & Testing**:
+6. **Email-Gated Booth Setup Links & Store Access Revocation**:
+   - **Root Cause of Error**: Invoking `/api/owner/booths/[id]/invite` in `app/shop-owner/booths/page.tsx` was calling unauthenticated global `fetch` instead of `authenticatedFetch`, causing `requireRequestUser` to fail with `Authentication required.`.
+   - **Migration 012 (`supabase/migrations/012_booth_invitation_email.sql`)**:
+     1. Added `invited_email TEXT` to `booth_invitations` with index.
+     2. Added `email TEXT` to `merchant_memberships` with index.
+     3. Backfilled `merchant_memberships.email` from `auth.users`.
+     4. Added RLS SELECT policy allowing restaurant owners to view all stall members in their outlets.
+     5. Added RLS DELETE policies allowing restaurant owners to remove members from `merchant_memberships` and revoke `booth_invitations`.
+     6. Pushed migration to remote Supabase via `npx supabase db push`.
+   - **Email-Gated Setup Links (`app/api/owner/booths/[id]/invite/route.ts` & `app/api/owner/booths/join/route.ts`)**:
+     - Shop owners enter an email (e.g. `vendor@stall.com`) and click "Send Setup Link".
+     - Generates cryptographically secure token tied specifically to `invited_email`.
+     - When claiming (`POST /api/owner/booths/join`), only the authenticated user whose email matches `invitation.invited_email` is authorized to claim the stall. Any other signed-in email is rejected with 403 Forbidden.
+   - **Store Control Revocation (`app/api/owner/booths/[id]/members/route.ts`)**:
+     - Shop owners view all authorized emails (`Active (Manager)` and `Pending Setup`).
+     - Clicking "Remove" invokes `DELETE /api/owner/booths/[id]/members`, deleting the user from `merchant_memberships` and revoking any pending invitations.
+     - Once removed, the user immediately loses control of the store; all stall management endpoints (`/api/owner/dishes`, `/api/owner/orders`, `/owner/menu`) reject access with 403 Forbidden.
+   - **UI Overhaul (`app/shop-owner/booths/page.tsx`)**:
+     - Replaced generic "Generate Token" buttons with an email input and a "Send Setup Link" button for each booth slot.
+     - Displays the live list of authorized emails with status indicators (`Active Staff` vs `Pending Setup`).
+     - Provided 1-click "Remove" buttons with real-time feedback that immediately revokes stall access.
+
+7. **Automated Verification & Testing**:
    - `lib/auth-onboarding.test.ts`: Added unit tests verifying `resolveSignOutDestination` defaults to `'/'`, handles custom safe paths, and sanitizes malicious URLs; tested `isCustomerIntent` route classification, marketing nav role detection, dashboard visibility gating, dual-role dropdown handling, shop-only "Start Free" visibility, and `/customer` route isolation.
-   - `lib/multi-client-architecture.test.ts`: Client path resolution including `/customer`, client boundaries, cross-stall isolation, cross-shop isolation, and unauthenticated redirects.
-   - All 16 tests pass (`npm test`).
+   - `lib/multi-client-architecture.test.ts`: Client path resolution including `/customer`, client boundaries, cross-stall isolation, cross-shop isolation, unauthenticated redirects, stall access revocation on membership removal, and email-gated setup link validation.
+   - All 18 tests pass (`npm test`).
    - TypeScript verification (`npx tsc --noEmit`) passes with 0 errors.
    - ESLint (`npm run lint`) passes with 0 errors.
    - Production build (`npm run build`) compiles all 45 routes successfully.

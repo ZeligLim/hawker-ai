@@ -91,6 +91,7 @@ export type Database = {
           user_id: string;
           food_outlet_id: string;
           role: 'owner' | 'manager' | 'staff';
+          email: string | null;
           created_at: string;
         };
         Insert: Omit<Database['public']['Tables']['merchant_memberships']['Row'], 'created_at'> & {
@@ -108,6 +109,7 @@ export type Database = {
           expires_at: string;
           used_at: string | null;
           used_by: string | null;
+          invited_email: string | null;
           created_at: string;
         };
         Insert: Omit<Database['public']['Tables']['booth_invitations']['Row'], 'id' | 'created_at' | 'used_at' | 'used_by'> & {
@@ -115,6 +117,7 @@ export type Database = {
           created_at?: string;
           used_at?: string | null;
           used_by?: string | null;
+          invited_email?: string | null;
         };
         Update: Partial<Database['public']['Tables']['booth_invitations']['Insert']>;
         Relationships: [];

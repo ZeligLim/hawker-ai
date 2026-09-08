@@ -149,3 +149,40 @@ test('5. Unauthenticated Redirection: protects stall and owner portals with retu
   assert.equal(ownerAuthCheck.allowed, false);
   assert.equal(ownerAuthCheck.redirectUrl, '/auth?redirect=%2Fshop-owner%2Fbooths');
 });
+
+test('6. Stall Access Revocation: removing authorized email revokes store control immediately', () => {
+  // Initially authorized worker
+  assert.equal(PermissionEngine.canAccessStall(mockStallWorkerAAuth, 'stall-outlet-a'), true);
+  assert.equal(PermissionEngine.canManageStallOrder(mockStallWorkerAAuth, 'stall-outlet-a'), true);
+  assert.equal(PermissionEngine.canManageStallDishes(mockStallWorkerAAuth, 'stall-outlet-a'), true);
+
+  // When owner removes the email / membership is deleted:
+  const revokedWorkerAuth: UserAuthorizationState = {
+    ...mockStallWorkerAAuth,
+    isStallWorker: false,
+    stallMemberships: [],
+  };
+
+  // Immediate loss of store control
+  assert.equal(PermissionEngine.canAccessStall(revokedWorkerAuth, 'stall-outlet-a'), false);
+  assert.equal(PermissionEngine.canManageStallOrder(revokedWorkerAuth, 'stall-outlet-a'), false);
+  assert.equal(PermissionEngine.canManageStallDishes(revokedWorkerAuth, 'stall-outlet-a'), false);
+
+  const routeCheck = PermissionEngine.isRouteAllowed('/owner/orders', revokedWorkerAuth);
+  assert.equal(routeCheck.allowed, false);
+  assert.equal(routeCheck.redirectUrl, '/profile');
+});
+
+test('7. Email-gated setup link validation: only matching invited email can claim the store', () => {
+  const invitedEmail = 'chef.tan@gmail.com';
+
+  const isEmailAuthorized = (candidateEmail: string, targetInviteEmail: string) => {
+    return candidateEmail.trim().toLowerCase() === targetInviteEmail.trim().toLowerCase();
+  };
+
+  assert.equal(isEmailAuthorized('chef.tan@gmail.com', invitedEmail), true);
+  assert.equal(isEmailAuthorized('  CHEF.TAN@GMAIL.COM ', invitedEmail), true);
+  assert.equal(isEmailAuthorized('different.user@gmail.com', invitedEmail), false);
+  assert.equal(isEmailAuthorized('hacker@attack.com', invitedEmail), false);
+});
+

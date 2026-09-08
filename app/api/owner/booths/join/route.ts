@@ -1,10 +1,10 @@
 import { createHash } from 'crypto';
 import { NextRequest, NextResponse } from 'next/server';
-import { requireRequestUser } from '@/lib/supabase/server';
+import { requireRequestUser, createAdminClient } from '@/lib/supabase/server';
 
 export async function POST(request: NextRequest) {
   const auth = await requireRequestUser(request);
-  if (!auth.client || !auth.user) return NextResponse.json({ error: auth.error }, { status: 401 });
+  if (!auth.client || !auth.user) return NextResponse.json({ error: auth.error ?? 'Authentication required.' }, { status: 401 });
 
   const body = await request.json().catch(() => null);
   const token = typeof body?.token === 'string' ? body.token.trim() : '';
@@ -14,9 +14,11 @@ export async function POST(request: NextRequest) {
   }
 
   const tokenHash = createHash('sha256').update(token).digest('hex');
-  const { data: invitation, error: invitationError } = await auth.client
+  const adminClient = createAdminClient() ?? auth.client;
+
+  const { data: invitation, error: invitationError } = await adminClient
     .from('booth_invitations')
-    .select('id, food_outlet_id, expires_at, used_at')
+    .select('id, food_outlet_id, expires_at, used_at, invited_email')
     .eq('token_hash', tokenHash)
     .maybeSingle();
 
@@ -36,7 +38,18 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'This invitation has already been used.' }, { status: 409 });
   }
 
-  const { data: existingMembership, error: membershipCheckError } = await auth.client
+  // Security check: Only the invited email can claim this stall setup link
+  if (invitation.invited_email && auth.user.email) {
+    const invitedEmail = invitation.invited_email.toLowerCase().trim();
+    const userEmail = auth.user.email.toLowerCase().trim();
+    if (invitedEmail !== userEmail) {
+      return NextResponse.json({
+        error: `This setup link was sent specifically to ${invitation.invited_email}. You are currently signed in as ${auth.user.email}. Only the invited email can edit this stall. Please sign in with that email.`,
+      }, { status: 403 });
+    }
+  }
+
+  const { data: existingMembership, error: membershipCheckError } = await adminClient
     .from('merchant_memberships')
     .select('food_outlet_id')
     .eq('user_id', auth.user.id)
@@ -53,20 +66,23 @@ export async function POST(request: NextRequest) {
 
   const stallName = typeof body?.stallName === 'string' ? body.stallName.trim() : typeof body?.boothName === 'string' ? body.boothName.trim() : '';
   if (stallName) {
-    await auth.client.from('food_outlets').update({ name: stallName }).eq('id', invitation.food_outlet_id);
+    await adminClient.from('food_outlets').update({ name: stallName }).eq('id', invitation.food_outlet_id);
   }
 
-  const { error: insertError } = await auth.client.from('merchant_memberships').insert({
+  const userEmail = auth.user.email?.toLowerCase().trim() ?? invitation.invited_email?.toLowerCase().trim() ?? null;
+
+  const { error: insertError } = await adminClient.from('merchant_memberships').insert({
     user_id: auth.user.id,
     food_outlet_id: invitation.food_outlet_id,
     role: 'owner',
+    email: userEmail,
   });
 
   if (insertError) {
     return NextResponse.json({ error: insertError.message }, { status: 500 });
   }
 
-  const { error: markUsedError } = await auth.client
+  const { error: markUsedError } = await adminClient
     .from('booth_invitations')
     .update({ used_at: new Date().toISOString(), used_by: auth.user.id })
     .eq('id', invitation.id);
