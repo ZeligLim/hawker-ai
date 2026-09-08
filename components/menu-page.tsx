@@ -35,6 +35,7 @@ type MenuItem = {
   price: number;
   vegetarian: boolean;
   category: 'main-course' | 'drinks' | 'desserts';
+  imageUrl?: string | null;
 };
 
 function categorizeDish(name: string, tags: string[] = []): 'main-course' | 'drinks' | 'desserts' {
@@ -74,6 +75,7 @@ export function MenuPage() {
               price: Number(dish.price),
               vegetarian: Boolean(dish.is_vegetarian),
               category: categorizeDish(dish.name, dish.tags),
+              imageUrl: dish.image_url ?? null,
             });
           }
         }
@@ -217,6 +219,7 @@ export function MenuPage() {
                           name={item.name}
                           price={item.price}
                           isVegetarian={item.vegetarian}
+                          imageUrl={item.imageUrl}
                           quantity={quantity}
                           onAdd={() => addMenuItem(item)}
                           onUpdateQuantity={(delta) =>

@@ -308,13 +308,13 @@ export default function ShopOwnerBoothsPage() {
           </button>
         </header>
 
-        <section className="mt-6 space-y-4">
+        <section className="mt-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5 items-start">
           {loading ? (
-            <div className="flex items-center justify-center p-12 text-[#6e6e73] text-sm">
+            <div className="col-span-full flex items-center justify-center p-12 text-[#6e6e73] text-sm">
               <LoaderCircle className="h-4 w-4 animate-spin mr-2 text-[#111827]" /> Loading booths…
             </div>
           ) : boothList.length === 0 ? (
-            <div className="rounded-[24px] bg-white p-8 text-center shadow-[0_12px_26px_rgba(15,23,42,0.04)] border border-black/[0.04]">
+            <div className="col-span-full rounded-[24px] bg-white p-8 text-center shadow-[0_12px_26px_rgba(15,23,42,0.04)] border border-black/[0.04]">
               <Store className="h-10 w-10 text-[#86868b] mx-auto mb-3" />
               <p className="text-base font-semibold text-[#1d1d1f]">No booth slots created yet</p>
               <p className="mt-1 text-xs text-[#6e6e73] max-w-sm mx-auto">
@@ -341,7 +341,7 @@ export default function ShopOwnerBoothsPage() {
               return (
                 <article
                   key={booth.id}
-                  className="rounded-[24px] bg-white p-4 sm:p-5 shadow-[0_12px_26px_rgba(15,23,42,0.04)] border border-black/[0.04]"
+                  className="flex flex-col justify-between rounded-[24px] bg-white p-4 sm:p-5 shadow-[0_12px_26px_rgba(15,23,42,0.04)] border border-black/[0.04] transition-all hover:shadow-[0_16px_32px_rgba(15,23,42,0.06)]"
                 >
                   {/* Booth Slot Header */}
                   <div className="flex items-center justify-between gap-3">
@@ -418,7 +418,7 @@ export default function ShopOwnerBoothsPage() {
 
                     {feedback && (
                       <div
-                        className={`mt-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 rounded-xl p-3 text-xs ${
+                        className={`mt-3 flex flex-col gap-2 rounded-xl p-3 text-xs ${
                           feedback.type === 'success'
                             ? 'bg-[#30d158]/10 text-[#166534] border border-[#30d158]/20'
                             : 'bg-red-50 text-red-700 border border-red-200'

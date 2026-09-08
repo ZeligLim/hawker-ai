@@ -224,6 +224,21 @@ Phase 8: Multi-Client Platform Architecture Refactoring & Onboarding Access Gati
     - Replaced all remaining `#0071e3` blue buttons, input focus rings, and modal accents with sleek `#111827` dark styling.
     - Optimized email input and "Send Link" button to never break or overflow on small mobile displays (<375px).
     - Refactored authorized member rows and pending invite tokens with responsive wrapping and accessible touch targets.
+- **Price Input Acceptance & Validation Fix (`app/owner/menu/[id]/page.tsx` & `lib/owner/schema.ts`)**:
+  - Fixed HTML5 constraint validation bug where `min="0.01"` combined with `step="0.10"` rejected whole numbers like `10` or `10.00` via browser `stepMismatch` error.
+  - Changed price inputs to `min="0" step="any"`, allowing whole numbers (e.g. 10) and any valid decimal prices.
+  - Updated validation to `Number(dish.price) > 0` and included `imageUrl` in initial dish save payload.
+  - Updated `OwnerDishSchema` in `lib/owner/schema.ts` to allow both remote URLs and data URIs.
+- **Customer App Dish Photo Rendering Fix (`components/home-page.tsx`, `components/menu-page.tsx`, `components/shop-detail-client.tsx`, `app/shop/[slug]/page.tsx`, `components/result-card.tsx`, `app/api/owner/dishes/[id]/image/route.ts`)**:
+  - Added `imageUrl` to `FeaturedDish`, `MenuItem`, `ShopData`, and `SearchResultSchema`.
+  - Explicitly passed `imageUrl` prop to `<DishCard>` across `/home`, `/menu`, and `/shop/[slug]` so uploaded dish photos are immediately visible in the customer app.
+  - Updated `fetchShopBySlug` in `app/shop/[slug]/page.tsx` to query `image_url` and map it to `imageUrl`.
+  - Added optional image banner rendering to `ResultCard` in `components/result-card.tsx` for search results with photos.
+  - Enhanced `/api/owner/dishes/[id]/image` with `createAdminClient()` and an automatic base64 data URI fallback if Supabase Storage bucket access is restricted, ensuring uploaded dish photos are permanently saved and never lost.
+- **Booth Slots 3-Column Responsive Grid (`app/shop-owner/booths/page.tsx`)**:
+  - Upgraded Booth Slots & Access layout from a single-column stack into a 3-column responsive grid (`grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5`).
+  - Optimized vendor email input, send setup link button, and feedback notifications to fit compactly in 3-column card widths.
+  - Made authorized store manager and pending invitation tokens responsive with concise action buttons (`Copy`, `Revoke`, `Remove`).
 
 ## Current Architecture
 - Frontend: Next.js App Router, TypeScript, React, Tailwind

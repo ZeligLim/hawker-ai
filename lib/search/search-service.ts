@@ -169,6 +169,7 @@ export class SearchService {
           isHalal: dish.is_halal,
           spiceLevel: dish.spice_level,
           proteinGrams: Number(dish.protein_grams),
+          imageUrl: dish.image_url ?? null,
           matchScore,
           reasons: [...new Set(reasons)].slice(0, 3),
         };

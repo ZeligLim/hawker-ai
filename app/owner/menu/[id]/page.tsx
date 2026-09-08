@@ -97,7 +97,7 @@ export default function OwnerDishEditorPage() {
 
   const save = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!dish.name.trim() || dish.price <= 0) {
+    if (!dish.name.trim() || Number(dish.price) <= 0 || isNaN(Number(dish.price))) {
       setError('Enter a dish name and a price greater than zero.');
       return;
     }
@@ -105,6 +105,7 @@ export default function OwnerDishEditorPage() {
     const saved = {
       ...dish,
       name: dish.name.trim(),
+      price: Number(dish.price),
       vegetarian,
       description: description.trim(),
       tags: [...new Set(tags.split(',').map((tag) => tag.trim()).filter(Boolean))],
@@ -125,9 +126,15 @@ export default function OwnerDishEditorPage() {
 
     const payload = {
       ...(isNew ? { foodOutletId: dish.foodOutletId } : {}),
-      name: saved.name, description: saved.description, price: saved.price,
-      isVegetarian: saved.vegetarian, spiceLevel: saved.spiceLevels, isAvailable: saved.available,
-      tags: saved.tags, customizations: saved.customizations,
+      name: saved.name,
+      description: saved.description,
+      price: saved.price,
+      isVegetarian: saved.vegetarian,
+      spiceLevel: saved.spiceLevels,
+      isAvailable: saved.available,
+      tags: saved.tags,
+      customizations: saved.customizations,
+      imageUrl: dish.imageUrl || null,
     };
     const response = await fetch(isNew ? '/api/owner/dishes' : `/api/owner/dishes/${dish.id}`, {
       method: isNew ? 'POST' : 'PATCH',
@@ -176,7 +183,7 @@ export default function OwnerDishEditorPage() {
             <div className="grid gap-3 sm:grid-cols-3">
               <input value={dish.name} onChange={(event) => updateDish({ name: event.target.value })} placeholder="Dish name" className="h-11 rounded-[14px] bg-[#f5f5f7] px-3 text-sm outline-none" />
               <select value={dish.category} onChange={(event) => updateDish({ category: event.target.value })} className="h-11 appearance-none rounded-[14px] bg-[#f5f5f7] px-3 text-sm outline-none"><option>Main course</option><option>Drinks</option><option>Desserts</option></select>
-              <input type="number" min="0.01" step="0.10" value={dish.price || ''} onChange={(event) => updateDish({ price: Number(event.target.value) })} placeholder="Price (RM)" className="h-11 rounded-[14px] bg-[#f5f5f7] px-3 text-sm outline-none" />
+              <input type="number" min="0" step="any" value={dish.price === 0 ? '' : dish.price} onChange={(event) => updateDish({ price: event.target.value === '' ? 0 : parseFloat(event.target.value) })} placeholder="Price (RM)" className="h-11 rounded-[14px] bg-[#f5f5f7] px-3 text-sm outline-none" />
             </div>
             <div className="mt-4 flex items-center justify-between rounded-[14px] bg-[#f5f5f7] px-3 py-3 text-sm font-medium">
               <span>Vegetarian dish</span>
@@ -201,7 +208,7 @@ export default function OwnerDishEditorPage() {
               {customizations.map((option, index) => (
                 <div key={index} className="flex items-center gap-2">
                   <input value={option.label} onChange={(event) => setCustomizations((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, label: event.target.value } : item))} placeholder="e.g. Add egg or Large" className="min-w-0 flex-1 rounded-[12px] bg-[#f5f5f7] px-3 py-3 text-sm outline-none" />
-                  <input type="number" min="0" step="0.10" value={option.price || ''} onChange={(event) => setCustomizations((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, price: Number(event.target.value) } : item))} placeholder="RM" className="w-20 rounded-[12px] bg-[#f5f5f7] px-2 py-3 text-sm outline-none" aria-label={`Price for customisation ${index + 1}`} />
+                  <input type="number" min="0" step="any" value={option.price === 0 ? '' : option.price} onChange={(event) => setCustomizations((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, price: event.target.value === '' ? 0 : parseFloat(event.target.value) } : item))} placeholder="RM" className="w-20 rounded-[12px] bg-[#f5f5f7] px-2 py-3 text-sm outline-none" aria-label={`Price for customisation ${index + 1}`} />
                   <button type="button" onClick={() => setCustomizations((current) => current.filter((_, itemIndex) => itemIndex !== index))} className="rounded-full p-2 text-[#6e6e73]" aria-label={`Remove customisation ${index + 1}`}><Trash2 className="h-4 w-4" /></button>
                 </div>
               ))}

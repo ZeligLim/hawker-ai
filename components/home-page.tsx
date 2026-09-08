@@ -22,6 +22,7 @@ type FeaturedDish = {
   isHalal: boolean;
   spiceLevel: number;
   proteinGrams: number;
+  imageUrl?: string | null;
 };
 
 const quickFilters = [
@@ -100,6 +101,7 @@ export function HomePage() {
               isHalal: Boolean(dish.is_halal),
               spiceLevel: Number(dish.spice_level ?? 0),
               proteinGrams: Number(dish.protein_grams ?? 0),
+              imageUrl: dish.image_url ?? null,
             });
             if (loaded.length >= 6) break;
           }
@@ -132,6 +134,7 @@ export function HomePage() {
       isHalal: dish.isHalal,
       spiceLevel: dish.spiceLevel,
       proteinGrams: dish.proteinGrams,
+      imageUrl: (dish as any).imageUrl || null,
     }));
   }, [results, initialDishes]);
 
@@ -166,6 +169,7 @@ export function HomePage() {
         isHalal: Boolean(dish.isHalal),
         spiceLevel: Number(dish.spiceLevel),
         proteinGrams: Number(dish.proteinGrams),
+        imageUrl: dish.imageUrl || dish.image_url || null,
       }));
 
       setResults(nextResults);
@@ -308,6 +312,7 @@ export function HomePage() {
                       name={dish.name}
                       price={dish.price}
                       isVegetarian={dish.isVegetarian}
+                      imageUrl={dish.imageUrl}
                       quantity={quantity}
                       onAdd={() => addDish(dish)}
                       onUpdateQuantity={(delta) =>

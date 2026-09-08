@@ -45,6 +45,7 @@ export const SearchResultSchema = z.object({
   isHalal: z.boolean(),
   spiceLevel: z.number(),
   proteinGrams: z.number(),
+  imageUrl: z.string().nullable().optional(),
   matchScore: z.number(),
   reasons: z.array(z.string()),
 });

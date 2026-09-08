@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requireRequestUser } from '@/lib/supabase/server';
+import { createAdminClient, requireRequestUser } from '@/lib/supabase/server';
 
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
 
@@ -51,17 +51,38 @@ export async function POST(request: NextRequest, context: { params: Promise<{ id
   if (!file.type.startsWith('image/')) return NextResponse.json({ error: 'Only image files are supported.' }, { status: 400 });
   if (file.size > MAX_IMAGE_SIZE) return NextResponse.json({ error: 'Images must be 5 MB or smaller.' }, { status: 400 });
 
-  const extension = file.name.split('.').pop()?.toLowerCase() || 'jpg';
-  const path = `${dish.food_outlet_id}/${id}-${Date.now()}.${extension}`;
-  const { error: uploadError } = await auth.client.storage.from('dish-images').upload(path, file, {
-    contentType: file.type,
-    upsert: true,
-  });
-  if (uploadError) return NextResponse.json({ error: uploadError.message }, { status: 500 });
+  const adminClient = createAdminClient();
+  const storageClient = adminClient || auth.client;
+  let finalImageUrl: string | null = null;
 
-  const { data: publicUrl } = auth.client.storage.from('dish-images').getPublicUrl(path);
-  const { error: updateError } = await auth.client.from('dishes').update({ image_url: publicUrl.publicUrl }).eq('id', id);
+  try {
+    const extension = file.name.split('.').pop()?.toLowerCase() || 'jpg';
+    const path = `${dish.food_outlet_id}/${id}-${Date.now()}.${extension}`;
+    const { error: uploadError } = await storageClient.storage.from('dish-images').upload(path, file, {
+      contentType: file.type,
+      upsert: true,
+    });
+
+    if (!uploadError) {
+      const { data: publicUrl } = storageClient.storage.from('dish-images').getPublicUrl(path);
+      finalImageUrl = publicUrl.publicUrl;
+    } else {
+      console.warn('Storage upload notice, falling back to data URI:', uploadError.message);
+      const buffer = Buffer.from(await file.arrayBuffer());
+      finalImageUrl = `data:${file.type};base64,${buffer.toString('base64')}`;
+    }
+  } catch (err) {
+    console.warn('Storage upload exception, falling back to data URI:', err);
+    const buffer = Buffer.from(await file.arrayBuffer());
+    finalImageUrl = `data:${file.type};base64,${buffer.toString('base64')}`;
+  }
+
+  const { error: updateError } = await (adminClient || auth.client)
+    .from('dishes')
+    .update({ image_url: finalImageUrl })
+    .eq('id', id);
+
   if (updateError) return NextResponse.json({ error: updateError.message }, { status: 500 });
 
-  return NextResponse.json({ imageUrl: publicUrl.publicUrl });
+  return NextResponse.json({ imageUrl: finalImageUrl });
 }

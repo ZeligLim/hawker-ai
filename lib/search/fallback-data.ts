@@ -161,6 +161,7 @@ export function getFallbackMatches(filters: SearchFilters): SearchResult[] {
         isHalal: dish.isHalal,
         spiceLevel: dish.spiceLevel,
         proteinGrams: dish.proteinGrams,
+        imageUrl: null,
         matchScore: Number(score.toFixed(2)),
         reasons: [...new Set(reasons)].slice(0, 3),
       } satisfies SearchResult;
