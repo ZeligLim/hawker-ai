@@ -10,7 +10,6 @@ import {
   ChevronDown,
   Check,
   Store,
-  UtensilsCrossed,
   Smartphone,
   BarChart3,
   QrCode,
@@ -160,22 +159,12 @@ export default function LandingPage() {
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-gradient-to-b from-[#0071e3]/8 to-transparent rounded-full blur-3xl pointer-events-none -z-10" />
 
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          {/* Eyebrow & Customer Switcher Badge */}
-          <div className="flex flex-wrap items-center justify-center gap-2.5 mb-6">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/80 border border-black/[0.08] shadow-[0_2px_8px_rgba(0,0,0,0.03)] backdrop-blur-md">
-              <span className="flex h-2 w-2 rounded-full bg-[#30d158] animate-pulse" />
-              <span className="text-xs font-semibold tracking-tight text-[#1d1d1f]">
-                Hawker Centre Operating System
-              </span>
-            </div>
-
-            <Link
-              href={'/customer' as any}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#0071e3]/10 hover:bg-[#0071e3]/15 border border-[#0071e3]/20 text-xs font-semibold text-[#0071e3] transition-all"
-            >
-              <UtensilsCrossed className="w-3.5 h-3.5" />
-              <span>Looking to order food? Customer App →</span>
-            </Link>
+          {/* Eyebrow */}
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/80 border border-black/[0.08] shadow-[0_2px_8px_rgba(0,0,0,0.03)] backdrop-blur-md mb-6">
+            <span className="flex h-2 w-2 rounded-full bg-[#30d158] animate-pulse" />
+            <span className="text-xs font-semibold tracking-tight text-[#1d1d1f]">
+              Hawker Centre Operating System
+            </span>
           </div>
 
           {/* Grand Headline */}
@@ -1548,7 +1537,6 @@ export default function LandingPage() {
             <div>
               <p className="font-semibold text-[#1d1d1f] mb-3">Customer Dining</p>
               <ul className="space-y-2.5">
-                <li><Link href={'/customer' as any} className="hover:text-[#1d1d1f] font-semibold text-[#0071e3] transition-colors">Customer Landing Page →</Link></li>
                 <li><Link href="/home" className="hover:text-[#1d1d1f] transition-colors">Customer Web App</Link></li>
                 <li><Link href="/menu" className="hover:text-[#1d1d1f] transition-colors">Browse Food Halls</Link></li>
                 <li><Link href="/scan" className="hover:text-[#1d1d1f] transition-colors">Scan Table QR</Link></li>

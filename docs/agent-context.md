@@ -33,17 +33,18 @@ Phase 8: Multi-Client Platform Architecture Refactoring & Onboarding Access Gati
    - **Stall Onboarding**: Strictly email-invite only via operator tokens (`/booths/join?token=...`). Stalls cannot register independently or publicly on the website.
    - **Start Free Button**: Linked strictly to Shop Onboarding (`/apply`), never stall setup. Shown when signed in only if `!roles.hasShopOwner`. If already a shop owner, links to `/shop-owner/booths`.
 
-3. **Dedicated Customer Landing Page (`/customer`)**:
-   - Built a standalone public landing page tailored specifically for diners and food lovers (`app/customer/page.tsx`):
-     - Cinematic hero: "Order from every stall at your table. One simple checkout."
-     - The Old Way vs The Hawker Way interactive comparison.
-     - Interactive simulated Multi-Stall Tray demo with live item toggles and unified billing.
-     - Step-by-step table QR guide: Scan QR, Mix dishes across stalls, 1-tap pay & live buzzer notifications.
-     - AI culinary query interactive preview ("spicy laksa under RM15", "comforting soup no pork").
-     - Featured food halls showcase (Lot 10 Hutong, Newton Food Centre, Penang Road, Medan Selera SS2).
-     - Customer FAQ accordion (No app download, multi-stall ordering, eWallet refunds, payment methods).
-     - Cross-links between Operator Landing (`/`) and Diner Landing (`/customer`) across top ribbon, navigation bar, and footer.
-   - Client routing updated in `lib/shared/permissions.ts` to classify `/customer` as `'website'`, rendering clean full-bleed marketing layouts without mobile bottom tabs.
+3. **Customer Landing Page (`/customer`) & Clean Client Separation**:
+   - **Owner Landing Page (`app/page.tsx` & `components/marketing-nav.tsx`)**: Removed all customer app and customer landing page links/buttons from the hero section, navigation bars, and footer. The owner landing page is now strictly dedicated to food court operators, hawker centre owners, and stall onboarding.
+   - **Simplified Customer Landing Page (`app/customer/page.tsx`)**:
+     - **Spacious, Non-Crowded Navbar**: Eliminated the cluttered ribbon and reduced the nav links to 4 core anchors (`How It Works`, `Perks`, `Food Halls`, `FAQ`). On desktop, right-side buttons are compact (`Scan QR`, `Order Food`, and `Sign In`/profile badge) inside `max-w-7xl` with generous breathing room. On mobile, compact direct `Order` button and hamburger drawer prevent any layout overflow.
+     - **Streamlined Sections**: Focused strictly on diner essentials:
+       - Crisp hero with table ordering value proposition and quick action buttons.
+       - 3-step visual guide: Scan QR → Mix dishes across stalls into 1 cart → Pick up when phone buzzes.
+       - Key perks: One Shared Cart, Zero App Download, Digital Phone Buzzer, Instant Sold-Out Refunds.
+       - Popular food halls directory (Lot 10 Hutong, Newton Food Centre, Penang Road, Medan Selera SS2) with stall count and direct menu links.
+       - Concise diner FAQ accordion with smooth expand/collapse.
+       - Clean, minimalist footer.
+   - Client routing in `lib/shared/permissions.ts` classifies `/customer` as `'website'`.
 
 4. **Sign Out Landing Page Redirection**:
    - `signOut` in `components/auth-provider.tsx` now redirects to the landing page (`'/'`) by default instead of `/auth`.

@@ -109,15 +109,6 @@ export function MarketingNav({ currentPath = '/' }: MarketingNavProps) {
 
         {/* Desktop Nav Items */}
         <div className="hidden md:flex items-center gap-6 text-[13px] font-medium text-[#1d1d1f]/75">
-          <Link
-            href={'/customer' as any}
-            className="inline-flex items-center gap-1.5 text-[#0071e3] font-semibold hover:text-[#0077ed] transition-colors"
-          >
-            <span>Customer App</span>
-            <span className="text-[10px] bg-[#0071e3]/10 text-[#0071e3] px-1.5 py-0.5 rounded-full font-bold">
-              Diners
-            </span>
-          </Link>
           <Link href="/#product" className="hover:text-[#1d1d1f] transition-colors">Platform</Link>
           <Link href="/#features" className="hover:text-[#1d1d1f] transition-colors">Features</Link>
           <Link href="/#how-it-works" className="hover:text-[#1d1d1f] transition-colors">How It Works</Link>
@@ -401,16 +392,6 @@ export function MarketingNav({ currentPath = '/' }: MarketingNavProps) {
           ) : null}
 
           <div className="flex flex-col gap-2 text-sm font-medium text-[#1d1d1f]/80">
-            <Link
-              href={'/customer' as any}
-              onClick={() => setMobileMenuOpen(false)}
-              className="py-1.5 px-3 rounded-xl bg-[#0071e3]/10 font-semibold text-[#0071e3] flex items-center justify-between"
-            >
-              <span>Customer App (For Diners)</span>
-              <span className="text-[10px] bg-[#0071e3] text-white px-2 py-0.5 rounded-full font-bold">
-                Order Food →
-              </span>
-            </Link>
             <Link href="/#product" onClick={() => setMobileMenuOpen(false)} className="py-1">Platform</Link>
             <Link href="/#features" onClick={() => setMobileMenuOpen(false)} className="py-1">Features</Link>
             <Link href="/#how-it-works" onClick={() => setMobileMenuOpen(false)} className="py-1">How It Works</Link>
