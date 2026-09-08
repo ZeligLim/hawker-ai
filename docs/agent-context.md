@@ -1,7 +1,7 @@
 # Current Project Context
 
 ## Current Phase
-Phase 8: Multi-Client Platform Architecture Refactoring (Landing, Customer, Stall, Owner)
+Phase 8: Multi-Client Platform Architecture Refactoring & Onboarding Access Gating
 
 ## Current Feature
 1. **Multi-Client Experience Separation**:
@@ -9,37 +9,29 @@ Phase 8: Multi-Client Platform Architecture Refactoring (Landing, Customer, Stal
      1. **Public Marketing Website** (`components/marketing/marketing-shell.tsx` & `components/marketing-nav.tsx`):
         - Public discovery, features, pricing, and onboarding (`/`, `/pricing`, `/plans`, `/apply`, `/subscribe`).
         - Does NOT expose customer, stall-worker, or owner dashboards.
-        - Persists real-time authentication awareness with user initials avatar, role badge, and contextual navigation without layout leakage.
+        - Real-time authentication awareness:
+          - "Dashboard" button is ONLY shown if user has completed shop onboarding (`roles.hasShopOwner`) OR stall setup via invitation email (`roles.hasBooth`).
+          - If the user holds **both** shop owner and stall worker roles, clicking "Dashboard" opens a dropdown allowing them to choose between "Shop Dashboard" (`/shop-owner/booths`) and "Stall Kitchen (KDS)" (`/owner/orders`).
+          - If only a shop owner, links directly to `/shop-owner/booths`.
+          - If only a stall worker, links directly to `/owner/orders`.
+          - If user is only a customer / diner, "Dashboard" is completely hidden.
+          - "Start Free" is shown when signed in ONLY if shop onboarding has not yet been completed (`!roles.hasShopOwner`), linking directly to shop onboarding (`/apply`).
      2. **Customer App** (`components/customer/customer-shell.tsx`):
         - Browsing, menus, QR table sessions, multi-stall cart, checkout, order tracking, and diner profile (`/home`, `/menu`, `/orders`, `/profile`, `/scan`, `/shop/[slug]`, `/results`).
         - Bottom navigation strictly exposes customer views (Home, Menu, Orders, Profile).
-        - Does NOT expose stall dashboard, ticket processing, menu editing, staff management, or owner analytics.
+        - Guest mode ("Continue as guest") in `/auth` is strictly gated to customer intent (`/home`, `/menu`, `/orders`, `/scan`, `/shop/`, `/results`); it does NOT apply when signing in from the public marketing site or merchant onboarding.
      3. **Hawker Stall App** (`components/stall/stall-shell.tsx` & `components/stall/stall-guard.tsx`):
         - Tailored for stall workers & chefs operating kitchen display systems (`/stall`, `/owner`, `/owner/orders`, `/owner/menu`, `/owner/profile`).
-        - Dark-mode high-contrast KDS bottom navigation (Tickets, Menu 86, Overview, Profile).
-        - Strictly isolated: stall workers only see and modify their assigned stall's orders and dishes.
-        - Cross-access prevented: customers and unauthorized users are blocked by `StallGuard` and redirected.
+        - Stall access is **strictly email-invite only** via cryptographic invitation tokens dispatched by food hall venue operators (`/booths/join?token=...`).
+        - Added dedicated interactive FAQ on the landing page explaining that stalls cannot self-register publicly without an operator invitation.
      4. **Hawker Shop Owner App** (`components/owner/owner-shell.tsx` & `components/owner/owner-guard.tsx`):
         - Reserved for venue operators and hawker centre business owners (`/shop-owner`, `/shop-owner/booths`, `/shop-owner/analytics`, `/shop-owner/profile`, `/booths`, `/analytics`).
-        - Dedicated business navigation (Booths & Invites, Financial Analytics, Venue Settings).
-        - Protected by `OwnerGuard`: customers and stall workers without venue ownership are redirected to `/apply`.
-   - Refactored root `components/app-shell.tsx` into a lightweight multi-client dispatcher using `PermissionEngine.getClientForPath(pathname)`.
+        - Registration button on `/apply` simplified to "Sign Up".
 
-2. **Decoupled Platform SDK (`lib/shared/`)**:
-   - Designed for 100% portability across Web, iOS, and Android (React Native / Expo):
-     - `lib/shared/types.ts`: Clean domain entities separating personal user identity (`UserProfile`) from business entities (`RestaurantEntity`, `FoodOutletEntity`, `DishEntity`, `MerchantOrderEntity`) and memberships (`RestaurantMembershipEntity`, `MerchantMembershipEntity`).
-     - `lib/shared/permissions.ts`: Pure TypeScript `PermissionEngine` evaluating client capabilities, route authorization, and cross-stall/cross-shop boundaries.
-     - `lib/shared/api-client.ts`: Modular API client layer with client-specific namespaces (`customerApi`, `stallApi`, `ownerApi`).
-
-3. **Backend Authorization & Security Hardening**:
-   - Fixed `app/api/owner/analytics/route.ts`: Enforced strict `restaurant_memberships` role check (`owner`, `manager`). Stall workers and customers calling shop analytics now receive `403 Forbidden`. Removed all dev fallback leaks.
-   - Fixed `app/api/owner/dishes/route.ts`: Removed insecure POST bypass and fallback mock data in GET. Unauthorized users receive `403 Forbidden`.
-   - Fixed `app/api/owner/orders/route.ts`: Returns `403 Forbidden` if requester lacks stall/shop memberships.
-   - Created Supabase migration `supabase/migrations/010_multi_client_authorization.sql` enforcing PostgreSQL Row Level Security (RLS) for restaurants, food outlets, dishes, and merchant orders.
-
-4. **Automated Verification & Testing**:
-   - Added `lib/multi-client-architecture.test.ts` covering path resolution, client boundaries, cross-stall isolation, cross-shop isolation, and unauthenticated redirects.
-   - All 13 unit tests pass (`npm test`).
+2. **Automated Verification & Testing**:
+   - `lib/auth-onboarding.test.ts`: Added unit tests verifying `isCustomerIntent` route classification, marketing nav role detection, dashboard visibility gating, dual-role dropdown handling, and shop-only "Start Free" visibility.
+   - `lib/multi-client-architecture.test.ts`: Client path resolution, client boundaries, cross-stall isolation, cross-shop isolation, and unauthenticated redirects.
+   - All 15 tests pass (`npm test`).
    - TypeScript verification (`npx tsc --noEmit`) passes with 0 errors.
    - ESLint (`npm run lint`) passes with 0 errors.
    - Production build (`npm run build`) compiles all 44 routes successfully.

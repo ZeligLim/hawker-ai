@@ -234,8 +234,7 @@ export default function ApplyPage() {
                 href="/auth?mode=signup&redirect=/apply"
                 className="w-full sm:w-auto flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full text-sm font-semibold text-white bg-[#0071e3] hover:bg-[#0077ed] transition-all shadow-sm"
               >
-                Sign Up as Hawker Owner
-                <ArrowRight className="w-4 h-4" />
+                Sign Up
               </Link>
               <Link
                 href="/auth?mode=signin&redirect=/apply"

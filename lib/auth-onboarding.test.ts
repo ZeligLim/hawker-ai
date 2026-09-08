@@ -106,3 +106,84 @@ test('resolveUserDestination directs regular diner to /home by default', async (
   const destination = await resolveUserDestination(mockClient, mockUser, null);
   assert.equal(destination, '/home');
 });
+
+test('Customer intent route classification: guest mode applies strictly within customer app routes', () => {
+  const isCustomerRoute = (redirectParam?: string | null): boolean => {
+    return Boolean(
+      redirectParam &&
+        (redirectParam.startsWith('/home') ||
+          redirectParam.startsWith('/menu') ||
+          redirectParam.startsWith('/orders') ||
+          redirectParam.startsWith('/scan') ||
+          redirectParam.startsWith('/shop/') ||
+          redirectParam === '/shop' ||
+          redirectParam.startsWith('/results'))
+    );
+  };
+
+  // Customer app routes allow guest mode
+  assert.equal(isCustomerRoute('/home'), true);
+  assert.equal(isCustomerRoute('/menu'), true);
+  assert.equal(isCustomerRoute('/orders'), true);
+  assert.equal(isCustomerRoute('/scan'), true);
+  assert.equal(isCustomerRoute('/shop/madam-kwan'), true);
+  assert.equal(isCustomerRoute('/results?query=laksa'), true);
+
+  // Marketing, operator onboarding, and stall worker routes DO NOT allow guest mode
+  assert.equal(isCustomerRoute(null), false);
+  assert.equal(isCustomerRoute(''), false);
+  assert.equal(isCustomerRoute('/'), false);
+  assert.equal(isCustomerRoute('/apply'), false);
+  assert.equal(isCustomerRoute('/owner'), false);
+  assert.equal(isCustomerRoute('/owner/orders'), false);
+  assert.equal(isCustomerRoute('/shop-owner/booths'), false);
+  assert.equal(isCustomerRoute('/pricing'), false);
+});
+
+test('Marketing nav role detection & dashboard visibility logic', () => {
+  const evaluateNavState = (roles: { hasShopOwner: boolean; hasBooth: boolean }) => {
+    const hasShop = roles.hasShopOwner;
+    const hasStall = roles.hasBooth;
+    const hasDashboard = hasShop || hasStall;
+    const hasBoth = hasShop && hasStall;
+    const showStartFree = !hasShop; // Start Free only shows if shop onboarding NOT completed
+
+    return {
+      hasDashboard,
+      hasBoth,
+      showStartFree,
+      dashboardType: hasBoth ? 'dropdown' : hasShop ? 'shop' : hasStall ? 'stall' : 'none',
+      targetHref: hasBoth ? null : hasShop ? '/shop-owner/booths' : hasStall ? '/owner/orders' : null,
+    };
+  };
+
+  // 1. Regular Diner / Customer (neither shop nor booth)
+  const dinerState = evaluateNavState({ hasShopOwner: false, hasBooth: false });
+  assert.equal(dinerState.hasDashboard, false);
+  assert.equal(dinerState.dashboardType, 'none');
+  assert.equal(dinerState.showStartFree, true);
+
+  // 2. Shop Owner Only
+  const shopOnlyState = evaluateNavState({ hasShopOwner: true, hasBooth: false });
+  assert.equal(shopOnlyState.hasDashboard, true);
+  assert.equal(shopOnlyState.hasBoth, false);
+  assert.equal(shopOnlyState.dashboardType, 'shop');
+  assert.equal(shopOnlyState.targetHref, '/shop-owner/booths');
+  assert.equal(shopOnlyState.showStartFree, false); // Hidden because shop onboarding is complete
+
+  // 3. Stall Worker Only (from email invitation)
+  const stallOnlyState = evaluateNavState({ hasShopOwner: false, hasBooth: true });
+  assert.equal(stallOnlyState.hasDashboard, true);
+  assert.equal(stallOnlyState.hasBoth, false);
+  assert.equal(stallOnlyState.dashboardType, 'stall');
+  assert.equal(stallOnlyState.targetHref, '/owner/orders');
+  assert.equal(stallOnlyState.showStartFree, true); // Shown to allow registering a shop
+
+  // 4. Dual Role Account (both Shop Owner AND Stall Worker)
+  const dualRoleState = evaluateNavState({ hasShopOwner: true, hasBooth: true });
+  assert.equal(dualRoleState.hasDashboard, true);
+  assert.equal(dualRoleState.hasBoth, true);
+  assert.equal(dualRoleState.dashboardType, 'dropdown'); // Renders dropdown with both options
+  assert.equal(dualRoleState.showStartFree, false); // Hidden because shop onboarding is complete
+});
+

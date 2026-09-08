@@ -3,9 +3,11 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { MarketingNav } from '@/components/marketing-nav';
+import { useAuth } from '@/components/auth-provider';
 import {
   ArrowRight,
   ChevronRight,
+  ChevronDown,
   Check,
   Store,
   UtensilsCrossed,
@@ -34,13 +36,50 @@ import {
   CreditCard,
   Building2,
   KeyRound,
+  HelpCircle,
+  Mail,
 } from 'lucide-react';
 
 export default function LandingPage() {
+  const { user, status, roles } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeShowcaseTab, setActiveShowcaseTab] = useState<'operator' | 'kitchen' | 'customer'>('operator');
   const [activeAiIndex, setActiveAiIndex] = useState(0);
   const [copiedInvite, setCopiedInvite] = useState(false);
+  const [openFaq, setOpenFaq] = useState<number | null>(0);
+
+  const faqs = [
+    {
+      question: 'How do hawker stall vendors join the platform?',
+      answer:
+        'Hawker stall vendors join strictly via private email invitation dispatched by their food court or hawker centre operator. Individual stall vendors cannot register directly from the public landing page. Your food hall operator registers the physical venue first, assigns designated booth slots, and generates secure 1-click invitation links sent directly to vendor emails.',
+    },
+    {
+      question: "Who is the 'Start Free' registration on the landing page for?",
+      answer:
+        "'Start Free' is exclusively for Hawker Centre / Food Hall Shop Owners and Venue Operators who manage dining halls, seating areas, and overall food court infrastructure. If you operate a physical multi-stall venue, you can sign up, name your food hall, and begin issuing stall invitations in under 15 minutes.",
+    },
+    {
+      question: 'Can an individual food stall sign up without a venue operator invitation?',
+      answer:
+        'No. Hawker is built around a unified multi-tenant experience that powers multi-stall customer carts and shared table QR sessions (where diners can order from multiple stalls in a single checkout). For orders and payments to route accurately, every stall must belong to an authorized venue registered by an operator.',
+    },
+    {
+      question: 'I received an email invitation for my booth. How do I get started?',
+      answer:
+        'Simply click the private invitation link received in your email (/booths/join?token=...). You will be prompted to create or sign into your merchant account, claim your booth slot, customize your menu items with price variations and photos, and immediately start receiving live customer tickets on your digital Kitchen Display System (KDS).',
+    },
+    {
+      question: 'What is the difference between a Shop Owner and a Stall Worker?',
+      answer:
+        'A Shop Owner (Venue Operator) manages the physical food hall: generating QR table stickers, allocating booth slots, inviting stall workers, and reviewing venue-wide revenue. A Stall Worker (Chef / Vendor) runs an individual kitchen: receiving live orders, updating ticket statuses, marking sold-out dishes, and triggering 1-tap automated refunds.',
+    },
+    {
+      question: 'Are there any upfront hardware costs or monthly subscription fees?',
+      answer:
+        'None. Hawker requires zero monthly subscriptions, zero upfront software licenses, and zero proprietary hardware terminals. Kitchen staff can use existing Android phones, iPads, or tablets. We operate on a transparent transaction cut—meaning we only earn when your venue and stalls make sales.',
+    },
+  ];
 
   const handleCopyCode = () => {
     setCopiedInvite(true);
@@ -141,13 +180,23 @@ export default function LandingPage() {
 
           {/* Apple Call to Actions */}
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3.5">
-            <Link
-              href={'/apply' as any}
-              className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-3 rounded-full text-sm font-medium text-white bg-[#0071e3] hover:bg-[#0077ed] transition-all shadow-[0_2px_10px_rgba(0,113,227,0.25)] hover:shadow-[0_4px_16px_rgba(0,113,227,0.35)]"
-            >
-              Start Free
-              <ArrowRight className="w-4 h-4 ml-2" />
-            </Link>
+            {roles.hasShopOwner ? (
+              <Link
+                href="/shop-owner/booths"
+                className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-3 rounded-full text-sm font-medium text-white bg-[#1d1d1f] hover:bg-black transition-all shadow-[0_2px_10px_rgba(0,0,0,0.15)]"
+              >
+                Go to Shop Dashboard
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </Link>
+            ) : (
+              <Link
+                href={'/apply' as any}
+                className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-3 rounded-full text-sm font-medium text-white bg-[#0071e3] hover:bg-[#0077ed] transition-all shadow-[0_2px_10px_rgba(0,113,227,0.25)] hover:shadow-[0_4px_16px_rgba(0,113,227,0.35)]"
+              >
+                Start Free
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </Link>
+            )}
             <a
               href="#product"
               className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3 rounded-full text-sm font-medium text-[#1d1d1f] bg-white/90 border border-black/[0.1] hover:bg-white hover:border-black/[0.2] transition-all shadow-sm"
@@ -1034,13 +1083,23 @@ export default function LandingPage() {
               </div>
 
               <div className="mt-8 pt-6 border-t border-black/[0.06]">
-                <Link
-                  href={'/apply' as any}
-                  className="w-full inline-flex items-center justify-center py-3 rounded-full text-sm font-semibold bg-[#1d1d1f] text-white hover:bg-black transition-colors"
-                >
-                  Start Free as Shop Owner
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </Link>
+                {roles.hasShopOwner ? (
+                  <Link
+                    href="/shop-owner/booths"
+                    className="w-full inline-flex items-center justify-center py-3 rounded-full text-sm font-semibold bg-[#1d1d1f] text-white hover:bg-black transition-colors"
+                  >
+                    Open Shop Dashboard
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </Link>
+                ) : (
+                  <Link
+                    href={'/apply' as any}
+                    className="w-full inline-flex items-center justify-center py-3 rounded-full text-sm font-semibold bg-[#1d1d1f] text-white hover:bg-black transition-colors"
+                  >
+                    Start Free as Shop Owner
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </Link>
+                )}
               </div>
             </div>
 
@@ -1218,13 +1277,23 @@ export default function LandingPage() {
                 <span className="text-xs text-[#a1a1a6]">
                   Zero lock-in contracts &bull; 100% free to start today
                 </span>
-                <Link
-                  href={'/apply' as any}
-                  className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3 rounded-full text-xs font-semibold bg-[#0071e3] text-white hover:bg-[#0077ed] transition-all shadow-lg hover:shadow-[#0071e3]/25"
-                >
-                  Start Free for RM 0
-                  <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
-                </Link>
+                {roles.hasShopOwner ? (
+                  <Link
+                    href="/shop-owner/booths"
+                    className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3 rounded-full text-xs font-semibold bg-white text-[#1d1d1f] hover:bg-white/90 transition-all shadow-lg"
+                  >
+                    Open Shop Dashboard
+                    <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
+                  </Link>
+                ) : (
+                  <Link
+                    href={'/apply' as any}
+                    className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3 rounded-full text-xs font-semibold bg-[#0071e3] text-white hover:bg-[#0077ed] transition-all shadow-lg hover:shadow-[#0071e3]/25"
+                  >
+                    Start Free for RM 0
+                    <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
+                  </Link>
+                )}
               </div>
             </div>
           </div>
@@ -1292,6 +1361,80 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* ── FREQUENTLY ASKED QUESTIONS (FAQ) ── */}
+      <section id="faq" className="py-24 sm:py-32 bg-[#f5f5f7] border-t border-black/[0.06]">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-2xl mx-auto mb-16">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0071e3]/10 text-[#0071e3] text-xs font-semibold mb-4">
+              <HelpCircle className="w-3.5 h-3.5" />
+              Frequently Asked Questions
+            </div>
+            <h2 className="text-3xl sm:text-5xl font-semibold tracking-[-0.035em] text-[#1d1d1f]">
+              Everything you need to know.
+            </h2>
+            <p className="mt-4 text-base text-[#6e6e73]">
+              Clear answers on venue setup, stall email invitations, and our zero-subscription model.
+            </p>
+          </div>
+
+          <div className="space-y-4">
+            {faqs.map((faq, index) => {
+              const isOpen = openFaq === index;
+              return (
+                <div
+                  key={faq.question}
+                  className="bg-white rounded-2xl border border-black/[0.06] shadow-sm transition-all overflow-hidden"
+                >
+                  <button
+                    type="button"
+                    onClick={() => setOpenFaq(isOpen ? null : index)}
+                    className="w-full py-5 px-6 sm:px-8 flex items-center justify-between text-left gap-4 hover:bg-black/[0.01] transition-colors"
+                    aria-expanded={isOpen}
+                  >
+                    <span className="font-semibold text-base sm:text-lg text-[#1d1d1f] leading-snug">
+                      {faq.question}
+                    </span>
+                    <span
+                      className={`w-7 h-7 rounded-full bg-black/5 flex items-center justify-center shrink-0 text-[#1d1d1f] transition-transform duration-200 ${
+                        isOpen ? 'rotate-180 bg-black/10' : ''
+                      }`}
+                    >
+                      <ChevronDown className="w-4 h-4" />
+                    </span>
+                  </button>
+                  {isOpen && (
+                    <div className="px-6 sm:px-8 pb-6 text-sm sm:text-base text-[#6e6e73] leading-relaxed border-t border-black/[0.04] pt-4">
+                      {faq.answer}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Callout box specifically emphasizing Stall Email Invitations */}
+          <div className="mt-12 bg-white rounded-3xl border border-black/[0.08] p-6 sm:p-8 flex flex-col sm:flex-row items-center gap-6 shadow-sm">
+            <div className="w-12 h-12 rounded-2xl bg-[#0071e3]/10 text-[#0071e3] flex items-center justify-center shrink-0">
+              <Mail className="w-6 h-6" />
+            </div>
+            <div className="flex-1 text-center sm:text-left">
+              <h3 className="text-base font-semibold text-[#1d1d1f]">
+                Are you a stall vendor or hawker master?
+              </h3>
+              <p className="text-xs sm:text-sm text-[#6e6e73] mt-1 leading-relaxed">
+                Stalls join exclusively via private email invitation dispatched by your food hall operator. Check your inbox for your unique activation link, or ask your venue manager to dispatch a booth invite token.
+              </p>
+            </div>
+            <a
+              href="#how-it-works"
+              className="shrink-0 px-5 py-2.5 rounded-full text-xs font-semibold bg-[#1d1d1f] text-white hover:bg-black transition-colors"
+            >
+              See Invite Flow
+            </a>
+          </div>
+        </div>
+      </section>
+
       {/* ── CINEMATIC FINAL CTA (Apple Keynote Style) ── */}
       <section className="py-24 sm:py-32 bg-[#1d1d1f] text-white text-center relative overflow-hidden">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -1306,12 +1449,21 @@ export default function LandingPage() {
           </p>
 
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-3.5">
-            <Link
-              href={'/apply' as any}
-              className="w-full sm:w-auto px-8 py-3.5 rounded-full text-sm font-semibold bg-[#0071e3] text-white hover:bg-[#0077ed] transition-all shadow-[0_4px_20px_rgba(0,113,227,0.35)]"
-            >
-              Start Free
-            </Link>
+            {roles.hasShopOwner ? (
+              <Link
+                href="/shop-owner/booths"
+                className="w-full sm:w-auto px-8 py-3.5 rounded-full text-sm font-semibold bg-white text-[#1d1d1f] hover:bg-white/90 transition-all shadow-sm"
+              >
+                Go to Shop Dashboard
+              </Link>
+            ) : (
+              <Link
+                href={'/apply' as any}
+                className="w-full sm:w-auto px-8 py-3.5 rounded-full text-sm font-semibold bg-[#0071e3] text-white hover:bg-[#0077ed] transition-all shadow-[0_4px_20px_rgba(0,113,227,0.35)]"
+              >
+                Start Free
+              </Link>
+            )}
             <Link
               href="/pricing"
               className="w-full sm:w-auto px-7 py-3.5 rounded-full text-sm font-semibold bg-white/10 hover:bg-white/15 text-white border border-white/10 transition-all"
@@ -1348,6 +1500,7 @@ export default function LandingPage() {
                 <li><a href="#features" className="hover:text-[#1d1d1f] transition-colors">Kitchen Display (KDS)</a></li>
                 <li><a href="#features" className="hover:text-[#1d1d1f] transition-colors">Multi-Stall QR Cart</a></li>
                 <li><a href="#intelligence" className="hover:text-[#1d1d1f] transition-colors">AI Discovery Engine</a></li>
+                <li><a href="#faq" className="hover:text-[#1d1d1f] transition-colors">FAQ (Stall Invites & Pricing)</a></li>
                 <li><Link href="/pricing" className="hover:text-[#1d1d1f] transition-colors">Pricing & Model</Link></li>
               </ul>
             </div>
@@ -1355,7 +1508,17 @@ export default function LandingPage() {
             <div>
               <p className="font-semibold text-[#1d1d1f] mb-3">Operators</p>
               <ul className="space-y-2.5">
-                <li><Link href={'/apply' as any} className="hover:text-[#1d1d1f] transition-colors">Start Free (Shop Owner)</Link></li>
+                <li>
+                  {roles.hasShopOwner ? (
+                    <Link href="/shop-owner/booths" className="hover:text-[#1d1d1f] transition-colors">
+                      Shop Dashboard
+                    </Link>
+                  ) : (
+                    <Link href={'/apply' as any} className="hover:text-[#1d1d1f] transition-colors">
+                      Start Free (Shop Owner)
+                    </Link>
+                  )}
+                </li>
                 <li><a href="#how-it-works" className="hover:text-[#1d1d1f] transition-colors">Booth Invitation Keys</a></li>
                 <li><a href="#roles" className="hover:text-[#1d1d1f] transition-colors">Revenue Reconciliation</a></li>
                 <li><a href="#product" className="hover:text-[#1d1d1f] transition-colors">Table Session Manager</a></li>

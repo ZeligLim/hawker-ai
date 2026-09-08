@@ -7,6 +7,7 @@ import {
   ChevronDown,
   ClipboardList,
   CookingPot,
+  HelpCircle,
   LayoutDashboard,
   LogOut,
   Menu as MenuIcon,
@@ -27,30 +28,37 @@ export function MarketingNav({ currentPath = '/' }: MarketingNavProps) {
   const { user, status, profile, roles, signOut } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [accountDropdownOpen, setAccountDropdownOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [dashboardDropdownOpen, setDashboardDropdownOpen] = useState(false);
 
-  // Close dropdown on outside click
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const dashboardDropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdowns on outside click
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setAccountDropdownOpen(false);
       }
+      if (dashboardDropdownRef.current && !dashboardDropdownRef.current.contains(event.target as Node)) {
+        setDashboardDropdownOpen(false);
+      }
     }
 
-    if (accountDropdownOpen) {
+    if (accountDropdownOpen || dashboardDropdownOpen) {
       document.addEventListener('mousedown', handleClickOutside);
     }
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [accountDropdownOpen]);
+  }, [accountDropdownOpen, dashboardDropdownOpen]);
 
-  // Close mobile menu on ESC
+  // Close menus on ESC
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       if (e.key === 'Escape') {
         setMobileMenuOpen(false);
         setAccountDropdownOpen(false);
+        setDashboardDropdownOpen(false);
       }
     }
     window.addEventListener('keydown', handleKeyDown);
@@ -59,6 +67,12 @@ export function MarketingNav({ currentPath = '/' }: MarketingNavProps) {
 
   const isAuthenticated = status === 'authenticated' && Boolean(user);
   const isLoading = status === 'loading';
+
+  // Role capability checks
+  const hasShop = roles.hasShopOwner;
+  const hasStall = roles.hasBooth;
+  const hasDashboard = hasShop || hasStall;
+  const hasBoth = hasShop && hasStall;
 
   const displayName =
     profile?.displayName ||
@@ -75,21 +89,9 @@ export function MarketingNav({ currentPath = '/' }: MarketingNavProps) {
     .map((part: string) => part[0]?.toUpperCase())
     .join('') || 'H';
 
-  // Primary destination for logged-in user
-  const dashboardHref = roles.hasShopOwner
-    ? '/shop-owner/booths'
-    : roles.hasBooth
-      ? '/owner'
-      : '/home';
-
-  const dashboardLabel = roles.hasShopOwner
-    ? 'Shop Dashboard'
-    : roles.hasBooth
-      ? 'Kitchen KDS'
-      : 'Dashboard';
-
   const handleSignOut = async () => {
     setAccountDropdownOpen(false);
+    setDashboardDropdownOpen(false);
     setMobileMenuOpen(false);
     await signOut();
   };
@@ -106,13 +108,17 @@ export function MarketingNav({ currentPath = '/' }: MarketingNavProps) {
         </Link>
 
         {/* Desktop Nav Items */}
-        <div className="hidden md:flex items-center gap-8 text-[13px] font-medium text-[#1d1d1f]/75">
+        <div className="hidden md:flex items-center gap-7 text-[13px] font-medium text-[#1d1d1f]/75">
           <Link href="/#product" className="hover:text-[#1d1d1f] transition-colors">Platform</Link>
           <Link href="/#features" className="hover:text-[#1d1d1f] transition-colors">Features</Link>
           <Link href="/#how-it-works" className="hover:text-[#1d1d1f] transition-colors">How It Works</Link>
           <Link href="/#intelligence" className="hover:text-[#1d1d1f] transition-colors">AI Discovery</Link>
+          <Link href="/#faq" className="hover:text-[#1d1d1f] transition-colors">FAQ</Link>
           <Link href="/#roles" className="hover:text-[#1d1d1f] transition-colors">Solutions</Link>
-          <Link href="/pricing" className={`transition-colors ${currentPath === '/pricing' || currentPath === '/plans' ? 'text-[#1d1d1f] font-semibold' : 'hover:text-[#1d1d1f]'}`}>
+          <Link
+            href="/pricing"
+            className={`transition-colors ${currentPath === '/pricing' || currentPath === '/plans' ? 'text-[#1d1d1f] font-semibold' : 'hover:text-[#1d1d1f]'}`}
+          >
             Pricing
           </Link>
         </div>
@@ -126,31 +132,102 @@ export function MarketingNav({ currentPath = '/' }: MarketingNavProps) {
             </div>
           ) : isAuthenticated ? (
             <>
-              {/* If user is not yet a shop owner, provide direct Start Free CTA */}
+              {/* Only show 'Start Free' if shop onboarding is NOT completed */}
               {!roles.hasShopOwner && (
                 <Link
                   href={'/apply' as any}
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#0071e3] bg-[#0071e3]/10 hover:bg-[#0071e3]/15 px-3 py-1.5 rounded-full transition-all"
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#0071e3] bg-[#0071e3]/10 hover:bg-[#0071e3]/15 px-3.5 py-1.5 rounded-full transition-all"
                 >
                   <PlusCircle className="w-3.5 h-3.5" />
                   Start Free
                 </Link>
               )}
 
-              {/* Direct Dashboard Link */}
-              <Link
-                href={dashboardHref as any}
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-white bg-[#1d1d1f] hover:bg-black px-3.5 py-1.5 rounded-full shadow-sm transition-all"
-              >
-                <LayoutDashboard className="w-3.5 h-3.5" />
-                {dashboardLabel}
-              </Link>
+              {/* Only show 'Dashboard' if shop onboarding OR stall setup completed */}
+              {hasDashboard && (
+                hasBoth ? (
+                  /* Both Shop and Booth: Show Dropdown */
+                  <div className="relative" ref={dashboardDropdownRef}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setDashboardDropdownOpen((prev) => !prev);
+                        setAccountDropdownOpen(false);
+                      }}
+                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-white bg-[#1d1d1f] hover:bg-black px-3.5 py-1.5 rounded-full shadow-sm transition-all"
+                      aria-expanded={dashboardDropdownOpen}
+                      aria-haspopup="menu"
+                    >
+                      <LayoutDashboard className="w-3.5 h-3.5" />
+                      <span>Dashboard</span>
+                      <ChevronDown
+                        className={`w-3 h-3 text-white/70 transition-transform ${dashboardDropdownOpen ? 'rotate-180' : ''}`}
+                      />
+                    </button>
+
+                    {dashboardDropdownOpen && (
+                      <div className="absolute right-0 mt-2 w-60 rounded-2xl bg-white border border-black/10 shadow-[0_12px_36px_rgba(0,0,0,0.12)] py-1.5 text-xs text-[#1d1d1f] z-50 animate-in fade-in zoom-in-95 duration-100">
+                        <div className="px-3.5 py-1.5 text-[10px] font-semibold text-[#86868b] uppercase tracking-wider border-b border-black/[0.04]">
+                          Choose Workspace
+                        </div>
+                        <Link
+                          href="/shop-owner/booths"
+                          onClick={() => setDashboardDropdownOpen(false)}
+                          className="flex items-center gap-3 px-3.5 py-2.5 hover:bg-black/[0.04] transition-colors"
+                        >
+                          <div className="w-7 h-7 rounded-lg bg-[#0071e3]/10 text-[#0071e3] flex items-center justify-center shrink-0">
+                            <Store className="w-4 h-4" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="font-semibold text-[#1d1d1f] leading-snug">Shop Dashboard</p>
+                            <p className="text-[10px] text-[#86868b] truncate">{roles.shops?.[0]?.name || 'Food Hall Venue'}</p>
+                          </div>
+                        </Link>
+                        <Link
+                          href="/owner/orders"
+                          onClick={() => setDashboardDropdownOpen(false)}
+                          className="flex items-center gap-3 px-3.5 py-2.5 hover:bg-black/[0.04] transition-colors"
+                        >
+                          <div className="w-7 h-7 rounded-lg bg-[#ff9500]/10 text-[#d97706] flex items-center justify-center shrink-0">
+                            <CookingPot className="w-4 h-4" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="font-semibold text-[#1d1d1f] leading-snug">Stall Kitchen (KDS)</p>
+                            <p className="text-[10px] text-[#86868b] truncate">{roles.booths?.[0]?.name || 'Live Tickets & Menu'}</p>
+                          </div>
+                        </Link>
+                      </div>
+                    )}
+                  </div>
+                ) : hasShop ? (
+                  /* Only Shop Owner */
+                  <Link
+                    href="/shop-owner/booths"
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-white bg-[#1d1d1f] hover:bg-black px-3.5 py-1.5 rounded-full shadow-sm transition-all"
+                  >
+                    <Store className="w-3.5 h-3.5" />
+                    Shop Dashboard
+                  </Link>
+                ) : (
+                  /* Only Stall Worker */
+                  <Link
+                    href="/owner/orders"
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-white bg-[#1d1d1f] hover:bg-black px-3.5 py-1.5 rounded-full shadow-sm transition-all"
+                  >
+                    <CookingPot className="w-3.5 h-3.5" />
+                    Stall Kitchen
+                  </Link>
+                )
+              )}
 
               {/* Account Dropdown Menu */}
               <div className="relative" ref={dropdownRef}>
                 <button
                   type="button"
-                  onClick={() => setAccountDropdownOpen((prev) => !prev)}
+                  onClick={() => {
+                    setAccountDropdownOpen((prev) => !prev);
+                    setDashboardDropdownOpen(false);
+                  }}
                   className="flex items-center gap-2 px-2.5 py-1 rounded-full border border-black/10 bg-white hover:bg-black/[0.03] transition-all text-xs font-medium text-[#1d1d1f] shadow-[0_1px_2px_rgba(0,0,0,0.04)]"
                   aria-expanded={accountDropdownOpen}
                   aria-haspopup="menu"
@@ -169,7 +246,13 @@ export function MarketingNav({ currentPath = '/' }: MarketingNavProps) {
                       {userEmail && <p className="text-[11px] text-[#6e6e73] truncate">{userEmail}</p>}
                       <div className="mt-1.5 flex items-center gap-1.5">
                         <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#30d158]/15 text-[#248a3d]">
-                          {roles.hasShopOwner ? 'Shop Owner' : roles.hasBooth ? 'Stall Merchant' : 'Diner'}
+                          {roles.hasShopOwner && roles.hasBooth
+                            ? 'Shop Owner & Merchant'
+                            : roles.hasShopOwner
+                              ? 'Shop Owner'
+                              : roles.hasBooth
+                                ? 'Stall Merchant'
+                                : 'Diner'}
                         </span>
                       </div>
                     </div>
@@ -255,13 +338,30 @@ export function MarketingNav({ currentPath = '/' }: MarketingNavProps) {
 
         {/* Mobile Hamburger Toggle */}
         <div className="flex sm:hidden items-center gap-2">
-          {isAuthenticated && (
-            <Link
-              href={dashboardHref as any}
-              className="text-[11px] font-semibold text-white bg-[#1d1d1f] px-2.5 py-1 rounded-full shadow-sm"
-            >
-              Dashboard
-            </Link>
+          {isAuthenticated && hasDashboard && (
+            hasBoth ? (
+              <button
+                type="button"
+                onClick={() => setMobileMenuOpen(true)}
+                className="text-[11px] font-semibold text-white bg-[#1d1d1f] px-2.5 py-1 rounded-full shadow-sm"
+              >
+                Dashboard
+              </button>
+            ) : hasShop ? (
+              <Link
+                href="/shop-owner/booths"
+                className="text-[11px] font-semibold text-white bg-[#1d1d1f] px-2.5 py-1 rounded-full shadow-sm"
+              >
+                Shop Dashboard
+              </Link>
+            ) : (
+              <Link
+                href="/owner/orders"
+                className="text-[11px] font-semibold text-white bg-[#1d1d1f] px-2.5 py-1 rounded-full shadow-sm"
+              >
+                Stall Kitchen
+              </Link>
+            )
           )}
           <button
             type="button"
@@ -296,6 +396,7 @@ export function MarketingNav({ currentPath = '/' }: MarketingNavProps) {
             <Link href="/#features" onClick={() => setMobileMenuOpen(false)} className="py-1">Features</Link>
             <Link href="/#how-it-works" onClick={() => setMobileMenuOpen(false)} className="py-1">How It Works</Link>
             <Link href="/#intelligence" onClick={() => setMobileMenuOpen(false)} className="py-1">AI Discovery</Link>
+            <Link href="/#faq" onClick={() => setMobileMenuOpen(false)} className="py-1">FAQ</Link>
             <Link href="/#roles" onClick={() => setMobileMenuOpen(false)} className="py-1">Solutions</Link>
             <Link href="/pricing" onClick={() => setMobileMenuOpen(false)} className="py-1">Pricing</Link>
           </div>
@@ -305,22 +406,59 @@ export function MarketingNav({ currentPath = '/' }: MarketingNavProps) {
               <div className="h-10 rounded-full bg-black/5 animate-pulse" />
             ) : isAuthenticated ? (
               <>
-                <Link
-                  href={dashboardHref as any}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="w-full text-center py-2.5 rounded-full text-sm font-semibold text-white bg-[#1d1d1f]"
-                >
-                  {dashboardLabel}
-                </Link>
+                {/* Mobile Dashboards: Only show if shop or booth is completed */}
+                {hasDashboard && (
+                  hasBoth ? (
+                    <div className="grid grid-cols-2 gap-2">
+                      <Link
+                        href="/shop-owner/booths"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="flex items-center justify-center gap-1.5 py-2.5 rounded-full text-xs font-semibold text-white bg-[#1d1d1f]"
+                      >
+                        <Store className="w-3.5 h-3.5" />
+                        Shop Dashboard
+                      </Link>
+                      <Link
+                        href="/owner/orders"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="flex items-center justify-center gap-1.5 py-2.5 rounded-full text-xs font-semibold text-white bg-[#1d1d1f]"
+                      >
+                        <CookingPot className="w-3.5 h-3.5" />
+                        Stall Kitchen
+                      </Link>
+                    </div>
+                  ) : hasShop ? (
+                    <Link
+                      href="/shop-owner/booths"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex items-center justify-center gap-2 w-full text-center py-2.5 rounded-full text-sm font-semibold text-white bg-[#1d1d1f]"
+                    >
+                      <Store className="w-4 h-4" />
+                      Shop Dashboard
+                    </Link>
+                  ) : (
+                    <Link
+                      href="/owner/orders"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex items-center justify-center gap-2 w-full text-center py-2.5 rounded-full text-sm font-semibold text-white bg-[#1d1d1f]"
+                    >
+                      <CookingPot className="w-4 h-4" />
+                      Stall Kitchen (KDS)
+                    </Link>
+                  )
+                )}
+
+                {/* 'Start Free' only if shop onboarding NOT completed */}
                 {!roles.hasShopOwner && (
                   <Link
                     href={'/apply' as any}
                     onClick={() => setMobileMenuOpen(false)}
                     className="w-full text-center py-2.5 rounded-full text-sm font-semibold text-white bg-[#0071e3]"
                   >
-                    Start Free (Shop Owner)
+                    Start Free (Register Shop)
                   </Link>
                 )}
+
                 <div className="grid grid-cols-2 gap-2 mt-1">
                   <Link
                     href="/profile"

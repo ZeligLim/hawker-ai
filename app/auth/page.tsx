@@ -28,6 +28,18 @@ function AuthForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectParam = searchParams.get('redirect') || searchParams.get('returnTo') || searchParams.get('next');
+  // Guest mode applies exclusively within the Customer App (table-side QR ordering)
+  // It does NOT apply when signing in from the public landing page or merchant onboarding.
+  const isCustomerIntent = Boolean(
+    redirectParam &&
+      (redirectParam.startsWith('/home') ||
+        redirectParam.startsWith('/menu') ||
+        redirectParam.startsWith('/orders') ||
+        redirectParam.startsWith('/scan') ||
+        redirectParam.startsWith('/shop/') ||
+        redirectParam === '/shop' ||
+        redirectParam.startsWith('/results'))
+  );
 
   useEffect(() => {
     if (redirectParam) {
@@ -137,14 +149,16 @@ function AuthForm() {
         Continue with Google
       </button>
 
-      <button
-        type="button"
-        onClick={() => void handleGuest()}
-        disabled={isGoogleLoading || isSubmitting}
-        className="mt-3 flex w-full items-center justify-center rounded-full border border-[#dfe1e6] bg-[#f5f5f7] px-4 py-3 text-sm font-medium text-[#1d1d1f] transition disabled:cursor-not-allowed disabled:opacity-60"
-      >
-        Continue as guest
-      </button>
+      {isCustomerIntent && (
+        <button
+          type="button"
+          onClick={() => void handleGuest()}
+          disabled={isGoogleLoading || isSubmitting}
+          className="mt-3 flex w-full items-center justify-center rounded-full border border-[#dfe1e6] bg-[#f5f5f7] px-4 py-3 text-sm font-medium text-[#1d1d1f] transition disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          Continue as guest
+        </button>
+      )}
 
       <div className="my-5 flex items-center gap-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#6e6e73]">
         <div className="h-px flex-1 bg-[#e5e7eb]" />
