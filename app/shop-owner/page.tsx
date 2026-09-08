@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { CalendarRange, Store, Users } from 'lucide-react';
+import { authenticatedFetch } from '@/lib/supabase/client';
 
 type ShopMembership = {
   id: string;
@@ -25,7 +26,7 @@ export default function ShopOwnerPage() {
   useEffect(() => {
     const loadShops = async () => {
       try {
-        const response = await fetch('/api/owner/shops');
+        const response = await authenticatedFetch('/api/owner/shops');
         if (!response.ok) {
           setShops([]);
           return;

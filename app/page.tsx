@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { MarketingNav } from '@/components/marketing-nav';
 import {
   ArrowRight,
   ChevronRight,
@@ -111,120 +112,8 @@ export default function LandingPage() {
         </Link>
       </div>
 
-      {/* ── Sticky Apple Navigation Bar ── */}
-      <nav className="sticky top-0 z-50 backdrop-blur-2xl bg-[#f5f5f7]/85 border-b border-black/[0.06] transition-all">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-12 sm:h-14 flex items-center justify-between">
-          {/* Brand */}
-          <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="w-7 h-7 rounded-lg bg-[#1d1d1f] text-white flex items-center justify-center font-black text-xs tracking-tighter shadow-sm group-hover:scale-105 transition-transform">
-              H
-            </div>
-            <span className="font-semibold text-base tracking-tight text-[#1d1d1f]">Hawker</span>
-          </Link>
-
-          {/* Desktop Nav Items */}
-          <div className="hidden md:flex items-center gap-8 text-[13px] font-medium text-[#1d1d1f]/75">
-            <a href="#product" className="hover:text-[#1d1d1f] transition-colors">
-              Platform
-            </a>
-            <a href="#features" className="hover:text-[#1d1d1f] transition-colors">
-              Features
-            </a>
-            <a href="#how-it-works" className="hover:text-[#1d1d1f] transition-colors">
-              How It Works
-            </a>
-            <a href="#intelligence" className="hover:text-[#1d1d1f] transition-colors">
-              AI Discovery
-            </a>
-            <a href="#roles" className="hover:text-[#1d1d1f] transition-colors">
-              Solutions
-            </a>
-            <a href="#pricing" className="hover:text-[#1d1d1f] transition-colors">
-              Pricing
-            </a>
-          </div>
-
-          {/* Right Action Buttons */}
-          <div className="hidden sm:flex items-center gap-3">
-            <Link
-              href="/auth"
-              className="text-xs font-medium text-[#1d1d1f]/80 hover:text-[#1d1d1f] px-3 py-1.5 rounded-full hover:bg-black/[0.04] transition-all"
-            >
-              Sign In
-            </Link>
-            <Link
-              href="/subscribe"
-              className="text-xs font-medium text-white bg-[#0071e3] hover:bg-[#0077ed] px-3.5 py-1.5 rounded-full shadow-[0_1px_2px_rgba(0,0,0,0.08)] transition-all hover:shadow"
-            >
-              Start Free
-            </Link>
-          </div>
-
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 text-[#1d1d1f] rounded-lg hover:bg-black/[0.05]"
-            aria-label="Toggle navigation menu"
-          >
-            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
-        </div>
-
-        {/* Mobile Dropdown */}
-        {mobileMenuOpen && (
-          <div className="md:hidden bg-white/95 backdrop-blur-2xl border-b border-black/[0.08] px-4 pt-3 pb-6 space-y-3">
-            <a
-              href="#product"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block py-2 text-sm font-medium text-[#1d1d1f] border-b border-black/[0.04]"
-            >
-              Platform Overview
-            </a>
-            <a
-              href="#features"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block py-2 text-sm font-medium text-[#1d1d1f] border-b border-black/[0.04]"
-            >
-              Features
-            </a>
-            <a
-              href="#how-it-works"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block py-2 text-sm font-medium text-[#1d1d1f] border-b border-black/[0.04]"
-            >
-              How It Works
-            </a>
-            <a
-              href="#intelligence"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block py-2 text-sm font-medium text-[#1d1d1f] border-b border-black/[0.04]"
-            >
-              AI Food Intelligence
-            </a>
-            <a
-              href="#pricing"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block py-2 text-sm font-medium text-[#1d1d1f] border-b border-black/[0.04]"
-            >
-              Pricing
-            </a>
-            <div className="pt-2 flex flex-col gap-2">
-              <Link
-                href="/subscribe"
-                className="w-full text-center py-2.5 rounded-full text-sm font-semibold text-white bg-[#0071e3]"
-              >
-                Start Free
-              </Link>
-              <Link
-                href="/auth"
-                className="w-full text-center py-2 rounded-full text-xs font-medium border border-black/10 bg-white"
-              >
-                Sign In
-              </Link>
-            </div>
-          </div>
-        )}
-      </nav>
+      {/* ── Sticky Navigation Bar (Auth-Aware) ── */}
+      <MarketingNav currentPath="/" />
 
       {/* ── HERO SECTION (Apple Product Hero) ── */}
       <section className="relative pt-12 pb-16 sm:pt-20 sm:pb-24 lg:pt-28 lg:pb-32 overflow-hidden">
@@ -253,10 +142,10 @@ export default function LandingPage() {
           {/* Apple Call to Actions */}
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3.5">
             <Link
-              href="/subscribe"
+              href={'/apply' as any}
               className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-3 rounded-full text-sm font-medium text-white bg-[#0071e3] hover:bg-[#0077ed] transition-all shadow-[0_2px_10px_rgba(0,113,227,0.25)] hover:shadow-[0_4px_16px_rgba(0,113,227,0.35)]"
             >
-              Get started for free
+              Apply / List Your Hawker Stall
               <ArrowRight className="w-4 h-4 ml-2" />
             </Link>
             <a
@@ -1185,9 +1074,13 @@ export default function LandingPage() {
               </div>
 
               <div className="mt-8 pt-6 border-t border-black/[0.06]">
-                <div className="w-full text-center py-3 rounded-full text-xs font-medium bg-[#f5f5f7] text-[#6e6e73] border border-black/[0.04]">
-                  Private invite-only via food hall operator token
-                </div>
+                <Link
+                  href={'/apply' as any}
+                  className="w-full inline-flex items-center justify-center py-3 rounded-full text-sm font-semibold bg-[#0071e3] text-white hover:bg-[#0077ed] transition-colors"
+                >
+                  Apply / List Your Stall
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Link>
               </div>
             </div>
           </div>
@@ -1476,6 +1369,7 @@ export default function LandingPage() {
             <div>
               <p className="font-semibold text-[#1d1d1f] mb-3">Merchants</p>
               <ul className="space-y-2.5">
+                <li><Link href={'/apply' as any} className="text-[#0071e3] font-semibold hover:underline">Apply / List Your Stall</Link></li>
                 <li><Link href="/auth?redirect=/owner" className="hover:text-[#1d1d1f] transition-colors">Merchant Sign In</Link></li>
                 <li><a href="#how-it-works" className="hover:text-[#1d1d1f] transition-colors">How Stalls Join (Invite Only)</a></li>
                 <li><a href="#features" className="hover:text-[#1d1d1f] transition-colors">Menu Customisations</a></li>

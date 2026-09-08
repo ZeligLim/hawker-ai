@@ -36,7 +36,8 @@ function AuthForm() {
   }, [redirectParam]);
 
   const { signInWithEmail, signInWithGoogle, signUpWithEmail, continueAsGuest } = useAuth();
-  const [mode, setMode] = useState<'signin' | 'signup'>('signin');
+  const modeParam = searchParams.get('mode');
+  const [mode, setMode] = useState<'signin' | 'signup'>(modeParam === 'signup' ? 'signup' : 'signin');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -77,7 +78,16 @@ function AuthForm() {
       }
 
       await signUpWithEmail(email.trim(), password);
-      setSuccess('Account created. Please check your inbox to confirm the email before signing in.');
+
+      // Check if session was automatically established upon signup
+      const session = (await supabase?.auth.getSession())?.data.session;
+      if (session?.user) {
+        const target = await resolveUserDestination(supabase, session.user, redirectParam);
+        router.replace(target as any);
+        return;
+      }
+
+      setSuccess('Account created. Please check your inbox to confirm your email before signing in.');
       setMode('signin');
       setPassword('');
     } catch (submitError) {

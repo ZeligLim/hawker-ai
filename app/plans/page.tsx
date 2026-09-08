@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { MarketingNav } from '@/components/marketing-nav';
 import {
   Check,
   ChevronRight,
@@ -137,31 +138,8 @@ const faqs = [
 export default function PlansPage() {
   return (
     <div className="min-h-screen bg-[#f5f5f7] text-[#1d1d1f] antialiased selection:bg-[#0071e3] selection:text-white">
-      {/* ── Apple Breadcrumb Navigation Header ── */}
-      <header className="sticky top-0 z-40 backdrop-blur-2xl bg-[#f5f5f7]/85 border-b border-black/[0.06]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 group text-xs font-medium text-[#6e6e73] hover:text-[#1d1d1f] transition-colors">
-            <span className="font-semibold text-sm text-[#1d1d1f]">Hawker</span>
-            <span className="text-black/20">/</span>
-            <span>Pricing</span>
-          </Link>
-
-          <div className="flex items-center gap-3">
-            <Link
-              href="/auth"
-              className="text-xs font-medium text-[#1d1d1f]/80 hover:text-[#1d1d1f] px-3 py-1.5 rounded-full hover:bg-black/[0.04] transition-all"
-            >
-              Sign In
-            </Link>
-            <Link
-              href="/subscribe"
-              className="text-xs font-medium text-white bg-[#0071e3] hover:bg-[#0077ed] px-3.5 py-1.5 rounded-full shadow-[0_1px_2px_rgba(0,0,0,0.08)] transition-all hover:shadow"
-            >
-              Get Started Free
-            </Link>
-          </div>
-        </div>
-      </header>
+      {/* ── Apple Breadcrumb Navigation Header (Auth-Aware) ── */}
+      <MarketingNav currentPath="/pricing" />
 
       {/* ── HERO BANNER ── */}
       <section className="pt-16 pb-12 sm:pt-24 sm:pb-16 text-center px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
@@ -244,10 +222,10 @@ export default function PlansPage() {
             </div>
 
             <Link
-              href="/subscribe"
+              href={'/apply' as any}
               className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-3.5 rounded-full text-sm font-semibold bg-[#0071e3] text-white hover:bg-[#0077ed] transition-all shadow-lg hover:shadow-xl shrink-0"
             >
-              Launch Your Food Hall for Free
+              Apply / Launch Your Stall
               <ArrowRight className="w-4 h-4 ml-2" />
             </Link>
           </div>
@@ -372,7 +350,7 @@ export default function PlansPage() {
 
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link
-              href="/subscribe"
+              href={'/apply' as any}
               className="w-full sm:w-auto px-8 py-3.5 rounded-full text-sm font-semibold bg-[#0071e3] text-white hover:bg-[#0077ed] transition-all shadow-lg"
             >
               Get Started for Free

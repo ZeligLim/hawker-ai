@@ -3,7 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import type { User } from '@supabase/supabase-js';
-import { supabase } from '@/lib/supabase/client';
+import { supabase, authenticatedFetch } from '@/lib/supabase/client';
 import {
   clearAuthRedirect,
   resolveAuthRedirect,
@@ -55,6 +55,7 @@ const publicRoutes = [
   '/plans',
   '/pricing',
   '/subscribe',
+  '/apply',
   '/home',
   '/menu',
   '/shop',
@@ -187,7 +188,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     try {
-      const res = await fetch('/api/user/roles');
+      const res = await authenticatedFetch('/api/user/roles');
       if (res.ok) {
         const data = await res.json();
         setRoles({
@@ -377,6 +378,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const client = supabase;
     if (!client) return;
+
+    setUser(null);
+    setStatus('unauthenticated');
+    setRoles({
+      isCustomer: true,
+      hasShopOwner: false,
+      hasBooth: false,
+      isLoading: false,
+      shops: [],
+      booths: [],
+    });
 
     const { error } = await client.auth.signOut();
     if (error) {

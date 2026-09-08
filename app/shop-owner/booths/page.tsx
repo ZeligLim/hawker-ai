@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { Check, Copy, KeyRound, LoaderCircle, Pencil, RefreshCw, Sparkles, Store, X } from 'lucide-react';
+import { authenticatedFetch } from '@/lib/supabase/client';
 
 type Booth = {
   id: string;
@@ -30,7 +31,7 @@ export default function ShopOwnerBoothsPage() {
 
   const loadShops = useCallback(async () => {
     try {
-      const response = await fetch('/api/owner/shops');
+      const response = await authenticatedFetch('/api/owner/shops');
       const payload = (await response.json()) as { shops?: ShopMembership[] };
       setShops(payload.shops ?? []);
       const defaultRestaurantId = payload.shops?.[0]?.id ?? '';
@@ -77,7 +78,7 @@ export default function ShopOwnerBoothsPage() {
     setIsGenerating(true);
     try {
       // 1. Provision the booth slot
-      const boothRes = await fetch('/api/owner/booths', {
+      const boothRes = await authenticatedFetch('/api/owner/booths', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

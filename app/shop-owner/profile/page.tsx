@@ -3,6 +3,7 @@
 import { Save } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { RoleModeSwitcher } from '@/components/role-mode-switcher';
+import { authenticatedFetch } from '@/lib/supabase/client';
 
 type Shop = {
   id: string;
@@ -23,7 +24,7 @@ export default function ShopOwnerProfilePage() {
 
   const loadShop = useCallback(async () => {
     try {
-      const response = await fetch('/api/owner/shops');
+      const response = await authenticatedFetch('/api/owner/shops');
       const payload = (await response.json()) as { shops?: Shop[] };
       const nextShop = payload.shops?.[0] ?? null;
       setShop(nextShop);
@@ -54,7 +55,7 @@ export default function ShopOwnerProfilePage() {
 
     setSaving(true);
     try {
-      const response = await fetch(`/api/owner/shops/${shop.id}`, {
+      const response = await authenticatedFetch(`/api/owner/shops/${shop.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -85,7 +86,7 @@ export default function ShopOwnerProfilePage() {
   const handleCreate = async () => {
     setCreating(true);
     try {
-      const response = await fetch('/api/owner/shops', {
+      const response = await authenticatedFetch('/api/owner/shops', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

@@ -1,18 +1,25 @@
 # Current Project Context
 
 ## Current Phase
-Phase 6: Strict Membership-Gated Role Switching & Invite-Only Booth Activation
+Phase 7: Authenticated UI State Synchronization & Dedicated Hawker Shop Onboarding Flow
 
 ## Current Feature
-Enforce strict separation of concerns and membership verification between Customer, Booth, and Shop Owner modes:
-1. Removed all public `/booths/join` links from the public landing page. Booth onboarding is strictly invite-only.
-2. Refactored booth slot creation: Shop owners do not create or configure stall brands/menus; they only provision booth slots and generate cryptographic invitation tokens.
-3. Booth vendors define their stall name, upload dishes, and configure their kitchen when redeeming their invitation token link (`/booths/join?token=...`).
-4. Implemented verified role switching:
-   - Customer mode: default for all users.
-   - Shop owner mode: ONLY visible if user has launched/applied for a shop owner account (`restaurant_memberships` exists).
-   - Booth account mode: ONLY visible if user has redeemed an invitation token from a shop owner (`merchant_memberships` exists).
-5. Removed arbitrary mode toggles in `/profile/settings`, `/profile`, `/owner/profile`, and `/shop-owner/profile`, replacing them with server-validated `<RoleModeSwitcher />` and route protection in `AuthProvider`.
+1. Fixed signed-in state reflection in UI:
+   - Built `<MarketingNav />` component with real-time authentication awareness.
+   - Replaced static unauthenticated navigation across landing page (`/`), pricing page (`/pricing`, `/plans`), and app entry points.
+   - When authenticated, navbar renders user initials avatar, user name, verified role badge (Shop Owner, Stall Merchant, Diner), contextual "Dashboard" link, and comprehensive Account Menu (Profile, Shop/Kitchen links, Discovery, Sign Out).
+   - Never flashes "Sign In" / "Sign Up" buttons when user is authenticated; uses skeleton pulse while hydrating session.
+   - Created `authenticatedFetch` in `lib/supabase/client.ts` to automatically attach Supabase session JWT in `Authorization: Bearer <token>` headers, resolving 401s on `/api/user/roles`, `/api/owner/shops`, and `/api/owner/booths`.
+2. Hawker Shop Application & Onboarding Flow (`/apply`):
+   - Separated the personal user account from the hawker shop/business entity.
+   - Direct gate for unauthenticated users with mode and return redirect preservation (`/auth?mode=signup&redirect=/apply` and `/auth?mode=signin&redirect=/apply`).
+   - Authenticated users skip auth and directly enter the 3-step stall onboarding form:
+     1. Stall & Business Profile (shop name, primary stall name, cuisine category)
+     2. Location & Operations (hawker centre name, address, contact WhatsApp/phone)
+     3. Activation & Status (`draft`, `pending_review`, `approved`, `rejected`, `suspended`)
+   - Guaranteed relationship: user → owns/manages (`restaurant_memberships` & `merchant_memberships`) → shop (`restaurants`) → stall (`food_outlets`) → menu items (`dishes`).
+   - Duplicate prevention & idempotency: checks existing memberships before provisioning. If user already owns a shop, renders direct links to existing dashboard (`/shop-owner/booths`) and kitchen (`/owner`) rather than creating duplicate shops.
+   - Added `009_shop_status.sql` documentation for shop lifecycle states.
 
 ## Completed
 - Next.js App Router foundation initialized
