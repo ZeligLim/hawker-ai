@@ -120,17 +120,23 @@ export async function GET(request: NextRequest) {
 
   const averageTicket = totalOrders > 0 ? totalRevenue / totalOrders : 0;
 
-  const booths = foodOutlets.map((outlet) => {
-    const metrics = boothMetrics.get(outlet.id) ?? { orders: 0, revenue: 0 };
-    return {
-      id: outlet.id,
-      name: outlet.name,
-      periodOrders: metrics.orders,
-      periodRevenue: metrics.revenue,
-    };
-  });
+  const booths = foodOutlets
+    .map((outlet) => {
+      const metrics = boothMetrics.get(outlet.id) ?? { orders: 0, revenue: 0 };
+      return {
+        id: outlet.id,
+        name: outlet.name,
+        periodOrders: metrics.orders,
+        periodRevenue: metrics.revenue,
+      };
+    })
+    .sort((a, b) => b.periodRevenue - a.periodRevenue);
 
   const maxRevenue = Math.max(...booths.map((b) => b.periodRevenue), 1);
+  const activeBoothCount = booths.filter((b) => b.periodOrders > 0).length;
+  const totalBooths = booths.length;
+  const platformFee = totalRevenue * 0.02 + totalOrders * 0.5;
+  const merchantPayout = Math.max(0, totalRevenue - platformFee);
 
   return NextResponse.json({
     totalRevenue,
@@ -138,5 +144,9 @@ export async function GET(request: NextRequest) {
     averageTicket,
     maxRevenue,
     booths,
+    activeBoothCount,
+    totalBooths,
+    platformFee,
+    merchantPayout,
   });
 }

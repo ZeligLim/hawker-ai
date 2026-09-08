@@ -24,24 +24,12 @@ export function ClientBottomNav({
 }: ClientBottomNavProps) {
   const pathname = usePathname();
 
-  // Color schemes for each client experience
-  const containerTheme = {
-    customer: 'bg-[#f7f7f7]/95 md:bg-white/95 border border-black/5 shadow-[0_8px_24px_rgba(17,17,17,0.08)] text-[#6e6e73]',
-    stall: 'bg-[#111827]/95 border border-white/10 shadow-[0_8px_28px_rgba(0,0,0,0.25)] text-white/70',
-    owner: 'bg-white/95 border border-black/5 shadow-[0_8px_24px_rgba(17,17,17,0.08)] text-[#6e6e73]',
-  }[theme];
+  // Unified modern Apple-inspired color scheme across all 3 apps
+  const containerTheme = 'bg-white/90 backdrop-blur-2xl border border-black/[0.08] shadow-[0_12px_32px_rgba(0,0,0,0.08)] text-[#6e6e73]';
 
-  const activeTheme = {
-    customer: 'bg-white text-[#1d1d1f] shadow-sm font-semibold',
-    stall: 'bg-white text-[#111827] shadow-sm font-semibold',
-    owner: 'bg-[#0071e3] text-white shadow-sm font-semibold',
-  }[theme];
+  const activeTheme = 'bg-[#111827] text-white shadow-sm font-semibold';
 
-  const inactiveTheme = {
-    customer: 'text-[#6e6e73] hover:text-[#1d1d1f]',
-    stall: 'text-white/70 hover:text-white',
-    owner: 'text-[#6e6e73] hover:text-[#1d1d1f]',
-  }[theme];
+  const inactiveTheme = 'text-[#86868b] hover:text-[#1d1d1f]';
 
   const gridColsClass = items.length === 3 ? 'grid-cols-3' : 'grid-cols-4';
 

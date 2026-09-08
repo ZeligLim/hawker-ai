@@ -284,19 +284,25 @@ export default function ShopOwnerBoothsPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#f5f5f7] px-4 pb-32 pt-5 text-[#1d1d1f]">
-      <div className="mx-auto max-w-[980px]">
+    <main className="min-h-screen bg-[#f5f5f7] px-4 pb-32 pt-5 sm:px-6 text-[#1d1d1f]">
+      <div className="mx-auto max-w-7xl">
         <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-semibold tracking-[-0.06em]">Booth Slots & Access</h1>
-            <p className="mt-1 text-sm text-[#6e6e73]">
+            <div className="inline-flex items-center gap-1.5 rounded-full bg-black/5 px-2.5 py-0.5 text-[11px] font-semibold text-[#1d1d1f] mb-1.5">
+              <Store className="w-3.5 h-3.5" />
+              <span>Stall Allocation</span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-semibold tracking-[-0.035em] text-[#1d1d1f]">
+              Booth Slots & Access
+            </h1>
+            <p className="mt-1 text-xs sm:text-sm text-[#6e6e73]">
               Send setup links to vendor emails. Only authorized emails can edit the store; removing an email revokes control immediately.
             </p>
           </div>
           <button
             type="button"
             onClick={handleOpenAddSlot}
-            className="inline-flex items-center gap-2 rounded-full bg-[#0071e3] px-5 py-2.5 text-xs font-semibold text-white shadow-sm hover:bg-[#0077ed] transition-all shrink-0"
+            className="inline-flex items-center justify-center gap-2 rounded-full bg-[#111827] px-5 py-2.5 text-xs font-semibold text-white shadow-sm hover:bg-black transition-all shrink-0"
           >
             <Plus className="h-3.5 w-3.5" /> Add Booth Slot
           </button>
@@ -305,10 +311,10 @@ export default function ShopOwnerBoothsPage() {
         <section className="mt-6 space-y-4">
           {loading ? (
             <div className="flex items-center justify-center p-12 text-[#6e6e73] text-sm">
-              <LoaderCircle className="h-4 w-4 animate-spin mr-2 text-[#0071e3]" /> Loading booths…
+              <LoaderCircle className="h-4 w-4 animate-spin mr-2 text-[#111827]" /> Loading booths…
             </div>
           ) : boothList.length === 0 ? (
-            <div className="rounded-[24px] bg-white p-8 text-center shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
+            <div className="rounded-[24px] bg-white p-8 text-center shadow-[0_12px_26px_rgba(15,23,42,0.04)] border border-black/[0.04]">
               <Store className="h-10 w-10 text-[#86868b] mx-auto mb-3" />
               <p className="text-base font-semibold text-[#1d1d1f]">No booth slots created yet</p>
               <p className="mt-1 text-xs text-[#6e6e73] max-w-sm mx-auto">
@@ -335,23 +341,23 @@ export default function ShopOwnerBoothsPage() {
               return (
                 <article
                   key={booth.id}
-                  className="rounded-[24px] bg-white p-5 shadow-[0_12px_26px_rgba(15,23,42,0.04)] border border-black/[0.04]"
+                  className="rounded-[24px] bg-white p-4 sm:p-5 shadow-[0_12px_26px_rgba(15,23,42,0.04)] border border-black/[0.04]"
                 >
                   {/* Booth Slot Header */}
                   <div className="flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#0071e3]/10 text-[#0071e3]">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-full bg-black/5 text-[#1d1d1f] shrink-0">
                         <Store className="h-5 w-5" />
                       </div>
-                      <div>
-                        <p className="text-base font-semibold text-[#1d1d1f]">{booth.name}</p>
-                        <p className="mt-0.5 text-xs text-[#6e6e73]">
+                      <div className="min-w-0">
+                        <p className="text-sm sm:text-base font-semibold text-[#1d1d1f] truncate">{booth.name}</p>
+                        <p className="text-[11px] text-[#6e6e73] truncate">
                           Role: {booth.manager ?? 'Shop owner'}
                         </p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span className="rounded-full bg-[#30d158]/15 px-2.5 py-1 text-xs font-semibold text-[#166534]">
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className="rounded-full bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-700">
                         {booth.status}
                       </span>
                       <button
@@ -361,7 +367,7 @@ export default function ShopOwnerBoothsPage() {
                         aria-label="Edit Slot"
                       >
                         <Pencil className="h-3 w-3" />
-                        <span className="hidden sm:inline">Edit Slot</span>
+                        <span className="hidden sm:inline">Edit</span>
                       </button>
                     </div>
                   </div>
@@ -391,14 +397,14 @@ export default function ShopOwnerBoothsPage() {
                             }
                           }}
                           placeholder="vendor@stall.com"
-                          className="w-full rounded-full border border-black/10 bg-white py-2 pl-9 pr-3 text-xs text-[#1d1d1f] placeholder:text-[#86868b] focus:border-[#0071e3] focus:outline-none"
+                          className="w-full rounded-full border border-black/10 bg-white py-2 pl-9 pr-3 text-xs text-[#1d1d1f] placeholder:text-[#86868b] focus:border-black/30 focus:outline-none"
                         />
                       </div>
                       <button
                         type="button"
                         disabled={isSending}
                         onClick={() => void handleSendSetupLink(booth.id)}
-                        className="inline-flex items-center justify-center gap-1.5 rounded-full bg-[#0071e3] px-3.5 sm:px-4 py-2 text-xs font-semibold text-white hover:bg-[#0077ed] disabled:opacity-50 transition-colors shrink-0 shadow-sm"
+                        className="inline-flex items-center justify-center gap-1.5 rounded-full bg-[#111827] px-3.5 sm:px-4 py-2 text-xs font-semibold text-white hover:bg-black disabled:opacity-50 transition-colors shrink-0 shadow-sm"
                         aria-label="Send setup link"
                       >
                         {isSending ? (
@@ -422,7 +428,7 @@ export default function ShopOwnerBoothsPage() {
                           {feedback.delivered ? (
                             <CheckCircle2 className="h-4 w-4 shrink-0 text-[#30d158]" />
                           ) : feedback.type === 'success' ? (
-                            <Mail className="h-4 w-4 shrink-0 text-[#0071e3]" />
+                            <Mail className="h-4 w-4 shrink-0 text-[#111827]" />
                           ) : null}
                           <span className="font-medium leading-snug">{feedback.message}</span>
                         </div>
@@ -430,7 +436,7 @@ export default function ShopOwnerBoothsPage() {
                           <button
                             type="button"
                             onClick={() => copyLink(feedback.link!, `feedback-${booth.id}`)}
-                            className="inline-flex items-center gap-1 font-semibold text-[#0071e3] hover:underline shrink-0"
+                            className="inline-flex items-center gap-1 font-semibold text-[#1d1d1f] hover:underline shrink-0"
                           >
                             {copiedLinks[`feedback-${booth.id}`] ? (
                               <>
@@ -451,7 +457,7 @@ export default function ShopOwnerBoothsPage() {
                   <div className="mt-4 pt-3 border-t border-black/[0.04]">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-1.5">
-                        <ShieldCheck className="h-3.5 w-3.5 text-[#0071e3]" />
+                        <ShieldCheck className="h-3.5 w-3.5 text-[#111827]" />
                         <span className="text-xs font-semibold text-[#1d1d1f]">
                           Authorized Store Access ({activeMembers.length + pendingInvites.length})
                         </span>
@@ -537,7 +543,7 @@ export default function ShopOwnerBoothsPage() {
                                       linkKey,
                                     )
                                   }
-                                  className="inline-flex items-center gap-1 text-[11px] font-medium text-[#0071e3] hover:underline px-1.5 py-1"
+                                  className="inline-flex items-center gap-1 text-[11px] font-medium text-[#1d1d1f] hover:underline px-1.5 py-1"
                                 >
                                   {isCopied ? (
                                     <>
@@ -584,8 +590,8 @@ export default function ShopOwnerBoothsPage() {
           <div className="w-full max-w-md rounded-[28px] bg-white p-6 shadow-2xl">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Store className="h-5 w-5 text-[#0071e3]" />
-                <h2 className="text-xl font-semibold tracking-tight">Add Booth Slot</h2>
+                <Store className="h-5 w-5 text-[#111827]" />
+                <h2 className="text-xl font-semibold tracking-tight text-[#1d1d1f]">Add Booth Slot</h2>
               </div>
               <button
                 type="button"
@@ -606,7 +612,7 @@ export default function ShopOwnerBoothsPage() {
                     onChange={(event) =>
                       setNewSlot({ ...newSlot, restaurantId: event.target.value })
                     }
-                    className="mt-1.5 w-full rounded-2xl border border-black/10 bg-white px-3.5 py-2.5 text-sm outline-none focus:border-[#0071e3]"
+                    className="mt-1.5 w-full rounded-2xl border border-black/10 bg-white px-3.5 py-2.5 text-sm outline-none focus:border-black/30"
                   >
                     {shops.map((shop) => (
                       <option key={shop.id} value={shop.id}>
@@ -623,7 +629,7 @@ export default function ShopOwnerBoothsPage() {
                   value={newSlot.slotName}
                   onChange={(event) => setNewSlot({ ...newSlot, slotName: event.target.value })}
                   placeholder="e.g. Slot #02, Counter 2"
-                  className="mt-1.5 w-full rounded-2xl border border-black/10 bg-white px-3.5 py-2.5 text-sm outline-none focus:border-[#0071e3]"
+                  className="mt-1.5 w-full rounded-2xl border border-black/10 bg-white px-3.5 py-2.5 text-sm outline-none focus:border-black/30"
                   required
                 />
               </label>
@@ -637,7 +643,7 @@ export default function ShopOwnerBoothsPage() {
                     setNewSlot({ ...newSlot, vendorEmail: event.target.value })
                   }
                   placeholder="vendor@stall.com"
-                  className="mt-1.5 w-full rounded-2xl border border-black/10 bg-white px-3.5 py-2.5 text-sm outline-none focus:border-[#0071e3]"
+                  className="mt-1.5 w-full rounded-2xl border border-black/10 bg-white px-3.5 py-2.5 text-sm outline-none focus:border-black/30"
                 />
                 <span className="mt-1 block text-[11px] text-[#86868b]">
                   If provided, a setup link will be automatically sent to this email upon creation.
@@ -647,7 +653,7 @@ export default function ShopOwnerBoothsPage() {
               <button
                 type="submit"
                 disabled={isCreatingSlot}
-                className="mt-3 flex w-full items-center justify-center gap-2 rounded-full bg-[#0071e3] px-4 py-3 text-xs font-semibold text-white hover:bg-[#0077ed] transition-all disabled:opacity-70"
+                className="mt-3 flex w-full items-center justify-center gap-2 rounded-full bg-[#111827] px-4 py-3 text-xs font-semibold text-white hover:bg-black transition-all disabled:opacity-70"
               >
                 {isCreatingSlot ? (
                   <>
@@ -672,7 +678,7 @@ export default function ShopOwnerBoothsPage() {
             className="w-full max-w-md rounded-[28px] bg-white p-6 shadow-2xl space-y-4"
           >
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold">Edit Booth Slot</h2>
+              <h2 className="text-xl font-semibold text-[#1d1d1f]">Edit Booth Slot</h2>
               <button
                 type="button"
                 aria-label="Close edit dialog"
@@ -687,7 +693,7 @@ export default function ShopOwnerBoothsPage() {
               <input
                 value={editing.name}
                 onChange={(event) => setEditing({ ...editing, name: event.target.value })}
-                className="mt-1.5 w-full rounded-2xl border border-black/10 bg-white px-3.5 py-2.5 text-sm outline-none focus:border-[#0071e3]"
+                className="mt-1.5 w-full rounded-2xl border border-black/10 bg-white px-3.5 py-2.5 text-sm outline-none focus:border-black/30"
               />
             </label>
 

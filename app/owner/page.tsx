@@ -14,11 +14,19 @@ export default function OwnerDashboardPage() {
   const { profile } = useAuth();
 
   return (
-    <main className="min-h-screen bg-[#f5f5f7] px-4 pb-32 pt-5 text-[#1d1d1f]">
-      <div className="mx-auto max-w-[960px]">
-        <header className="flex items-center justify-between gap-4">
+    <main className="min-h-screen bg-[#f5f5f7] px-4 pb-32 pt-5 sm:px-6 text-[#1d1d1f]">
+      <div className="mx-auto max-w-7xl">
+        <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="mt-1 text-3xl font-semibold tracking-[-0.06em]">Good evening{profile?.displayName ? `, ${profile.displayName}` : ''}</h1>
+            <div className="inline-flex items-center gap-1.5 rounded-full bg-black/5 px-2.5 py-0.5 text-[11px] font-semibold text-[#1d1d1f] mb-1.5">
+              <span>Kitchen & Stall Operations</span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-semibold tracking-[-0.035em] text-[#1d1d1f]">
+              Good day{profile?.displayName ? `, ${profile.displayName}` : ''}
+            </h1>
+            <p className="mt-1 text-xs sm:text-sm text-[#6e6e73]">
+              Track kitchen tickets, manage live dish availability, and monitor stall turnover.
+            </p>
           </div>
         </header>
 

@@ -145,11 +145,11 @@ export default function ShopOwnerProfilePage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#f5f5f7] px-4 pb-32 pt-5 text-[#1d1d1f]">
-      <div className="mx-auto max-w-[760px]">
+    <main className="min-h-screen bg-[#f5f5f7] px-4 pb-32 pt-5 sm:px-6 text-[#1d1d1f]">
+      <div className="mx-auto max-w-3xl">
         <header className="flex items-center justify-between gap-3">
           <div>
-            <h1 className="text-3xl font-semibold tracking-[-0.06em]">Shop information</h1>
+            <h1 className="text-2xl sm:text-3xl font-semibold tracking-[-0.035em] text-[#1d1d1f]">Shop information</h1>
           </div>
         </header>
 

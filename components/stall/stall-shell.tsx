@@ -17,8 +17,8 @@ export function StallShell({ children }: { children: React.ReactNode }) {
     <StallGuard>
       <div className="relative min-h-screen bg-[#f5f5f7] text-[#1d1d1f]">
         {/* Stall Worker App Header */}
-        <header className="sticky top-0 z-20 border-b border-black/5 bg-white/95 px-3 sm:px-4 py-2.5 backdrop-blur-md">
-          <div className="mx-auto flex max-w-[960px] items-center justify-between gap-2">
+        <header className="sticky top-0 z-20 border-b border-black/5 bg-white/90 px-3 sm:px-6 py-2.5 backdrop-blur-md">
+          <div className="mx-auto flex max-w-7xl items-center justify-between gap-2">
             <div className="flex items-center gap-2 min-w-0">
               <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-amber-500 text-white shadow-sm shrink-0">
                 <Store className="h-4 w-4" />
