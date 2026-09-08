@@ -138,6 +138,7 @@ test('Customer intent route classification: guest mode applies strictly within c
   assert.equal(isCustomerRoute('/owner/orders'), false);
   assert.equal(isCustomerRoute('/shop-owner/booths'), false);
   assert.equal(isCustomerRoute('/pricing'), false);
+  assert.equal(isCustomerRoute('/customer'), false); // Customer landing page is public marketing, not guest app
 });
 
 test('Marketing nav role detection & dashboard visibility logic', () => {

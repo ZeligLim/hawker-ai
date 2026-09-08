@@ -130,35 +130,27 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: membershipError.message }, { status: 500 });
   }
 
-  // Provision primary stall / booth and merchant membership
-  const stallName = typeof body?.stallName === 'string' && body.stallName.trim()
-    ? body.stallName.trim()
-    : `${name} Stall`;
+  // Provision initial empty booth slots if specified (for venue slot management)
+  // Note: Stalls are email invite only; the shop owner is NOT assigned stall merchant membership.
+  const boothCount = typeof body?.boothCount === 'number' && body.boothCount > 0
+    ? Math.min(body.boothCount, 20)
+    : 3; // Default 3 initial empty booth slots for the food hall
 
-  let boothRecord: { id: string; name: string } | null = null;
-  const { data: booth, error: boothError } = await auth.client
+  const initialSlots = Array.from({ length: boothCount }, (_, i) => ({
+    restaurant_id: restaurant.id,
+    name: `Booth Slot #${String(i + 1).padStart(2, '0')}`,
+  }));
+
+  const { data: initialBooths } = await auth.client
     .from('food_outlets')
-    .insert({
-      restaurant_id: restaurant.id,
-      name: stallName,
-    })
-    .select('id, restaurant_id, name, created_at')
-    .single();
-
-  if (!boothError && booth) {
-    boothRecord = { id: booth.id, name: booth.name };
-    await auth.client.from('merchant_memberships').insert({
-      user_id: auth.user.id,
-      food_outlet_id: booth.id,
-      role: 'owner',
-    });
-  }
+    .insert(initialSlots)
+    .select('id, restaurant_id, name, created_at');
 
   return NextResponse.json({
     shop: {
       ...restaurant,
       status: typeof body?.status === 'string' ? body.status : 'approved',
-      booths: boothRecord ? [boothRecord] : [],
+      booths: initialBooths || [],
     },
     status: 'created',
   }, { status: 201 });

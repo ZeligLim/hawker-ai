@@ -5,55 +5,50 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import {
   ArrowRight,
-  Check,
+  Building2,
   CheckCircle2,
-  ChefHat,
-  ChevronRight,
-  Clock,
-  ExternalLink,
-  HelpCircle,
   Info,
   LayoutDashboard,
   LoaderCircle,
+  Mail,
   MapPin,
-  Phone,
   ShieldCheck,
   Sparkles,
-  Store,
-  UtensilsCrossed,
 } from 'lucide-react';
 import { useAuth } from '@/components/auth-provider';
 import { authenticatedFetch } from '@/lib/supabase/client';
 
-const CUISINES = [
-  'Chicken Rice & Roasted Meats',
-  'Noodles & Laksa',
-  'Nasi Lemak & Malay Delights',
-  'Indian & Mamak Specialties',
-  'Western & Grill',
-  'Seafood & Zi Char',
-  'Beverages & Desserts',
-  'Vegetarian & Vegan',
-  'Halal Certified',
-  'Other Local Street Food',
+const VENUE_TYPES = [
+  'Food Court / Food Hall',
+  'Hawker Centre',
+  'Kopitiam / Traditional Coffee Shop',
+  'Night Market / Street Food Alley',
+  'Commercial / Campus Canteen',
+  'Multi-Brand Cloud Kitchen',
+];
+
+const STALL_CAPACITIES = [
+  { label: '3 - 5 Stalls (Boutique Hall)', value: 5 },
+  { label: '6 - 12 Stalls (Medium Food Court)', value: 10 },
+  { label: '13 - 25 Stalls (Large Food Hall)', value: 20 },
+  { label: '26+ Stalls (Mega Hawker Centre)', value: 30 },
 ];
 
 export default function ApplyPage() {
   const router = useRouter();
   const { user, status, profile, roles, refreshRoles } = useAuth();
 
-  // Form states
-  const [shopName, setShopName] = useState('');
-  const [stallName, setStallName] = useState('');
-  const [venueName, setVenueName] = useState('Lot 10 Hutong');
-  const [address, setAddress] = useState('50 Jalan Sultan, Kuala Lumpur');
-  const [cuisine, setCuisine] = useState(CUISINES[0]);
+  // Form states - Pure Shop / Venue Onboarding
+  const [venueName, setVenueName] = useState('');
+  const [venueType, setVenueType] = useState(VENUE_TYPES[0]);
+  const [stallCapacity, setStallCapacity] = useState('10');
+  const [city, setCity] = useState('Kuala Lumpur');
+  const [address, setAddress] = useState('50 Jalan Sultan, City Centre');
   const [phone, setPhone] = useState('');
-  const [prepTime, setPrepTime] = useState('5-10 mins');
-  const [shopStatus, setShopStatus] = useState<'pending_review' | 'approved' | 'draft'>('approved');
+  const [tableCount, setTableCount] = useState('30 tables');
+  const [shopStatus] = useState<'approved' | 'pending_review'>('approved');
 
   // UI flow states
-  const [step, setStep] = useState<1 | 2 | 3>(1);
   const [submitting, setSubmitting] = useState(false);
   const [submittedShop, setSubmittedShop] = useState<{ id: string; name: string } | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -103,11 +98,11 @@ export default function ApplyPage() {
     };
   }, [isAuthenticated, roles.hasShopOwner]);
 
-  // Handle Form Submission
+  // Handle Form Submission (Pure Shop Onboarding)
   const handleSubmitApplication = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!shopName.trim()) {
-      setErrorMessage('Please enter a business or stall name.');
+    if (!venueName.trim()) {
+      setErrorMessage('Please enter your food hall or hawker centre name.');
       return;
     }
 
@@ -115,22 +110,19 @@ export default function ApplyPage() {
     setErrorMessage(null);
 
     try {
-      const fullAddress = venueName.trim()
-        ? `${venueName.trim()} — ${address.trim()}`
+      const fullAddress = city.trim()
+        ? `${address.trim()}, ${city.trim()}`
         : address.trim();
-
-      const finalStallName = stallName.trim() || `${shopName.trim()} Stall`;
 
       const res = await authenticatedFetch('/api/owner/shops', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name: shopName.trim(),
+          name: venueName.trim(),
           address: fullAddress,
-          stallName: finalStallName,
-          cuisine,
           phone: phone.trim(),
-          prepTime,
+          venueType,
+          boothCount: Number(stallCapacity) || 5,
           status: shopStatus,
         }),
       });
@@ -138,17 +130,16 @@ export default function ApplyPage() {
       const data = await res.json();
 
       if (!res.ok && res.status !== 200) {
-        throw new Error(data.error || 'Failed to submit application.');
+        throw new Error(data.error || 'Failed to submit shop registration.');
       }
 
-      // If user already had a shop, data.status === 'existing'
       const createdOrExistingShop = data.shop;
       setSubmittedShop(createdOrExistingShop);
 
       // Refresh roles so AuthProvider reflects newly created shop ownership
       await refreshRoles();
 
-      // Automatically transition to success / redirect
+      // Automatically transition to Shop Dashboard
       setTimeout(() => {
         router.push('/shop-owner/booths' as any);
       }, 2000);
@@ -171,7 +162,7 @@ export default function ApplyPage() {
             <div className="flex items-center gap-2">
               <span className="font-semibold text-base tracking-tight text-[#1d1d1f]">Hawker</span>
               <span className="text-xs px-2 py-0.5 rounded-full bg-black/5 text-[#86868b] font-medium hidden sm:inline">
-                Stall Onboarding
+                Shop Onboarding
               </span>
             </div>
           </Link>
@@ -214,7 +205,7 @@ export default function ApplyPage() {
           /* State 2: Unauthenticated User - Prompt to sign in or create account first */
           <div className="bg-white rounded-3xl border border-black/[0.08] shadow-[0_16px_40px_rgba(0,0,0,0.06)] p-6 sm:p-10 text-center">
             <div className="w-16 h-16 rounded-2xl bg-[#0071e3]/10 text-[#0071e3] flex items-center justify-center mx-auto mb-6 shadow-sm">
-              <Store className="w-8 h-8" />
+              <Building2 className="w-8 h-8" />
             </div>
 
             <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-[#0071e3]/10 text-[#0071e3] mb-3">
@@ -247,7 +238,7 @@ export default function ApplyPage() {
             <div className="mt-10 pt-6 border-t border-black/[0.06] grid grid-cols-1 sm:grid-cols-3 gap-4 text-left text-xs text-[#6e6e73]">
               <div className="flex items-start gap-2.5">
                 <CheckCircle2 className="w-4 h-4 text-[#30d158] shrink-0 mt-0.5" />
-                <span>Zero monthly fees. Keep 100% of your earnings.</span>
+                <span>Zero monthly fees. Only 0.5% per order.</span>
               </div>
               <div className="flex items-start gap-2.5">
                 <CheckCircle2 className="w-4 h-4 text-[#30d158] shrink-0 mt-0.5" />
@@ -255,7 +246,7 @@ export default function ApplyPage() {
               </div>
               <div className="flex items-start gap-2.5">
                 <CheckCircle2 className="w-4 h-4 text-[#30d158] shrink-0 mt-0.5" />
-                <span>Real-time digital kitchen display system (KDS).</span>
+                <span>Private email invitations for stall vendors.</span>
               </div>
             </div>
           </div>
@@ -274,17 +265,17 @@ export default function ApplyPage() {
               You Already Manage {existingShop.name}
             </h1>
             <p className="text-sm sm:text-base text-[#6e6e73] mt-2 max-w-lg mx-auto">
-              Your user account (<strong className="text-[#1d1d1f]">{userEmail}</strong>) is already associated with an active hawker business. You do not need to submit another application.
+              Your user account (<strong className="text-[#1d1d1f]">{userEmail}</strong>) is already the verified Shop Owner of an active hawker venue. You do not need to register another venue.
             </p>
 
             <div className="mt-6 p-4 rounded-2xl bg-[#f5f5f7] max-w-md mx-auto text-left text-xs space-y-1.5 border border-black/[0.04]">
               <div className="flex justify-between">
-                <span className="text-[#6e6e73]">Registered Stall:</span>
+                <span className="text-[#6e6e73]">Registered Venue:</span>
                 <span className="font-semibold text-[#1d1d1f]">{existingShop.name}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-[#6e6e73]">Account Role:</span>
-                <span className="font-semibold text-[#1d1d1f] capitalize">{existingShop.role}</span>
+                <span className="font-semibold text-[#1d1d1f] capitalize">Shop Owner</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-[#6e6e73]">Status:</span>
@@ -304,11 +295,10 @@ export default function ApplyPage() {
                 Go to Shop Dashboard
               </Link>
               <Link
-                href="/owner"
+                href="/shop-owner/analytics"
                 className="w-full sm:w-auto flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full text-sm font-semibold text-[#1d1d1f] bg-black/5 hover:bg-black/10 transition-all"
               >
-                <UtensilsCrossed className="w-4 h-4" />
-                Kitchen & Orders
+                View Financial Analytics
               </Link>
             </div>
           </div>
@@ -320,14 +310,14 @@ export default function ApplyPage() {
             </div>
 
             <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-[#30d158]/15 text-[#248a3d] mb-3">
-              Application Approved
+              Shop Registered Successfully
             </span>
 
             <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#1d1d1f]">
               Welcome to Hawker, {submittedShop.name}!
             </h1>
             <p className="text-sm sm:text-base text-[#6e6e73] mt-2 max-w-md mx-auto">
-              Your shop and primary stall workspace have been created successfully. Redirecting you to your stall dashboard now...
+              Your food hall workspace has been created. Redirecting to your Shop Dashboard to manage booth slots and invite stall vendors...
             </p>
 
             <div className="mt-8">
@@ -341,19 +331,19 @@ export default function ApplyPage() {
             </div>
           </div>
         ) : (
-          /* State 5: Onboarding Application Form */
+          /* State 5: Onboarding Application Form for Hawker Shop Owners */
           <div className="space-y-6">
             {/* Header info */}
             <div>
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#0071e3]/10 text-[#0071e3] text-xs font-semibold mb-2">
-                <Store className="w-3.5 h-3.5" />
-                Hawker Stall Application
+                <Building2 className="w-3.5 h-3.5" />
+                Hawker Shop Onboarding
               </div>
               <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#1d1d1f]">
-                List Your Hawker Stall
+                Register Your Hawker Centre & Food Hall
               </h1>
               <p className="text-sm text-[#6e6e73] mt-1">
-                Complete your stall setup to start receiving digital table orders.
+                Set up your physical food court or hawker venue. Once registered, generate table QR codes and invite your stall vendors via email.
               </p>
             </div>
 
@@ -376,7 +366,7 @@ export default function ApplyPage() {
 
               <div className="text-right text-[11px] text-[#6e6e73] hidden sm:block">
                 <span>Will become</span>
-                <p className="font-semibold text-[#1d1d1f]">Shop Owner</p>
+                <p className="font-semibold text-[#1d1d1f]">Shop Owner (Operator)</p>
               </div>
             </div>
 
@@ -389,58 +379,59 @@ export default function ApplyPage() {
 
             {/* Main Form Card */}
             <form onSubmit={handleSubmitApplication} className="bg-white rounded-3xl border border-black/[0.08] shadow-[0_12px_32px_rgba(0,0,0,0.04)] p-6 sm:p-8 space-y-6">
-              {/* Section 1: Business Details */}
+              {/* Section 1: Venue Details */}
               <div className="space-y-4">
                 <div className="flex items-center gap-2 pb-2 border-b border-black/[0.06]">
-                  <ChefHat className="w-4 h-4 text-[#0071e3]" />
+                  <Building2 className="w-4 h-4 text-[#0071e3]" />
                   <h2 className="text-sm font-bold text-[#1d1d1f] uppercase tracking-wider">
-                    1. Stall & Business Profile
+                    1. Venue & Establishment Profile
                   </h2>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5 sm:col-span-2">
                     <label className="text-xs font-semibold text-[#1d1d1f]">
-                      Hawker Stall / Business Name <span className="text-[#ff3b30]">*</span>
+                      Hawker Centre / Food Hall Name <span className="text-[#ff3b30]">*</span>
                     </label>
                     <input
                       type="text"
                       required
-                      placeholder="e.g. Ah Seng Hainanese Chicken Rice"
-                      value={shopName}
-                      onChange={(e) => {
-                        setShopName(e.target.value);
-                        if (!stallName) setStallName(e.target.value);
-                      }}
+                      placeholder="e.g. Lot 10 Hutong Food Hall"
+                      value={venueName}
+                      onChange={(e) => setVenueName(e.target.value)}
                       className="w-full px-4 py-2.5 rounded-xl border border-black/15 bg-white text-sm text-[#1d1d1f] placeholder:text-[#86868b] focus:border-[#0071e3] focus:ring-2 focus:ring-[#0071e3]/20 focus:outline-none transition-all"
                     />
                   </div>
 
                   <div className="space-y-1.5">
                     <label className="text-xs font-semibold text-[#1d1d1f]">
-                      Stall Unit / Booth Slot
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="e.g. Stall #08 / Main Wok"
-                      value={stallName}
-                      onChange={(e) => setStallName(e.target.value)}
-                      className="w-full px-4 py-2.5 rounded-xl border border-black/15 bg-white text-sm text-[#1d1d1f] placeholder:text-[#86868b] focus:border-[#0071e3] focus:ring-2 focus:ring-[#0071e3]/20 focus:outline-none transition-all"
-                    />
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-[#1d1d1f]">
-                      Cuisine Category
+                      Venue Classification
                     </label>
                     <select
-                      value={cuisine}
-                      onChange={(e) => setCuisine(e.target.value)}
+                      value={venueType}
+                      onChange={(e) => setVenueType(e.target.value)}
                       className="w-full px-4 py-2.5 rounded-xl border border-black/15 bg-white text-sm text-[#1d1d1f] focus:border-[#0071e3] focus:ring-2 focus:ring-[#0071e3]/20 focus:outline-none transition-all"
                     >
-                      {CUISINES.map((item) => (
+                      {VENUE_TYPES.map((item) => (
                         <option key={item} value={item}>
                           {item}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-[#1d1d1f]">
+                      Initial Stall Booth Slots
+                    </label>
+                    <select
+                      value={stallCapacity}
+                      onChange={(e) => setStallCapacity(e.target.value)}
+                      className="w-full px-4 py-2.5 rounded-xl border border-black/15 bg-white text-sm text-[#1d1d1f] focus:border-[#0071e3] focus:ring-2 focus:ring-[#0071e3]/20 focus:outline-none transition-all"
+                    >
+                      {STALL_CAPACITIES.map((cap) => (
+                        <option key={cap.value} value={String(cap.value)}>
+                          {cap.label}
                         </option>
                       ))}
                     </select>
@@ -460,23 +451,25 @@ export default function ApplyPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
                     <label className="text-xs font-semibold text-[#1d1d1f]">
-                      Hawker Centre / Venue
+                      City / Region <span className="text-[#ff3b30]">*</span>
                     </label>
                     <input
                       type="text"
-                      placeholder="e.g. Lot 10 Hutong"
-                      value={venueName}
-                      onChange={(e) => setVenueName(e.target.value)}
+                      required
+                      placeholder="e.g. Kuala Lumpur"
+                      value={city}
+                      onChange={(e) => setCity(e.target.value)}
                       className="w-full px-4 py-2.5 rounded-xl border border-black/15 bg-white text-sm text-[#1d1d1f] placeholder:text-[#86868b] focus:border-[#0071e3] focus:ring-2 focus:ring-[#0071e3]/20 focus:outline-none transition-all"
                     />
                   </div>
 
                   <div className="space-y-1.5">
                     <label className="text-xs font-semibold text-[#1d1d1f]">
-                      Contact Number / WhatsApp
+                      Operator Contact / WhatsApp <span className="text-[#ff3b30]">*</span>
                     </label>
                     <input
                       type="tel"
+                      required
                       placeholder="e.g. +60 12-345 6789"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
@@ -486,13 +479,27 @@ export default function ApplyPage() {
 
                   <div className="space-y-1.5 sm:col-span-2">
                     <label className="text-xs font-semibold text-[#1d1d1f]">
-                      Full Street Address
+                      Full Street Address <span className="text-[#ff3b30]">*</span>
                     </label>
                     <input
                       type="text"
-                      placeholder="e.g. 50 Jalan Sultan, Kuala Lumpur"
+                      required
+                      placeholder="e.g. 50 Jalan Sultan, City Centre"
                       value={address}
                       onChange={(e) => setAddress(e.target.value)}
+                      className="w-full px-4 py-2.5 rounded-xl border border-black/15 bg-white text-sm text-[#1d1d1f] placeholder:text-[#86868b] focus:border-[#0071e3] focus:ring-2 focus:ring-[#0071e3]/20 focus:outline-none transition-all"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5 sm:col-span-2">
+                    <label className="text-xs font-semibold text-[#1d1d1f]">
+                      Estimated Seating / Table Capacity
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. 40 tables (approx. 160 diners)"
+                      value={tableCount}
+                      onChange={(e) => setTableCount(e.target.value)}
                       className="w-full px-4 py-2.5 rounded-xl border border-black/15 bg-white text-sm text-[#1d1d1f] placeholder:text-[#86868b] focus:border-[#0071e3] focus:ring-2 focus:ring-[#0071e3]/20 focus:outline-none transition-all"
                     />
                   </div>
@@ -504,56 +511,27 @@ export default function ApplyPage() {
                 <div className="flex items-center gap-2 pb-2 border-b border-black/[0.06]">
                   <ShieldCheck className="w-4 h-4 text-[#0071e3]" />
                   <h2 className="text-sm font-bold text-[#1d1d1f] uppercase tracking-wider">
-                    3. Activation & Status
+                    3. Activation & Stall Policy
                   </h2>
+                </div>
+
+                <div className="p-4 rounded-2xl bg-[#0071e3]/5 border border-[#0071e3]/10 flex items-start gap-3">
+                  <Mail className="w-5 h-5 text-[#0071e3] shrink-0 mt-0.5" />
+                  <div className="text-xs space-y-1">
+                    <p className="font-semibold text-[#1d1d1f]">Stalls Are Email-Invite Only</p>
+                    <p className="text-[#6e6e73]">
+                      Individual hawker stalls cannot register independently on the website. Once your venue is registered, you will generate secure 1-click invitation tokens (<code className="text-[#1d1d1f]">/booths/join?token=...</code>) in your Shop Dashboard to email to each vendor.
+                    </p>
+                  </div>
                 </div>
 
                 <div className="p-4 rounded-2xl bg-[#f5f5f7] border border-black/[0.04] flex items-start gap-3">
                   <Info className="w-5 h-5 text-[#0071e3] shrink-0 mt-0.5" />
                   <div className="text-xs space-y-1">
-                    <p className="font-semibold text-[#1d1d1f]">Instant Stall Provisioning</p>
+                    <p className="font-semibold text-[#1d1d1f]">Instant Venue Provisioning</p>
                     <p className="text-[#6e6e73]">
-                      Submitting this form immediately provisions your hawker business workspace (<code className="text-[#1d1d1f]">restaurants</code>), your primary stall (<code className="text-[#1d1d1f]">food_outlets</code>), and assigns your personal user account as the verified <strong className="text-[#1d1d1f]">Owner</strong>.
+                      Submitting this form immediately provisions your food hall workspace (<code className="text-[#1d1d1f]">restaurants</code>) and assigns your personal user account as the verified <strong className="text-[#1d1d1f]">Shop Owner</strong>.
                     </p>
-                  </div>
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-[#1d1d1f]">
-                    Initial Status
-                  </label>
-                  <div className="grid grid-cols-2 gap-3">
-                    <button
-                      type="button"
-                      onClick={() => setShopStatus('approved')}
-                      className={`p-3 rounded-xl border text-left transition-all ${
-                        shopStatus === 'approved'
-                          ? 'border-[#0071e3] bg-[#0071e3]/5 ring-1 ring-[#0071e3]'
-                          : 'border-black/10 bg-white hover:bg-black/[0.02]'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-semibold text-[#1d1d1f]">Approved & Active</span>
-                        {shopStatus === 'approved' && <Check className="w-4 h-4 text-[#0071e3]" />}
-                      </div>
-                      <p className="text-[11px] text-[#6e6e73] mt-0.5">Ready to take customer orders immediately</p>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setShopStatus('pending_review')}
-                      className={`p-3 rounded-xl border text-left transition-all ${
-                        shopStatus === 'pending_review'
-                          ? 'border-[#0071e3] bg-[#0071e3]/5 ring-1 ring-[#0071e3]'
-                          : 'border-black/10 bg-white hover:bg-black/[0.02]'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-semibold text-[#1d1d1f]">Pending Review</span>
-                        {shopStatus === 'pending_review' && <Check className="w-4 h-4 text-[#0071e3]" />}
-                      </div>
-                      <p className="text-[11px] text-[#6e6e73] mt-0.5">Submit for venue operator verification</p>
-                    </button>
                   </div>
                 </div>
               </div>
@@ -568,17 +546,17 @@ export default function ApplyPage() {
                   {submitting ? (
                     <>
                       <LoaderCircle className="w-4 h-4 animate-spin" />
-                      Creating Hawker Business...
+                      Registering Hawker Shop...
                     </>
                   ) : (
                     <>
-                      Submit Application & Launch Stall
+                      Register Hawker Shop
                       <ArrowRight className="w-4 h-4" />
                     </>
                   )}
                 </button>
                 <p className="text-center text-[11px] text-[#86868b] mt-3">
-                  By applying, you agree to Hawker&apos;s standard merchant terms and fair-pricing policy.
+                  By registering, you agree to Hawker&apos;s standard venue operator terms and fair-pricing policy.
                 </p>
               </div>
             </form>

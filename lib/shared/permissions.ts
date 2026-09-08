@@ -96,6 +96,8 @@ export class PermissionEngine {
   static getClientForPath(pathname: string): ClientAppType {
     if (
       pathname === '/' ||
+      pathname === '/customer' ||
+      pathname.startsWith('/customer/') ||
       pathname === '/pricing' ||
       pathname === '/plans' ||
       pathname === '/subscribe' ||

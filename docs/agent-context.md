@@ -28,13 +28,30 @@ Phase 8: Multi-Client Platform Architecture Refactoring & Onboarding Access Gati
         - Reserved for venue operators and hawker centre business owners (`/shop-owner`, `/shop-owner/booths`, `/shop-owner/analytics`, `/shop-owner/profile`, `/booths`, `/analytics`).
         - Registration button on `/apply` simplified to "Sign Up".
 
-2. **Automated Verification & Testing**:
-   - `lib/auth-onboarding.test.ts`: Added unit tests verifying `isCustomerIntent` route classification, marketing nav role detection, dashboard visibility gating, dual-role dropdown handling, and shop-only "Start Free" visibility.
-   - `lib/multi-client-architecture.test.ts`: Client path resolution, client boundaries, cross-stall isolation, cross-shop isolation, and unauthenticated redirects.
+2. **Shop Onboarding vs Stall Setup Decoupling**:
+   - **Shop Onboarding (`/apply`)**: Venue operators register physical hawker centres or food halls (`restaurants`) and receive `restaurant_memberships` (`role: 'owner'`). Fixed `app/api/owner/shops/route.ts` to stop auto-inserting `merchant_memberships` or creating stall records. Overhauled `app/apply/page.tsx` to collect genuine venue attributes (venue type, stall slot capacity, address, table capacity, operator phone).
+   - **Stall Onboarding**: Strictly email-invite only via operator tokens (`/booths/join?token=...`). Stalls cannot register independently or publicly on the website.
+   - **Start Free Button**: Linked strictly to Shop Onboarding (`/apply`), never stall setup. Shown when signed in only if `!roles.hasShopOwner`. If already a shop owner, links to `/shop-owner/booths`.
+
+3. **Dedicated Customer Landing Page (`/customer`)**:
+   - Built a standalone public landing page tailored specifically for diners and food lovers (`app/customer/page.tsx`):
+     - Cinematic hero: "Order from every stall at your table. One simple checkout."
+     - The Old Way vs The Hawker Way interactive comparison.
+     - Interactive simulated Multi-Stall Tray demo with live item toggles and unified billing.
+     - Step-by-step table QR guide: Scan QR, Mix dishes across stalls, 1-tap pay & live buzzer notifications.
+     - AI culinary query interactive preview ("spicy laksa under RM15", "comforting soup no pork").
+     - Featured food halls showcase (Lot 10 Hutong, Newton Food Centre, Penang Road, Medan Selera SS2).
+     - Customer FAQ accordion (No app download, multi-stall ordering, eWallet refunds, payment methods).
+     - Cross-links between Operator Landing (`/`) and Diner Landing (`/customer`) across top ribbon, navigation bar, and footer.
+   - Client routing updated in `lib/shared/permissions.ts` to classify `/customer` as `'website'`, rendering clean full-bleed marketing layouts without mobile bottom tabs.
+
+4. **Automated Verification & Testing**:
+   - `lib/auth-onboarding.test.ts`: Added unit tests verifying `isCustomerIntent` route classification, marketing nav role detection, dashboard visibility gating, dual-role dropdown handling, shop-only "Start Free" visibility, and `/customer` route isolation.
+   - `lib/multi-client-architecture.test.ts`: Client path resolution including `/customer`, client boundaries, cross-stall isolation, cross-shop isolation, and unauthenticated redirects.
    - All 15 tests pass (`npm test`).
    - TypeScript verification (`npx tsc --noEmit`) passes with 0 errors.
    - ESLint (`npm run lint`) passes with 0 errors.
-   - Production build (`npm run build`) compiles all 44 routes successfully.
+   - Production build (`npm run build`) compiles all 45 routes successfully.
 
 ## Completed
 - Next.js App Router foundation initialized
