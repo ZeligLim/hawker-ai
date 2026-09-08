@@ -176,10 +176,11 @@ export default function CustomerLandingPage() {
           <div className="flex sm:hidden items-center gap-2">
             <Link
               href="/menu"
-              className="inline-flex items-center gap-1 text-xs font-semibold text-white bg-[#0071e3] px-3 py-1.5 rounded-full shadow-sm"
+              className="inline-flex items-center gap-1 text-xs font-semibold text-white bg-[#0071e3] p-2 xs:px-3 xs:py-1.5 rounded-full shadow-sm"
+              aria-label="Order food"
             >
               <UtensilsCrossed className="w-3.5 h-3.5" />
-              <span>Order</span>
+              <span className="hidden xs:inline">Order</span>
             </Link>
             <button
               type="button"

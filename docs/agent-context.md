@@ -168,6 +168,21 @@ Phase 8: Multi-Client Platform Architecture Refactoring & Onboarding Access Gati
 - Integrated `<RoleModeSwitcher />` across `app/profile/settings/page.tsx`, `app/profile/page.tsx`, `app/owner/profile/page.tsx`, and `app/shop-owner/profile/page.tsx`, eliminating all arbitrary toggle buttons
 - Refactored `app/subscribe/page.tsx` Stage 3 to "Generate Booth Token" so shop owners specify booth slot identifiers (e.g. `Slot #01`) rather than stall brand names or menus, and display 1-click invitation links on launch
 - Refactored `app/shop-owner/booths/page.tsx` to "Generate Booth Token" so shop owners generate cryptographically secure invitation tokens for stall slots, copyable with 1-click links (`/booths/join?token=...`)
+- **Picture-Only Dish Cards (`components/dish-card.tsx`)**:
+  - Removed dish name text completely from card face to honor visual-first diner experience.
+  - Replaced text initials fallback with culinary icon (`UtensilsCrossed`).
+  - Edge-to-edge visual tile with floating glassmorphism price pill (top-left), vegetarian badge (top-right), and floating quantity / add button pill.
+  - Preserved accessibility with `aria-label={name}` and `alt={name}` for assistive technology.
+- **Mobile Phone Responsive Design & Logo/Icon-First Optimization**:
+  - `components/marketing-nav.tsx`: Mobile header (`sm:hidden`) uses logo/icon-first buttons (`LayoutDashboard`, `Store`, `CookingPot`) with responsive labels (`hidden xs:inline`) so top navigation never wraps or overflows on small screens (320px–375px).
+  - `components/role-mode-switcher.tsx`: Truncation protection (`min-w-0 flex-1 truncate`), responsive mode pill, and clean stacking on phone viewports.
+  - `components/stall/stall-shell.tsx` & `components/owner/owner-shell.tsx`: Concise navigation labels ("Tickets", "Menu", "Booths", "Profile") and responsive compact headers.
+  - `components/shared/client-bottom-nav.tsx`: Fixed label wrapping with `truncate max-w-full px-1 text-center` and safe-area inset preservation.
+  - `app/orders/page.tsx`: Responsive checkout button (`Pay RM XX.XX` on phone, `Pay & Place Order • RM XX.XX` on tablet/desktop).
+  - `app/shop-owner/booths/page.tsx`: Icon-first buttons (`Edit Slot`, `Send Link`, `Remove`, `Revoke`) preventing horizontal squashing.
+  - `app/owner/orders/page.tsx`: KDS ticket refund button made compact (`XCircle` icon + responsive text) and stall payout footer wraps gracefully.
+  - `app/owner/menu/page.tsx`: Add dish button uses responsive icon-first pill, and dish list items render clean fallback culinary thumbnails.
+  - `components/home-page.tsx`, `components/menu-page.tsx`, `components/shop-detail-client.tsx`, and `app/customer/page.tsx`: Full responsive review preventing text overflow and awkward line breaks.
 
 ## Current Architecture
 - Frontend: Next.js App Router, TypeScript, React, Tailwind

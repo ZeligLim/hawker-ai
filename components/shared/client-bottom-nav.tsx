@@ -63,14 +63,14 @@ export function ClientBottomNav({
             <Link
               key={label}
               href={href as any}
-              className={`flex min-h-[44px] flex-col items-center justify-center rounded-full py-1.5 transition-all ${
+              className={`flex min-h-[44px] flex-col items-center justify-center rounded-full py-1.5 px-1 transition-all ${
                 active ? activeTheme : inactiveTheme
               }`}
               aria-label={label}
               aria-current={active ? 'page' : undefined}
             >
-              <Icon className="h-[18px] w-[18px]" strokeWidth={active ? 2.2 : 1.8} />
-              <span className="mt-0.5 text-[10px] sm:text-[11px] font-medium tracking-tight">
+              <Icon className="h-[18px] w-[18px] shrink-0" strokeWidth={active ? 2.2 : 1.8} />
+              <span className="mt-0.5 text-[10px] sm:text-[11px] font-medium tracking-tight truncate max-w-full text-center">
                 {label}
               </span>
             </Link>

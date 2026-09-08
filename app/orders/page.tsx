@@ -340,7 +340,13 @@ export default function OrdersPage() {
                   ? 'Placing Order...'
                   : checkoutState === 'success'
                     ? 'Order Placed!'
-                    : `Pay & Place Order • RM ${summary.total.toFixed(2)}`}
+                    : (
+                      <span>
+                        <span className="hidden xs:inline">Pay & Place Order • </span>
+                        <span className="xs:hidden">Pay </span>
+                        RM {summary.total.toFixed(2)}
+                      </span>
+                    )}
               </button>
 
               {checkoutError && (

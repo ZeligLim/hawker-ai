@@ -337,36 +337,42 @@ export function MarketingNav({ currentPath = '/' }: MarketingNavProps) {
         </div>
 
         {/* Mobile Hamburger Toggle */}
-        <div className="flex sm:hidden items-center gap-2">
+        <div className="flex sm:hidden items-center gap-1.5">
           {isAuthenticated && hasDashboard && (
             hasBoth ? (
               <button
                 type="button"
                 onClick={() => setMobileMenuOpen(true)}
-                className="text-[11px] font-semibold text-white bg-[#1d1d1f] px-2.5 py-1 rounded-full shadow-sm"
+                className="inline-flex items-center gap-1 text-[11px] font-semibold text-white bg-[#1d1d1f] p-2 xs:px-2.5 xs:py-1 rounded-full shadow-sm"
+                aria-label="Dashboard"
               >
-                Dashboard
+                <LayoutDashboard className="w-3.5 h-3.5" />
+                <span className="hidden xs:inline">Dashboard</span>
               </button>
             ) : hasShop ? (
               <Link
                 href="/shop-owner/booths"
-                className="text-[11px] font-semibold text-white bg-[#1d1d1f] px-2.5 py-1 rounded-full shadow-sm"
+                className="inline-flex items-center gap-1 text-[11px] font-semibold text-white bg-[#1d1d1f] p-2 xs:px-2.5 xs:py-1 rounded-full shadow-sm"
+                aria-label="Shop Dashboard"
               >
-                Shop Dashboard
+                <Store className="w-3.5 h-3.5" />
+                <span className="hidden xs:inline">Shop</span>
               </Link>
             ) : (
               <Link
                 href="/owner/orders"
-                className="text-[11px] font-semibold text-white bg-[#1d1d1f] px-2.5 py-1 rounded-full shadow-sm"
+                className="inline-flex items-center gap-1 text-[11px] font-semibold text-white bg-[#1d1d1f] p-2 xs:px-2.5 xs:py-1 rounded-full shadow-sm"
+                aria-label="Stall Kitchen"
               >
-                Stall Kitchen
+                <CookingPot className="w-3.5 h-3.5" />
+                <span className="hidden xs:inline">Kitchen</span>
               </Link>
             )
           )}
           <button
             type="button"
             onClick={() => setMobileMenuOpen((prev) => !prev)}
-            className="p-1.5 text-[#1d1d1f]/70 hover:text-[#1d1d1f] rounded-lg hover:bg-black/5"
+            className="p-2 text-[#1d1d1f]/70 hover:text-[#1d1d1f] rounded-lg hover:bg-black/5"
             aria-label="Toggle menu"
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <MenuIcon className="w-5 h-5" />}

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useAuth } from '@/components/auth-provider';
-import { Store, UtensilsCrossed, UserRound, ArrowRight, ShieldCheck, Building2 } from 'lucide-react';
+import { Building2, UserRound, UtensilsCrossed } from 'lucide-react';
 
 interface RoleModeSwitcherProps {
   currentMode: 'customer' | 'booth' | 'shop_owner';
@@ -18,22 +18,22 @@ export function RoleModeSwitcher({ currentMode }: RoleModeSwitcherProps) {
   // If user only has Customer mode (neither shop owner nor booth owner)
   if (!roles.hasShopOwner && !roles.hasBooth) {
     return (
-      <div className="rounded-[24px] bg-[#f5f5f7] p-5 text-xs text-[#6e6e73] border border-black/[0.04]">
+      <div className="rounded-[24px] bg-[#f5f5f7] p-4 sm:p-5 text-xs text-[#6e6e73] border border-black/[0.04]">
         <div className="flex items-center gap-2 font-semibold text-[#1d1d1f]">
-          <UserRound className="w-4 h-4 text-[#0071e3]" />
+          <UserRound className="w-4 h-4 text-[#0071e3] shrink-0" />
           <span>Standard Diner Account</span>
         </div>
         <p className="mt-1.5 leading-relaxed text-[#6e6e73]">
           You are currently in Diner mode. Food hall management and stall kitchen access are strictly role-gated.
         </p>
-        <div className="mt-3.5 pt-3 border-t border-black/[0.06] flex flex-wrap items-center gap-3">
+        <div className="mt-3.5 pt-3 border-t border-black/[0.06] flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
           <Link
             href="/apply"
             className="inline-flex items-center gap-1 font-semibold text-[#0071e3] hover:underline"
           >
             Start Free: Register Your Shop &rsaquo;
           </Link>
-          <span className="text-black/20">&bull;</span>
+          <span className="text-black/20 hidden sm:inline">&bull;</span>
           <span className="text-[#86868b]">
             Stall access is invite-only via operator token
           </span>
@@ -44,31 +44,31 @@ export function RoleModeSwitcher({ currentMode }: RoleModeSwitcherProps) {
 
   // User has authorized operator or stall roles!
   return (
-    <div className="rounded-[26px] bg-white p-5 shadow-[0_12px_26px_rgba(15,23,42,0.04)] border border-black/[0.04]">
-      <div className="flex items-center justify-between mb-3.5">
-        <div>
+    <div className="rounded-[26px] bg-white p-4 sm:p-5 shadow-[0_12px_26px_rgba(15,23,42,0.04)] border border-black/[0.04]">
+      <div className="flex items-start justify-between gap-2.5 mb-3.5">
+        <div className="min-w-0 flex-1">
           <p className="text-[11px] font-semibold uppercase tracking-wider text-[#86868b]">
             Switch Active Mode
           </p>
-          <p className="text-xs text-[#6e6e73] mt-0.5">
+          <p className="text-xs text-[#6e6e73] mt-0.5 line-clamp-2 sm:line-clamp-none">
             Switch between ordering as a diner, cooking at your stall, or managing your venue.
           </p>
         </div>
-        <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-[#0071e3]/10 text-[#0071e3]">
+        <span className="text-[10px] sm:text-[11px] font-semibold px-2 sm:px-2.5 py-1 rounded-full bg-[#0071e3]/10 text-[#0071e3] shrink-0 whitespace-nowrap">
           {roles.hasShopOwner && roles.hasBooth
             ? 'Multi-Role'
             : roles.hasShopOwner
-              ? 'Food Hall Owner'
-              : 'Stall Vendor'}
+              ? 'Owner'
+              : 'Stall'}
         </span>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-2.5">
         {/* 1. Customer / Diner Mode (Always present) */}
         <button
           type="button"
           onClick={() => switchMode('customer')}
-          className={`flex items-center gap-3 p-3.5 rounded-[18px] text-left transition-all ${
+          className={`flex min-w-0 items-center gap-3 p-3 sm:p-3.5 rounded-[18px] text-left transition-all ${
             currentMode === 'customer'
               ? 'bg-[#111827] text-white shadow-sm ring-2 ring-[#111827]'
               : 'bg-[#f5f5f7] text-[#1d1d1f] hover:bg-black/[0.05]'
@@ -81,8 +81,8 @@ export function RoleModeSwitcher({ currentMode }: RoleModeSwitcherProps) {
           >
             <UserRound className="w-4 h-4" />
           </div>
-          <div className="min-w-0">
-            <p className="text-xs font-semibold">Diner App</p>
+          <div className="min-w-0 flex-1">
+            <p className="text-xs font-semibold truncate">Diner App</p>
             <p className={`text-[10px] truncate ${currentMode === 'customer' ? 'text-white/70' : 'text-[#86868b]'}`}>
               Browse & Order
             </p>
@@ -94,7 +94,7 @@ export function RoleModeSwitcher({ currentMode }: RoleModeSwitcherProps) {
           <button
             type="button"
             onClick={() => switchMode('booth')}
-            className={`flex items-center gap-3 p-3.5 rounded-[18px] text-left transition-all ${
+            className={`flex min-w-0 items-center gap-3 p-3 sm:p-3.5 rounded-[18px] text-left transition-all ${
               currentMode === 'booth'
                 ? 'bg-[#111827] text-white shadow-sm ring-2 ring-[#111827]'
                 : 'bg-[#f5f5f7] text-[#1d1d1f] hover:bg-black/[0.05]'
@@ -107,10 +107,10 @@ export function RoleModeSwitcher({ currentMode }: RoleModeSwitcherProps) {
             >
               <UtensilsCrossed className="w-4 h-4" />
             </div>
-            <div className="min-w-0">
-              <p className="text-xs font-semibold">Stall Kitchen</p>
+            <div className="min-w-0 flex-1">
+              <p className="text-xs font-semibold truncate">Stall Kitchen</p>
               <p className={`text-[10px] truncate ${currentMode === 'booth' ? 'text-white/70' : 'text-[#86868b]'}`}>
-                {roles.booths?.[0]?.name || 'Manage Woks'}
+                {roles.booths?.[0]?.name || 'Live Tickets'}
               </p>
             </div>
           </button>
@@ -121,7 +121,7 @@ export function RoleModeSwitcher({ currentMode }: RoleModeSwitcherProps) {
           <button
             type="button"
             onClick={() => switchMode('shop_owner')}
-            className={`flex items-center gap-3 p-3.5 rounded-[18px] text-left transition-all ${
+            className={`flex min-w-0 items-center gap-3 p-3 sm:p-3.5 rounded-[18px] text-left transition-all ${
               currentMode === 'shop_owner'
                 ? 'bg-[#111827] text-white shadow-sm ring-2 ring-[#111827]'
                 : 'bg-[#f5f5f7] text-[#1d1d1f] hover:bg-black/[0.05]'
@@ -134,8 +134,8 @@ export function RoleModeSwitcher({ currentMode }: RoleModeSwitcherProps) {
             >
               <Building2 className="w-4 h-4" />
             </div>
-            <div className="min-w-0">
-              <p className="text-xs font-semibold">Food Hall</p>
+            <div className="min-w-0 flex-1">
+              <p className="text-xs font-semibold truncate">Food Hall</p>
               <p
                 className={`text-[10px] truncate ${
                   currentMode === 'shop_owner' ? 'text-white/70' : 'text-[#86868b]'

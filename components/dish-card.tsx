@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Leaf, Plus } from 'lucide-react';
+import { Leaf, Plus, UtensilsCrossed } from 'lucide-react';
 
 export interface DishCardProps {
   id: string;
@@ -24,15 +24,14 @@ export function DishCard({
   onAdd,
   onUpdateQuantity,
 }: DishCardProps) {
-  const initial = name.trim().split(/\s+/)[0] || 'Dish';
-
   return (
     <article
       data-dish-id={id}
-      className="group relative flex flex-col justify-between overflow-hidden rounded-[22px] sm:rounded-[24px] bg-white border border-black/[0.04] shadow-[0_8px_20px_rgba(15,23,42,0.03)] hover:shadow-[0_12px_28px_rgba(15,23,42,0.06)] transition-all"
+      aria-label={name}
+      className="group relative flex flex-col justify-between overflow-hidden rounded-[22px] sm:rounded-[26px] bg-white border border-black/[0.04] shadow-[0_8px_20px_rgba(15,23,42,0.03)] hover:shadow-[0_12px_28px_rgba(15,23,42,0.06)] transition-all"
     >
-      {/* Top Image / Media Area */}
-      <div className="relative h-36 sm:h-40 md:h-44 w-full overflow-hidden bg-gradient-to-br from-[#fbf8f3] to-[#f2ede4]">
+      {/* Visual Picture-Only Card Area */}
+      <div className="relative aspect-[4/3] sm:aspect-square w-full overflow-hidden bg-gradient-to-br from-[#f8f6f0] to-[#eee8db]">
         {imageUrl ? (
           <img
             src={imageUrl}
@@ -42,9 +41,7 @@ export function DishCard({
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center p-3 text-center">
-            <span className="text-base sm:text-lg font-bold uppercase tracking-[0.2em] text-[#6b582b] select-none">
-              {initial}
-            </span>
+            <UtensilsCrossed className="h-8 w-8 text-[#a8a29e]" strokeWidth={1.5} />
           </div>
         )}
 
@@ -110,13 +107,6 @@ export function DishCard({
             </div>
           )}
         </div>
-      </div>
-
-      {/* Dish Name & Info Below */}
-      <div className="flex flex-col justify-between p-3 sm:p-3.5">
-        <h3 className="line-clamp-2 text-xs sm:text-sm font-semibold text-[#1d1d1f] leading-snug">
-          {name}
-        </h3>
       </div>
     </article>
   );

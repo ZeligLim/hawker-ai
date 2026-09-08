@@ -119,9 +119,11 @@ export default function OwnerMenuPage() {
           </div>
           <Link
             href={'/owner/menu/new' as any}
-            className="inline-flex items-center gap-2 rounded-full bg-[#111827] px-4 py-2.5 text-xs font-semibold text-white shadow-xs hover:bg-black transition-colors"
+            className="inline-flex items-center gap-1.5 rounded-full bg-[#111827] px-3.5 sm:px-4 py-2 sm:py-2.5 text-xs font-semibold text-white shadow-xs hover:bg-black transition-colors shrink-0"
+            aria-label="Add dish"
           >
-            <Plus className="h-4 w-4" /> Add dish
+            <Plus className="h-4 w-4" />
+            <span className="hidden xs:inline">Add dish</span>
           </Link>
         </header>
 
@@ -172,12 +174,16 @@ export default function OwnerMenuPage() {
             {dishes.map((dish) => (
               <article
                 key={dish.id}
-                className="flex items-center justify-between gap-4 rounded-[22px] bg-white p-4 shadow-[0_12px_26px_rgba(15,23,42,0.04)] border border-black/[0.04]"
+                className="flex items-center justify-between gap-3 sm:gap-4 rounded-[22px] bg-white p-3.5 sm:p-4 shadow-[0_12px_26px_rgba(15,23,42,0.04)] border border-black/[0.04]"
               >
                 <Link href={`/owner/menu/${dish.id}` as any} className="flex min-w-0 flex-1 items-center gap-3">
                   {dish.imageUrl ? (
-                    <img src={dish.imageUrl} alt="" className="h-12 w-12 rounded-[14px] object-cover" />
-                  ) : null}
+                    <img src={dish.imageUrl} alt="" className="h-12 w-12 shrink-0 rounded-[14px] object-cover" />
+                  ) : (
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[14px] bg-[#f5f5f7] text-[#86868b]">
+                      <UtensilsCrossed className="h-5 w-5" />
+                    </div>
+                  )}
                   <div className="min-w-0">
                     <h2 className="truncate text-base font-semibold">{dish.name}</h2>
                     <p className="mt-1 text-xs text-[#6e6e73]">

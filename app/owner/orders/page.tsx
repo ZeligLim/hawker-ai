@@ -395,9 +395,11 @@ export default function OwnerOrdersPage() {
                                   onClick={() => void handleItemSoldOut(order, item)}
                                   disabled={isRefundingThis}
                                   title="Mark item sold out & trigger customer refund"
-                                  className="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 transition-colors disabled:opacity-50"
+                                  className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-1 rounded-full text-[11px] font-semibold bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 transition-colors disabled:opacity-50"
                                 >
-                                  {isRefundingThis ? 'Refunding…' : 'Item Sold Out / Refund'}
+                                  <XCircle className="h-3 w-3 shrink-0" />
+                                  <span className="hidden sm:inline">{isRefundingThis ? 'Refunding…' : 'Item Sold Out / Refund'}</span>
+                                  <span className="sm:hidden">{isRefundingThis ? 'Refunding…' : 'Refund'}</span>
                                 </button>
                               ) : null}
                             </div>
@@ -408,8 +410,8 @@ export default function OwnerOrdersPage() {
                   </div>
 
                   {/* Hawker Earnings Subtotal (Customer Platform Fee OMITTED) */}
-                  <div className="mt-4 pt-3.5 border-t border-black/[0.06] flex items-center justify-between">
-                    <div>
+                  <div className="mt-4 pt-3.5 border-t border-black/[0.06] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div className="min-w-0">
                       <p className="text-[11px] font-bold uppercase tracking-wider text-[#86868b]">
                         Stall Payout (0% Commission)
                       </p>
@@ -430,10 +432,10 @@ export default function OwnerOrdersPage() {
                       <button
                         type="button"
                         onClick={() => advanceOrder(order.backendId, order.status)}
-                        className="inline-flex items-center gap-1.5 rounded-full bg-[#111827] px-4 py-2.5 text-xs font-semibold text-white shadow-sm hover:bg-black transition-colors"
+                        className="inline-flex items-center justify-center gap-1.5 rounded-full bg-[#111827] px-4 py-2.5 text-xs font-semibold text-white shadow-sm hover:bg-black transition-colors shrink-0"
                       >
                         {order.status === 'Ready' ? <Check className="h-3.5 w-3.5" /> : <Clock3 className="h-3.5 w-3.5" />}
-                        Mark {nextStatus(order.status)}
+                        <span>Mark {nextStatus(order.status)}</span>
                       </button>
                     ) : null}
                   </div>

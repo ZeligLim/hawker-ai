@@ -177,7 +177,7 @@ export function MenuPage() {
                     type="button"
                     aria-label={`Browse ${label} category`}
                     onClick={() => scrollToCategory(id)}
-                    className="flex items-center gap-2 rounded-full bg-white px-4 py-2.5 text-xs sm:text-sm font-semibold text-[#1d1d1f] shadow-xs border border-black/5 hover:bg-[#f5f5f7] active:scale-95 transition-all shrink-0"
+                    className="flex items-center gap-1.5 sm:gap-2 rounded-full bg-white px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold text-[#1d1d1f] shadow-xs border border-black/5 hover:bg-[#f5f5f7] active:scale-95 transition-all shrink-0"
                   >
                     <Icon />
                     <span>{label}</span>

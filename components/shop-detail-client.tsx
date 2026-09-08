@@ -85,28 +85,28 @@ export function ShopDetailClient({ shop, slug }: { shop: ShopData; slug: string 
     <main className="min-h-screen bg-[#f5f5f7] px-4 pb-32 pt-5 text-[#1d1d1f] sm:px-6">
       <div className="mx-auto w-full max-w-md sm:max-w-xl md:max-w-3xl lg:max-w-5xl">
         <section className="rounded-[28px] bg-white p-5 sm:p-6 shadow-[0_12px_28px_rgba(15,23,42,0.04)] border border-black/[0.04]">
-          <div className="flex items-start justify-between gap-3">
-            <div className="flex min-w-0 items-start gap-3.5">
-              <div className="flex h-12 w-12 sm:h-14 sm:w-14 shrink-0 items-center justify-center rounded-[16px] bg-[#111827] text-base sm:text-lg font-bold text-white shadow-sm">
+          <div className="flex items-start justify-between gap-2.5 sm:gap-3">
+            <div className="flex min-w-0 flex-1 items-start gap-3 sm:gap-3.5">
+              <div className="flex h-11 w-11 sm:h-14 sm:w-14 shrink-0 items-center justify-center rounded-[14px] sm:rounded-[16px] bg-[#111827] text-sm sm:text-lg font-bold text-white shadow-sm">
                 {shop.name
                   .split(' ')
                   .slice(0, 2)
                   .map((part) => part[0])
                   .join('')}
               </div>
-              <div className="min-w-0">
-                <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#1d1d1f]">
+              <div className="min-w-0 flex-1">
+                <h1 className="text-xl sm:text-3xl font-bold tracking-tight text-[#1d1d1f] truncate">
                   {shop.name}
                 </h1>
-                <p className="mt-1 text-xs sm:text-sm text-[#6e6e73]">
+                <p className="mt-0.5 sm:mt-1 text-xs sm:text-sm text-[#6e6e73] line-clamp-2">
                   {shop.description}
                 </p>
               </div>
             </div>
 
-            <div className="flex min-w-[88px] shrink-0 flex-col items-end gap-1 text-right">
+            <div className="flex shrink-0 flex-col items-end gap-1 text-right">
               <span
-                className={`whitespace-nowrap rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] ${
+                className={`whitespace-nowrap rounded-full px-2 sm:px-2.5 py-0.5 sm:py-1 text-[10px] font-semibold uppercase tracking-[0.12em] ${
                   shop.busy === 'Busy'
                     ? 'bg-[#fef3c7] text-[#b45309]'
                     : shop.busy === 'Moderate'
@@ -119,7 +119,7 @@ export function ShopDetailClient({ shop, slug }: { shop: ShopData; slug: string 
                 {shop.busy}
               </span>
               {shop.busy !== 'Closed' ? (
-                <span className="whitespace-nowrap text-[11px] font-medium leading-none text-[#6e6e73]">
+                <span className="whitespace-nowrap text-[10px] sm:text-[11px] font-medium leading-none text-[#6e6e73]">
                   ETA {shop.eta}
                 </span>
               ) : null}
