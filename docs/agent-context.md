@@ -181,8 +181,18 @@ Phase 8: Multi-Client Platform Architecture Refactoring & Onboarding Access Gati
   - `app/orders/page.tsx`: Responsive checkout button (`Pay RM XX.XX` on phone, `Pay & Place Order • RM XX.XX` on tablet/desktop).
   - `app/shop-owner/booths/page.tsx`: Icon-first buttons (`Edit Slot`, `Send Link`, `Remove`, `Revoke`) preventing horizontal squashing.
   - `app/owner/orders/page.tsx`: KDS ticket refund button made compact (`XCircle` icon + responsive text) and stall payout footer wraps gracefully.
-  - `app/owner/menu/page.tsx`: Add dish button uses responsive icon-first pill, and dish list items render clean fallback culinary thumbnails.
   - `components/home-page.tsx`, `components/menu-page.tsx`, `components/shop-detail-client.tsx`, and `app/customer/page.tsx`: Full responsive review preventing text overflow and awkward line breaks.
+- **Stall Setup Email Dispatch Service (`lib/email/mailer.ts`)**:
+  - Implemented multi-provider email delivery engine supporting:
+    1. **Resend REST API** (`RESEND_API_KEY`, `RESEND_FROM` / `EMAIL_FROM`)
+    2. **SMTP Transport via Nodemailer** (`SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`)
+    3. **Dev Simulation & Console Logging**: Generates high-visibility console notification box with clickable `/booths/join?token=...` link when live email keys are not yet configured in local development.
+  - Connected email dispatch into `POST /api/owner/booths/[id]/invite`:
+    - Retrieves physical food hall venue name (`restaurants`) and slot identifier (`food_outlets`).
+    - Constructs responsive, mobile-optimized HTML email containing stall setup link, security isolation warning, and 7-day expiration notice.
+    - Dispatches email and returns `{ delivered, simulated, provider, setupLink, message }`.
+  - Updated `app/shop-owner/booths/page.tsx` UI feedback banner: displays green check badge (`CheckCircle2`) when email is delivered via Resend/SMTP or link copy badge when simulated in dev mode.
+  - Documented configuration options in `.env.example`.
 
 ## Current Architecture
 - Frontend: Next.js App Router, TypeScript, React, Tailwind

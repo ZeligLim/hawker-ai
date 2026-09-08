@@ -1,6 +1,7 @@
 import { createHash, randomBytes } from 'crypto';
 import { NextRequest, NextResponse } from 'next/server';
 import { requireRequestUser, createAdminClient } from '@/lib/supabase/server';
+import { sendStallInvitationEmail } from '@/lib/email/mailer';
 
 export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const auth = await requireRequestUser(request);
@@ -40,6 +41,15 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   if (membershipError || !membership || !['owner', 'manager'].includes(membership.role)) {
     return NextResponse.json({ error: 'You are not allowed to create booth invitations for this shop.' }, { status: 403 });
   }
+
+  const { data: restaurant } = await auth.client
+    .from('restaurants')
+    .select('name')
+    .eq('id', outlet.restaurant_id)
+    .maybeSingle();
+
+  const venueName = restaurant?.name || 'Hawker Centre';
+  const stallName = outlet.name || 'Booth Slot';
 
   const adminClient = createAdminClient() ?? auth.client;
 
@@ -81,6 +91,15 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   const origin = request.nextUrl.origin || 'http://localhost:3000';
   const setupLink = `${origin}/booths/join?token=${token}`;
 
+  // Dispatch real email via Resend, SMTP, or local preview simulation
+  const emailResult = await sendStallInvitationEmail({
+    to: email,
+    stallName,
+    venueName,
+    setupLink,
+    expiresAt,
+  });
+
   return NextResponse.json({
     boothId: outlet.id,
     email,
@@ -88,7 +107,13 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     setupLink,
     expiresAt,
     status: 'sent',
-    message: `Setup link generated and sent to ${email}`,
+    delivered: emailResult.delivered,
+    simulated: emailResult.simulated,
+    provider: emailResult.provider,
+    previewUrl: emailResult.previewUrl,
+    message: emailResult.delivered
+      ? `Setup invitation email sent successfully to ${email} via ${emailResult.provider.toUpperCase()}!`
+      : `Setup link generated for ${email}. (Email provider not configured in .env.local — copy the link below to test or configure RESEND_API_KEY / SMTP)`,
   }, { status: 201 });
 }
 

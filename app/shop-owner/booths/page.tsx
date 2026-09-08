@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import {
   Check,
+  CheckCircle2,
   Copy,
   LoaderCircle,
   Mail,
@@ -64,7 +65,7 @@ export default function ShopOwnerBoothsPage() {
   const [sendingState, setSendingState] = useState<Record<string, boolean>>({});
   const [removingState, setRemovingState] = useState<Record<string, boolean>>({});
   const [feedbacks, setFeedbacks] = useState<
-    Record<string, { type: 'success' | 'error'; message: string; link?: string }>
+    Record<string, { type: 'success' | 'error'; message: string; link?: string; delivered?: boolean }>
   >({});
   const [copiedLinks, setCopiedLinks] = useState<Record<string, boolean>>({});
 
@@ -143,6 +144,8 @@ export default function ShopOwnerBoothsPage() {
         setupLink?: string;
         error?: string;
         message?: string;
+        delivered?: boolean;
+        provider?: string;
       };
 
       if (!response.ok) {
@@ -154,8 +157,9 @@ export default function ShopOwnerBoothsPage() {
         ...prev,
         [boothId]: {
           type: 'success',
-          message: `Setup link sent to ${targetEmail}`,
+          message: payload.message ?? `Setup link sent to ${targetEmail}`,
           link: payload.setupLink,
+          delivered: payload.delivered,
         },
       }));
 
@@ -408,13 +412,20 @@ export default function ShopOwnerBoothsPage() {
 
                     {feedback && (
                       <div
-                        className={`mt-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 rounded-xl p-3 text-xs ${
+                        className={`mt-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 rounded-xl p-3 text-xs ${
                           feedback.type === 'success'
                             ? 'bg-[#30d158]/10 text-[#166534] border border-[#30d158]/20'
                             : 'bg-red-50 text-red-700 border border-red-200'
                         }`}
                       >
-                        <span className="font-medium">{feedback.message}</span>
+                        <div className="flex items-center gap-2 min-w-0 flex-1">
+                          {feedback.delivered ? (
+                            <CheckCircle2 className="h-4 w-4 shrink-0 text-[#30d158]" />
+                          ) : feedback.type === 'success' ? (
+                            <Mail className="h-4 w-4 shrink-0 text-[#0071e3]" />
+                          ) : null}
+                          <span className="font-medium leading-snug">{feedback.message}</span>
+                        </div>
                         {feedback.link && (
                           <button
                             type="button"
