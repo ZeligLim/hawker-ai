@@ -217,7 +217,7 @@ Phase 8: Multi-Client Platform Architecture Refactoring & Onboarding Access Gati
     - Expanded layout from `max-w-[980px]` to `max-w-7xl` to make full use of widescreen monitors and tablets.
     - Upgraded top summary into a responsive 5-card KPI ribbon: Gross Sales (RM), Total Orders, Average Ticket Size, Active Stalls, and Stall Avg Sales.
     - Two-column responsive architecture (`lg:grid-cols-12`):
-      - Left (8 cols): Stall performance leaderboard with medal ranks (🥇 1, 🥈 2, 🥉 3), proportional volume progress bars, and operational velocity benchmarks (Top Earner, Occupancy Rate, Stall Velocity).
+      - Left (8 cols): Stall performance leaderboard rendered in a responsive multi-column grid (`grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3`) so stalls span 2-3 per row (occupying exactly 2-3 rows for up to 6 stalls), with rank medals (🥇 1, 🥈 2, 🥉 3), proportional volume progress bars, expandable view toggle for >6 stalls, and operational velocity benchmarks (Top Earner, Occupancy Rate, Stall Velocity).
       - Right (4 cols): Segmented revenue share visualizer, transparent settlement & merchant payout breakdown (Gross Volume, Merchant Disbursements, Platform Cut), and quick food hall management shortcuts.
     - Updated `app/api/owner/analytics/route.ts` to sort stalls by revenue descending and calculate active booth counts, platform processing fees, and merchant payouts.
   - **Booths Management Page Mobile Optimization (`app/shop-owner/booths/page.tsx`)**:
