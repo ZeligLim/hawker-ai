@@ -185,3 +185,11 @@ export async function resolveUserDestination(
 
   return resolveDefaultAppRoute();
 }
+
+/**
+ * Resolves the destination after signing out. Always defaults to the landing page ('/').
+ */
+export function resolveSignOutDestination(customRedirect?: string | null): string {
+  const sanitized = sanitizeRedirectPath(customRedirect);
+  return sanitized ?? '/';
+}

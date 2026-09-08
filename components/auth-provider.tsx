@@ -1,12 +1,13 @@
 'use client';
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import type { User } from '@supabase/supabase-js';
 import { supabase, authenticatedFetch } from '@/lib/supabase/client';
 import {
   clearAuthRedirect,
   resolveAuthRedirect,
+  resolveSignOutDestination,
   resolveUserDestination,
   saveAuthRedirect,
 } from '@/lib/auth-redirect';
@@ -41,7 +42,7 @@ type AuthContextValue = {
   signInWithGoogle: (customRedirect?: string) => Promise<void>;
   signInWithEmail: (email: string, password: string) => Promise<'signed-in' | 'activation-sent'>;
   signUpWithEmail: (email: string, password: string) => Promise<void>;
-  signOut: () => Promise<void>;
+  signOut: (redirectTo?: string) => Promise<void>;
   updateProfile: (displayName: string) => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
   updatePassword: (newPassword: string) => Promise<void>;
@@ -52,6 +53,7 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 
 const publicRoutes = [
   '/',
+  '/customer',
   '/plans',
   '/pricing',
   '/subscribe',
@@ -117,6 +119,7 @@ function getFriendlyAuthError(error: unknown): string {
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
+  const isSigningOutRef = useRef(false);
   const [user, setUser] = useState<User | null>(null);
   const [isGuest, setIsGuest] = useState<boolean>(() => {
     if (typeof window === 'undefined') return false;
@@ -163,8 +166,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [isGuest]);
 
-  const effectiveStatus: AuthStatus = status === 'loading' ? 'loading' : user || isGuest ? 'authenticated' : 'unauthenticated';
-
   const [roles, setRoles] = useState<UserRoles>({
     isCustomer: true,
     hasShopOwner: false,
@@ -192,25 +193,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (res.ok) {
         const data = await res.json();
         setRoles({
-          isCustomer: true,
-          hasShopOwner: Boolean(data.hasShopOwner),
-          hasBooth: Boolean(data.hasBooth),
+          isCustomer: data.isCustomer ?? true,
+          hasShopOwner: data.hasShopOwner ?? false,
+          hasBooth: data.hasBooth ?? false,
           isLoading: false,
-          shops: Array.isArray(data.shops) ? data.shops : [],
-          booths: Array.isArray(data.booths) ? data.booths : [],
+          shops: data.shops ?? [],
+          booths: data.booths ?? [],
         });
-      } else {
-        setRoles((prev) => ({ ...prev, isLoading: false }));
       }
     } catch {
-      setRoles((prev) => ({ ...prev, isLoading: false }));
+      // Ignore network errors in role fetch
     }
   }, [user]);
 
   useEffect(() => {
     let active = true;
     const timeoutId = window.setTimeout(() => {
-      if (active) {
+      if (active && status === 'authenticated' && user) {
         void refreshRoles();
       }
     }, 0);
@@ -218,23 +217,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       active = false;
       window.clearTimeout(timeoutId);
     };
-  }, [refreshRoles]);
+  }, [status, user, refreshRoles]);
+
+  const effectiveStatus: AuthStatus = isGuest ? 'authenticated' : status;
 
   const switchMode = useCallback(
     (mode: 'customer' | 'booth' | 'shop_owner') => {
-      if (typeof window !== 'undefined') {
-        window.localStorage.setItem('hawker-active-mode', mode);
-        if (mode === 'customer') {
+      if (mode === 'customer') {
+        if (typeof window !== 'undefined') {
           window.localStorage.setItem('hawker-user-mode', 'customer');
           window.localStorage.setItem('hawker-shop-owner-mode', 'false');
           router.push('/home');
-        } else if (mode === 'booth') {
-          if (!roles.hasBooth) return;
+        }
+      } else if (mode === 'booth') {
+        if (roles.hasBooth && typeof window !== 'undefined') {
           window.localStorage.setItem('hawker-user-mode', 'owner');
           window.localStorage.setItem('hawker-shop-owner-mode', 'false');
-          router.push('/owner');
-        } else if (mode === 'shop_owner') {
-          if (!roles.hasShopOwner) return;
+          router.push('/owner/orders');
+        }
+      } else if (mode === 'shop_owner') {
+        if (roles.hasShopOwner && typeof window !== 'undefined') {
           window.localStorage.setItem('hawker-user-mode', 'customer');
           window.localStorage.setItem('hawker-shop-owner-mode', 'true');
           router.push('/shop-owner/booths');
@@ -245,7 +247,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   );
 
   useEffect(() => {
-    if (effectiveStatus === 'loading') return;
+    if (effectiveStatus === 'loading' || isSigningOutRef.current) return;
 
     const isPublicRoute = publicRoutes.some((route) => pathname === route || pathname.startsWith(`${route}/`));
 
@@ -366,37 +368,57 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const signOut = useCallback(async () => {
-    if (isGuest) {
-      setIsGuest(false);
-      if (typeof window !== 'undefined') {
-        window.localStorage.setItem('hawker-guest-mode', 'false');
+  const signOut = useCallback(
+    async (redirectTo?: string) => {
+      isSigningOutRef.current = true;
+      const targetDestination = resolveSignOutDestination(redirectTo);
+
+      if (isGuest) {
+        setIsGuest(false);
+        if (typeof window !== 'undefined') {
+          window.localStorage.setItem('hawker-guest-mode', 'false');
+          window.location.href = targetDestination;
+        } else {
+          router.replace(targetDestination as any);
+        }
+        return;
       }
-      router.replace('/auth' as any);
-      return;
-    }
 
-    const client = supabase;
-    if (!client) return;
+      const client = supabase;
+      if (!client) {
+        if (typeof window !== 'undefined') {
+          window.location.href = targetDestination;
+        } else {
+          router.replace(targetDestination as any);
+        }
+        return;
+      }
 
-    setUser(null);
-    setStatus('unauthenticated');
-    setRoles({
-      isCustomer: true,
-      hasShopOwner: false,
-      hasBooth: false,
-      isLoading: false,
-      shops: [],
-      booths: [],
-    });
+      setUser(null);
+      setStatus('unauthenticated');
+      setRoles({
+        isCustomer: true,
+        hasShopOwner: false,
+        hasBooth: false,
+        isLoading: false,
+        shops: [],
+        booths: [],
+      });
 
-    const { error } = await client.auth.signOut();
-    if (error) {
-      throw new Error(getFriendlyAuthError(error));
-    }
+      try {
+        await client.auth.signOut();
+      } catch (error) {
+        console.error('Sign out error:', error);
+      }
 
-    router.replace('/auth' as any);
-  }, [isGuest, router]);
+      if (typeof window !== 'undefined') {
+        window.location.href = targetDestination;
+      } else {
+        router.replace(targetDestination as any);
+      }
+    },
+    [isGuest, router],
+  );
 
   const resetPassword = async (email: string) => {
     const client = supabase;

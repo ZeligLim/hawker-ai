@@ -1,8 +1,9 @@
 'use client';
 
-import { Save } from 'lucide-react';
+import { LogOut, Save } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { RoleModeSwitcher } from '@/components/role-mode-switcher';
+import { useAuth } from '@/components/auth-provider';
 import { authenticatedFetch } from '@/lib/supabase/client';
 
 type Shop = {
@@ -15,6 +16,8 @@ type Shop = {
 };
 
 export default function ShopOwnerProfilePage() {
+  const { signOut } = useAuth();
+  const [isSignOutDialogOpen, setIsSignOutDialogOpen] = useState(false);
   const [shop, setShop] = useState<Shop | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -184,6 +187,31 @@ export default function ShopOwnerProfilePage() {
         <div className="mt-6">
           <RoleModeSwitcher currentMode="shop_owner" />
         </div>
+
+        <button
+          type="button"
+          onClick={() => setIsSignOutDialogOpen(true)}
+          className="mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-[#111827] px-4 py-3 text-sm font-semibold text-white hover:bg-black transition-all"
+        >
+          <LogOut className="h-4 w-4" /> Sign out
+        </button>
+
+        {isSignOutDialogOpen ? (
+          <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/35 px-4" role="presentation">
+            <div role="dialog" aria-modal="true" aria-labelledby="shop-owner-sign-out-title" className="w-full max-w-[360px] rounded-[24px] bg-white p-5 shadow-[0_24px_70px_rgba(15,23,42,0.24)]">
+              <h2 id="shop-owner-sign-out-title" className="text-xl font-semibold tracking-[-0.04em]">Sign out?</h2>
+              <p className="mt-2 text-sm text-[#6e6e73]">You can sign in again anytime to manage your food hall.</p>
+              <div className="mt-5 flex gap-2">
+                <button type="button" onClick={() => setIsSignOutDialogOpen(false)} className="flex-1 rounded-full bg-[#f5f5f7] px-4 py-3 text-sm font-semibold text-[#1d1d1f]">
+                  Cancel
+                </button>
+                <button type="button" onClick={() => void signOut()} className="flex-1 rounded-full bg-[#111827] px-4 py-3 text-sm font-semibold text-white">
+                  Sign out
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : null}
       </div>
     </main>
   );

@@ -4,6 +4,7 @@ import {
   sanitizeRedirectPath,
   resolveAuthRedirect,
   resolveUserDestination,
+  resolveSignOutDestination,
 } from './auth-redirect.ts';
 
 test('sanitizeRedirectPath allows safe relative paths and blocks open redirects & auth loops', () => {
@@ -26,6 +27,24 @@ test('sanitizeRedirectPath allows safe relative paths and blocks open redirects 
   assert.equal(sanitizeRedirectPath(null), null);
   assert.equal(sanitizeRedirectPath(undefined), null);
   assert.equal(sanitizeRedirectPath(''), null);
+});
+
+test('resolveSignOutDestination always defaults to landing page (/) and prevents open redirects', () => {
+  // Default is landing page
+  assert.equal(resolveSignOutDestination(), '/');
+  assert.equal(resolveSignOutDestination(null), '/');
+  assert.equal(resolveSignOutDestination(undefined), '/');
+  assert.equal(resolveSignOutDestination(''), '/');
+
+  // Explicit safe paths
+  assert.equal(resolveSignOutDestination('/'), '/');
+  assert.equal(resolveSignOutDestination('/customer'), '/customer');
+
+  // Blocks malicious open redirects and auth loops, safely defaulting to landing page
+  assert.equal(resolveSignOutDestination('https://evil.com'), '/');
+  assert.equal(resolveSignOutDestination('//evil.com'), '/');
+  assert.equal(resolveSignOutDestination('/auth'), '/');
+  assert.equal(resolveSignOutDestination('/auth/callback'), '/');
 });
 
 test('resolveAuthRedirect prioritizes explicit /apply redirect', () => {

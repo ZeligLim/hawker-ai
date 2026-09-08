@@ -45,10 +45,17 @@ Phase 8: Multi-Client Platform Architecture Refactoring & Onboarding Access Gati
      - Cross-links between Operator Landing (`/`) and Diner Landing (`/customer`) across top ribbon, navigation bar, and footer.
    - Client routing updated in `lib/shared/permissions.ts` to classify `/customer` as `'website'`, rendering clean full-bleed marketing layouts without mobile bottom tabs.
 
-4. **Automated Verification & Testing**:
-   - `lib/auth-onboarding.test.ts`: Added unit tests verifying `isCustomerIntent` route classification, marketing nav role detection, dashboard visibility gating, dual-role dropdown handling, shop-only "Start Free" visibility, and `/customer` route isolation.
+4. **Sign Out Landing Page Redirection**:
+   - `signOut` in `components/auth-provider.tsx` now redirects to the landing page (`'/'`) by default instead of `/auth`.
+   - Added `resolveSignOutDestination` in `lib/auth-redirect.ts` to enforce safe landing-page fallback and prevent open-redirect vulnerabilities or auth loops.
+   - Introduced `isSigningOutRef` in `AuthProvider` so unauthenticated route guards do not intercept the sign out transition when logging out from private views (such as `/owner/orders`, `/profile`, or `/shop-owner/booths`).
+   - Added Sign Out button and confirmation modal to `app/shop-owner/profile/page.tsx` for food hall operators.
+   - Added `/customer` to `publicRoutes` in `components/auth-provider.tsx`.
+
+5. **Automated Verification & Testing**:
+   - `lib/auth-onboarding.test.ts`: Added unit tests verifying `resolveSignOutDestination` defaults to `'/'`, handles custom safe paths, and sanitizes malicious URLs; tested `isCustomerIntent` route classification, marketing nav role detection, dashboard visibility gating, dual-role dropdown handling, shop-only "Start Free" visibility, and `/customer` route isolation.
    - `lib/multi-client-architecture.test.ts`: Client path resolution including `/customer`, client boundaries, cross-stall isolation, cross-shop isolation, and unauthenticated redirects.
-   - All 15 tests pass (`npm test`).
+   - All 16 tests pass (`npm test`).
    - TypeScript verification (`npx tsc --noEmit`) passes with 0 errors.
    - ESLint (`npm run lint`) passes with 0 errors.
    - Production build (`npm run build`) compiles all 45 routes successfully.
