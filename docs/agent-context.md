@@ -239,6 +239,11 @@ Phase 8: Multi-Client Platform Architecture Refactoring & Onboarding Access Gati
   - Upgraded Booth Slots & Access layout from a single-column stack into a 3-column responsive grid (`grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5`).
   - Optimized vendor email input, send setup link button, and feedback notifications to fit compactly in 3-column card widths.
   - Made authorized store manager and pending invitation tokens responsive with concise action buttons (`Copy`, `Revoke`, `Remove`).
+- **Docs Cleanup & API Endpoints Documentation (`docs/endpoints.md`)**:
+  - Removed obsolete and empty markdown files (`docs/fixes.md` and `docs/mainpage.md`).
+  - Authored a comprehensive endpoint specification at `docs/endpoints.md` covering all 28 API operations across 21 App Router route handlers.
+  - Documented HTTP methods, access tiers (Public, Diner, Stall Merchant, Shop Owner), request schemas, success response formats, and error codes.
+  - Updated `README.md` to reference the central endpoint catalog.
 
 ## Current Architecture
 - Frontend: Next.js App Router, TypeScript, React, Tailwind

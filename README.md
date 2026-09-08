@@ -66,12 +66,16 @@ Before shipping, run:
 - `npm run build`
 - `npm run check:env`
 
-## Search APIs
+## API Reference
 
-- `GET /api/search?maxPrice=15&vegetarian=true&limit=5`
-- `POST /api/search` with JSON payloads
-- `POST /api/search-intent` with `{ "query": "vegetarian under RM15" }`
-- `GET /api/health`
+Comprehensive endpoint documentation is available in [`docs/endpoints.md`](docs/endpoints.md), covering:
+
+- **System**: `GET /api/health`
+- **Customer Discovery**: `GET /api/search`, `POST /api/search`, `POST /api/search-intent`, `GET /api/outlets`
+- **Customer Orders & Sessions**: `POST /api/table-sessions`, `POST /api/orders`, `GET /api/orders`
+- **User Identity & Roles**: `GET /api/user/roles`
+- **Stall Operations**: `GET/POST /api/owner/dishes`, `PATCH/POST /api/owner/dishes/[id]`, `GET/PATCH /api/owner/orders`, `POST /api/owner/orders/[id]/refund`, `GET/POST /api/owner/booths/join`
+- **Food Hall Operations**: `GET/POST /api/owner/shops`, `GET/PATCH /api/owner/shops/[id]`, `POST/PATCH /api/owner/booths`, `POST /api/owner/booths/[id]/invite`, `GET/DELETE /api/owner/booths/[id]/members`, `GET /api/owner/analytics`
 
 ## Deployment notes
 
