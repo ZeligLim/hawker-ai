@@ -145,7 +145,7 @@ export default function LandingPage() {
               href={'/apply' as any}
               className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-3 rounded-full text-sm font-medium text-white bg-[#0071e3] hover:bg-[#0077ed] transition-all shadow-[0_2px_10px_rgba(0,113,227,0.25)] hover:shadow-[0_4px_16px_rgba(0,113,227,0.35)]"
             >
-              Apply / List Your Hawker Stall
+              Start Free
               <ArrowRight className="w-4 h-4 ml-2" />
             </Link>
             <a
@@ -1035,10 +1035,10 @@ export default function LandingPage() {
 
               <div className="mt-8 pt-6 border-t border-black/[0.06]">
                 <Link
-                  href="/subscribe"
+                  href={'/apply' as any}
                   className="w-full inline-flex items-center justify-center py-3 rounded-full text-sm font-semibold bg-[#1d1d1f] text-white hover:bg-black transition-colors"
                 >
-                  Start as Venue Operator
+                  Start Free as Shop Owner
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
               </div>
@@ -1074,13 +1074,9 @@ export default function LandingPage() {
               </div>
 
               <div className="mt-8 pt-6 border-t border-black/[0.06]">
-                <Link
-                  href={'/apply' as any}
-                  className="w-full inline-flex items-center justify-center py-3 rounded-full text-sm font-semibold bg-[#0071e3] text-white hover:bg-[#0077ed] transition-colors"
-                >
-                  Apply / List Your Stall
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </Link>
+                <div className="w-full text-center py-3 px-4 rounded-full text-xs font-medium bg-[#f5f5f7] text-[#6e6e73] border border-black/[0.04]">
+                  Joined via private email invitation from your food hall operator
+                </div>
               </div>
             </div>
           </div>
@@ -1223,10 +1219,10 @@ export default function LandingPage() {
                   Zero lock-in contracts &bull; 100% free to start today
                 </span>
                 <Link
-                  href="/subscribe"
+                  href={'/apply' as any}
                   className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3 rounded-full text-xs font-semibold bg-[#0071e3] text-white hover:bg-[#0077ed] transition-all shadow-lg hover:shadow-[#0071e3]/25"
                 >
-                  Launch Your Food Hall for RM 0
+                  Start Free for RM 0
                   <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
                 </Link>
               </div>
@@ -1311,10 +1307,10 @@ export default function LandingPage() {
 
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-3.5">
             <Link
-              href="/subscribe"
+              href={'/apply' as any}
               className="w-full sm:w-auto px-8 py-3.5 rounded-full text-sm font-semibold bg-[#0071e3] text-white hover:bg-[#0077ed] transition-all shadow-[0_4px_20px_rgba(0,113,227,0.35)]"
             >
-              Get started for free
+              Start Free
             </Link>
             <Link
               href="/pricing"
@@ -1359,7 +1355,7 @@ export default function LandingPage() {
             <div>
               <p className="font-semibold text-[#1d1d1f] mb-3">Operators</p>
               <ul className="space-y-2.5">
-                <li><Link href="/subscribe" className="hover:text-[#1d1d1f] transition-colors">Create Hawker Centre</Link></li>
+                <li><Link href={'/apply' as any} className="hover:text-[#1d1d1f] transition-colors">Start Free (Shop Owner)</Link></li>
                 <li><a href="#how-it-works" className="hover:text-[#1d1d1f] transition-colors">Booth Invitation Keys</a></li>
                 <li><a href="#roles" className="hover:text-[#1d1d1f] transition-colors">Revenue Reconciliation</a></li>
                 <li><a href="#product" className="hover:text-[#1d1d1f] transition-colors">Table Session Manager</a></li>
@@ -1369,9 +1365,8 @@ export default function LandingPage() {
             <div>
               <p className="font-semibold text-[#1d1d1f] mb-3">Merchants</p>
               <ul className="space-y-2.5">
-                <li><Link href={'/apply' as any} className="text-[#0071e3] font-semibold hover:underline">Apply / List Your Stall</Link></li>
                 <li><Link href="/auth?redirect=/owner" className="hover:text-[#1d1d1f] transition-colors">Merchant Sign In</Link></li>
-                <li><a href="#how-it-works" className="hover:text-[#1d1d1f] transition-colors">How Stalls Join (Invite Only)</a></li>
+                <li><a href="#how-it-works" className="hover:text-[#1d1d1f] transition-colors">How Stalls Join (Email Invite Only)</a></li>
                 <li><a href="#features" className="hover:text-[#1d1d1f] transition-colors">Menu Customisations</a></li>
                 <li><a href="#features" className="hover:text-[#1d1d1f] transition-colors">Sold-out 86 Controls</a></li>
               </ul>

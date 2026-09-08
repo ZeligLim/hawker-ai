@@ -219,14 +219,14 @@ export default function ApplyPage() {
 
             <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-[#0071e3]/10 text-[#0071e3] mb-3">
               <Sparkles className="w-3.5 h-3.5" />
-              Hawker Business Onboarding
+              Hawker Shop Owner Onboarding
             </span>
 
             <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#1d1d1f]">
-              Apply & List Your Hawker Stall
+              Start Free: Register Your Hawker Shop
             </h1>
             <p className="text-sm sm:text-base text-[#6e6e73] mt-2 max-w-md mx-auto">
-              To separate your business operations from your personal account, please sign in or register your account first.
+              Set up your hawker venue or food hall operations. Stalls and booth masters join your venue via email invitation.
             </p>
 
             <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3 max-w-md mx-auto">
@@ -377,7 +377,7 @@ export default function ApplyPage() {
 
               <div className="text-right text-[11px] text-[#6e6e73] hidden sm:block">
                 <span>Will become</span>
-                <p className="font-semibold text-[#1d1d1f]">Stall Owner</p>
+                <p className="font-semibold text-[#1d1d1f]">Shop Owner</p>
               </div>
             </div>
 

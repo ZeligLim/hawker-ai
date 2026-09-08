@@ -126,14 +126,14 @@ export function MarketingNav({ currentPath = '/' }: MarketingNavProps) {
             </div>
           ) : isAuthenticated ? (
             <>
-              {/* If user is not yet a shop owner, provide direct Apply / List Stall CTA */}
+              {/* If user is not yet a shop owner, provide direct Start Free CTA */}
               {!roles.hasShopOwner && (
                 <Link
                   href={'/apply' as any}
                   className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#0071e3] bg-[#0071e3]/10 hover:bg-[#0071e3]/15 px-3 py-1.5 rounded-full transition-all"
                 >
                   <PlusCircle className="w-3.5 h-3.5" />
-                  List Your Stall
+                  Start Free
                 </Link>
               )}
 
@@ -247,7 +247,7 @@ export function MarketingNav({ currentPath = '/' }: MarketingNavProps) {
                 href={'/apply' as any}
                 className="text-xs font-semibold text-white bg-[#0071e3] hover:bg-[#0077ed] px-3.5 py-1.5 rounded-full shadow-[0_1px_2px_rgba(0,0,0,0.08)] transition-all hover:shadow"
               >
-                Apply / List Stall
+                Start Free
               </Link>
             </>
           )}
@@ -318,7 +318,7 @@ export function MarketingNav({ currentPath = '/' }: MarketingNavProps) {
                     onClick={() => setMobileMenuOpen(false)}
                     className="w-full text-center py-2.5 rounded-full text-sm font-semibold text-white bg-[#0071e3]"
                   >
-                    Apply / List Your Hawker Stall
+                    Start Free (Shop Owner)
                   </Link>
                 )}
                 <div className="grid grid-cols-2 gap-2 mt-1">
@@ -345,7 +345,7 @@ export function MarketingNav({ currentPath = '/' }: MarketingNavProps) {
                   onClick={() => setMobileMenuOpen(false)}
                   className="w-full text-center py-2.5 rounded-full text-sm font-semibold text-white bg-[#0071e3]"
                 >
-                  Apply / List Your Hawker Stall
+                  Start Free
                 </Link>
                 <Link
                   href="/auth"

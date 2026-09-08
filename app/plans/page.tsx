@@ -225,7 +225,7 @@ export default function PlansPage() {
               href={'/apply' as any}
               className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-3.5 rounded-full text-sm font-semibold bg-[#0071e3] text-white hover:bg-[#0077ed] transition-all shadow-lg hover:shadow-xl shrink-0"
             >
-              Apply / Launch Your Stall
+              Start Free
               <ArrowRight className="w-4 h-4 ml-2" />
             </Link>
           </div>

@@ -10,13 +10,13 @@ Phase 7: Authenticated UI State Synchronization & Dedicated Hawker Shop Onboardi
    - When authenticated, navbar renders user initials avatar, user name, verified role badge (Shop Owner, Stall Merchant, Diner), contextual "Dashboard" link, and comprehensive Account Menu (Profile, Shop/Kitchen links, Discovery, Sign Out).
    - Never flashes "Sign In" / "Sign Up" buttons when user is authenticated; uses skeleton pulse while hydrating session.
    - Created `authenticatedFetch` in `lib/supabase/client.ts` to automatically attach Supabase session JWT in `Authorization: Bearer <token>` headers, resolving 401s on `/api/user/roles`, `/api/owner/shops`, and `/api/owner/booths`.
-2. Hawker Shop Application & Onboarding Flow (`/apply`):
+2. Hawker Shop Owner Onboarding & Landing Experience:
+   - Unified all public landing page CTAs to **"Start Free"**, routing to the dedicated shop owner onboarding and sign-up flow (`/apply`).
+   - Completely removed public "List Your Stall" / "List Booth" links from the main landing page, navigation header, and footer.
+   - Enforced invite-only booth/stall access: independent booth masters join exclusively via private email invitations dispatched by their food hall operator (`/booths/join?token=...`).
    - Separated the personal user account from the hawker shop/business entity.
    - Direct gate for unauthenticated users with mode and return redirect preservation (`/auth?mode=signup&redirect=/apply` and `/auth?mode=signin&redirect=/apply`).
-   - Authenticated users skip auth and directly enter the 3-step stall onboarding form:
-     1. Stall & Business Profile (shop name, primary stall name, cuisine category)
-     2. Location & Operations (hawker centre name, address, contact WhatsApp/phone)
-     3. Activation & Status (`draft`, `pending_review`, `approved`, `rejected`, `suspended`)
+   - Authenticated users skip auth and directly enter the 3-step stall onboarding form.
    - Guaranteed relationship: user → owns/manages (`restaurant_memberships` & `merchant_memberships`) → shop (`restaurants`) → stall (`food_outlets`) → menu items (`dishes`).
    - Duplicate prevention & idempotency: checks existing memberships before provisioning. If user already owns a shop, renders direct links to existing dashboard (`/shop-owner/booths`) and kitchen (`/owner`) rather than creating duplicate shops.
    - Added `009_shop_status.sql` documentation for shop lifecycle states.
