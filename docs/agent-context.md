@@ -1,25 +1,48 @@
 # Current Project Context
 
 ## Current Phase
-Phase 7: Authenticated UI State Synchronization & Dedicated Hawker Shop Onboarding Flow
+Phase 8: Multi-Client Platform Architecture Refactoring (Landing, Customer, Stall, Owner)
 
 ## Current Feature
-1. Fixed signed-in state reflection in UI:
-   - Built `<MarketingNav />` component with real-time authentication awareness.
-   - Replaced static unauthenticated navigation across landing page (`/`), pricing page (`/pricing`, `/plans`), and app entry points.
-   - When authenticated, navbar renders user initials avatar, user name, verified role badge (Shop Owner, Stall Merchant, Diner), contextual "Dashboard" link, and comprehensive Account Menu (Profile, Shop/Kitchen links, Discovery, Sign Out).
-   - Never flashes "Sign In" / "Sign Up" buttons when user is authenticated; uses skeleton pulse while hydrating session.
-   - Created `authenticatedFetch` in `lib/supabase/client.ts` to automatically attach Supabase session JWT in `Authorization: Bearer <token>` headers, resolving 401s on `/api/user/roles`, `/api/owner/shops`, and `/api/owner/booths`.
-2. Hawker Shop Owner Onboarding & Landing Experience:
-   - Unified all public landing page CTAs to **"Start Free"**, routing to the dedicated shop owner onboarding and sign-up flow (`/apply`).
-   - Completely removed public "List Your Stall" / "List Booth" links from the main landing page, navigation header, and footer.
-   - Enforced invite-only booth/stall access: independent booth masters join exclusively via private email invitations dispatched by their food hall operator (`/booths/join?token=...`).
-   - Separated the personal user account from the hawker shop/business entity.
-   - Direct gate for unauthenticated users with mode and return redirect preservation (`/auth?mode=signup&redirect=/apply` and `/auth?mode=signin&redirect=/apply`).
-   - Authenticated users skip auth and directly enter the 3-step stall onboarding form.
-   - Guaranteed relationship: user → owns/manages (`restaurant_memberships` & `merchant_memberships`) → shop (`restaurants`) → stall (`food_outlets`) → menu items (`dishes`).
-   - Duplicate prevention & idempotency: checks existing memberships before provisioning. If user already owns a shop, renders direct links to existing dashboard (`/shop-owner/booths`) and kitchen (`/owner`) rather than creating duplicate shops.
-   - Added `009_shop_status.sql` documentation for shop lifecycle states.
+1. **Multi-Client Experience Separation**:
+   - Refactored application into 4 distinct client experiences with clean architectural boundaries:
+     1. **Public Marketing Website** (`components/marketing/marketing-shell.tsx` & `components/marketing-nav.tsx`):
+        - Public discovery, features, pricing, and onboarding (`/`, `/pricing`, `/plans`, `/apply`, `/subscribe`).
+        - Does NOT expose customer, stall-worker, or owner dashboards.
+        - Persists real-time authentication awareness with user initials avatar, role badge, and contextual navigation without layout leakage.
+     2. **Customer App** (`components/customer/customer-shell.tsx`):
+        - Browsing, menus, QR table sessions, multi-stall cart, checkout, order tracking, and diner profile (`/home`, `/menu`, `/orders`, `/profile`, `/scan`, `/shop/[slug]`, `/results`).
+        - Bottom navigation strictly exposes customer views (Home, Menu, Orders, Profile).
+        - Does NOT expose stall dashboard, ticket processing, menu editing, staff management, or owner analytics.
+     3. **Hawker Stall App** (`components/stall/stall-shell.tsx` & `components/stall/stall-guard.tsx`):
+        - Tailored for stall workers & chefs operating kitchen display systems (`/stall`, `/owner`, `/owner/orders`, `/owner/menu`, `/owner/profile`).
+        - Dark-mode high-contrast KDS bottom navigation (Tickets, Menu 86, Overview, Profile).
+        - Strictly isolated: stall workers only see and modify their assigned stall's orders and dishes.
+        - Cross-access prevented: customers and unauthorized users are blocked by `StallGuard` and redirected.
+     4. **Hawker Shop Owner App** (`components/owner/owner-shell.tsx` & `components/owner/owner-guard.tsx`):
+        - Reserved for venue operators and hawker centre business owners (`/shop-owner`, `/shop-owner/booths`, `/shop-owner/analytics`, `/shop-owner/profile`, `/booths`, `/analytics`).
+        - Dedicated business navigation (Booths & Invites, Financial Analytics, Venue Settings).
+        - Protected by `OwnerGuard`: customers and stall workers without venue ownership are redirected to `/apply`.
+   - Refactored root `components/app-shell.tsx` into a lightweight multi-client dispatcher using `PermissionEngine.getClientForPath(pathname)`.
+
+2. **Decoupled Platform SDK (`lib/shared/`)**:
+   - Designed for 100% portability across Web, iOS, and Android (React Native / Expo):
+     - `lib/shared/types.ts`: Clean domain entities separating personal user identity (`UserProfile`) from business entities (`RestaurantEntity`, `FoodOutletEntity`, `DishEntity`, `MerchantOrderEntity`) and memberships (`RestaurantMembershipEntity`, `MerchantMembershipEntity`).
+     - `lib/shared/permissions.ts`: Pure TypeScript `PermissionEngine` evaluating client capabilities, route authorization, and cross-stall/cross-shop boundaries.
+     - `lib/shared/api-client.ts`: Modular API client layer with client-specific namespaces (`customerApi`, `stallApi`, `ownerApi`).
+
+3. **Backend Authorization & Security Hardening**:
+   - Fixed `app/api/owner/analytics/route.ts`: Enforced strict `restaurant_memberships` role check (`owner`, `manager`). Stall workers and customers calling shop analytics now receive `403 Forbidden`. Removed all dev fallback leaks.
+   - Fixed `app/api/owner/dishes/route.ts`: Removed insecure POST bypass and fallback mock data in GET. Unauthorized users receive `403 Forbidden`.
+   - Fixed `app/api/owner/orders/route.ts`: Returns `403 Forbidden` if requester lacks stall/shop memberships.
+   - Created Supabase migration `supabase/migrations/010_multi_client_authorization.sql` enforcing PostgreSQL Row Level Security (RLS) for restaurants, food outlets, dishes, and merchant orders.
+
+4. **Automated Verification & Testing**:
+   - Added `lib/multi-client-architecture.test.ts` covering path resolution, client boundaries, cross-stall isolation, cross-shop isolation, and unauthenticated redirects.
+   - All 13 unit tests pass (`npm test`).
+   - TypeScript verification (`npx tsc --noEmit`) passes with 0 errors.
+   - ESLint (`npm run lint`) passes with 0 errors.
+   - Production build (`npm run build`) compiles all 44 routes successfully.
 
 ## Completed
 - Next.js App Router foundation initialized

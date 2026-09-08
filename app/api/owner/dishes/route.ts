@@ -1,28 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireRequestUser } from '@/lib/supabase/server';
 import { OwnerDishSchema } from '@/lib/owner/schema';
-import { fallbackDishes } from '@/lib/search/fallback-data';
-
-function getFallbackDishesPayload() {
-  const formatted = fallbackDishes.slice(0, 6).map((d) => ({
-    id: d.id,
-    food_outlet_id: 'c46f62c4-a1d9-4428-88f2-759da5cd9e16',
-    name: d.name,
-    description: `${d.stallName} • ${d.ingredients.join(', ')}`,
-    price: d.price,
-    is_vegetarian: d.isVegetarian,
-    is_halal: d.isHalal,
-    spice_level: d.spiceLevel,
-    protein_grams: d.proteinGrams,
-    image_url: null,
-    is_available: true,
-    tags: d.ingredients,
-    customizations: [],
-    created_at: new Date().toISOString(),
-  }));
-
-  return { dishes: formatted, foodOutletIds: ['c46f62c4-a1d9-4428-88f2-759da5cd9e16'] };
-}
 
 export async function GET(request: NextRequest) {
   const auth = await requireRequestUser(request);
@@ -37,23 +15,7 @@ export async function GET(request: NextRequest) {
       .select('food_outlet_id')
       .eq('user_id', auth.user.id);
 
-    // If merchant_memberships table is not yet migrated in the schema cache, fallback gracefully
     if (merchantError) {
-      if (merchantError.message.includes('schema cache') || merchantError.message.includes('merchant_memberships')) {
-        // Try reading dishes directly from dishes table if present
-        const { data: allDishes, error: dishesErr } = await auth.client
-          .from('dishes')
-          .select('id, food_outlet_id, name, description, price, is_vegetarian, is_halal, spice_level, protein_grams, image_url, is_available, tags, customizations, created_at')
-          .order('created_at', { ascending: false });
-
-        if (!dishesErr && allDishes && allDishes.length > 0) {
-          const outletIds = Array.from(new Set(allDishes.map((d) => d.food_outlet_id).filter(Boolean)));
-          return NextResponse.json({ dishes: allDishes, foodOutletIds: outletIds });
-        }
-
-        return NextResponse.json(getFallbackDishesPayload(), { status: 200 });
-      }
-
       return NextResponse.json({ error: merchantError.message }, { status: 500 });
     }
 
@@ -83,12 +45,12 @@ export async function GET(request: NextRequest) {
 
     let allOutletIds = Array.from(new Set([...directOutletIds, ...shopOutletIds]));
 
-    // If user has no booth or shop memberships, return empty list
+    // If user has no booth or shop memberships, deny access
     if (allOutletIds.length === 0) {
-      return NextResponse.json({ dishes: [], foodOutletIds: [] }, { status: 200 });
+      return NextResponse.json({ error: 'Forbidden: Stall worker authorization required.' }, { status: 403 });
     }
 
-    // 5. Query dishes for all authorized outlets
+    // Query dishes for all authorized outlets
     const { data, error } = await auth.client
       .from('dishes')
       .select('id, food_outlet_id, name, description, price, is_vegetarian, is_halal, spice_level, protein_grams, image_url, is_available, tags, customizations, created_at')
@@ -103,10 +65,9 @@ export async function GET(request: NextRequest) {
       dishes: data ?? [],
       foodOutletIds: allOutletIds,
     });
-  } catch (err) {
-    // If database queries fail completely, return fallback dishes instead of a broken screen
-    console.error('Owner dishes error, returning fallback:', err);
-    return NextResponse.json(getFallbackDishesPayload(), { status: 200 });
+  } catch (err: any) {
+    console.error('Owner dishes error:', err);
+    return NextResponse.json({ error: err?.message || 'Failed to fetch stall dishes.' }, { status: 500 });
   }
 }
 
@@ -163,19 +124,6 @@ export async function POST(request: NextRequest) {
       }
     } catch {
       // ignore
-    }
-  }
-
-  // 3. If in development or unmigrated schema, permit dish creation if outlet exists
-  if (!isAuthorized) {
-    const { data: outlet } = await auth.client
-      .from('food_outlets')
-      .select('id')
-      .eq('id', input.foodOutletId)
-      .maybeSingle();
-
-    if (outlet) {
-      isAuthorized = true;
     }
   }
 

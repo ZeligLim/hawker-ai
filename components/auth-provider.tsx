@@ -267,10 +267,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Role-based route protection
     if (effectiveStatus === 'authenticated' && user && !roles.isLoading) {
       if (pathname.startsWith('/shop-owner') && !roles.hasShopOwner) {
-        router.replace('/subscribe');
+        router.replace('/apply');
         return;
       }
-      if (pathname.startsWith('/owner') && !roles.hasBooth) {
+      if ((pathname.startsWith('/owner') || pathname.startsWith('/stall')) && !roles.hasBooth && !roles.hasShopOwner) {
         router.replace('/profile');
         return;
       }

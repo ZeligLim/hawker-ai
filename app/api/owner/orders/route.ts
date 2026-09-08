@@ -38,7 +38,9 @@ export async function GET(request: NextRequest) {
   }
 
   const outletIds = Array.from(new Set([...directOutletIds, ...shopOutletIds]));
-  if (outletIds.length === 0) return NextResponse.json({ orders: [] });
+  if (outletIds.length === 0) {
+    return NextResponse.json({ error: 'Forbidden: Stall worker authorization required.' }, { status: 403 });
+  }
 
   const { data, error } = await auth.client
     .from('merchant_orders')

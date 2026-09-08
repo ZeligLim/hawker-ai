@@ -1,150 +1,40 @@
 'use client';
 
-import Link from 'next/link';
+import React from 'react';
 import { usePathname } from 'next/navigation';
-import { ClipboardList, House, Menu, Store, UserRound, LayoutDashboard, UtensilsCrossed, CircleUserRound, BarChart3, Building2 } from 'lucide-react';
+import { PermissionEngine } from '@/lib/shared/permissions';
+import { CustomerShell } from '@/components/customer/customer-shell';
+import { StallShell } from '@/components/stall/stall-shell';
+import { OwnerShell } from '@/components/owner/owner-shell';
 
-function HomeIcon({ active }: { active: boolean }) {
-  return <House className="h-[18px] w-[18px]" strokeWidth={1.8} fill={active ? 'currentColor' : 'none'} />;
-}
-
-function MenuIcon() {
-  return <Menu className="h-[18px] w-[18px]" strokeWidth={1.8} />;
-}
-
-function ShopIcon({ active }: { active: boolean }) {
-  return <Store className="h-[18px] w-[18px]" strokeWidth={1.8} fill={active ? 'currentColor' : 'none'} />;
-}
-
-function OrdersIcon({ active }: { active: boolean }) {
-  return <ClipboardList className="h-[18px] w-[18px]" strokeWidth={1.8} fill={active ? 'currentColor' : 'none'} />;
-}
-
-function NavigationIcon({ Icon, active }: { Icon: any; active: boolean }) {
-  return <Icon className="h-[18px] w-[18px]" strokeWidth={1.8} fill={active ? 'currentColor' : 'none'} />;
-}
-
-const navItems = [
-  { href: '/home', label: 'Home', icon: HomeIcon },
-  { href: '/menu', label: 'Menu', icon: MenuIcon },
-  { href: '/shop', label: 'Shop', icon: ShopIcon },
-  { href: '/orders', label: 'Orders', icon: OrdersIcon },
-  { href: '/profile', label: 'Profile', icon: UserRound },
-];
-
-const ownerNavItems = [
-  { href: '/owner', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/owner/orders', label: 'Orders', icon: ClipboardList },
-  { href: '/owner/menu', label: 'Menu', icon: UtensilsCrossed },
-  { href: '/owner/profile', label: 'Profile', icon: CircleUserRound },
-];
-
-const shopOwnerNavItems = [
-  { href: '/shop-owner/booths', label: 'Booths', icon: Store },
-  { href: '/shop-owner/analytics', label: 'Analytics', icon: BarChart3 },
-  { href: '/shop-owner/profile', label: 'Profile', icon: CircleUserRound },
-];
-
+/**
+ * AppShell: Multi-Client Root Shell Dispatcher
+ *
+ * Dispatches between the four dedicated frontend experiences:
+ * 1. Website / Marketing: Public landing & onboarding (self-contained layout)
+ * 2. Customer App: Food discovery, menus, cart, orders, profile
+ * 3. Hawker Stall App: Kitchen Display System (KDS), orders, sold-out controls
+ * 4. Hawker Shop Owner App: Venue overview, booth management, analytics, fee settings
+ */
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const isAuthRoute = pathname.startsWith('/auth');
-  const isOwnerRoute = pathname.startsWith('/owner');
-  const isShopOwnerRoute = pathname.startsWith('/shop-owner');
-  const isMarketingRoute = pathname === '/' || pathname === '/plans' || pathname === '/pricing' || pathname === '/subscribe' || pathname === '/apply';
-  const isStandaloneOwnerRoute = pathname === '/booths' || pathname.startsWith('/booths/') || pathname === '/analytics' || pathname.startsWith('/analytics/');
+  const client = PermissionEngine.getClientForPath(pathname);
 
-  if (isAuthRoute || isMarketingRoute || isStandaloneOwnerRoute) {
+  // 1. Marketing & Auth routes (Public marketing pages render their own navigation)
+  if (client === 'website') {
     return <>{children}</>;
   }
 
-  if (isShopOwnerRoute) {
-    return (
-      <>
-        {children}
-        <nav className="fixed inset-x-0 bottom-0 z-20 mx-auto max-w-[430px] px-2 pb-3 sm:max-w-[480px] lg:max-w-[960px]">
-          <div className="grid grid-cols-3 gap-1 rounded-full bg-[#f7f7f7]/95 p-1.5 shadow-[0_8px_24px_rgba(17,17,17,0.08)] backdrop-blur-xl lg:bg-white/95">
-            {shopOwnerNavItems.map(({ href, label, icon: Icon }) => {
-              const active = pathname === href || pathname.startsWith(`${href}/`);
- 
-              return (
-                <Link
-                  key={label}
-                  href={href as any}
-                  className={`flex items-center justify-center rounded-full px-2 py-2 transition ${
-                    active ? 'bg-white text-[#1d1d1f] shadow-sm' : 'text-[#6e6e73]'
-                  }`}
-                  aria-label={label}
-                  aria-current={active ? 'page' : undefined}
-                >
-                  <span className={`flex h-8 w-8 items-center justify-center ${active ? 'text-[#1d1d1f]' : 'text-[#6e6e73]'}`}>
-                    <Icon className="h-[18px] w-[18px]" strokeWidth={1.8} />
-                  </span>
-                </Link>
-              );
-            })}
-          </div>
-        </nav>
-      </>
-    );
+  // 2. Hawker Stall Worker App
+  if (client === 'stall') {
+    return <StallShell>{children}</StallShell>;
   }
 
-  if (isOwnerRoute) {
-    return (
-      <>
-        {children}
-        <nav className="fixed inset-x-0 bottom-0 z-20 mx-auto max-w-[430px] px-2 pb-3 sm:max-w-[480px] lg:max-w-[960px]">
-          <div className="grid grid-cols-4 gap-1 rounded-full bg-[#f7f7f7]/95 p-1.5 shadow-[0_8px_24px_rgba(17,17,17,0.08)] backdrop-blur-xl lg:bg-white/95">
-            {ownerNavItems.map(({ href, label, icon: Icon }) => {
-              const active = pathname === href || pathname.startsWith(`${href}/`);
- 
-              return (
-                <Link
-                  key={label}
-                  href={href as any}
-                  className={`flex items-center justify-center rounded-full px-2 py-2 transition ${
-                    active ? 'bg-white text-[#1d1d1f] shadow-sm' : 'text-[#6e6e73]'
-                  }`}
-                  aria-label={label}
-                  aria-current={active ? 'page' : undefined}
-                >
-                  <span className={`flex h-8 w-8 items-center justify-center ${active ? 'text-[#1d1d1f]' : 'text-[#6e6e73]'}`}>
-                    <Icon className="h-[18px] w-[18px]" strokeWidth={1.8} />
-                  </span>
-                </Link>
-              );
-            })}
-          </div>
-        </nav>
-      </>
-    );
+  // 3. Hawker Shop Owner App
+  if (client === 'owner') {
+    return <OwnerShell>{children}</OwnerShell>;
   }
 
-  return (
-    <>
-      {children}
-      <nav className="fixed inset-x-0 bottom-0 z-20 mx-auto max-w-[430px] px-2 pb-3 sm:max-w-[480px] lg:max-w-[960px]">
-        <div className="grid grid-cols-5 gap-1 rounded-full bg-[#f7f7f7]/95 p-1.5 shadow-[0_8px_24px_rgba(17,17,17,0.08)] backdrop-blur-xl lg:bg-white/95">
-          {navItems.map(({ href, label, icon: Icon }) => {
-            const active = pathname === href;
- 
-            return (
-              <Link
-                key={label}
-                href={href as any}
-                className={`flex items-center justify-center rounded-full px-2 py-2 transition ${
-                  active ? 'bg-white text-[#1d1d1f] shadow-sm' : 'text-[#6e6e73]'
-                }`}
-                aria-label={label}
-                aria-current={active ? 'page' : undefined}
-              >
-                <span className={`flex h-8 w-8 items-center justify-center ${active ? 'text-[#1d1d1f]' : 'text-[#6e6e73]'}`}>
-                  <NavigationIcon Icon={Icon} active={active} />
-                </span>
-              </Link>
-            );
-          })}
-        </div>
-      </nav>
-    </>
-  );
+  // 4. Customer App (Default)
+  return <CustomerShell>{children}</CustomerShell>;
 }

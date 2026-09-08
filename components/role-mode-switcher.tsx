@@ -28,10 +28,10 @@ export function RoleModeSwitcher({ currentMode }: RoleModeSwitcherProps) {
         </p>
         <div className="mt-3.5 pt-3 border-t border-black/[0.06] flex flex-wrap items-center gap-3">
           <Link
-            href="/subscribe"
+            href="/apply"
             className="inline-flex items-center gap-1 font-semibold text-[#0071e3] hover:underline"
           >
-            Register a Food Hall &rsaquo;
+            Start Free: Register Your Shop &rsaquo;
           </Link>
           <span className="text-black/20">&bull;</span>
           <span className="text-[#86868b]">

@@ -10,26 +10,28 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const period = searchParams.get('period') || 'w';
 
-  // 1. Resolve user's outlets
-  let directOutletIds: string[] = [];
-  try {
-    const { data: memberships } = await auth.client
-      .from('merchant_memberships')
-      .select('food_outlet_id')
-      .eq('user_id', auth.user.id);
-    if (memberships) {
-      directOutletIds = memberships.map((m) => m.food_outlet_id).filter(Boolean);
-    }
-  } catch {
-    // ignore
-  }
-
-  const { data: restaurantMemberships } = await auth.client
+  const { data: restaurantMemberships, error: restError } = await auth.client
     .from('restaurant_memberships')
-    .select('restaurant_id')
+    .select('restaurant_id, role')
     .eq('user_id', auth.user.id);
 
-  const restaurantIds = restaurantMemberships?.map((r) => r.restaurant_id).filter(Boolean) ?? [];
+  if (restError) {
+    return NextResponse.json({ error: restError.message }, { status: 500 });
+  }
+
+  // Stall workers and customers cannot access shop-wide business analytics
+  const authorizedRestaurantMemberships = (restaurantMemberships || []).filter(
+    (m) => ['owner', 'manager'].includes(m.role)
+  );
+
+  if (authorizedRestaurantMemberships.length === 0) {
+    return NextResponse.json(
+      { error: 'Forbidden: Shop owner or manager permissions required for venue analytics.' },
+      { status: 403 }
+    );
+  }
+
+  const restaurantIds = authorizedRestaurantMemberships.map((r) => r.restaurant_id).filter(Boolean);
   let shopOutletIds: string[] = [];
 
   if (restaurantIds.length > 0) {
@@ -41,22 +43,14 @@ export async function GET(request: NextRequest) {
     shopOutletIds = shopOutlets?.map((o) => o.id).filter(Boolean) ?? [];
   }
 
-  const outletIds = Array.from(new Set([...directOutletIds, ...shopOutletIds]));
-
-  // If no assigned outlets, load all food outlets if in dev or return empty
+  // Only aggregate booths belonging to shops this owner is authorized to manage
   let foodOutlets: Array<{ id: string; name: string }> = [];
-  if (outletIds.length > 0) {
+  if (shopOutletIds.length > 0) {
     const { data: outlets } = await auth.client
       .from('food_outlets')
       .select('id, name')
-      .in('id', outletIds);
+      .in('id', shopOutletIds);
     foodOutlets = outlets ?? [];
-  } else {
-    // Fallback to all food outlets for initial development/testing
-    const { data: allOutlets } = await auth.client
-      .from('food_outlets')
-      .select('id, name');
-    foodOutlets = allOutlets ?? [];
   }
 
   const effectiveOutletIds = foodOutlets.map((o) => o.id);
