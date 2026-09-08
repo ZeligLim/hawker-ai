@@ -64,6 +64,7 @@ const colorPalette = [
 
 export default function ShopOwnerAnalyticsPage() {
   const [selectedPeriod, setSelectedPeriod] = useState<(typeof periods)[number]['id']>('w');
+  const [showAllBooths, setShowAllBooths] = useState(false);
   const [data, setData] = useState<AnalyticsPayload>({
     totalRevenue: 0,
     totalOrders: 0,
@@ -119,6 +120,7 @@ export default function ShopOwnerAnalyticsPage() {
   const averageBoothRevenue = totalBooths > 0 ? totalRevenue / totalBooths : 0;
   const topBooth = booths[0];
   const activePeriodMeta = periods.find((p) => p.id === selectedPeriod);
+  const displayedBooths = showAllBooths ? booths : booths.slice(0, 6);
 
   return (
     <main className="min-h-screen bg-[#f5f5f7] px-4 pb-32 pt-5 sm:px-6 text-[#1d1d1f]">
@@ -262,64 +264,83 @@ export default function ShopOwnerAnalyticsPage() {
                   </p>
                 </div>
               ) : (
-                <div className="space-y-4">
-                  {booths.map((booth, index) => {
-                    const sharePct = totalRevenue > 0 ? (booth.periodRevenue / totalRevenue) * 100 : 0;
-                    const relativeWidth = maxRevenue > 0 ? (booth.periodRevenue / maxRevenue) * 100 : 0;
-                    const stallAvgTicket =
-                      booth.periodOrders > 0 ? booth.periodRevenue / booth.periodOrders : 0;
-                    const medalClass = rankMedalStyles[index] ?? 'bg-black/5 text-[#1d1d1f] border border-black/5';
+                <>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
+                    {displayedBooths.map((booth, index) => {
+                      const sharePct = totalRevenue > 0 ? (booth.periodRevenue / totalRevenue) * 100 : 0;
+                      const relativeWidth = maxRevenue > 0 ? (booth.periodRevenue / maxRevenue) * 100 : 0;
+                      const stallAvgTicket =
+                        booth.periodOrders > 0 ? booth.periodRevenue / booth.periodOrders : 0;
+                      const medalClass = rankMedalStyles[index] ?? 'bg-black/5 text-[#1d1d1f] border border-black/5';
 
-                    return (
-                      <div
-                        key={booth.id || booth.name}
-                        className="rounded-2xl bg-[#f5f5f7]/70 border border-black/[0.03] p-4 transition-all hover:bg-[#f5f5f7]"
-                      >
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="flex items-center gap-3 min-w-0">
-                            <span
-                              className={`flex h-7 w-7 items-center justify-center rounded-xl text-xs font-bold shrink-0 ${medalClass}`}
-                            >
-                              {index === 0 ? '1' : index === 1 ? '2' : index === 2 ? '3' : index + 1}
-                            </span>
-                            <div className="min-w-0">
-                              <p className="text-sm font-semibold text-[#1d1d1f] truncate">
-                                {booth.name}
-                              </p>
-                              <p className="text-[11px] text-[#6e6e73] truncate">
-                                {booth.periodOrders.toLocaleString()} orders &bull; Avg. RM{' '}
-                                {stallAvgTicket.toFixed(2)}
-                              </p>
+                      return (
+                        <div
+                          key={booth.id || booth.name}
+                          className="flex flex-col justify-between rounded-2xl bg-[#f5f5f7]/70 border border-black/[0.04] p-3.5 sm:p-4 transition-all hover:bg-[#f5f5f7] hover:shadow-2xs"
+                        >
+                          <div>
+                            <div className="flex items-start justify-between gap-2">
+                              <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                                <span
+                                  className={`flex h-6 w-6 sm:h-7 sm:w-7 items-center justify-center rounded-xl text-xs font-bold shrink-0 ${medalClass}`}
+                                >
+                                  {index === 0 ? '1' : index === 1 ? '2' : index === 2 ? '3' : index + 1}
+                                </span>
+                                <div className="min-w-0 flex-1">
+                                  <p className="text-xs sm:text-sm font-semibold text-[#1d1d1f] truncate" title={booth.name}>
+                                    {booth.name}
+                                  </p>
+                                  <p className="text-[10px] sm:text-[11px] text-[#6e6e73] truncate">
+                                    {booth.periodOrders.toLocaleString()} orders &bull; Avg. RM{' '}
+                                    {stallAvgTicket.toFixed(2)}
+                                  </p>
+                                </div>
+                              </div>
+
+                              <span className="rounded-full bg-black/5 px-2 py-0.5 text-[10px] font-semibold text-[#1d1d1f] shrink-0">
+                                {sharePct.toFixed(1)}%
+                              </span>
+                            </div>
+
+                            <div className="mt-3 flex items-baseline justify-between border-t border-black/[0.03] pt-2">
+                              <span className="text-[10px] sm:text-[11px] font-medium text-[#86868b]">Period Revenue</span>
+                              <span className="text-sm sm:text-base font-semibold text-[#1d1d1f]">
+                                RM {booth.periodRevenue.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
+                              </span>
                             </div>
                           </div>
 
-                          <div className="text-right shrink-0">
-                            <p className="text-sm sm:text-base font-semibold text-[#1d1d1f]">
-                              RM {booth.periodRevenue.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
-                            </p>
-                            <span className="inline-block rounded-full bg-black/5 px-2 py-0.5 text-[10px] font-semibold text-[#1d1d1f]">
-                              {sharePct.toFixed(1)}% of total
-                            </span>
+                          {/* Relative Volume Progress Bar */}
+                          <div className="mt-3 h-1.5 sm:h-2 w-full overflow-hidden rounded-full bg-black/5">
+                            <div
+                              className={`h-full rounded-full transition-all duration-500 ${
+                                index === 0
+                                  ? 'bg-[#111827]'
+                                  : index === 1
+                                  ? 'bg-emerald-600'
+                                  : 'bg-[#6e6e73]'
+                              }`}
+                              style={{ width: `${Math.max(relativeWidth, 2)}%` }}
+                            />
                           </div>
                         </div>
+                      );
+                    })}
+                  </div>
 
-                        {/* Relative Volume Progress Bar */}
-                        <div className="mt-3.5 h-2 w-full overflow-hidden rounded-full bg-black/5">
-                          <div
-                            className={`h-full rounded-full transition-all duration-500 ${
-                              index === 0
-                                ? 'bg-[#111827]'
-                                : index === 1
-                                ? 'bg-emerald-600'
-                                : 'bg-[#6e6e73]'
-                            }`}
-                            style={{ width: `${Math.max(relativeWidth, 2)}%` }}
-                          />
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
+                  {booths.length > 6 && (
+                    <div className="mt-4 flex justify-center">
+                      <button
+                        type="button"
+                        onClick={() => setShowAllBooths((prev) => !prev)}
+                        className="inline-flex items-center gap-1.5 rounded-full bg-black/5 hover:bg-black/10 px-4 py-2 text-xs font-semibold text-[#1d1d1f] transition-all"
+                      >
+                        {showAllBooths ? 'Collapse to Top 6 (2-3 Rows)' : `View All ${booths.length} Stalls`}
+                        <ChevronRight className={`w-3.5 h-3.5 transition-transform ${showAllBooths ? '-rotate-90' : 'rotate-90'}`} />
+                      </button>
+                    </div>
+                  )}
+                </>
               )}
             </div>
 
