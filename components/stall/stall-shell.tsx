@@ -1,10 +1,9 @@
 'use client';
 
 import React from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import { ClipboardList, UtensilsCrossed, LayoutDashboard, CircleUserRound, Store } from 'lucide-react';
 import { StallGuard } from './stall-guard';
+import { ClientBottomNav } from '@/components/shared/client-bottom-nav';
 
 const stallNavItems = [
   { href: '/owner/orders', label: 'Tickets (KDS)', icon: ClipboardList },
@@ -14,8 +13,6 @@ const stallNavItems = [
 ];
 
 export function StallShell({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
-
   return (
     <StallGuard>
       <div className="relative min-h-screen bg-[#f5f5f7] text-[#1d1d1f]">
@@ -42,32 +39,11 @@ export function StallShell({ children }: { children: React.ReactNode }) {
 
         <main className="pb-28">{children}</main>
 
-        {/* Stall Worker Bottom Navigation */}
-        <nav
-          aria-label="Stall Worker Navigation"
-          className="fixed inset-x-0 bottom-0 z-30 mx-auto max-w-[430px] px-3 pb-3 sm:max-w-[480px] lg:max-w-[720px]"
-        >
-          <div className="grid grid-cols-4 gap-1 rounded-full bg-[#111827]/95 p-1.5 shadow-[0_8px_24px_rgba(0,0,0,0.2)] backdrop-blur-xl border border-white/10 text-white">
-            {stallNavItems.map(({ href, label, icon: Icon }) => {
-              const active = pathname === href || (href !== '/owner' && pathname.startsWith(`${href}/`));
-
-              return (
-                <Link
-                  key={label}
-                  href={href as any}
-                  className={`flex flex-col items-center justify-center rounded-full py-2 transition ${
-                    active ? 'bg-white text-[#111827] shadow-sm font-semibold' : 'text-white/70 hover:text-white'
-                  }`}
-                  aria-label={label}
-                  aria-current={active ? 'page' : undefined}
-                >
-                  <Icon className="h-[18px] w-[18px]" strokeWidth={active ? 2.2 : 1.8} />
-                  <span className="mt-0.5 text-[10px] tracking-tight">{label}</span>
-                </Link>
-              );
-            })}
-          </div>
-        </nav>
+        <ClientBottomNav
+          items={stallNavItems}
+          theme="stall"
+          ariaLabel="Stall Worker Navigation"
+        />
       </div>
     </StallGuard>
   );

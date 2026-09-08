@@ -40,14 +40,14 @@ export default function ProfileSettingsPage() {
 
   if (status !== 'authenticated' || isGuest) {
     return (
-      <main className="min-h-screen bg-[#f5f5f7] px-4 pb-28 pt-5 text-[#1d1d1f]">
-        <div className="mx-auto max-w-[430px]">
-          <Link href="/profile" className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-white shadow-sm" aria-label="Back to profile">
+      <main className="min-h-screen bg-[#f5f5f7] px-4 pb-32 pt-5 text-[#1d1d1f] sm:px-6">
+        <div className="mx-auto w-full max-w-md sm:max-w-xl md:max-w-2xl">
+          <Link href="/profile" className="inline-flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-full bg-white shadow-xs hover:bg-black/[0.04] transition-colors" aria-label="Back to profile">
             <ArrowLeft className="h-5 w-5" />
           </Link>
-          <section className="mt-5 rounded-[26px] bg-white p-4 shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
-            <h1 className="text-2xl font-semibold tracking-[-0.05em]">Sign in to edit settings</h1>
-            <Link href="/auth?redirect=/profile/settings" className="mt-5 inline-flex w-full items-center justify-center rounded-full bg-[#111827] px-4 py-3 text-sm font-semibold text-white">
+          <section className="mt-5 rounded-[28px] bg-white p-6 shadow-[0_12px_28px_rgba(15,23,42,0.04)] border border-black/[0.04]">
+            <h1 className="text-2xl font-bold tracking-tight">Sign in to edit settings</h1>
+            <Link href="/auth?redirect=/profile/settings" className="mt-5 inline-flex w-full items-center justify-center rounded-full bg-[#111827] px-4 py-3 text-sm font-semibold text-white hover:bg-black transition-colors">
               Sign in
             </Link>
           </section>
@@ -57,12 +57,12 @@ export default function ProfileSettingsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#f5f5f7] px-4 pb-28 pt-5 text-[#1d1d1f]">
-      <div className="mx-auto max-w-[430px]">
-        <Link href="/profile" className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-white shadow-sm" aria-label="Back to profile">
+    <main className="min-h-screen bg-[#f5f5f7] px-4 pb-32 pt-5 text-[#1d1d1f] sm:px-6">
+      <div className="mx-auto w-full max-w-md sm:max-w-xl md:max-w-2xl">
+        <Link href="/profile" className="inline-flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-full bg-white shadow-xs hover:bg-black/[0.04] transition-colors" aria-label="Back to profile">
           <ArrowLeft className="h-5 w-5" />
         </Link>
-        <section className="mt-5 rounded-[26px] bg-white p-4 shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
+        <section className="mt-5 rounded-[28px] bg-white p-6 shadow-[0_12px_28px_rgba(15,23,42,0.04)] border border-black/[0.04]">
           <h1 className="text-3xl font-semibold tracking-[-0.06em]">Settings</h1>
           <p className="mt-2 text-sm text-[#6e6e73]">Update your account details.</p>
           <form onSubmit={(event) => void handleSubmit(event)} className="mt-5">

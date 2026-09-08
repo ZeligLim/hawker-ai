@@ -1,11 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import { Leaf, Plus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { HawkerSearchBar } from '@/components/hawker-search-bar';
 import { CustomizationCard } from '@/components/customization-card';
+import { DishCard } from '@/components/dish-card';
 import { addItemToCart, getDishQuantity, removeCartItem, updateCartItemQuantity, useCartItems } from '@/lib/order/cart';
 import { getDishCustomization } from '@/lib/order/customizations';
 import { fallbackDishes } from '@/lib/search/fallback-data';
@@ -63,10 +63,6 @@ const stallDirectory = [
     dishCount: 11,
   },
 ];
-
-function LeafIcon() {
-  return <Leaf className="h-[14px] w-[14px]" strokeWidth={1.8} />;
-}
 
 export function HomePage() {
   const [query, setQuery] = useState('');
@@ -248,16 +244,20 @@ export function HomePage() {
 
   return (
     <main className="min-h-screen bg-[#f5f5f7] text-[#1d1d1f]">
-      <div className="mx-auto min-h-screen max-w-[430px] px-4 pb-28 pt-5 sm:max-w-[480px] lg:max-w-[960px] lg:px-6">
-        <div className="lg:rounded-[32px] lg:border lg:border-[#e5e7eb] lg:bg-white lg:p-5 lg:shadow-[0_24px_60px_rgba(15,23,42,0.08)]">
-          <div className="mb-3 flex items-center justify-between gap-3 rounded-[18px] bg-[#f5f5f7] px-3 py-2">
-            <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-[12px] bg-[#1d1d1f] text-xs font-semibold text-white">
+      <div className="mx-auto min-h-screen w-full max-w-md sm:max-w-xl md:max-w-3xl lg:max-w-5xl px-4 pb-32 pt-5 sm:px-6">
+        <div className="lg:rounded-[32px] lg:border lg:border-black/[0.04] lg:bg-white lg:p-6 lg:shadow-[0_24px_60px_rgba(15,23,42,0.06)]">
+          <div className="mb-4 flex items-center justify-between gap-3 rounded-[20px] bg-[#f5f5f7] px-3.5 py-2.5">
+            <div className="flex items-center gap-2.5">
+              <div className="flex h-8 w-8 items-center justify-center rounded-[12px] bg-[#1d1d1f] text-xs font-semibold text-white shadow-xs">
                 H
               </div>
-              <p className="text-sm font-medium text-[#1d1d1f]">Setia Hawker Centre</p>
+              <p className="text-sm font-semibold text-[#1d1d1f]">Setia Hawker Centre</p>
             </div>
-            <button type="button" onClick={() => router.push('/scan' as any)} className="rounded-full bg-white px-2 py-1 text-sm font-semibold text-[#1d1d1f] shadow-[0_4px_12px_rgba(15,23,42,0.04)]">
+            <button
+              type="button"
+              onClick={() => router.push('/scan' as any)}
+              className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-[#1d1d1f] shadow-xs border border-black/5 hover:bg-black/[0.03] transition-colors"
+            >
               {tableLabel}
             </button>
           </div>
@@ -270,90 +270,56 @@ export function HomePage() {
             buttonLabel="Search for dishes"
           />
 
-
           <section className="mt-8">
             <div className="flex items-center justify-between gap-3">
-              <h2 className="text-[1.3rem] font-semibold tracking-[-0.05em] text-[#1d1d1f]">Popular right now</h2>
-              <button type="button" onClick={() => void handleSearch(query || 'popular hawker dishes')} className="text-sm font-medium text-[#3c3c43] underline-offset-4 hover:underline">
+              <h2 className="text-lg sm:text-xl font-bold tracking-tight text-[#1d1d1f]">
+                Popular right now
+              </h2>
+              <button
+                type="button"
+                onClick={() => void handleSearch(query || 'popular hawker dishes')}
+                className="text-xs sm:text-sm font-medium text-[#6e6e73] hover:text-[#1d1d1f] transition-colors"
+              >
                 Refresh
               </button>
             </div>
 
             {isLoading && (
-              <div className="mt-4 rounded-[20px] border border-[#e5e7eb] bg-white p-4 text-sm text-[#6e6e73]">
+              <div className="mt-4 rounded-[22px] border border-black/[0.06] bg-white p-6 text-center text-xs sm:text-sm text-[#6e6e73]">
                 Finding dishes near your table…
               </div>
             )}
 
             {error && (
-              <div className="mt-4 rounded-[20px] border border-[#f5c2c7] bg-[#fff1f2] p-4 text-sm text-[#9f1239]">
+              <div className="mt-4 rounded-[22px] border border-[#f5c2c7] bg-[#fff1f2] p-4 text-xs sm:text-sm text-[#9f1239]">
                 {error}
               </div>
             )}
 
             {!isLoading && !error && (
-              <div className="mt-4 grid grid-cols-2 gap-3">
+              <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
                 {featuredDishes.map((dish) => {
                   const quantity = getDishQuantity(cartItems, dish.id);
 
                   return (
-                    <article key={dish.id} className="overflow-hidden rounded-[22px] bg-white shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
-                      <div className="relative h-40 overflow-hidden bg-[#f3efe8]">
-                        <div className="flex h-full items-center justify-center text-lg font-semibold uppercase tracking-[0.22em] text-[#5c4b1d]">
-                          {dish.name.split(' ')[0]}
-                        </div>
-
-                        <div className="absolute left-2 top-2 rounded-full bg-black/70 px-2 py-1 text-[10px] font-semibold text-white backdrop-blur-sm">
-                          RM {dish.price.toFixed(2)}
-                        </div>
-
-                        {dish.isVegetarian ? (
-                          <div className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-[#ecfdf5] text-[#166534] shadow-[0_8px_20px_rgba(15,23,42,0.12)]">
-                            <LeafIcon />
-                          </div>
-                        ) : null}
-
-                        <div className="absolute bottom-2 left-2 right-2">
-                          {quantity > 0 ? (
-                            <div className="flex w-full items-center justify-between gap-2.5 rounded-full bg-white/95 px-2.5 py-1.5 text-[10px] font-medium text-[#1d1d1f] shadow-[0_8px_20px_rgba(15,23,42,0.18)] backdrop-blur-sm">
-                              <button
-                                type="button"
-                                aria-label={`Decrease ${dish.name} quantity`}
-                                onClick={() => updateQuantity(dish, -1)}
-                                className="flex h-8 w-8 items-center justify-center rounded-full bg-[#f5f5f7] text-lg font-semibold text-[#1d1d1f]"
-                              >
-                                −
-                              </button>
-                              <span className="min-w-5 text-center text-sm font-semibold">{quantity}</span>
-                              <button
-                                type="button"
-                                aria-label={`Increase ${dish.name} quantity`}
-                                onClick={() => addDish(dish)}
-                                className="flex h-8 w-8 items-center justify-center rounded-full bg-[#1d1d1f] text-lg font-semibold text-white"
-                              >
-                                +
-                              </button>
-                            </div>
-                          ) : (
-                            <div className="flex justify-end">
-                              <button
-                                type="button"
-                                onClick={() => addDish(dish)}
-                                className="flex h-8 w-8 items-center justify-center rounded-full bg-[#1d1d1f] text-white shadow-[0_8px_20px_rgba(15,23,42,0.18)]"
-                                aria-label={`Add ${dish.name} to your order`}
-                              >
-                                <Plus className="h-4 w-4" strokeWidth={2} />
-                              </button>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </article>
+                    <DishCard
+                      key={dish.id}
+                      id={dish.id}
+                      name={dish.name}
+                      price={dish.price}
+                      isVegetarian={dish.isVegetarian}
+                      quantity={quantity}
+                      onAdd={() => addDish(dish)}
+                      onUpdateQuantity={(delta) =>
+                        delta > 0 ? addDish(dish) : updateQuantity(dish, -1)
+                      }
+                    />
                   );
                 })}
               </div>
             )}
           </section>
+
           {customizingDish ? (
             <CustomizationCard
               dishName={customizingDish.name}
@@ -364,12 +330,14 @@ export function HomePage() {
             />
           ) : null}
 
-          <section className="mt-8">
-            <div className="mb-3 flex items-center justify-between gap-3">
-              <h2 className="text-[1.3rem] font-semibold tracking-[-0.05em] text-[#1d1d1f]">Hawker directory</h2>
+          <section className="mt-9">
+            <div className="mb-3.5 flex items-center justify-between gap-3">
+              <h2 className="text-lg sm:text-xl font-bold tracking-tight text-[#1d1d1f]">
+                Hawker directory
+              </h2>
             </div>
 
-            <div className="grid grid-cols-1 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-3.5">
               {stallDirectory.map((stall) => {
                 const slug = stall.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 

@@ -61,16 +61,16 @@ export default function ScanTablePage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#f5f5f7] px-4 pb-28 pt-5 text-[#1d1d1f]">
-      <div className="mx-auto max-w-[430px]">
-        <div className="rounded-[26px] bg-white p-4 shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
+    <main className="min-h-screen bg-[#f5f5f7] px-4 pb-32 pt-5 text-[#1d1d1f] sm:px-6">
+      <div className="mx-auto w-full max-w-md sm:max-w-lg">
+        <div className="rounded-[28px] bg-white p-5 sm:p-6 shadow-[0_12px_28px_rgba(15,23,42,0.04)] border border-black/[0.04]">
           <div className="flex items-center gap-3">
-            <Link href="/" className="flex h-10 w-10 items-center justify-center rounded-full bg-[#f5f5f7] text-[#1d1d1f]" aria-label="Back home">
-              <ArrowLeft className="h-4 w-4" />
+            <Link href="/" className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-full bg-[#f5f5f7] text-[#1d1d1f] hover:bg-black/[0.04] transition-colors" aria-label="Back home">
+              <ArrowLeft className="h-5 w-5" />
             </Link>
             <div>
-              <p className="text-xs uppercase tracking-[0.18em] text-[#6e6e73]">Table link</p>
-              <h1 className="text-3xl font-semibold tracking-[-0.06em]">Scan QR</h1>
+              <p className="text-[11px] font-bold uppercase tracking-wider text-[#0071e3]">Table link</p>
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#1d1d1f]">Scan QR</h1>
             </div>
           </div>
 

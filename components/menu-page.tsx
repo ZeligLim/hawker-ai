@@ -1,9 +1,10 @@
 'use client';
 
-import { CupSoda, IceCreamCone, Leaf, Plus, UtensilsCrossed } from 'lucide-react';
+import { CupSoda, IceCreamCone, UtensilsCrossed } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { HawkerSearchBar } from '@/components/hawker-search-bar';
 import { CustomizationCard } from '@/components/customization-card';
+import { DishCard } from '@/components/dish-card';
 import { addItemToCart, getDishQuantity, removeCartItem, updateCartItemQuantity, useCartItems } from '@/lib/order/cart';
 import { getDishCustomization } from '@/lib/order/customizations';
 
@@ -158,9 +159,9 @@ export function MenuPage() {
 
   return (
     <main className="min-h-screen bg-[#f5f5f7] text-[#1d1d1f]">
-      <div className="mx-auto min-h-screen max-w-[430px] px-4 pb-28 pt-5 sm:max-w-[480px] lg:max-w-[960px] lg:px-6">
-        <div className="lg:rounded-[32px] lg:bg-white lg:p-5 lg:shadow-[0_24px_60px_rgba(15,23,42,0.08)]">
-          <div className="sticky top-0 z-10 bg-transparent pb-2 pt-1">
+      <div className="mx-auto min-h-screen w-full max-w-md sm:max-w-xl md:max-w-3xl lg:max-w-5xl px-4 pb-32 pt-5 sm:px-6">
+        <div className="lg:rounded-[32px] lg:border lg:border-black/[0.04] lg:bg-white lg:p-6 lg:shadow-[0_24px_60px_rgba(15,23,42,0.06)]">
+          <div className="sticky top-0 z-10 bg-transparent pb-3 pt-1">
             <HawkerSearchBar
               placeholder="Search the menu"
               value={searchValue}
@@ -168,94 +169,66 @@ export function MenuPage() {
               buttonLabel="Search menu"
             />
 
-            <section className="mt-2">
-              <div className="flex gap-3 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                {categories.map(({ id, icon: Icon }) => (
+            <section className="mt-3">
+              <div className="flex gap-2.5 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                {categories.map(({ id, label, icon: Icon }) => (
                   <button
                     key={id}
                     type="button"
-                    aria-label={`Browse ${id} category`}
+                    aria-label={`Browse ${label} category`}
                     onClick={() => scrollToCategory(id)}
-                    className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white text-[#1d1d1f] shadow-[0_8px_18px_rgba(15,23,42,0.02)] transition hover:bg-[#f5f5f7]"
+                    className="flex items-center gap-2 rounded-full bg-white px-4 py-2.5 text-xs sm:text-sm font-semibold text-[#1d1d1f] shadow-xs border border-black/5 hover:bg-[#f5f5f7] active:scale-95 transition-all shrink-0"
                   >
                     <Icon />
+                    <span>{label}</span>
                   </button>
                 ))}
               </div>
             </section>
           </div>
 
-          <section className="mt-8 space-y-5">
-            {categories.map(({ id, icon: Icon }) => (
-              <section key={id} id={`category-${id}`} className="scroll-mt-24">
-                <div className="mb-3 flex items-center justify-start">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#f5f5f7] text-[#1d1d1f]">
-                    <Icon />
+          <section className="mt-8 space-y-8">
+            {categories.map(({ id, label, icon: Icon }) => {
+              const categoryDishes = menuItems[id as keyof typeof menuItems] ?? [];
+              if (categoryDishes.length === 0) return null;
+
+              return (
+                <section key={id} id={`category-${id}`} className="scroll-mt-24">
+                  <div className="mb-4 flex items-center gap-2.5">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#111827] text-white shadow-xs">
+                      <Icon />
+                    </div>
+                    <h2 className="text-base sm:text-lg font-bold text-[#1d1d1f]">
+                      {label}
+                    </h2>
+                    <span className="text-xs text-[#86868b] font-medium">
+                      ({categoryDishes.length})
+                    </span>
                   </div>
-                </div>
 
-                <div className="grid grid-cols-2 gap-3">
-                  {(menuItems[id as keyof typeof menuItems] ?? []).map((item) => {
-                    const quantity = getDishQuantity(cartItems, item.id);
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+                    {categoryDishes.map((item) => {
+                      const quantity = getDishQuantity(cartItems, item.id);
 
-                    return (
-                      <article key={item.id} className="overflow-hidden rounded-[22px] bg-white shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
-                        <div className="relative h-40 overflow-hidden bg-[#f3efe8]">
-                          <div className="flex h-full items-center justify-center text-lg font-semibold uppercase tracking-[0.22em] text-[#5c4b1d]">
-                            {item.name.split(' ')[0]}
-                          </div>
-
-                          <div className="absolute left-2 top-2 rounded-full bg-black/70 px-2 py-1 text-[10px] font-semibold text-white backdrop-blur-sm">
-                            RM {item.price.toFixed(2)}
-                          </div>
-
-                          {item.vegetarian ? (
-                            <div className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-[#ecfdf5] text-[#166534] shadow-[0_8px_20px_rgba(15,23,42,0.12)]">
-                              <Leaf className="h-[14px] w-[14px]" strokeWidth={1.8} />
-                            </div>
-                          ) : null}
-
-                          <div className="absolute bottom-2 left-2 right-2">
-                            {quantity > 0 ? (
-                              <div className="flex w-full items-center justify-between gap-2 rounded-full bg-white/90 px-2 py-1 text-[10px] font-medium text-[#1d1d1f] shadow-[0_8px_20px_rgba(15,23,42,0.18)] backdrop-blur-sm">
-                                <button
-                                  type="button"
-                                  aria-label={`Decrease ${item.name} quantity`}
-                                  onClick={() => updateQuantity(item, -1)}
-                                  className="flex h-8 w-8 items-center justify-center rounded-full bg-[#f5f5f7] text-lg font-semibold text-[#1d1d1f]"
-                                >
-                                  −
-                                </button>
-                                <span className="min-w-4 text-center text-[11px] font-semibold">{quantity}</span>
-                                <button
-                                  type="button"
-                                  aria-label={`Increase ${item.name} quantity`}
-                                  onClick={() => addMenuItem(item)}
-                                  className="flex h-8 w-8 items-center justify-center rounded-full bg-[#1d1d1f] text-lg font-semibold text-white"
-                                >
-                                  +
-                                </button>
-                              </div>
-                            ) : (
-                              <div className="flex justify-end">
-                                <button
-                                  type="button"
-                                  onClick={() => addMenuItem(item)}
-                                  className="flex h-8 w-8 items-center justify-center rounded-full bg-[#1d1d1f] text-white shadow-[0_8px_20px_rgba(15,23,42,0.18)]"
-                                  aria-label={`Add ${item.name} to your order`}
-                                >
-                                  <Plus className="h-4 w-4" strokeWidth={2} />
-                                </button>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </article>
-                    );
-                  })}
-                </div>
-              </section>
-            ))}
+                      return (
+                        <DishCard
+                          key={item.id}
+                          id={item.id}
+                          name={item.name}
+                          price={item.price}
+                          isVegetarian={item.vegetarian}
+                          quantity={quantity}
+                          onAdd={() => addMenuItem(item)}
+                          onUpdateQuantity={(delta) =>
+                            delta > 0 ? addMenuItem(item) : updateQuantity(item, -1)
+                          }
+                        />
+                      );
+                    })}
+                  </div>
+                </section>
+              );
+            })}
           </section>
           {customizingItem ? (
             <CustomizationCard

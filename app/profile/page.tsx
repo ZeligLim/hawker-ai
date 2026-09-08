@@ -180,12 +180,12 @@ export default function ProfilePage() {
 
   if (!isMounted) {
     return (
-      <main className="min-h-screen bg-[#f5f5f7] px-4 pb-28 pt-5 text-[#1d1d1f]">
-        <div className="mx-auto max-w-[430px] sm:max-w-[480px] lg:max-w-[960px]">
-          <section className="rounded-[26px] bg-white p-4 shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
-            <h1 className="text-3xl font-semibold tracking-[-0.06em]">Sign in</h1>
-            <p className="mt-3 text-sm text-[#6e6e73]">Save your favourite hawker picks and revisit your recent orders in one place.</p>
-            <Link href="/auth?redirect=/profile" className="mt-5 inline-flex w-full items-center justify-center rounded-full bg-[#111827] px-4 py-3 text-sm font-medium text-white">
+      <main className="min-h-screen bg-[#f5f5f7] px-4 pb-32 pt-5 text-[#1d1d1f] sm:px-6">
+        <div className="mx-auto w-full max-w-md sm:max-w-xl md:max-w-2xl">
+          <section className="rounded-[28px] bg-white p-6 shadow-[0_12px_28px_rgba(15,23,42,0.04)] border border-black/[0.04]">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Sign in</h1>
+            <p className="mt-2 text-sm text-[#6e6e73]">Save your favourite hawker picks and revisit your recent orders in one place.</p>
+            <Link href="/auth?redirect=/profile" className="mt-6 inline-flex w-full items-center justify-center rounded-full bg-[#111827] px-5 py-3 text-sm font-semibold text-white shadow-xs hover:bg-black transition-colors">
               Sign in
             </Link>
           </section>
@@ -195,41 +195,54 @@ export default function ProfilePage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#f5f5f7] px-4 pb-28 pt-5 text-[#1d1d1f]">
-      <div className="mx-auto max-w-[430px] sm:max-w-[480px] lg:max-w-[960px]">
+    <main className="min-h-screen bg-[#f5f5f7] px-4 pb-32 pt-5 text-[#1d1d1f] sm:px-6">
+      <div className="mx-auto w-full max-w-md sm:max-w-xl md:max-w-2xl">
         {!signedIn ? (
-          <section className="rounded-[26px] bg-white p-4 shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
-            <h1 className="text-3xl font-semibold tracking-[-0.06em]">Sign in</h1>
-            <p className="mt-3 text-sm text-[#6e6e73]">Save your favourite hawker picks and revisit your recent orders in one place.</p>
-            <Link href="/auth?redirect=/profile" className="mt-5 inline-flex w-full items-center justify-center rounded-full bg-[#111827] px-4 py-3 text-sm font-medium text-white">
+          <section className="rounded-[28px] bg-white p-6 shadow-[0_12px_28px_rgba(15,23,42,0.04)] border border-black/[0.04]">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Sign in</h1>
+            <p className="mt-2 text-sm text-[#6e6e73]">Save your favourite hawker picks and revisit your recent orders in one place.</p>
+            <Link href="/auth?redirect=/profile" className="mt-6 inline-flex w-full items-center justify-center rounded-full bg-[#111827] px-5 py-3 text-sm font-semibold text-white shadow-xs hover:bg-black transition-colors">
               Sign in
             </Link>
           </section>
         ) : (
           <>
-            <section className="rounded-[26px] bg-white p-4 shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
+            <section className="rounded-[28px] bg-white p-5 sm:p-6 shadow-[0_12px_28px_rgba(15,23,42,0.04)] border border-black/[0.04]">
               <div className="flex items-center justify-between gap-3">
                 <div className="min-w-0 flex-1">
-                  <div className="flex min-w-0 items-center gap-3">
+                  <div className="flex min-w-0 items-center gap-3.5">
                     {authProfile?.avatarUrl ? (
-                      <img src={authProfile.avatarUrl} alt="" className="h-11 w-11 rounded-full object-cover" />
+                      <img src={authProfile.avatarUrl} alt="" className="h-12 w-12 rounded-full object-cover shrink-0" />
                     ) : (
-                      <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#111827] text-sm font-semibold text-white">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#111827] text-base font-bold text-white shrink-0 shadow-xs">
                         {initials}
                       </div>
                     )}
-                    <div className="min-w-0">
-                      <h1 className="max-w-[190px] truncate text-3xl font-semibold tracking-[-0.06em]" title={displayName}>{displayName}</h1>
-                      <p className="mt-1 max-w-[190px] truncate text-xs text-[#6e6e73]" title={authProfile?.email ?? undefined}>{authProfile?.email}</p>
+                    <div className="min-w-0 flex-1">
+                      <h1 className="truncate text-xl sm:text-2xl font-bold tracking-tight text-[#1d1d1f]" title={displayName}>
+                        {displayName}
+                      </h1>
+                      <p className="mt-0.5 truncate text-xs sm:text-sm text-[#6e6e73]" title={authProfile?.email ?? undefined}>
+                        {authProfile?.email}
+                      </p>
                     </div>
                   </div>
                 </div>
-                <div className="flex w-[104px] shrink-0 items-center justify-end gap-2">
-                  <Link href={'/profile/settings' as any} className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#f5f5f7] text-[#1d1d1f]" aria-label="Edit settings">
-                    <Settings className="h-5 w-5" />
+                <div className="flex shrink-0 items-center justify-end gap-2">
+                  <Link
+                    href={'/profile/settings' as any}
+                    className="flex h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-full bg-[#f5f5f7] text-[#1d1d1f] hover:bg-black/[0.06] transition-colors"
+                    aria-label="Edit settings"
+                  >
+                    <Settings className="h-4 w-4 sm:h-5 sm:w-5" />
                   </Link>
-                  <button type="button" onClick={() => setIsSignOutDialogOpen(true)} className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#f5f5f7] text-[#1d1d1f]" aria-label="Sign out">
-                    <LogOut className="h-5 w-5" />
+                  <button
+                    type="button"
+                    onClick={() => setIsSignOutDialogOpen(true)}
+                    className="flex h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-full bg-[#f5f5f7] text-[#1d1d1f] hover:bg-black/[0.06] transition-colors"
+                    aria-label="Sign out"
+                  >
+                    <LogOut className="h-4 w-4 sm:h-5 sm:w-5" />
                   </button>
                 </div>
               </div>

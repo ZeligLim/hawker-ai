@@ -85,7 +85,26 @@ Phase 8: Multi-Client Platform Architecture Refactoring & Onboarding Access Gati
      - Displays the live list of authorized emails with status indicators (`Active Staff` vs `Pending Setup`).
      - Provided 1-click "Remove" buttons with real-time feedback that immediately revokes stall access.
 
-7. **Automated Verification & Testing**:
+8. **Responsive Design (Mobile & Tablet), Unified Design Language & Deduplication**:
+   - **Unified Shared Components**:
+     - `components/shared/client-bottom-nav.tsx`: Extracted floating bottom navigation used across Customer, Stall Worker, and Shop Owner client shells. Features responsive width scaling (`max-w-[430px] sm:max-w-[480px] md:max-w-[560px] lg:max-w-[680px]`), iOS home-bar safe-area insets (`pb-[max(0.75rem,env(safe-area-inset-bottom))]`), and accessible minimum 44px tap targets.
+     - `components/dish-card.tsx`: Extracted common Apple-style dish card UI with rounded borders, price badge, vegetarian leaf badge, lazy-loaded photo fallback, and quantity counter controls.
+   - **Code Deduplication**:
+     - Replaced duplicate dish card JSX across `components/home-page.tsx`, `components/menu-page.tsx`, and `components/shop-detail-client.tsx` with `<DishCard />`.
+     - Removed redundant custom `<nav>` blocks in `components/customer/customer-shell.tsx`, `components/stall/stall-shell.tsx`, and `components/owner/owner-shell.tsx` in favor of `<ClientBottomNav />`.
+     - Deleted obsolete unused file `components/shop-owner-nav.tsx`.
+     - Net reduction of over 120 lines of redundant code while expanding capabilities.
+   - **Responsive Breakpoint Overhaul (Mobile, Tablet, Desktop)**:
+     - Uncapped restrictive mobile-locked containers (`max-w-[430px] sm:max-w-[480px]`) in favor of fluid responsive widths (`w-full max-w-md sm:max-w-xl md:max-w-3xl lg:max-w-5xl px-4 sm:px-6`).
+     - **Dish Grids**: Scales from 2 columns on mobile to 3 columns on tablet portrait, and 4 columns on tablet landscape/desktop (`grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4`) in Home, Menu, and Stall Detail views.
+     - **Stalls & Directory**: Upgraded to 2-column grid on tablet/desktop (`grid-cols-1 md:grid-cols-2 gap-3.5`).
+     - **Orders & Checkout**: Overhauled into a responsive 2-column layout on tablet/desktop (`md:grid md:grid-cols-[1fr_360px] lg:grid-cols-[1fr_380px] md:gap-6 md:items-start`), keeping the order items on the left and a sticky Order Summary & Checkout panel on the right.
+     - **KDS Kitchen Ticket Stream (`/owner/orders`)**: Upgraded to a 2-column ticket grid on tablet/desktop (`grid grid-cols-1 md:grid-cols-2 gap-4`), optimized for counter-mounted iPads and tablets in hawker stalls.
+     - **Owner Menu (`/owner/menu`)**: Upgraded to a 2-column responsive grid on tablet/desktop.
+     - **Profile & Settings (`/profile`, `/profile/settings`)**: Uncapped artificial `max-w-[190px]` display name truncation and expanded container to `max-w-2xl`.
+     - **Scan QR (`/scan`)**: Expanded container and adjusted typography for tablets.
+
+9. **Automated Verification & Testing**:
    - `lib/auth-onboarding.test.ts`: Added unit tests verifying `resolveSignOutDestination` defaults to `'/'`, handles custom safe paths, and sanitizes malicious URLs; tested `isCustomerIntent` route classification, marketing nav role detection, dashboard visibility gating, dual-role dropdown handling, shop-only "Start Free" visibility, and `/customer` route isolation.
    - `lib/multi-client-architecture.test.ts`: Client path resolution including `/customer`, client boundaries, cross-stall isolation, cross-shop isolation, unauthenticated redirects, stall access revocation on membership removal, and email-gated setup link validation.
    - All 18 tests pass (`npm test`).
