@@ -1,13 +1,13 @@
 import type { SearchResult } from '@/lib/search/schema';
-import { Plus } from 'lucide-react';
+import { Flame, Leaf, Plus } from 'lucide-react';
 
 const spiceLabels: Record<number, string> = {
-  0: 'Mild',
-  1: 'Low heat',
-  2: 'Warm',
-  3: 'Medium',
-  4: 'Spicy',
-  5: 'Very spicy',
+  0: 'Non-spicy',
+  1: 'Mild',
+  2: 'Medium',
+  3: 'Spicy',
+  4: 'Extra Spicy',
+  5: 'Fire',
 };
 
 export function ResultCard({
@@ -27,6 +27,26 @@ export function ResultCard({
             className="h-full w-full object-cover"
             loading="lazy"
           />
+          <div className="absolute right-2.5 top-2.5 flex items-center gap-1.5">
+            {dish.isVegetarian ? (
+              <div
+                className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-50 text-emerald-700 shadow-sm border border-emerald-200"
+                title="Vegetarian"
+                aria-label="Vegetarian"
+              >
+                <Leaf className="h-3.5 w-3.5" strokeWidth={2} />
+              </div>
+            ) : null}
+            {dish.spiceLevel > 1 ? (
+              <div
+                className="flex h-7 w-7 items-center justify-center rounded-full bg-red-50 text-red-600 shadow-sm border border-red-200"
+                title={`Spicy Level ${dish.spiceLevel}`}
+                aria-label={`Spicy Level ${dish.spiceLevel}`}
+              >
+                <Flame className="h-3.5 w-3.5 fill-red-500/20" strokeWidth={2} />
+              </div>
+            ) : null}
+          </div>
         </div>
       ) : null}
       <div className="flex items-start justify-between gap-3">
@@ -40,9 +60,24 @@ export function ResultCard({
       <p className="mt-3 text-sm text-[#4b5563]">{dish.stallName}</p>
 
       <div className="mt-4 flex flex-wrap gap-2 text-[11px] font-medium">
-        <span className="rounded-full bg-[#ecfdf5] px-2.5 py-1 text-[#065f46]">{dish.isVegetarian ? 'Vegetarian' : 'Non-veg'}</span>
+        {dish.isVegetarian ? (
+          <span className="inline-flex items-center gap-1 rounded-full bg-[#ecfdf5] px-2.5 py-1 text-[#065f46]">
+            <Leaf className="h-3 w-3" strokeWidth={2} /> Vegetarian
+          </span>
+        ) : (
+          <span className="rounded-full bg-[#f3f4f6] px-2.5 py-1 text-[#4b5563]">Non-veg</span>
+        )}
         <span className="rounded-full bg-[#ecfeff] px-2.5 py-1 text-[#0f766e]">{dish.isHalal ? 'Halal' : 'Non-halal'}</span>
-        <span className="rounded-full bg-[#f5f3ff] px-2.5 py-1 text-[#6d28d9]">{spiceLabels[dish.spiceLevel as keyof typeof spiceLabels] ?? 'Unknown'}</span>
+        {dish.spiceLevel > 1 ? (
+          <span className="inline-flex items-center gap-1 rounded-full bg-red-50 px-2.5 py-1 text-red-700 border border-red-100">
+            <Flame className="h-3 w-3 fill-red-500/20" strokeWidth={2} />
+            {spiceLabels[dish.spiceLevel as keyof typeof spiceLabels] ?? `Spicy ${dish.spiceLevel}`}
+          </span>
+        ) : (
+          <span className="rounded-full bg-[#f5f3ff] px-2.5 py-1 text-[#6d28d9]">
+            {spiceLabels[dish.spiceLevel as keyof typeof spiceLabels] ?? 'Non-spicy'}
+          </span>
+        )}
       </div>
 
       <div className="mt-4 grid grid-cols-2 gap-2 text-sm">

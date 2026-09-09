@@ -33,7 +33,7 @@ export default function OwnerDishEditorPage() {
     id: `dish-${Date.now()}`, name: '', category: 'Main course', price: 0, available: true,
   } : null);
   const [customizations, setCustomizations] = useState<{ label: string; price: number }[]>(() => loadCustomizations(dish));
-  const [spiceLevels, setSpiceLevels] = useState(() => dish?.spiceLevels ?? 1);
+  const [spiceLevels, setSpiceLevels] = useState(() => dish?.spiceLevels ?? 0);
   const [vegetarian, setVegetarian] = useState(() => dish?.vegetarian ?? false);
   const [description, setDescription] = useState(() => dish?.description ?? '');
   const [tags, setTags] = useState(() => dish?.tags?.join(', ') ?? '');
@@ -61,11 +61,11 @@ export default function OwnerDishEditorPage() {
           vegetarian: Boolean(remote.is_vegetarian), description: String(remote.description ?? ''),
           tags: Array.isArray(remote.tags) ? remote.tags.map(String) : [],
           customizations: Array.isArray(remote.customizations) ? remote.customizations as Dish['customizations'] : [],
-          spiceLevels: Number(remote.spice_level ?? 1),
+          spiceLevels: Number(remote.spice_level ?? 0),
         };
         setDish(loaded);
         setCustomizations(loadCustomizations(loaded));
-        setSpiceLevels(loaded.spiceLevels ?? 1);
+        setSpiceLevels(loaded.spiceLevels ?? 0);
         setVegetarian(loaded.vegetarian ?? false);
         setDescription(loaded.description ?? '');
         setTags(loaded.tags?.join(', ') ?? '');
@@ -220,11 +220,21 @@ export default function OwnerDishEditorPage() {
               <div className="flex items-center justify-between gap-3">
                 <div>
                   <p className="text-sm font-semibold">Spicy level</p>
-                  <p className="mt-1 text-xs text-[#6e6e73]">Allow customers to choose up to five levels.</p>
+                  <p className="mt-1 text-xs text-[#6e6e73]">
+                    {spiceLevels === 0 ? 'Not spicy (0)' : spiceLevels === 1 ? 'Mild (1)' : `Spicy Level ${spiceLevels}`}
+                  </p>
                 </div>
                 <span className="text-sm font-semibold">{spiceLevels} / 5</span>
               </div>
-              <input type="range" min="1" max="5" value={spiceLevels} onChange={(event) => setSpiceLevels(Number(event.target.value))} className="mt-3 w-full accent-[#111827]" aria-label="Number of spicy levels" />
+              <input
+                type="range"
+                min="0"
+                max="5"
+                value={spiceLevels}
+                onChange={(event) => setSpiceLevels(Number(event.target.value))}
+                className="mt-3 w-full accent-[#111827]"
+                aria-label="Spicy level"
+              />
             </div>
           </section>
           {error ? <p className="text-sm text-[#9f1239]">{error}</p> : null}

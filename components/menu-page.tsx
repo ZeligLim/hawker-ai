@@ -34,6 +34,7 @@ type MenuItem = {
   name: string;
   price: number;
   vegetarian: boolean;
+  spiceLevel?: number;
   category: 'main-course' | 'drinks' | 'desserts';
   imageUrl?: string | null;
 };
@@ -74,6 +75,7 @@ export function MenuPage() {
               name: dish.name,
               price: Number(dish.price),
               vegetarian: Boolean(dish.is_vegetarian),
+              spiceLevel: Number(dish.spice_level ?? 0),
               category: categorizeDish(dish.name, dish.tags),
               imageUrl: dish.image_url ?? null,
             });
@@ -219,6 +221,7 @@ export function MenuPage() {
                           name={item.name}
                           price={item.price}
                           isVegetarian={item.vegetarian}
+                          spiceLevel={item.spiceLevel}
                           imageUrl={item.imageUrl}
                           quantity={quantity}
                           onAdd={() => addMenuItem(item)}

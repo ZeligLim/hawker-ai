@@ -15,15 +15,18 @@ const parseHeuristicIntent = (rawQuery: string): SearchIntent => {
   const halalMatch = lower.match(/non-halal|not halal|non halal/i);
   const halal = halalMatch ? false : lower.includes('halal') ? true : undefined;
 
-  const spiceLevel = lower.includes('very spicy') || lower.includes('spicy hot') || lower.includes('hot')
-    ? 5
-    : lower.includes('spicy')
-      ? 4
-      : lower.includes('medium') || lower.includes('normal')
-        ? 3
-        : lower.includes('mild') || lower.includes('low heat')
-          ? 1
-          : undefined;
+  const spiceLevel =
+    lower.includes('non-spicy') || lower.includes('not spicy') || lower.includes('no spice') || lower.includes('no spicy') || lower.includes('zero spice')
+      ? 0
+      : lower.includes('very spicy') || lower.includes('spicy hot') || lower.includes('hot')
+      ? 5
+      : lower.includes('spicy')
+        ? 4
+        : lower.includes('medium') || lower.includes('normal')
+          ? 3
+          : lower.includes('mild') || lower.includes('low heat')
+            ? 1
+            : undefined;
 
   const cleanQuery = query
     .replace(/\b(?:rm|ringgit|myr)\b/gi, '')

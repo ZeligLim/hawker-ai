@@ -184,7 +184,7 @@ export function MarketingNav({ currentPath = '/' }: MarketingNavProps) {
                           </div>
                         </Link>
                         <Link
-                          href="/owner/orders"
+                          href="/owner"
                           onClick={() => setDashboardDropdownOpen(false)}
                           className="flex items-center gap-3 px-3.5 py-2.5 hover:bg-black/[0.04] transition-colors"
                         >
@@ -192,7 +192,7 @@ export function MarketingNav({ currentPath = '/' }: MarketingNavProps) {
                             <CookingPot className="w-4 h-4" />
                           </div>
                           <div className="min-w-0 flex-1">
-                            <p className="font-semibold text-[#1d1d1f] leading-snug">Stall Kitchen (KDS)</p>
+                            <p className="font-semibold text-[#1d1d1f] leading-snug">Stall Overview</p>
                             <p className="text-[10px] text-[#86868b] truncate">{roles.booths?.[0]?.name || 'Live Tickets & Menu'}</p>
                           </div>
                         </Link>
@@ -211,11 +211,11 @@ export function MarketingNav({ currentPath = '/' }: MarketingNavProps) {
                 ) : (
                   /* Only Stall Worker */
                   <Link
-                    href="/owner/orders"
+                    href="/owner"
                     className="inline-flex items-center gap-1.5 text-xs font-semibold text-white bg-[#1d1d1f] hover:bg-black px-3.5 py-1.5 rounded-full shadow-sm transition-all"
                   >
                     <CookingPot className="w-3.5 h-3.5" />
-                    Stall Kitchen
+                    Stall Overview
                   </Link>
                 )
               )}
@@ -444,12 +444,12 @@ export function MarketingNav({ currentPath = '/' }: MarketingNavProps) {
                     </Link>
                   ) : (
                     <Link
-                      href="/owner/orders"
+                      href="/owner"
                       onClick={() => setMobileMenuOpen(false)}
                       className="flex items-center justify-center gap-2 w-full text-center py-2.5 rounded-full text-sm font-semibold text-white bg-[#1d1d1f]"
                     >
                       <CookingPot className="w-4 h-4" />
-                      Stall Kitchen (KDS)
+                      Stall Overview
                     </Link>
                   )
                 )}

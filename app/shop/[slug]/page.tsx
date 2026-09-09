@@ -25,7 +25,7 @@ async function fetchShopBySlug(slug: string): Promise<ShopData | null> {
   // Step 2: fetch dishes for this outlet separately
   const { data: dishes } = await supabase
     .from('dishes')
-    .select('id, name, price, is_vegetarian, is_available, description, image_url')
+    .select('id, name, price, is_vegetarian, is_available, description, image_url, spice_level')
     .eq('food_outlet_id', matched.id)
     .eq('is_available', true);
 
@@ -44,6 +44,7 @@ async function fetchShopBySlug(slug: string): Promise<ShopData | null> {
       name: d.name,
       price: Number(d.price),
       vegetarian: Boolean(d.is_vegetarian),
+      spiceLevel: Number(d.spice_level ?? 0),
       imageUrl: d.image_url ?? null,
     })),
   };

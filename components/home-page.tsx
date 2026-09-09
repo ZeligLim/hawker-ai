@@ -301,6 +301,7 @@ export function HomePage() {
                         name={dish.name}
                         price={dish.price}
                         isVegetarian={dish.isVegetarian}
+                        spiceLevel={dish.spiceLevel}
                         imageUrl={dish.imageUrl}
                         quantity={quantity}
                         onAdd={() => addDish(dish)}

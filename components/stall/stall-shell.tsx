@@ -6,9 +6,9 @@ import { StallGuard } from './stall-guard';
 import { ClientBottomNav } from '@/components/shared/client-bottom-nav';
 
 const stallNavItems = [
+  { href: '/owner', label: 'Overview', icon: LayoutDashboard },
   { href: '/owner/orders', label: 'Tickets', icon: ClipboardList },
   { href: '/owner/menu', label: 'Menu', icon: UtensilsCrossed },
-  { href: '/owner', label: 'Overview', icon: LayoutDashboard },
   { href: '/owner/profile', label: 'Profile', icon: CircleUserRound },
 ];
 

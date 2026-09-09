@@ -1,18 +1,26 @@
 # Current Project Context
 
 ## Current Phase
-Phase 9: Real Backend Data Synchronization & Zero Mock Policy Enforcement
+Phase 10: Spicy Level 0-Index & Realtime Stall Overview Primary Tab
 
 ## Current Feature
-1. **Single Google Account & Clean Remote Database**:
-   - Preserved solely Google OAuth account `zeliglim8@gmail.com` (`34bba06f-92e1-4a66-bec9-5fda06ef0cb4`) in remote Supabase.
-   - Preserved active restaurant `Lim's Foodcourt` (`f4ddcb73-4e23-4156-b97e-9e5a5e54ed6f`), its 10 booth slots (`Western` + `Booth Slot #02..#10`), and genuine dish `Spaghetti` (RM 10.01).
-   - Executed SQL purge removing all mock restaurants, fabricated dishes, test accounts, and unneeded seed records.
+1. **Spicy Level 0-Index & Flame Badge Icon**:
+   - In dish editor (`app/owner/menu/[id]/page.tsx`), spicy level range slider now starts at `0` (`min="0" max="5"`), defaults to `0`, and labels level `0` as "Not spicy (0)".
+   - In `components/dish-card.tsx`, added `spiceLevel?: number` prop and rendered a circular red badge with the `Flame` icon from `lucide-react` (matching the vegetarian `Leaf` badge aesthetic) whenever `spiceLevel > 1`.
+   - Wired `spiceLevel` prop to `<DishCard>` across `components/home-page.tsx`, `components/menu-page.tsx`, `app/shop/[slug]/page.tsx`, and `components/shop-detail-client.tsx`.
+   - Updated `components/result-card.tsx` to display non-spicy (`0`) through fire (`5`), showing the spicy flame badge when `dish.spiceLevel > 1`.
+   - Updated `lib/ai/intent-parser.ts` heuristic parser to detect non-spicy queries ("non-spicy", "not spicy", "no spice", "zero spice") and map to spice level `0`.
 
-2. **Hawker Centre Backend Implementation**:
-   - Created `lib/hawker-centres/service.ts`: Queries Supabase `restaurants`, joins `food_outlets` and `dishes`, computes total stalls, active stalls, dish count, specialties, and price range.
-   - Created `app/api/hawker-centres/route.ts`: Exposes `GET /api/hawker-centres?slug=...&search=...` returning structured hawker centres for customer discovery.
-   - Added comprehensive documentation to `docs/endpoints.md`.
+2. **Stall Overview as First Tab & Live Database Integration**:
+   - In `components/stall/stall-shell.tsx`, reordered `stallNavItems` so that `{ href: '/owner', label: 'Overview', icon: LayoutDashboard }` is the first tab.
+   - Updated `app/stall/page.tsx` to redirect to `/owner` (Overview) instead of `/owner/orders`.
+   - Updated `components/marketing-nav.tsx` stall workspace links to direct to `/owner` ("Stall Overview").
+   - Rewrote `app/owner/page.tsx`:
+     - Completely removed hardcoded mock arrays (`stats = [...]`, `['Order #1042', ...]`).
+     - Linked directly to PostgreSQL database via authenticated `/api/owner/orders` and `/api/owner/dishes`.
+     - Real-time updates via Supabase PostgreSQL changes on `merchant_orders`.
+     - Dynamic metrics for today's orders, today's gross sales (RM), active vs unavailable dishes, active queue items, and real database order activity stream.
+     - Clean, responsive empty states when no orders are in the database yet.
 
 3. **Zero Mock Policy Enforcement & Codebase Cleanup**:
    - Purged hardcoded dish arrays in `lib/search/fallback-data.ts`.

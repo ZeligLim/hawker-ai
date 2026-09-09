@@ -1,13 +1,14 @@
 'use client';
 
 import React from 'react';
-import { Leaf, Plus, UtensilsCrossed } from 'lucide-react';
+import { Flame, Leaf, Plus, UtensilsCrossed } from 'lucide-react';
 
 export interface DishCardProps {
   id: string;
   name: string;
   price: number;
   isVegetarian?: boolean;
+  spiceLevel?: number;
   imageUrl?: string | null;
   quantity?: number;
   onAdd: () => void;
@@ -19,6 +20,7 @@ export function DishCard({
   name,
   price,
   isVegetarian,
+  spiceLevel,
   imageUrl,
   quantity = 0,
   onAdd,
@@ -50,16 +52,30 @@ export function DishCard({
           RM {price.toFixed(2)}
         </div>
 
-        {/* Vegetarian Badge */}
-        {isVegetarian ? (
-          <div
-            className="absolute right-2.5 top-2.5 flex h-7 w-7 items-center justify-center rounded-full bg-emerald-50 text-emerald-700 shadow-sm border border-emerald-200"
-            title="Vegetarian"
-            aria-label="Vegetarian"
-          >
-            <Leaf className="h-3.5 w-3.5" strokeWidth={2} />
-          </div>
-        ) : null}
+        {/* Dietary / Spicy Badges */}
+        <div className="absolute right-2.5 top-2.5 flex items-center gap-1.5">
+          {/* Vegetarian Badge */}
+          {isVegetarian ? (
+            <div
+              className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-50 text-emerald-700 shadow-sm border border-emerald-200"
+              title="Vegetarian"
+              aria-label="Vegetarian"
+            >
+              <Leaf className="h-3.5 w-3.5" strokeWidth={2} />
+            </div>
+          ) : null}
+
+          {/* Spicy Badge (shown when spicy level higher than 1) */}
+          {spiceLevel !== undefined && spiceLevel > 1 ? (
+            <div
+              className="flex h-7 w-7 items-center justify-center rounded-full bg-red-50 text-red-600 shadow-sm border border-red-200"
+              title={`Spicy Level ${spiceLevel}`}
+              aria-label={`Spicy Level ${spiceLevel}`}
+            >
+              <Flame className="h-3.5 w-3.5 fill-red-500/20" strokeWidth={2} />
+            </div>
+          ) : null}
+        </div>
 
         {/* Quantity Controls Floating on Image Bottom */}
         <div className="absolute bottom-2.5 left-2.5 right-2.5">

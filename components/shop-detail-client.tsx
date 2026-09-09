@@ -16,7 +16,7 @@ export type ShopData = {
   eta: string;
   busy: string;
   description: string;
-  dishes: ReadonlyArray<{ id?: string; name: string; price: number; vegetarian: boolean; imageUrl?: string | null }>;
+  dishes: ReadonlyArray<{ id?: string; name: string; price: number; vegetarian: boolean; spiceLevel?: number; imageUrl?: string | null }>;
 };
 
 export function ShopDetailClient({ shop, slug }: { shop: ShopData; slug: string }) {
@@ -157,6 +157,7 @@ export function ShopDetailClient({ shop, slug }: { shop: ShopData; slug: string 
                   name={dish.name}
                   price={dish.price}
                   isVegetarian={dish.vegetarian}
+                  spiceLevel={dish.spiceLevel}
                   imageUrl={dish.imageUrl}
                   quantity={isClosed ? 0 : quantity}
                   onAdd={() => !isClosed && addDish(dish)}
