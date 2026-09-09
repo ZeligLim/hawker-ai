@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import {
   ArrowUpRight,
@@ -16,6 +17,7 @@ import {
   ShoppingBag,
   Store,
   TrendingUp,
+  X,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 
@@ -62,8 +64,13 @@ const colorPalette = [
   'bg-teal-500',
 ];
 
-export default function ShopOwnerAnalyticsPage() {
+function ShopOwnerAnalyticsContent() {
+  const searchParams = useSearchParams();
+  const paramBoothId = searchParams.get('boothId') || '';
   const [selectedPeriod, setSelectedPeriod] = useState<(typeof periods)[number]['id']>('w');
+  const [userSelectedBoothId, setUserSelectedBoothId] = useState<string | null>(null);
+  const selectedBoothId = userSelectedBoothId !== null ? userSelectedBoothId : paramBoothId;
+  const setSelectedBoothId = (id: string) => setUserSelectedBoothId(id);
   const [showAllBooths, setShowAllBooths] = useState(false);
   const [data, setData] = useState<AnalyticsPayload>({
     totalRevenue: 0,
@@ -120,6 +127,8 @@ export default function ShopOwnerAnalyticsPage() {
   const averageBoothRevenue = totalBooths > 0 ? totalRevenue / totalBooths : 0;
   const topBooth = booths[0];
   const activePeriodMeta = periods.find((p) => p.id === selectedPeriod);
+  const selectedBooth = booths.find((b) => b.id === selectedBoothId);
+  const selectedBoothIndex = booths.findIndex((b) => b.id === selectedBoothId);
   const displayedBooths = showAllBooths ? booths : booths.slice(0, 6);
 
   return (
@@ -140,28 +149,130 @@ export default function ShopOwnerAnalyticsPage() {
             </p>
           </div>
 
-          {/* Timeframe Segmented Switcher */}
-          <div className="inline-flex items-center self-start sm:self-auto rounded-full bg-white p-1 border border-black/[0.06] shadow-xs">
-            {periods.map((period) => {
-              const active = selectedPeriod === period.id;
-              return (
+          <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
+            {/* Stall Focus Filter */}
+            <div className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 border border-black/[0.06] shadow-xs text-xs">
+              <Store className="w-3.5 h-3.5 text-[#6e6e73]" />
+              <select
+                value={selectedBoothId}
+                onChange={(e) => setSelectedBoothId(e.target.value)}
+                className="bg-transparent font-semibold text-[#1d1d1f] outline-none cursor-pointer pr-1"
+                aria-label="Filter by booth"
+              >
+                <option value="">All Stalls ({booths.length})</option>
+                {booths.map((b) => (
+                  <option key={b.id} value={b.id}>
+                    {b.name}
+                  </option>
+                ))}
+              </select>
+              {selectedBoothId && (
                 <button
-                  key={period.id}
                   type="button"
-                  onClick={() => setSelectedPeriod(period.id)}
-                  className={`min-h-[34px] min-w-[56px] rounded-full px-3 py-1 text-xs font-semibold tracking-wide transition-all ${
-                    active
-                      ? 'bg-[#111827] text-white shadow-xs'
-                      : 'text-[#6e6e73] hover:text-[#1d1d1f]'
-                  }`}
-                  aria-pressed={active}
+                  onClick={() => setSelectedBoothId('')}
+                  className="text-[#86868b] hover:text-[#1d1d1f] ml-0.5 p-0.5 rounded-full"
+                  title="Clear booth filter"
                 >
-                  {period.label}
+                  <X className="w-3 h-3" />
                 </button>
-              );
-            })}
+              )}
+            </div>
+
+            {/* Timeframe Segmented Switcher */}
+            <div className="inline-flex items-center rounded-full bg-white p-1 border border-black/[0.06] shadow-xs">
+              {periods.map((period) => {
+                const active = selectedPeriod === period.id;
+                return (
+                  <button
+                    key={period.id}
+                    type="button"
+                    onClick={() => setSelectedPeriod(period.id)}
+                    className={`min-h-[34px] min-w-[56px] rounded-full px-3 py-1 text-xs font-semibold tracking-wide transition-all ${
+                      active
+                        ? 'bg-[#111827] text-white shadow-xs'
+                        : 'text-[#6e6e73] hover:text-[#1d1d1f]'
+                    }`}
+                    aria-pressed={active}
+                  >
+                    {period.label}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </header>
+
+        {/* Focused Stall Banner */}
+        {selectedBooth && (
+          <div className="mt-4 rounded-[24px] bg-[#111827] text-white p-5 sm:p-6 shadow-sm border border-black/10">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/10 text-white shrink-0">
+                  <Store className="h-6 w-6" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-lg sm:text-xl font-bold tracking-tight text-white">{selectedBooth.name}</h2>
+                    <span className="rounded-full bg-white/15 px-2.5 py-0.5 text-[11px] font-semibold text-white">
+                      Rank #{selectedBoothIndex + 1} of {booths.length}
+                    </span>
+                  </div>
+                  <p className="text-xs text-white/70 mt-0.5">
+                    Individual booth metrics for {activePeriodMeta?.description.toLowerCase()}
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedBoothId('')}
+                className="inline-flex items-center gap-1.5 rounded-full bg-white/10 hover:bg-white/20 px-3.5 py-1.5 text-xs font-semibold text-white transition-all self-start sm:self-auto cursor-pointer"
+              >
+                <X className="h-3.5 w-3.5" />
+                <span>Show All Stalls</span>
+              </button>
+            </div>
+
+            <div className="mt-5 grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-white/10">
+              <div className="rounded-xl bg-white/5 p-3.5">
+                <p className="text-[11px] text-white/60">Stall Sales</p>
+                <p className="text-xl sm:text-2xl font-bold text-white mt-1">
+                  RM {selectedBooth.periodRevenue.toFixed(2)}
+                </p>
+                <p className="text-[10px] text-white/50 mt-0.5">
+                  {totalRevenue > 0 ? ((selectedBooth.periodRevenue / totalRevenue) * 100).toFixed(1) : 0}% of venue total
+                </p>
+              </div>
+
+              <div className="rounded-xl bg-white/5 p-3.5">
+                <p className="text-[11px] text-white/60">Orders Fulfilled</p>
+                <p className="text-xl sm:text-2xl font-bold text-white mt-1">
+                  {selectedBooth.periodOrders.toLocaleString()}
+                </p>
+                <p className="text-[10px] text-white/50 mt-0.5">
+                  {totalOrders > 0 ? ((selectedBooth.periodOrders / totalOrders) * 100).toFixed(1) : 0}% of venue orders
+                </p>
+              </div>
+
+              <div className="rounded-xl bg-white/5 p-3.5">
+                <p className="text-[11px] text-white/60">Average Ticket</p>
+                <p className="text-xl sm:text-2xl font-bold text-white mt-1">
+                  RM {selectedBooth.periodOrders > 0 ? (selectedBooth.periodRevenue / selectedBooth.periodOrders).toFixed(2) : '0.00'}
+                </p>
+                <p className="text-[10px] text-white/50 mt-0.5">Spend per order</p>
+              </div>
+
+              <div className="rounded-xl bg-white/5 p-3.5">
+                <p className="text-[11px] text-white/60">Operational Status</p>
+                <p className="text-xl sm:text-2xl font-bold text-emerald-400 mt-1">
+                  {selectedBooth.periodOrders > 0 ? 'Active' : 'Idle'}
+                </p>
+                <p className="text-[10px] text-white/50 mt-0.5">
+                  {selectedBooth.periodOrders > 0 ? 'Processing orders' : 'No orders in period'}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Widescreen KPI Ribbon: 2 cols on mobile, 3 on md, 5 on lg/xl */}
         <section className="mt-5 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
@@ -272,11 +383,17 @@ export default function ShopOwnerAnalyticsPage() {
                       const stallAvgTicket =
                         booth.periodOrders > 0 ? booth.periodRevenue / booth.periodOrders : 0;
                       const medalClass = rankMedalStyles[index] ?? 'bg-black/5 text-[#1d1d1f] border border-black/5';
+                      const isSelected = booth.id === selectedBoothId;
 
                       return (
                         <div
                           key={booth.id || booth.name}
-                          className="flex flex-col justify-between rounded-2xl bg-[#f5f5f7]/70 border border-black/[0.04] p-3.5 sm:p-4 transition-all hover:bg-[#f5f5f7] hover:shadow-2xs"
+                          onClick={() => setSelectedBoothId(isSelected ? '' : booth.id)}
+                          className={`flex flex-col justify-between rounded-2xl cursor-pointer p-3.5 sm:p-4 transition-all ${
+                            isSelected
+                              ? 'bg-white border-2 border-[#111827] shadow-md ring-2 ring-black/5'
+                              : 'bg-[#f5f5f7]/70 border border-black/[0.04] hover:bg-[#f5f5f7] hover:shadow-2xs'
+                          }`}
                         >
                           <div>
                             <div className="flex items-start justify-between gap-2">
@@ -287,8 +404,13 @@ export default function ShopOwnerAnalyticsPage() {
                                   {index === 0 ? '1' : index === 1 ? '2' : index === 2 ? '3' : index + 1}
                                 </span>
                                 <div className="min-w-0 flex-1">
-                                  <p className="text-xs sm:text-sm font-semibold text-[#1d1d1f] truncate" title={booth.name}>
-                                    {booth.name}
+                                  <p className="text-xs sm:text-sm font-semibold text-[#1d1d1f] truncate flex items-center gap-1.5" title={booth.name}>
+                                    <span>{booth.name}</span>
+                                    {isSelected && (
+                                      <span className="text-[9px] bg-[#111827] text-white px-1.5 py-0.5 rounded-full font-bold">
+                                        Selected
+                                      </span>
+                                    )}
                                   </p>
                                   <p className="text-[10px] sm:text-[11px] text-[#6e6e73] truncate">
                                     {booth.periodOrders.toLocaleString()} orders &bull; Avg. RM{' '}
@@ -518,5 +640,22 @@ export default function ShopOwnerAnalyticsPage() {
         </section>
       </div>
     </main>
+  );
+}
+
+export default function ShopOwnerAnalyticsPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="min-h-screen bg-[#f5f5f7] px-4 pb-32 pt-5 sm:px-6 text-[#1d1d1f]">
+          <div className="mx-auto max-w-7xl flex items-center justify-center min-h-[50vh] text-xs text-[#6e6e73]">
+            <LoaderCircle className="h-5 w-5 animate-spin mr-2 text-[#111827]" />
+            Loading analytics...
+          </div>
+        </main>
+      }
+    >
+      <ShopOwnerAnalyticsContent />
+    </Suspense>
   );
 }

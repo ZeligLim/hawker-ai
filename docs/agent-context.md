@@ -1,26 +1,35 @@
 # Current Project Context
 
 ## Current Phase
-Phase 10: Spicy Level 0-Index & Realtime Stall Overview Primary Tab
+Phase 11: Booth Deletion with Cascade Cleanup & Booth-Level Analytics Spotlight
 
 ## Current Feature
-1. **Spicy Level 0-Index & Flame Badge Icon**:
-   - In dish editor (`app/owner/menu/[id]/page.tsx`), spicy level range slider now starts at `0` (`min="0" max="5"`), defaults to `0`, and labels level `0` as "Not spicy (0)".
-   - In `components/dish-card.tsx`, added `spiceLevel?: number` prop and rendered a circular red badge with the `Flame` icon from `lucide-react` (matching the vegetarian `Leaf` badge aesthetic) whenever `spiceLevel > 1`.
-   - Wired `spiceLevel` prop to `<DishCard>` across `components/home-page.tsx`, `components/menu-page.tsx`, `app/shop/[slug]/page.tsx`, and `components/shop-detail-client.tsx`.
-   - Updated `components/result-card.tsx` to display non-spicy (`0`) through fire (`5`), showing the spicy flame badge when `dish.spiceLevel > 1`.
-   - Updated `lib/ai/intent-parser.ts` heuristic parser to detect non-spicy queries ("non-spicy", "not spicy", "no spice", "zero spice") and map to spice level `0`.
+1. **Booth Slot Deletion with Relational Cascade Cleanup**:
+   - **Database Migration (`supabase/migrations/014_delete_booth_slot.sql`)**:
+     - Created `delete_booth_slot(p_booth_id UUID)` stored procedure with `SECURITY DEFINER`.
+     - Validates caller ownership/manager permissions via `restaurant_memberships`.
+     - Cascades deletions across `order_items`, `merchant_orders` (which had `ON DELETE RESTRICT` on `food_outlet_id`), `booth_invitations`, `merchant_memberships`, `merchant_handles`, `dishes`, and `food_outlets`.
+     - Added owner DELETE policy for `food_outlets`.
+   - **Backend API (`app/api/owner/booths/[id]/route.ts`)**:
+     - Added authenticated `DELETE` method handler.
+     - Calls `delete_booth_slot` RPC first, falling back to direct cascade queries if migration is not yet pushed.
+   - **Operator Frontend (`app/shop-owner/booths/page.tsx`)**:
+     - Added "Delete" button to each booth slot card.
+     - Confirmation dialog with clear warnings, spinner, and error handling.
+     - Triggers automated reload of shops and booth slots upon deletion.
 
-2. **Stall Overview as First Tab & Live Database Integration**:
-   - In `components/stall/stall-shell.tsx`, reordered `stallNavItems` so that `{ href: '/owner', label: 'Overview', icon: LayoutDashboard }` is the first tab.
-   - Updated `app/stall/page.tsx` to redirect to `/owner` (Overview) instead of `/owner/orders`.
-   - Updated `components/marketing-nav.tsx` stall workspace links to direct to `/owner` ("Stall Overview").
-   - Rewrote `app/owner/page.tsx`:
-     - Completely removed hardcoded mock arrays (`stats = [...]`, `['Order #1042', ...]`).
-     - Linked directly to PostgreSQL database via authenticated `/api/owner/orders` and `/api/owner/dishes`.
-     - Real-time updates via Supabase PostgreSQL changes on `merchant_orders`.
-     - Dynamic metrics for today's orders, today's gross sales (RM), active vs unavailable dishes, active queue items, and real database order activity stream.
-     - Clean, responsive empty states when no orders are in the database yet.
+2. **Booth Analytics Button & Focused Stall Spotlight**:
+   - **Direct Navigation Links**:
+     - In `app/shop-owner/booths/page.tsx`: Added "Analytics" button on every booth slot card (`/shop-owner/analytics?boothId=${booth.id}`) and "Venue Analytics" button in the page header.
+     - In `app/shop-owner/page.tsx`: Added "Analytics" button next to every booth status badge in the food hall overview.
+   - **Analytics Dashboard (`app/shop-owner/analytics/page.tsx`)**:
+     - Wrapped client component in `<Suspense>` to support Next.js App Router static optimization with `useSearchParams()`.
+     - Reads `boothId` query parameter with zero-cascading-render derived state pattern.
+     - Added Stall Focus Filter dropdown in the header next to the timeframe switcher, with a 1-click "Clear" button.
+     - **Booth Performance Spotlight**: Displays a dedicated spotlight banner when a stall is selected, featuring rank within venue, gross sales (RM) & venue contribution %, orders fulfilled & volume %, average spend per ticket, and real-time operational status (Active vs Idle).
+     - **Interactive Leaderboard**: Stalls in the performance leaderboard are interactive; clicking a card focuses the booth spotlight and highlights the card with a distinct dark border, badge, and ring.
+
+3. **Spicy Level 0-Index & Realtime Stall Overview Primary Tab (Phase 10)**:
 
 3. **Zero Mock Policy Enforcement & Codebase Cleanup**:
    - Purged hardcoded dish arrays in `lib/search/fallback-data.ts`.

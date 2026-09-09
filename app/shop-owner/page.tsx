@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import {
+  BarChart3,
   Building2,
   CalendarRange,
   ChevronRight,
@@ -256,15 +257,25 @@ export default function ShopOwnerPage() {
                                       {hasMember ? 'Vendor connected' : 'Ready for invite'}
                                     </p>
                                   </div>
-                                  <span
-                                    className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ${
-                                      hasMember
-                                        ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                                        : 'bg-black/5 text-[#1d1d1f] border border-black/5'
-                                    }`}
-                                  >
-                                    {hasMember ? 'Claimed' : 'Available'}
-                                  </span>
+                                  <div className="flex items-center gap-1.5 shrink-0">
+                                    <span
+                                      className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                                        hasMember
+                                          ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                                          : 'bg-black/5 text-[#1d1d1f] border border-black/5'
+                                      }`}
+                                    >
+                                      {hasMember ? 'Claimed' : 'Available'}
+                                    </span>
+                                    <Link
+                                      href={`/shop-owner/analytics?boothId=${booth.id}`}
+                                      className="inline-flex items-center gap-1 rounded-full border border-black/10 bg-[#f5f5f7] px-2 py-0.5 text-[10px] font-semibold text-[#1d1d1f] hover:bg-black/5 transition-all"
+                                      title={`View analytics for ${booth.name}`}
+                                    >
+                                      <BarChart3 className="w-3 h-3 text-[#111827]" />
+                                      <span>Analytics</span>
+                                    </Link>
+                                  </div>
                                 </div>
                               );
                             })}

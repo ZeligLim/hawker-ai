@@ -1,7 +1,9 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import Link from 'next/link';
 import {
+  BarChart3,
   Check,
   CheckCircle2,
   Copy,
@@ -68,6 +70,11 @@ export default function ShopOwnerBoothsPage() {
     Record<string, { type: 'success' | 'error'; message: string; link?: string; delivered?: boolean }>
   >({});
   const [copiedLinks, setCopiedLinks] = useState<Record<string, boolean>>({});
+
+  // Booth deletion state
+  const [boothToDelete, setBoothToDelete] = useState<Booth | null>(null);
+  const [isDeletingBooth, setIsDeletingBooth] = useState(false);
+  const [deleteError, setDeleteError] = useState('');
 
   const loadShops = useCallback(async () => {
     try {
@@ -283,6 +290,26 @@ export default function ShopOwnerBoothsPage() {
     }
   };
 
+  const handleDeleteBooth = async (boothId: string) => {
+    setIsDeletingBooth(true);
+    setDeleteError('');
+    try {
+      const response = await authenticatedFetch(`/api/owner/booths/${boothId}`, {
+        method: 'DELETE',
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error ?? 'Failed to delete booth slot.');
+      }
+      setBoothToDelete(null);
+      await loadShops();
+    } catch (err) {
+      setDeleteError(err instanceof Error ? err.message : 'Unable to delete booth.');
+    } finally {
+      setIsDeletingBooth(false);
+    }
+  };
+
   return (
     <main className="min-h-screen bg-[#f5f5f7] px-4 pb-32 pt-5 sm:px-6 text-[#1d1d1f]">
       <div className="mx-auto max-w-7xl">
@@ -299,13 +326,22 @@ export default function ShopOwnerBoothsPage() {
               Send setup links to vendor emails. Only authorized emails can edit the store; removing an email revokes control immediately.
             </p>
           </div>
-          <button
-            type="button"
-            onClick={handleOpenAddSlot}
-            className="inline-flex items-center justify-center gap-2 rounded-full bg-[#111827] px-5 py-2.5 text-xs font-semibold text-white shadow-sm hover:bg-black transition-all shrink-0"
-          >
-            <Plus className="h-3.5 w-3.5" /> Add Booth Slot
-          </button>
+          <div className="flex items-center gap-2">
+            <Link
+              href={'/shop-owner/analytics' as any}
+              className="inline-flex items-center justify-center gap-1.5 rounded-full border border-black/10 bg-white px-4 py-2.5 text-xs font-semibold text-[#1d1d1f] shadow-xs hover:bg-black/[0.03] transition-all shrink-0"
+            >
+              <BarChart3 className="h-3.5 w-3.5" />
+              <span>Venue Analytics</span>
+            </Link>
+            <button
+              type="button"
+              onClick={handleOpenAddSlot}
+              className="inline-flex items-center justify-center gap-2 rounded-full bg-[#111827] px-5 py-2.5 text-xs font-semibold text-white shadow-sm hover:bg-black transition-all shrink-0"
+            >
+              <Plus className="h-3.5 w-3.5" /> Add Booth Slot
+            </button>
+          </div>
         </header>
 
         <section className="mt-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5 items-start">
@@ -356,18 +392,40 @@ export default function ShopOwnerBoothsPage() {
                         </p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2 shrink-0">
+                    <div className="flex items-center gap-1.5 shrink-0 flex-wrap justify-end">
                       <span className="rounded-full bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-700">
                         {booth.status}
                       </span>
+                      <Link
+                        href={`/shop-owner/analytics?boothId=${booth.id}`}
+                        className="inline-flex items-center gap-1.5 rounded-full border border-black/10 bg-white px-2.5 sm:px-3 py-1.5 text-xs font-semibold text-[#1d1d1f] hover:bg-black/[0.04] transition-all"
+                        title={`View analytics for ${booth.name}`}
+                      >
+                        <BarChart3 className="h-3 w-3 text-[#111827]" />
+                        <span className="hidden sm:inline">Analytics</span>
+                      </Link>
                       <button
                         type="button"
                         onClick={() => setEditing(booth)}
                         className="inline-flex items-center gap-1.5 rounded-full border border-[#e5e7eb] bg-white px-2.5 sm:px-3 py-1.5 text-xs font-semibold text-[#1d1d1f] hover:bg-black/[0.03]"
                         aria-label="Edit Slot"
+                        title="Edit slot identifier"
                       >
                         <Pencil className="h-3 w-3" />
                         <span className="hidden sm:inline">Edit</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setBoothToDelete(booth);
+                          setDeleteError('');
+                        }}
+                        className="inline-flex items-center gap-1.5 rounded-full border border-red-200 bg-red-50/60 px-2.5 sm:px-3 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-50 hover:text-red-700 transition-all"
+                        aria-label="Delete Booth Slot"
+                        title={`Delete ${booth.name}`}
+                      >
+                        <Trash2 className="h-3 w-3" />
+                        <span className="hidden sm:inline">Delete</span>
                       </button>
                     </div>
                   </div>
@@ -704,6 +762,79 @@ export default function ShopOwnerBoothsPage() {
               Save Slot Changes
             </button>
           </form>
+        </div>
+      ) : null}
+
+      {/* DELETE BOOTH SLOT CONFIRMATION MODAL */}
+      {boothToDelete ? (
+        <div className="fixed inset-0 z-30 flex items-end justify-center bg-black/40 p-4 sm:items-center backdrop-blur-xs">
+          <div className="w-full max-w-md rounded-[28px] bg-white p-6 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-red-50 text-red-600">
+                  <Trash2 className="h-5 w-5" />
+                </div>
+                <div>
+                  <h2 className="text-lg font-semibold text-[#1d1d1f]">Delete Booth Slot</h2>
+                  <p className="text-[11px] text-[#6e6e73]">Permanently remove stall allocation</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                aria-label="Close delete dialog"
+                onClick={() => {
+                  setBoothToDelete(null);
+                  setDeleteError('');
+                }}
+                className="p-1 rounded-full text-[#6e6e73] hover:text-[#1d1d1f]"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <p className="text-xs sm:text-sm text-[#6e6e73] leading-relaxed">
+              Are you sure you want to delete <strong className="text-[#1d1d1f] font-semibold">{boothToDelete.name}</strong>?
+              This will permanently revoke all vendor invitations, disconnect assigned staff, and remove all associated menu items and records for this slot.
+            </p>
+
+            {deleteError && (
+              <div className="rounded-xl bg-red-50 p-3 text-xs text-red-700 border border-red-200">
+                {deleteError}
+              </div>
+            )}
+
+            <div className="flex items-center gap-2.5 pt-2">
+              <button
+                type="button"
+                disabled={isDeletingBooth}
+                onClick={() => {
+                  setBoothToDelete(null);
+                  setDeleteError('');
+                }}
+                className="flex-1 rounded-full border border-black/10 py-2.5 text-xs font-semibold text-[#1d1d1f] hover:bg-black/5 transition-all"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={isDeletingBooth}
+                onClick={() => void handleDeleteBooth(boothToDelete.id)}
+                className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-full bg-red-600 hover:bg-red-700 py-2.5 text-xs font-semibold text-white shadow-sm transition-all disabled:opacity-50"
+              >
+                {isDeletingBooth ? (
+                  <>
+                    <LoaderCircle className="h-3.5 w-3.5 animate-spin" />
+                    <span>Deleting…</span>
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="h-3.5 w-3.5" />
+                    <span>Delete Slot</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
         </div>
       ) : null}
     </main>
