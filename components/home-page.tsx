@@ -8,7 +8,6 @@ import { CustomizationCard } from '@/components/customization-card';
 import { DishCard } from '@/components/dish-card';
 import { addItemToCart, getDishQuantity, removeCartItem, updateCartItemQuantity, useCartItems } from '@/lib/order/cart';
 import { getDishCustomization } from '@/lib/order/customizations';
-import { fallbackDishes } from '@/lib/search/fallback-data';
 import { formatTableLabel, getCurrentTableSession } from '@/lib/table-session';
 
 type FeaturedDish = {
@@ -34,36 +33,14 @@ const quickFilters = [
   { label: 'Popular', query: 'popular hawker dishes' },
 ];
 
-const stallDirectory = [
-  {
-    name: 'Ah Seng Chicken Rice',
-    description: 'Chicken rice, roasted meats & noodles',
-    eta: '10 min',
-    busy: 'Busy',
-    dishCount: 12,
-  },
-  {
-    name: 'Penang Corner',
-    description: 'Penang favourites',
-    eta: '12 min',
-    busy: 'Moderate',
-    dishCount: 9,
-  },
-  {
-    name: 'Curry House',
-    description: 'Curry noodles & rice dishes',
-    eta: 'Closed',
-    busy: 'Closed',
-    dishCount: 8,
-  },
-  {
-    name: 'Green Garden Vegetarian',
-    description: 'Vegetarian staples',
-    eta: '8 min',
-    busy: 'Quiet',
-    dishCount: 11,
-  },
-];
+type StallDirectoryItem = {
+  id: string;
+  name: string;
+  description: string;
+  eta: string;
+  busy: string;
+  dishCount: number;
+};
 
 export function HomePage() {
   const [query, setQuery] = useState('');
@@ -71,6 +48,8 @@ export function HomePage() {
   const [error, setError] = useState<string | null>(null);
   const [results, setResults] = useState<FeaturedDish[]>([]);
   const [initialDishes, setInitialDishes] = useState<FeaturedDish[]>([]);
+  const [stalls, setStalls] = useState<StallDirectoryItem[]>([]);
+  const [venueName, setVenueName] = useState('Hawker Centre');
   const [tableLabel] = useState(() => formatTableLabel(getCurrentTableSession().tableNumber));
   const router = useRouter();
   const { cartItems, setCartItems } = useCartItems();
@@ -86,9 +65,24 @@ export function HomePage() {
         if (!active || !Array.isArray(data.outlets)) return;
 
         const loaded: FeaturedDish[] = [];
+        const loadedStalls: StallDirectoryItem[] = [];
+
         for (const outlet of data.outlets) {
           const restaurantName = outlet.restaurants?.name || outlet.name;
-          for (const dish of outlet.dishes ?? []) {
+          const dishList = outlet.dishes ?? [];
+
+          loadedStalls.push({
+            id: outlet.id,
+            name: outlet.name,
+            description: dishList.length > 0
+              ? dishList.map((d: any) => d.name).join(', ')
+              : `${restaurantName} · ${outlet.name}`,
+            eta: '10 min',
+            busy: dishList.length > 0 ? 'Open' : 'Prep Shift',
+            dishCount: dishList.length,
+          });
+
+          for (const dish of dishList) {
             if (dish.is_available === false) continue;
             loaded.push({
               id: dish.id,
@@ -103,12 +97,18 @@ export function HomePage() {
               proteinGrams: Number(dish.protein_grams ?? 0),
               imageUrl: dish.image_url ?? null,
             });
-            if (loaded.length >= 6) break;
+            if (loaded.length >= 8) break;
           }
-          if (loaded.length >= 6) break;
         }
-        if (loaded.length > 0 && active) {
-          setInitialDishes(loaded);
+
+        if (active) {
+          setStalls(loadedStalls);
+          if (loaded.length > 0) {
+            setInitialDishes(loaded);
+          }
+          if (data.outlets[0]?.restaurants?.name) {
+            setVenueName(data.outlets[0].restaurants.name);
+          }
         }
       } catch {
         // gracefully handle
@@ -123,19 +123,7 @@ export function HomePage() {
   const featuredDishes = useMemo<FeaturedDish[]>(() => {
     if (results.length > 0) return results;
     if (initialDishes.length > 0) return initialDishes;
-    return fallbackDishes.slice(0, 4).map((dish) => ({
-      id: dish.id,
-      stallId: '00000000-0000-4000-8000-000000000000',
-      name: dish.name,
-      restaurantName: dish.restaurantName,
-      stallName: dish.stallName,
-      price: dish.price,
-      isVegetarian: dish.isVegetarian,
-      isHalal: dish.isHalal,
-      spiceLevel: dish.spiceLevel,
-      proteinGrams: dish.proteinGrams,
-      imageUrl: (dish as any).imageUrl || null,
-    }));
+    return [];
   }, [results, initialDishes]);
 
   const handleSearch = async (nextQuery: string) => {
@@ -255,7 +243,7 @@ export function HomePage() {
               <div className="flex h-8 w-8 items-center justify-center rounded-[12px] bg-[#1d1d1f] text-xs font-semibold text-white shadow-xs shrink-0">
                 H
               </div>
-              <p className="text-sm font-semibold text-[#1d1d1f] truncate">Setia Hawker Centre</p>
+              <p className="text-sm font-semibold text-[#1d1d1f] truncate">{venueName}</p>
             </div>
             <button
               type="button"
@@ -301,27 +289,33 @@ export function HomePage() {
             )}
 
             {!isLoading && !error && (
-              <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
-                {featuredDishes.map((dish) => {
-                  const quantity = getDishQuantity(cartItems, dish.id);
+              featuredDishes.length > 0 ? (
+                <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+                  {featuredDishes.map((dish) => {
+                    const quantity = getDishQuantity(cartItems, dish.id);
 
-                  return (
-                    <DishCard
-                      key={dish.id}
-                      id={dish.id}
-                      name={dish.name}
-                      price={dish.price}
-                      isVegetarian={dish.isVegetarian}
-                      imageUrl={dish.imageUrl}
-                      quantity={quantity}
-                      onAdd={() => addDish(dish)}
-                      onUpdateQuantity={(delta) =>
-                        delta > 0 ? addDish(dish) : updateQuantity(dish, -1)
-                      }
-                    />
-                  );
-                })}
-              </div>
+                    return (
+                      <DishCard
+                        key={dish.id}
+                        id={dish.id}
+                        name={dish.name}
+                        price={dish.price}
+                        isVegetarian={dish.isVegetarian}
+                        imageUrl={dish.imageUrl}
+                        quantity={quantity}
+                        onAdd={() => addDish(dish)}
+                        onUpdateQuantity={(delta) =>
+                          delta > 0 ? addDish(dish) : updateQuantity(dish, -1)
+                        }
+                      />
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="mt-4 rounded-[22px] border border-black/[0.06] bg-white p-8 text-center text-xs sm:text-sm text-[#6e6e73]">
+                  No dishes found. Browse the stalls below to view their menus!
+                </div>
+              )
             )}
           </section>
 
@@ -338,12 +332,12 @@ export function HomePage() {
           <section className="mt-9">
             <div className="mb-3.5 flex items-center justify-between gap-3">
               <h2 className="text-lg sm:text-xl font-bold tracking-tight text-[#1d1d1f]">
-                Hawker directory
+                Hawker stalls
               </h2>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-3.5">
-              {stallDirectory.map((stall) => {
+              {stalls.map((stall) => {
                 const slug = stall.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 
                 return (

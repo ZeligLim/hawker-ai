@@ -1,5 +1,4 @@
 import { supabase } from '@/lib/supabase/client';
-import { getFallbackMatches } from '@/lib/search/fallback-data';
 import { SearchFilters, SearchFiltersSchema, SearchResult, SearchResultSchema } from '@/lib/search/schema';
 
 type DishRow = {
@@ -33,7 +32,7 @@ export class SearchService {
     const filters = SearchFiltersSchema.parse(rawFilters);
 
     if (!supabase) {
-      return getFallbackMatches(filters);
+      return [];
     }
 
     const dishQuery = supabase.from('dishes').select('*');

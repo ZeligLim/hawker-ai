@@ -1,47 +1,38 @@
 # Current Project Context
 
 ## Current Phase
-Phase 8: Multi-Client Platform Architecture Refactoring & Onboarding Access Gating
+Phase 9: Real Backend Data Synchronization & Zero Mock Policy Enforcement
 
 ## Current Feature
-1. **Multi-Client Experience Separation**:
-   - Refactored application into 4 distinct client experiences with clean architectural boundaries:
-     1. **Public Marketing Website** (`components/marketing/marketing-shell.tsx` & `components/marketing-nav.tsx`):
-        - Public discovery, features, pricing, and onboarding (`/`, `/pricing`, `/plans`, `/apply`, `/subscribe`).
-        - Does NOT expose customer, stall-worker, or owner dashboards.
-        - Real-time authentication awareness:
-          - "Dashboard" button is ONLY shown if user has completed shop onboarding (`roles.hasShopOwner`) OR stall setup via invitation email (`roles.hasBooth`).
-          - If the user holds **both** shop owner and stall worker roles, clicking "Dashboard" opens a dropdown allowing them to choose between "Shop Dashboard" (`/shop-owner/booths`) and "Stall Kitchen (KDS)" (`/owner/orders`).
-          - If only a shop owner, links directly to `/shop-owner/booths`.
-          - If only a stall worker, links directly to `/owner/orders`.
-          - If user is only a customer / diner, "Dashboard" is completely hidden.
-          - "Start Free" is shown when signed in ONLY if shop onboarding has not yet been completed (`!roles.hasShopOwner`), linking directly to shop onboarding (`/apply`).
-     2. **Customer App** (`components/customer/customer-shell.tsx`):
-        - Browsing, menus, QR table sessions, multi-stall cart, checkout, order tracking, and diner profile (`/home`, `/menu`, `/orders`, `/profile`, `/scan`, `/shop/[slug]`, `/results`).
-        - Bottom navigation strictly exposes customer views (Home, Menu, Orders, Profile).
-        - Guest mode ("Continue as guest") in `/auth` is strictly gated to customer intent (`/home`, `/menu`, `/orders`, `/scan`, `/shop/`, `/results`); it does NOT apply when signing in from the public marketing site or merchant onboarding.
-     3. **Hawker Stall App** (`components/stall/stall-shell.tsx` & `components/stall/stall-guard.tsx`):
-        - Tailored for stall workers & chefs operating kitchen display systems (`/stall`, `/owner`, `/owner/orders`, `/owner/menu`, `/owner/profile`).
-        - Stall access is **strictly email-invite only** via cryptographic invitation tokens dispatched by food hall venue operators (`/booths/join?token=...`).
-        - Added dedicated interactive FAQ on the landing page explaining that stalls cannot self-register publicly without an operator invitation.
-     4. **Hawker Shop Owner App** (`components/owner/owner-shell.tsx` & `components/owner/owner-guard.tsx`):
-        - Reserved for venue operators and hawker centre business owners (`/shop-owner`, `/shop-owner/booths`, `/shop-owner/analytics`, `/shop-owner/profile`, `/booths`, `/analytics`).
-        - Registration button on `/apply` simplified to "Sign Up".
+1. **Single Google Account & Clean Remote Database**:
+   - Preserved solely Google OAuth account `zeliglim8@gmail.com` (`34bba06f-92e1-4a66-bec9-5fda06ef0cb4`) in remote Supabase.
+   - Preserved active restaurant `Lim's Foodcourt` (`f4ddcb73-4e23-4156-b97e-9e5a5e54ed6f`), its 10 booth slots (`Western` + `Booth Slot #02..#10`), and genuine dish `Spaghetti` (RM 10.01).
+   - Executed SQL purge removing all mock restaurants, fabricated dishes, test accounts, and unneeded seed records.
 
-2. **Shop Onboarding vs Stall Setup Decoupling**:
-   - **Shop Onboarding (`/apply`)**: Venue operators register physical hawker centres or food halls (`restaurants`) and receive `restaurant_memberships` (`role: 'owner'`). Fixed `app/api/owner/shops/route.ts` to stop auto-inserting `merchant_memberships` or creating stall records. Overhauled `app/apply/page.tsx` to collect genuine venue attributes (venue type, stall slot capacity, address, table capacity, operator phone).
-   - **Stall Onboarding**: Strictly email-invite only via operator tokens (`/booths/join?token=...`). Stalls cannot register independently or publicly on the website.
-   - **Start Free Button**: Linked strictly to Shop Onboarding (`/apply`), never stall setup. Shown when signed in only if `!roles.hasShopOwner`. If already a shop owner, links to `/shop-owner/booths`.
+2. **Hawker Centre Backend Implementation**:
+   - Created `lib/hawker-centres/service.ts`: Queries Supabase `restaurants`, joins `food_outlets` and `dishes`, computes total stalls, active stalls, dish count, specialties, and price range.
+   - Created `app/api/hawker-centres/route.ts`: Exposes `GET /api/hawker-centres?slug=...&search=...` returning structured hawker centres for customer discovery.
+   - Added comprehensive documentation to `docs/endpoints.md`.
 
-3. **Customer Landing Page (`/customer`) & Clean Client Separation**:
-   - **Owner Landing Page (`app/page.tsx` & `components/marketing-nav.tsx`)**: Removed all customer app and customer landing page links/buttons from the hero section, navigation bars, and footer. The owner landing page is now strictly dedicated to food court operators, hawker centre owners, and stall onboarding.
-   - **Simplified Customer Landing Page (`app/customer/page.tsx`)**:
-     - **Spacious, Non-Crowded Navbar**: Eliminated the cluttered ribbon and reduced the nav links to 4 core anchors (`How It Works`, `Perks`, `Food Halls`, `FAQ`). On desktop, right-side buttons are compact (`Scan QR`, `Order Food`, and `Sign In`/profile badge) inside `max-w-7xl` with generous breathing room. On mobile, compact direct `Order` button and hamburger drawer prevent any layout overflow.
-     - **Streamlined Sections**: Focused strictly on diner essentials:
-       - Crisp hero with table ordering value proposition and quick action buttons.
-       - 3-step visual guide: Scan QR → Mix dishes across stalls into 1 cart → Pick up when phone buzzes.
-       - Key perks: One Shared Cart, Zero App Download, Digital Phone Buzzer, Instant Sold-Out Refunds.
-       - Popular food halls directory (Lot 10 Hutong, Newton Food Centre, Penang Road, Medan Selera SS2) with stall count and direct menu links.
+3. **Zero Mock Policy Enforcement & Codebase Cleanup**:
+   - Purged hardcoded dish arrays in `lib/search/fallback-data.ts`.
+   - Removed silent fallback matches in `lib/search/search-service.ts` (returns `[]` cleanly if client unavailable).
+   - Removed unused `createMockOrder` helper from `lib/order/cart.ts`.
+   - Eliminated hardcoded form pre-fills from `app/subscribe/page.tsx`.
+   - Ensured `components/home-page.tsx` loads stalls and dishes dynamically from `/api/outlets`.
+
+4. **Customer Landing Page (`/customer`) Alignment**:
+   - Replaced static food halls list with live dynamic data fetched from `GET /api/hawker-centres` (rendering `Lim's Foodcourt` with its stalls and specialties).
+   - Removed "Order Food" / "Order" buttons from desktop header, mobile actions, and mobile drawer in `app/customer/page.tsx`.
+   - Updated action buttons and hero links to "Explore Hawker Centres" pointing to `#food-halls`.
+
+5. **Landing Page Showcase (`app/page.tsx`) Backend Realism**:
+   - Replaced fabricated mock data ("Lot 10 Hutong", "Madam Kwan Nasi Lemak", "Ah Fatt Chicken Rice") with real backend entities:
+     - Venue: `Lim's Foodcourt`
+     - Operator View: Shows `Western` (Booth #01, Active Menu: Spaghetti RM 10.01) + `Booth Slot #02` through `#06` (Ready to Invite).
+     - Kitchen View: Shows `Western` KDS with live ticket `Spaghetti` (RM 10.01) and order action controls.
+     - Customer View: Shows table receipt for `Table 04 • Lim's Foodcourt` with `1x Spaghetti (Western - Booth 01)` (RM 10.01 + RM 0.50 platform fee = RM 10.51).
+     - AI Search Queries: Aligned query intent with real dish `Spaghetti` from `Western`.
        - Concise diner FAQ accordion with smooth expand/collapse.
        - Clean, minimalist footer.
    - Client routing in `lib/shared/permissions.ts` classifies `/customer` as `'website'`.

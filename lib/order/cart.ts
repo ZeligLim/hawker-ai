@@ -213,18 +213,3 @@ export function buildCartSummary(items: CartItem[], feeConfig?: CartFeeConfig): 
     total,
   };
 }
-
-export function createMockOrder(items: CartItem[]) {
-  const summary = buildCartSummary(items);
-
-  return {
-    id: `#${Math.floor(1000 + Math.random() * 9000)}`,
-    status: 'PAID',
-    summary,
-    merchantStatuses: summary.merchantGroups.map((group) => ({
-      stallId: group.stallId,
-      stallName: group.stallName,
-      status: 'PENDING',
-    })),
-  };
-}

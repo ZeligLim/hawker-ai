@@ -35,25 +35,25 @@ const platformGuarantees = [
 ];
 
 function LaunchpadContent() {
-  const { status, profile, refreshRoles } = useAuth();
+  const { user, status, profile, refreshRoles } = useAuth();
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionError, setSubmissionError] = useState<string | null>(null);
 
   // Form states - Step 1: Venue Profile
-  const [venueName, setVenueName] = useState('Lot 10 Hutong Food Hall');
-  const [operatorName, setOperatorName] = useState('Tan Wei Ming');
-  const [email, setEmail] = useState('operator@hutong.com.my');
-  const [phone, setPhone] = useState('+60 12-345 6789');
+  const [venueName, setVenueName] = useState('');
+  const [operatorName, setOperatorName] = useState(() => profile?.displayName || user?.user_metadata?.full_name || '');
+  const [email, setEmail] = useState(() => user?.email || '');
+  const [phone, setPhone] = useState('');
   const [city, setCity] = useState('Kuala Lumpur');
   const [stallCount, setStallCount] = useState('6-15 stalls');
 
   // Form states - Step 2: Settlement & Monetization Strategy
   const [feePayer, setFeePayer] = useState<'CUSTOMER' | 'MERCHANT'>('CUSTOMER');
   const [bankName, setBankName] = useState('Maybank');
-  const [bankAccountNumber, setBankAccountNumber] = useState('5140 1234 5678');
-  const [accountHolder, setAccountHolder] = useState('Lot 10 Hutong Sdn Bhd');
+  const [bankAccountNumber, setBankAccountNumber] = useState('');
+  const [accountHolder, setAccountHolder] = useState('');
 
   // Form states - Step 3: Booth Token Generation
   const [firstStallSlot, setFirstStallSlot] = useState('Slot #01');

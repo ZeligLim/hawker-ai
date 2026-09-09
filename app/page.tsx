@@ -87,53 +87,51 @@ export default function LandingPage() {
 
   const aiQueries = [
     {
-      query: 'Craving something spicy with chicken and rice near Table 4',
+      query: 'Craving delicious freshly cooked pasta or western dishes under RM15',
       intent: {
-        category: 'Rice Dishes',
-        protein: 'Chicken',
-        flavorProfile: ['Spicy', 'Fragrant'],
-        dietary: ['Halal Options'],
-        maxPrice: 'RM 18.00',
+        category: 'Western Dishes',
+        dishType: 'Pasta',
+        flavorProfile: ['Rich Sauce', 'Savory'],
+        dietary: ['Pork Free'],
+        maxPrice: 'RM 15.00',
       },
       result: {
-        dish: 'Nasi Lemak Kukus with Ayam Goreng Berempah',
-        stall: 'Stall 08 • Madam Kwan Kitchen',
-        price: 'RM 14.50',
+        dish: 'Spaghetti',
+        stall: 'Booth 01 • Western',
+        price: 'RM 10.01',
         prepTime: '6 mins',
-        matchReason: '98% match • Freshly spiced sambal, lemongrass fried chicken',
+        matchReason: '100% match • Fresh pasta prepared on order at Lim\'s Foodcourt',
       },
     },
     {
-      query: 'Comforting hot soup noodles on a rainy day, no pork',
+      query: 'What vegetarian or light options are ready for table 4?',
       intent: {
-        category: 'Noodle Soup',
-        broth: 'Rich & Comforting',
-        dietary: ['No Pork', 'Halal-friendly'],
-        temperature: 'Hot Broth',
-        maxPrice: 'RM 20.00',
+        category: 'Vegetarian',
+        dietary: ['Vegetarian-friendly'],
+        speed: 'Fast Dispatch',
+        maxPrice: 'RM 15.00',
       },
       result: {
-        dish: 'Traditional Claypot Seafood Yee Mee',
-        stall: 'Stall 03 • Ah Fatt Claypot Special',
-        price: 'RM 16.00',
-        prepTime: '8 mins',
-        matchReason: '96% match • Hot ginger egg drop broth, fresh tiger prawns',
+        dish: 'Spaghetti (Custom Herb Selection)',
+        stall: 'Booth 01 • Western',
+        price: 'RM 10.01',
+        prepTime: '6 mins',
+        matchReason: '95% match • Customisable preparation',
       },
     },
     {
-      query: 'Quick iced dessert and street snacks under RM10',
+      query: 'Satisfying hot meal under RM12 near table 4',
       intent: {
-        category: 'Dessert & Snacks',
-        temperature: 'Iced / Chilled',
-        speed: 'Fast Dispatch (< 4m)',
-        maxPrice: 'RM 10.00',
+        category: 'Main Course',
+        speed: 'Quick Dispatch',
+        maxPrice: 'RM 12.00',
       },
       result: {
-        dish: 'Signature Shaved Ice Cendol & 5pc Chicken Satay',
-        stall: 'Stall 12 • Penang Road Famous Cendol',
-        price: 'RM 9.50',
-        prepTime: '3 mins',
-        matchReason: '99% match • Gula Melaka shaved ice, peanut dipping sauce',
+        dish: 'Spaghetti',
+        stall: 'Booth 01 • Western',
+        price: 'RM 10.01',
+        prepTime: '6 mins',
+        matchReason: '100% match • Within budget (RM 10.01), instant table notification',
       },
     },
   ];
@@ -277,14 +275,14 @@ export default function LandingPage() {
                 <span className="w-2.5 h-2.5 rounded-full bg-[#ff5f56]" />
                 <span className="w-2.5 h-2.5 rounded-full bg-[#ffbd2e]" />
                 <span className="w-2.5 h-2.5 rounded-full bg-[#27c93f]" />
-                <span className="ml-3 text-white/70 font-mono text-[10px]">app.hawker.com &mdash; Lot 10 Hutong Food Hall</span>
+                <span className="ml-3 text-white/70 font-mono text-[10px]">app.hawker.com &mdash; Lim&apos;s Foodcourt</span>
               </div>
               <div className="flex items-center gap-3">
                 <span className="inline-flex items-center gap-1.5 text-[#30d158] font-medium">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#30d158] animate-ping" />
                   Live Sync
                 </span>
-                <span className="text-white/40">14 Booths Active</span>
+                <span className="text-white/40">10 Booth Slots &bull; Western Kitchen Active</span>
               </div>
             </div>
 
@@ -297,33 +295,33 @@ export default function LandingPage() {
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
                     <div className="bg-white p-4 rounded-2xl border border-black/[0.06] shadow-sm">
                       <p className="text-xs text-[#86868b] font-medium">Today&apos;s Gross Sales</p>
-                      <p className="text-xl sm:text-2xl font-semibold mt-1 tracking-tight">RM 18,490.50</p>
+                      <p className="text-xl sm:text-2xl font-semibold mt-1 tracking-tight">RM 1,420.00</p>
                       <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#30d158] mt-1">
-                        <TrendingUp className="w-3 h-3" /> +24.8% vs yesterday
+                        <TrendingUp className="w-3 h-3" /> +18.5% vs yesterday
                       </span>
                     </div>
 
                     <div className="bg-white p-4 rounded-2xl border border-black/[0.06] shadow-sm">
                       <p className="text-xs text-[#86868b] font-medium">Total Orders Fulfilled</p>
-                      <p className="text-xl sm:text-2xl font-semibold mt-1 tracking-tight">1,248</p>
+                      <p className="text-xl sm:text-2xl font-semibold mt-1 tracking-tight">142</p>
                       <span className="inline-flex items-center gap-1 text-[11px] font-medium text-[#86868b] mt-1">
-                        Peak: 12:45 PM &bull; 8.2/min
+                        Peak: 12:45 PM &bull; 4.2/min
                       </span>
                     </div>
 
                     <div className="bg-white p-4 rounded-2xl border border-black/[0.06] shadow-sm">
                       <p className="text-xs text-[#86868b] font-medium">Average Prep Velocity</p>
-                      <p className="text-xl sm:text-2xl font-semibold mt-1 tracking-tight">6.8 mins</p>
+                      <p className="text-xl sm:text-2xl font-semibold mt-1 tracking-tight">6.0 mins</p>
                       <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#30d158] mt-1">
-                        <Zap className="w-3 h-3" /> 1.4m faster than avg
+                        <Zap className="w-3 h-3" /> Western Kitchen
                       </span>
                     </div>
 
                     <div className="bg-white p-4 rounded-2xl border border-black/[0.06] shadow-sm">
-                      <p className="text-xs text-[#86868b] font-medium">Active Table Sessions</p>
-                      <p className="text-xl sm:text-2xl font-semibold mt-1 tracking-tight">42 / 50</p>
+                      <p className="text-xs text-[#86868b] font-medium">Active Booth Slots</p>
+                      <p className="text-xl sm:text-2xl font-semibold mt-1 tracking-tight">10 Slots</p>
                       <span className="inline-flex items-center gap-1 text-[11px] font-medium text-[#0071e3] mt-1">
-                        84% floor capacity
+                        1 Active &bull; 9 Ready to Invite
                       </span>
                     </div>
                   </div>
@@ -332,64 +330,64 @@ export default function LandingPage() {
                   <div>
                     <div className="flex items-center justify-between mb-3">
                       <h4 className="text-sm font-semibold tracking-tight text-[#1d1d1f]">Live Booth Operations</h4>
-                      <span className="text-xs text-[#86868b]">Auto-updates every 2s</span>
+                      <span className="text-xs text-[#86868b]">Lim&apos;s Foodcourt &bull; Auto-sync</span>
                     </div>
 
                     <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
                       {[
                         {
-                          name: 'Ah Fatt Chicken Rice',
-                          stall: 'Booth 01',
-                          revenue: 'RM 4,210',
+                          name: 'Western',
+                          stall: 'Booth #01',
+                          revenue: 'RM 1,420.00',
                           orders: 142,
-                          status: 'Optimal',
+                          status: 'Open',
                           statusColor: 'text-[#30d158] bg-[#30d158]/10',
-                          badge: 'Popular',
+                          badge: 'Menu: Spaghetti (RM 10.01)',
                         },
                         {
-                          name: 'Jalan Alor Char Kway Teow',
-                          stall: 'Booth 04',
-                          revenue: 'RM 3,890',
-                          orders: 128,
-                          status: 'Rush Hour',
-                          statusColor: 'text-[#ff9f0a] bg-[#ff9f0a]/10',
-                          badge: '6 orders queue',
-                        },
-                        {
-                          name: 'Madam Kwan Nasi Lemak',
-                          stall: 'Booth 08',
-                          revenue: 'RM 4,680',
-                          orders: 164,
-                          status: 'Optimal',
-                          statusColor: 'text-[#30d158] bg-[#30d158]/10',
-                          badge: 'Top revenue',
-                        },
-                        {
-                          name: 'Pak Mat Satay & Rojak',
-                          stall: 'Booth 05',
-                          revenue: 'RM 2,840',
-                          orders: 98,
-                          status: 'Optimal',
-                          statusColor: 'text-[#30d158] bg-[#30d158]/10',
-                          badge: 'Fast prep (4m)',
-                        },
-                        {
-                          name: 'Penang Famous Cendol',
-                          stall: 'Booth 12',
-                          revenue: 'RM 1,640',
-                          orders: 110,
-                          status: 'Optimal',
-                          statusColor: 'text-[#30d158] bg-[#30d158]/10',
-                          badge: 'Dessert leader',
-                        },
-                        {
-                          name: 'Klang Valley Claypot Corner',
-                          stall: 'Booth 09',
-                          revenue: 'RM 1,230',
-                          orders: 46,
-                          status: 'Prep Shift',
+                          name: 'Booth Slot #02',
+                          stall: 'Booth #02',
+                          revenue: 'RM 0.00',
+                          orders: 0,
+                          status: 'Ready to Invite',
                           statusColor: 'text-[#0071e3] bg-[#0071e3]/10',
-                          badge: 'Normal flow',
+                          badge: 'Invitation Link Ready',
+                        },
+                        {
+                          name: 'Booth Slot #03',
+                          stall: 'Booth #03',
+                          revenue: 'RM 0.00',
+                          orders: 0,
+                          status: 'Ready to Invite',
+                          statusColor: 'text-[#0071e3] bg-[#0071e3]/10',
+                          badge: 'Invitation Link Ready',
+                        },
+                        {
+                          name: 'Booth Slot #04',
+                          stall: 'Booth #04',
+                          revenue: 'RM 0.00',
+                          orders: 0,
+                          status: 'Ready to Invite',
+                          statusColor: 'text-[#0071e3] bg-[#0071e3]/10',
+                          badge: 'Invitation Link Ready',
+                        },
+                        {
+                          name: 'Booth Slot #05',
+                          stall: 'Booth #05',
+                          revenue: 'RM 0.00',
+                          orders: 0,
+                          status: 'Ready to Invite',
+                          statusColor: 'text-[#0071e3] bg-[#0071e3]/10',
+                          badge: 'Invitation Link Ready',
+                        },
+                        {
+                          name: 'Booth Slot #06',
+                          stall: 'Booth #06',
+                          revenue: 'RM 0.00',
+                          orders: 0,
+                          status: 'Ready to Invite',
+                          statusColor: 'text-[#0071e3] bg-[#0071e3]/10',
+                          badge: 'Invitation Link Ready',
                         },
                       ].map((booth) => (
                         <div
@@ -409,7 +407,7 @@ export default function LandingPage() {
                           </div>
                           <div className="mt-3 flex items-center justify-between text-xs pt-2 border-t border-black/[0.04]">
                             <span className="font-semibold text-[#1d1d1f]">{booth.revenue}</span>
-                            <span className="text-[#86868b]">{booth.orders} orders</span>
+                            <span className="text-[#86868b]">{booth.badge}</span>
                           </div>
                         </div>
                       ))}
@@ -427,35 +425,40 @@ export default function LandingPage() {
                         <ChefHat className="w-5 h-5 text-[#f5f5f7]" />
                       </div>
                       <div>
-                        <p className="text-xs text-white/60 font-medium">Stall Kitchen Display &bull; Booth #04</p>
-                        <h4 className="text-sm font-semibold tracking-tight text-white">Jalan Alor Char Kway Teow</h4>
+                        <p className="text-xs text-white/60 font-medium">Stall Kitchen Display &bull; Booth #01</p>
+                        <h4 className="text-sm font-semibold tracking-tight text-white">Western &bull; Lim&apos;s Foodcourt</h4>
                       </div>
                     </div>
                     <div className="flex items-center gap-3 text-xs">
                       <span className="px-2.5 py-1 rounded-full bg-[#30d158]/20 text-[#30d158] font-medium flex items-center gap-1.5">
                         <span className="w-2 h-2 rounded-full bg-[#30d158]" /> Audio Chimes Active
                       </span>
-                      <span className="text-white/60">3 Active Wok Tickets</span>
+                      <span className="text-white/60">Live Wok Tickets</span>
                     </div>
                   </div>
 
-                  <div className="grid sm:grid-cols-3 gap-3">
+                  <div className="grid sm:grid-cols-2 gap-3">
                     <div className="bg-white rounded-2xl border-2 border-[#ff9f0a] p-4 shadow-sm relative">
                       <div className="flex items-center justify-between text-xs">
                         <span className="font-bold text-[#1d1d1f]">Ticket #1042</span>
                         <span className="px-2 py-0.5 rounded-full bg-[#ff9f0a]/15 text-[#ff9f0a] font-bold text-[10px]">
-                          Table 14 &bull; 4m ago
+                          Table 04 &bull; 3m ago
                         </span>
                       </div>
                       <div className="mt-3 space-y-2 border-y border-black/[0.06] py-3 text-xs">
                         <div className="font-medium text-[#1d1d1f]">
-                          <p className="font-bold text-sm">2x Signature Duck Egg Kway Teow</p>
-                          <p className="text-[11px] text-[#ff3b30] font-semibold mt-0.5">&bull; Extra Spicy Sambal</p>
-                          <p className="text-[11px] text-[#6e6e73]">&bull; Crispy Pork Lard Extra</p>
+                          <p className="font-bold text-sm">1x Spaghetti</p>
+                          <p className="text-[11px] text-[#0071e3] font-semibold mt-0.5">&bull; Freshly Prepared Pasta</p>
                         </div>
                       </div>
+                      <div className="mt-2.5 flex items-center justify-between text-xs">
+                        <span className="text-[11px] font-bold text-[#1d1d1f]">STALL TOTAL: RM 10.01</span>
+                        <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                          PAID (0% Cut)
+                        </span>
+                      </div>
                       <button className="mt-3 w-full py-2 rounded-xl text-xs font-semibold bg-[#30d158] text-white hover:bg-[#28b84d] transition-colors">
-                        Mark Ready for Table 14
+                        Mark Ready for Table 04
                       </button>
                     </div>
 
@@ -463,15 +466,14 @@ export default function LandingPage() {
                       <div className="flex items-center justify-between text-xs">
                         <span className="font-bold text-[#1d1d1f]">Ticket #1043</span>
                         <span className="px-2 py-0.5 rounded-full bg-[#0071e3]/10 text-[#0071e3] font-bold text-[10px]">
-                          Table 08 &bull; 2m ago
+                          Table 02 &bull; 1m ago
                         </span>
                       </div>
                       <div className="mt-3 space-y-2 border-y border-black/[0.06] py-3 text-xs">
                         <div className="flex items-start justify-between gap-2">
                           <div className="font-medium text-[#1d1d1f]">
-                            <p className="font-bold text-sm">1x Seafood Fried Hor Fun</p>
-                            <p className="text-[11px] text-[#0071e3] font-semibold mt-0.5">&bull; Egg Gravy on Side</p>
-                            <p className="text-[11px] text-[#6e6e73]">&bull; Pickled Green Chilies</p>
+                            <p className="font-bold text-sm">1x Spaghetti</p>
+                            <p className="text-[11px] text-[#6e6e73]">&bull; Standard Serving</p>
                           </div>
                           <button className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-rose-50 text-rose-700 border border-rose-200 shrink-0 hover:bg-rose-100">
                             Sold Out / Refund
@@ -479,42 +481,13 @@ export default function LandingPage() {
                         </div>
                       </div>
                       <div className="mt-2.5 flex items-center justify-between text-xs">
-                        <span className="text-[11px] font-bold text-[#1d1d1f]">STALL TOTAL: RM 15.50</span>
+                        <span className="text-[11px] font-bold text-[#1d1d1f]">STALL TOTAL: RM 10.01</span>
                         <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
                           PAID (0% Cut)
                         </span>
                       </div>
                       <button className="mt-3 w-full py-2 rounded-xl text-xs font-semibold bg-[#1d1d1f] text-white hover:bg-black transition-colors">
-                        Move to Wok
-                      </button>
-                    </div>
-
-                    <div className="bg-white rounded-2xl border border-black/[0.08] p-4 shadow-sm opacity-85">
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="font-bold text-[#1d1d1f]">Ticket #1044</span>
-                        <span className="px-2 py-0.5 rounded-full bg-black/[0.05] text-[#86868b] font-bold text-[10px]">
-                          Takeaway &bull; Just now
-                        </span>
-                      </div>
-                      <div className="mt-3 space-y-2 border-y border-black/[0.06] py-3 text-xs">
-                        <div className="flex items-start justify-between gap-2">
-                          <div className="font-medium text-[#1d1d1f]">
-                            <p className="font-bold text-sm">3x Black Sauce Fried Carrot Cake</p>
-                            <p className="text-[11px] text-[#6e6e73] mt-0.5">&bull; Mild Spicy, extra chives</p>
-                          </div>
-                          <button className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-rose-50 text-rose-700 border border-rose-200 shrink-0 hover:bg-rose-100">
-                            Sold Out / Refund
-                          </button>
-                        </div>
-                      </div>
-                      <div className="mt-2.5 flex items-center justify-between text-xs">
-                        <span className="text-[11px] font-bold text-[#1d1d1f]">STALL TOTAL: RM 24.00</span>
-                        <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                          PAID (0% Cut)
-                        </span>
-                      </div>
-                      <button className="mt-3 w-full py-2 rounded-xl text-xs font-semibold bg-black/[0.05] text-[#1d1d1f] hover:bg-black/[0.1] transition-colors">
-                        Accept Order
+                        Move to Kitchen
                       </button>
                     </div>
                   </div>
@@ -527,11 +500,11 @@ export default function LandingPage() {
                   <div className="flex items-center justify-between border-b border-black/[0.06] pb-3">
                     <div className="flex items-center gap-2">
                       <div className="w-8 h-8 rounded-full bg-[#0071e3] text-white flex items-center justify-center font-bold text-xs">
-                        12
+                        04
                       </div>
                       <div>
-                        <p className="text-xs font-bold text-[#1d1d1f]">Table 12 &bull; Lot 10 Hutong</p>
-                        <p className="text-[10px] text-[#86868b]">Receipt &bull; Verified Payment</p>
+                        <p className="text-xs font-bold text-[#1d1d1f]">Table 04 &bull; Lim&apos;s Foodcourt</p>
+                        <p className="text-[10px] text-[#86868b]">Receipt &bull; Verified Digital Order</p>
                       </div>
                     </div>
                     <span className="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-[#30d158]/10 text-[#30d158]">
@@ -541,19 +514,15 @@ export default function LandingPage() {
 
                   <div className="bg-[#f5f5f7] p-3.5 rounded-2xl space-y-2 text-xs">
                     <p className="font-semibold text-[11px] text-[#86868b] uppercase tracking-wider">
-                      Multi-Stall Cart (1 Order, 2 Kitchens)
+                      Ordered Dishes
                     </p>
                     <div className="flex items-center justify-between font-medium">
-                      <span>1x Nasi Lemak Rendang (Booth 08)</span>
-                      <span className="font-bold text-[#1d1d1f]">RM 15.50</span>
-                    </div>
-                    <div className="flex items-center justify-between font-medium">
-                      <span>1x Iced White Coffee (Booth 14)</span>
-                      <span className="font-bold text-[#1d1d1f]">RM 4.80</span>
+                      <span>1x Spaghetti (Western - Booth 01)</span>
+                      <span className="font-bold text-[#1d1d1f]">RM 10.01</span>
                     </div>
                     <div className="pt-2 border-t border-black/[0.06] flex items-center justify-between text-xs text-[#6e6e73]">
                       <span>Subtotal</span>
-                      <span className="font-medium text-[#1d1d1f]">RM 20.30</span>
+                      <span className="font-medium text-[#1d1d1f]">RM 10.01</span>
                     </div>
                     <div className="flex items-center justify-between text-xs text-[#6e6e73]">
                       <span>Platform Fee (Flat Diner Fee)</span>
@@ -561,12 +530,12 @@ export default function LandingPage() {
                     </div>
                     <div className="pt-2 border-t border-black/[0.06] flex items-center justify-between font-bold text-sm">
                       <span>Total Paid</span>
-                      <span className="text-[#0071e3]">RM 20.80</span>
+                      <span className="text-[#0071e3]">RM 10.51</span>
                     </div>
                   </div>
 
                   <button className="w-full py-3 rounded-full text-xs font-bold bg-[#1d1d1f] text-white shadow-md hover:bg-black transition-colors flex items-center justify-center gap-2">
-                    <CreditCard className="w-4 h-4" /> Paid via Apple Pay / Touch &apos;n Go QR
+                    <CreditCard className="w-4 h-4" /> Paid via DuitNow QR / Touch &apos;n Go
                   </button>
                   <p className="text-center text-[10px] text-[#86868b]">
                     0% hawker cut &bull; 1-Tap out-of-stock refunds direct to eWallet &bull; No app download

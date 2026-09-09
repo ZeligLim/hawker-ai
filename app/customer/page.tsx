@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   ArrowRight,
   CheckCircle2,
@@ -15,52 +15,10 @@ import {
   Smartphone,
   UtensilsCrossed,
   X,
+  Store,
 } from 'lucide-react';
 import { useAuth } from '@/components/auth-provider';
-
-// Featured food halls for diners
-const FEATURED_FOOD_HALLS = [
-  {
-    id: 'lot10',
-    name: 'Lot 10 Hutong Food Hall',
-    location: 'Bukit Bintang, Kuala Lumpur',
-    stallsCount: 34,
-    rating: 4.8,
-    image: '🍜',
-    specialties: ['Hokkien Mee', 'Roast Duck', 'Beef Noodles', 'Char Kway Teow'],
-    tag: 'Heritage Hall',
-  },
-  {
-    id: 'newton',
-    name: 'Newton Food Centre',
-    location: 'Clemenceau Ave, Singapore',
-    stallsCount: 83,
-    rating: 4.9,
-    image: '🦀',
-    specialties: ['Chilli Crab', 'Sambal Stingray', 'Satay', 'Oyster Omelette'],
-    tag: 'Michelin Bib Gourmand',
-  },
-  {
-    id: 'penang',
-    name: 'Penang Road Hawker Hall',
-    location: 'George Town, Penang',
-    stallsCount: 28,
-    rating: 4.9,
-    image: '🍧',
-    specialties: ['Teochew Chendul', 'Assam Laksa', 'Duck Kway Teow Soup'],
-    tag: 'Must Visit',
-  },
-  {
-    id: 'ss2',
-    name: 'Medan Selera SS2',
-    location: 'Petaling Jaya, Selangor',
-    stallsCount: 45,
-    rating: 4.7,
-    image: '🍢',
-    specialties: ['Lok Lok', 'Claypot Chicken Rice', 'Pau & Dim Sum'],
-    tag: 'Late Night Spot',
-  },
-];
+import type { HawkerCentreSummary } from '@/lib/hawker-centres/service';
 
 const CUSTOMER_FAQS = [
   {
@@ -94,6 +52,30 @@ export default function CustomerLandingPage() {
   const { user, status, profile } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const [foodHalls, setFoodHalls] = useState<HawkerCentreSummary[]>([]);
+  const [loadingHalls, setLoadingHalls] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+    async function loadHalls() {
+      try {
+        const res = await fetch('/api/hawker-centres');
+        if (!res.ok) return;
+        const data = await res.json();
+        if (active && Array.isArray(data.hawkerCentres)) {
+          setFoodHalls(data.hawkerCentres);
+        }
+      } catch {
+        // gracefully handle
+      } finally {
+        if (active) setLoadingHalls(false);
+      }
+    }
+    loadHalls();
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const isAuthenticated = status === 'authenticated' && Boolean(user);
   const displayName =
@@ -140,18 +122,10 @@ export default function CustomerLandingPage() {
           <div className="hidden sm:flex items-center gap-2.5 shrink-0">
             <Link
               href="/scan"
-              className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#1d1d1f]/80 hover:text-[#1d1d1f] px-3 py-1.5 rounded-full hover:bg-black/5 transition-all"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#1d1d1f] hover:text-[#0071e3] px-3.5 py-1.5 rounded-full border border-black/10 bg-white hover:border-black/20 transition-all shadow-xs"
             >
               <QrCode className="w-3.5 h-3.5 text-[#0071e3]" />
               <span>Scan QR</span>
-            </Link>
-
-            <Link
-              href="/menu"
-              className="inline-flex items-center gap-1.5 text-xs font-semibold text-white bg-[#0071e3] hover:bg-[#0077ed] px-3.5 py-1.5 rounded-full shadow-sm transition-all"
-            >
-              <UtensilsCrossed className="w-3.5 h-3.5" />
-              <span>Order Food</span>
             </Link>
 
             {isAuthenticated ? (
@@ -175,12 +149,12 @@ export default function CustomerLandingPage() {
           {/* Mobile Actions */}
           <div className="flex sm:hidden items-center gap-2">
             <Link
-              href="/menu"
-              className="inline-flex items-center gap-1 text-xs font-semibold text-white bg-[#0071e3] p-2 xs:px-3 xs:py-1.5 rounded-full shadow-sm"
-              aria-label="Order food"
+              href="/scan"
+              className="inline-flex items-center gap-1 text-xs font-semibold text-[#1d1d1f] bg-white border border-black/10 px-2.5 py-1.5 rounded-full shadow-xs"
+              aria-label="Scan QR"
             >
-              <UtensilsCrossed className="w-3.5 h-3.5" />
-              <span className="hidden xs:inline">Order</span>
+              <QrCode className="w-3.5 h-3.5 text-[#0071e3]" />
+              <span>Scan</span>
             </Link>
             <button
               type="button"
@@ -216,7 +190,7 @@ export default function CustomerLandingPage() {
                 onClick={() => setMobileMenuOpen(false)}
                 className="px-3 py-2 rounded-xl hover:bg-black/5"
               >
-                Popular Food Halls
+                Hawker Centres
               </a>
               <a
                 href="#faq"
@@ -236,14 +210,14 @@ export default function CustomerLandingPage() {
                 <QrCode className="w-4 h-4 text-[#0071e3]" />
                 Scan Table QR
               </Link>
-              <Link
-                href="/menu"
+              <a
+                href="#food-halls"
                 onClick={() => setMobileMenuOpen(false)}
                 className="flex items-center justify-center gap-2 py-2.5 rounded-full bg-[#0071e3] text-xs font-semibold text-white shadow-sm"
               >
-                <UtensilsCrossed className="w-4 h-4" />
-                Browse Menus & Order
-              </Link>
+                <Store className="w-4 h-4" />
+                Explore Hawker Centres
+              </a>
               {isAuthenticated ? (
                 <Link
                   href="/profile"
@@ -267,17 +241,12 @@ export default function CustomerLandingPage() {
       </header>
 
       {/* ── HERO SECTION ── */}
-      <section className="relative pt-12 pb-16 sm:pt-20 sm:pb-24 overflow-hidden">
-        {/* Soft atmospheric gradient */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-gradient-to-b from-[#0071e3]/10 to-transparent rounded-full blur-3xl pointer-events-none -z-10" />
-
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <section className="relative overflow-hidden pt-12 sm:pt-20 pb-16 sm:pb-24">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
           {/* Eyebrow Pill */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/90 border border-black/[0.08] shadow-[0_2px_8px_rgba(0,0,0,0.03)] backdrop-blur-md mb-6">
-            <span className="flex h-2 w-2 rounded-full bg-[#30d158] animate-pulse" />
-            <span className="text-xs font-semibold tracking-tight text-[#1d1d1f]">
-              Digital Table Ordering
-            </span>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#0071e3]/10 text-[#0071e3] text-xs font-semibold mb-6 border border-[#0071e3]/15">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#0071e3] animate-pulse" />
+            <span>Digital Tabletop Ordering For Hawker Centres</span>
           </div>
 
           {/* Grand Headline */}
@@ -293,13 +262,13 @@ export default function CustomerLandingPage() {
 
           {/* Action Buttons */}
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3.5">
-            <Link
-              href="/menu"
+            <a
+              href="#food-halls"
               className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-3 rounded-full text-sm font-semibold text-white bg-[#0071e3] hover:bg-[#0077ed] transition-all shadow-[0_2px_12px_rgba(0,113,227,0.28)] hover:shadow-[0_4px_18px_rgba(0,113,227,0.38)]"
             >
-              <UtensilsCrossed className="w-4 h-4 mr-2" />
-              Browse Menus & Food Halls
-            </Link>
+              <Store className="w-4 h-4 mr-2" />
+              Explore Hawker Centres
+            </a>
 
             <Link
               href="/scan"
@@ -438,7 +407,7 @@ export default function CustomerLandingPage() {
         </div>
       </section>
 
-      {/* ── POPULAR FOOD HALLS ── */}
+      {/* ── POPULAR HAWKER CENTRES & FOOD HALLS ── */}
       <section id="food-halls" className="py-16 sm:py-20 bg-white border-y border-black/[0.06]">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-3">
@@ -447,58 +416,72 @@ export default function CustomerLandingPage() {
                 Discover Venues
               </span>
               <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#1d1d1f] mt-1.5">
-                Popular Food Halls on Hawker
+                Popular Hawker Centres & Food Halls
               </h2>
             </div>
 
             <Link
-              href="/menu"
+              href="/home"
               className="inline-flex items-center gap-1 text-xs font-semibold text-[#0071e3] hover:underline"
             >
-              Browse all food courts <ArrowRight className="w-3.5 h-3.5" />
+              Browse all stalls & dishes <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {FEATURED_FOOD_HALLS.map((hall) => (
-              <div
-                key={hall.id}
-                className="bg-[#f5f5f7] rounded-2xl p-5 border border-black/[0.04] flex flex-col justify-between space-y-4"
-              >
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-2xl">{hall.image}</span>
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white text-[#1d1d1f] border border-black/5">
-                      ★ {hall.rating}
-                    </span>
-                  </div>
-                  <h3 className="font-bold text-sm text-[#1d1d1f]">{hall.name}</h3>
-                  <p className="text-xs text-[#6e6e73] mt-0.5 flex items-center gap-1">
-                    <MapPin className="w-3 h-3 text-[#0071e3]" />
-                    {hall.location}
-                  </p>
-
-                  <div className="mt-3 flex flex-wrap gap-1">
-                    {hall.specialties.slice(0, 3).map((spec) => (
-                      <span
-                        key={spec}
-                        className="text-[10px] px-1.5 py-0.5 rounded bg-white text-[#6e6e73] border border-black/5"
-                      >
-                        {spec}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                <Link
-                  href="/menu"
-                  className="w-full inline-flex items-center justify-center py-2 rounded-full bg-white border border-black/10 hover:bg-black/[0.02] text-xs font-semibold text-[#1d1d1f] transition-all"
+          {loadingHalls ? (
+            <div className="rounded-2xl border border-black/[0.06] bg-[#f5f5f7] p-12 text-center text-xs sm:text-sm text-[#6e6e73]">
+              Loading active hawker centres…
+            </div>
+          ) : foodHalls.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {foodHalls.map((hall) => (
+                <div
+                  key={hall.id}
+                  className="bg-[#f5f5f7] rounded-2xl p-5 border border-black/[0.04] flex flex-col justify-between space-y-4 hover:border-black/10 transition-all"
                 >
-                  View Menu ({hall.stallsCount} Stalls)
-                </Link>
-              </div>
-            ))}
-          </div>
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="w-9 h-9 rounded-xl bg-white flex items-center justify-center text-[#0071e3] font-bold shadow-xs">
+                        <Store className="w-5 h-5" />
+                      </div>
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white text-[#1d1d1f] border border-black/5">
+                        ★ {hall.rating}
+                      </span>
+                    </div>
+                    <h3 className="font-bold text-base text-[#1d1d1f]">{hall.name}</h3>
+                    <p className="text-xs text-[#6e6e73] mt-0.5 flex items-center gap-1">
+                      <MapPin className="w-3 h-3 text-[#0071e3] shrink-0" />
+                      <span className="truncate">{hall.address}</span>
+                    </p>
+
+                    {hall.specialties && hall.specialties.length > 0 ? (
+                      <div className="mt-3 flex flex-wrap gap-1">
+                        {hall.specialties.slice(0, 3).map((spec) => (
+                          <span
+                            key={spec}
+                            className="text-[10px] px-1.5 py-0.5 rounded bg-white text-[#6e6e73] border border-black/5"
+                          >
+                            {spec}
+                          </span>
+                        ))}
+                      </div>
+                    ) : null}
+                  </div>
+
+                  <Link
+                    href={`/shop/${hall.slug}`}
+                    className="w-full inline-flex items-center justify-center py-2.5 rounded-full bg-white border border-black/10 hover:bg-black/[0.02] text-xs font-semibold text-[#1d1d1f] transition-all shadow-xs"
+                  >
+                    View Food Centre ({hall.stallsCount} {hall.stallsCount === 1 ? 'Stall' : 'Stalls'})
+                  </Link>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="rounded-2xl border border-black/[0.06] bg-[#f5f5f7] p-12 text-center text-xs sm:text-sm text-[#6e6e73]">
+              No active hawker centres available at the moment.
+            </div>
+          )}
         </div>
       </section>
 
@@ -556,13 +539,13 @@ export default function CustomerLandingPage() {
           </p>
 
           <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
-            <Link
-              href="/menu"
+            <a
+              href="#food-halls"
               className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-3 rounded-full text-xs sm:text-sm font-semibold text-black bg-white hover:bg-white/90 transition-all shadow-md"
             >
-              <UtensilsCrossed className="w-4 h-4 mr-2" />
-              Explore Food Halls & Menus
-            </Link>
+              <Store className="w-4 h-4 mr-2" />
+              Explore Hawker Centres
+            </a>
             <Link
               href="/scan"
               className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-3 rounded-full text-xs sm:text-sm font-semibold text-white bg-white/10 hover:bg-white/20 transition-all"
@@ -585,7 +568,7 @@ export default function CustomerLandingPage() {
             <span>• Digital Food Court Table Ordering</span>
           </div>
           <div className="flex items-center gap-4 text-[#86868b]">
-            <Link href="/menu" className="hover:text-[#1d1d1f]">Menus</Link>
+            <Link href="/home" className="hover:text-[#1d1d1f]">Dishes</Link>
             <span>&bull;</span>
             <Link href="/scan" className="hover:text-[#1d1d1f]">Scan QR</Link>
             <span>&bull;</span>

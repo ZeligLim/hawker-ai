@@ -187,6 +187,41 @@ Retrieves hawker stalls (`food_outlets`) joined with their parent food hall (`re
 
 ---
 
+### `GET /api/hawker-centres`
+Retrieves physical food halls and hawker centres (`restaurants`) with aggregated stall metrics, active dish counts, price ranges, and specialties.
+
+- **Access Level**: Public
+- **Query Parameters**:
+  - `slug` *(string, optional)*: Filter by food hall slug (e.g. `lim-s-foodcourt`).
+  - `search` *(string, optional)*: Filter by food hall name or city.
+- **Response** `200 OK`:
+  ```json
+  {
+    "centres": [
+      {
+        "id": "f4ddcb73-4e23-4156-b97e-9e5a5e54ed6f",
+        "name": "Lim's Foodcourt",
+        "slug": "lim-s-foodcourt",
+        "address": "50 Jalan Sultan, City Centre, Kuala Lumpur",
+        "rating": 4.9,
+        "stallsCount": 10,
+        "activeStallsCount": 1,
+        "dishesCount": 1,
+        "specialties": ["Spaghetti", "Western Cuisine"],
+        "priceRange": {
+          "min": 10.01,
+          "max": 10.01,
+          "currency": "MYR"
+        }
+      }
+    ]
+  }
+  ```
+- **Error Responses**:
+  - `500 Internal Server Error`: `{ "error": "Failed to fetch hawker centres" }`
+
+---
+
 ## 3. Customer Ordering & Table Sessions
 
 ### `POST /api/table-sessions`
