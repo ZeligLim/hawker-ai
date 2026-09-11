@@ -362,8 +362,36 @@ Phase 17: Full-Screen Map UI, Auto-Location 5-Min Polling with Visibility Guard,
     - Haversine distance calculation and walking time estimation to sort centres by proximity.
     - Search bar and filters to quickly find hawker centres by name, area, or dish specialties.
 
+- **Phase 18: 5-Tab Customer Navigation, Clean CARTO Positron Basemap, and Background GPS Polling**:
+  - **5-Tab Customer Navigation Architecture (`components/customer/customer-shell.tsx` & `components/shared/client-bottom-nav.tsx`)**:
+    - Expanded bottom navigation to 5 unified customer tabs:
+      1. `Home` (`/home`): Full-screen map (100vw x 100vh) + floating top search + swipe-up bottom sheet list ranked by shortest distance.
+      2. `Stall` (`/stall`): Displays stalls directory with ETA per stall. Clicking a stall opens its store-specific food menu (`/shop/[slug]`).
+      3. `Menu` (`/menu`): Displays all food items available across the hawker centre, organized by category (Main Course, Drinks, Desserts), search, dish cards, customizations, and floating cart bar.
+      4. `Orders` (`/orders`): Diner order history and live order tracking.
+      5. `Profile` (`/profile`): Diner account management and authentication settings.
+    - Updated `client-bottom-nav.tsx` with dynamic `grid-cols-5` support and compact mobile spacing (`px-0.5 sm:px-1`) to ensure optimal touch targets on all mobile screen sizes.
+  - **Clean CARTO Positron Basemap & Watermark Fix (`components/hawker-map.tsx`)**:
+    - Replaced basemap tile URL with CARTO Positron: `https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png` with subdomains `['a', 'b', 'c', 'd']`.
+    - Added high-DPI retina tile resolution support (`@2x.png`).
+    - Extended maximum zoom level to `20` (`maxZoom: 20`).
+    - Fixed the "API KEY REQUIRED" watermark while delivering a sleek, light-grey map aesthetic.
+  - **Background GPS Polling with Visibility Guard (`components/home-page.tsx`)**:
+    - Implemented background `navigator.geolocation` polling interval (every 5 minutes).
+    - Added `document.visibilityState` lifecycle listener to pause timers when hidden and immediately refresh upon tab focus.
+    - Re-evaluates Haversine distances and real-time proximity rankings on every location update.
+  - **Stall & Menu Components Restoration (`components/customer-stall-page.tsx` & `components/menu-page.tsx`)**:
+    - Restored `CustomerStallPage` to display all active stalls with ETA badges (`ETA 10 min`, `ETA 15 min`), status badges (`Open`, `Busy`, `Closed`, `Prep Shift`), specialty descriptions, and menu dish counts.
+    - Added quick search and filter chips (All, Open Now, Fast ETA).
+    - Configured direct store menu links `/shop/${slug}`.
+    - Preserved table session indicator and QR camera scanner shortcut.
+    - Added floating cart order bar with subtotal and item count.
+
 ## Current Architecture
 - Frontend: Next.js App Router, TypeScript, React, Tailwind
+- Customer Navigation: 5-Tab Architecture (Home, Stall, Menu, Orders, Profile) with floating cart checkout pill
+- Map: Zero-dependency CARTO Positron canvas tiles with subdomains abcd, maxZoom 20, retina support, and no API key watermarks
+- Geolocation: 5-minute background polling with `document.visibilityState` guard and automatic proximity sort
 - AI boundary: OpenRouter via Vercel AI SDK for `SearchIntent` extraction only
 - Backend: route handlers, deterministic `SearchService`, and payment refund handlers
 - Database: Supabase/PostgreSQL with raw SQL migrations (001-017), generated-style TypeScript types, RLS, and fallback data paths
@@ -376,6 +404,7 @@ Phase 17: Full-Screen Map UI, Auto-Location 5-Min Polling with Visibility Guard,
 - Dynamic centre slug matching resolves typos and colloquial names (e.g. `restaurent888` and `lim'shawker`) to verified hawker centre records
 - Customer Home tab is dedicated to geographic food hall discovery and map-based exploration; specific venue menus are served on dynamic centre paths `/[centreSlug]/home`
 - Platform Monetization: Support for percentage fee cuts (e.g. 5%, 8%) alongside flat fee rates (RM 0.50), dynamically persisted per food hall and simulated in real time for operators
+- 5-tab customer layout separates venue-level discovery (`Home`), stall-level directory (`Stall`), food-level full menu (`Menu`), order tracker (`Orders`), and diner settings (`Profile`)
 
 ## Known Issues
 - Password recovery depends on Supabase Auth email configuration
@@ -383,3 +412,4 @@ Phase 17: Full-Screen Map UI, Auto-Location 5-Min Polling with Visibility Guard,
 
 ## Next Task
 - End-to-end user checkout and verify realtime multi-stall kitchen routing and sold-out refund synchronization.
+

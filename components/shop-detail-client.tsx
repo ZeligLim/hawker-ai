@@ -180,8 +180,8 @@ export function ShopDetailClient({ shop, slug }: { shop: ShopData; slug: string 
           />
         ) : null}
 
-        <Link href="/shop" className="mt-6 inline-flex rounded-full bg-[#111827] px-4 py-2.5 text-sm font-medium text-white">
-          Back to shops
+        <Link href="/stall" className="mt-6 inline-flex rounded-full bg-[#111827] px-4 py-2.5 text-sm font-medium text-white hover:bg-black transition-colors">
+          Back to stalls
         </Link>
       </div>
     </main>

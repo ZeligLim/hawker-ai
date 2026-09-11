@@ -31,12 +31,17 @@ export function ClientBottomNav({
 
   const inactiveTheme = 'text-[#86868b] hover:text-[#1d1d1f]';
 
-  const gridColsClass = items.length === 3 ? 'grid-cols-3' : 'grid-cols-4';
+  const gridColsClass =
+    items.length === 3
+      ? 'grid-cols-3'
+      : items.length === 5
+        ? 'grid-cols-5'
+        : 'grid-cols-4';
 
   return (
     <nav
       aria-label={ariaLabel}
-      className="fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-[430px] px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:max-w-[480px] md:max-w-[560px] lg:max-w-[680px]"
+      className="fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-[430px] px-2 sm:px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:max-w-[480px] md:max-w-[560px] lg:max-w-[680px]"
     >
       <div
         className={`grid ${gridColsClass} gap-1 rounded-full p-1.5 backdrop-blur-xl ${containerTheme}`}
@@ -51,7 +56,7 @@ export function ClientBottomNav({
             <Link
               key={label}
               href={href as any}
-              className={`flex min-h-[44px] flex-col items-center justify-center rounded-full py-1.5 px-1 transition-all ${
+              className={`flex min-h-[44px] flex-col items-center justify-center rounded-full py-1.5 px-0.5 sm:px-1 transition-all ${
                 active ? activeTheme : inactiveTheme
               }`}
               aria-label={label}

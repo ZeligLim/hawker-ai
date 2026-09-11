@@ -2,7 +2,7 @@
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
-import { ArrowRight, Layers, Locate, Minus, Plus, Store } from 'lucide-react';
+import { ArrowRight, Locate, Minus, Plus, Store } from 'lucide-react';
 import type { HawkerCentreSummary } from '@/lib/hawker-centres/service';
 
 interface HawkerMapProps {
@@ -35,7 +35,6 @@ export function HawkerMap({
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 600, height: 380 });
   const [zoom, setZoom] = useState(15);
-  const [mapStyle, setMapStyle] = useState<'minimal' | 'detailed'>('minimal');
 
   const selectedCentre = useMemo(
     () => centres.find((c) => c.id === selectedCentreId) ?? null,
@@ -88,6 +87,8 @@ export function HawkerMap({
 
     const subdomains = ['a', 'b', 'c', 'd'];
     const tiles = [];
+    const isRetina = typeof window !== 'undefined' && (window.devicePixelRatio || 1) > 1;
+    const r = isRetina ? '@2x' : '';
 
     for (let x = startTileX; x <= endTileX; x++) {
       for (let y = startTileY; y <= endTileY; y++) {
@@ -97,13 +98,12 @@ export function HawkerMap({
           const screenY = y * 256 - (centerProj.y - dimensions.height / 2);
           const sub = subdomains[Math.abs(x + y) % subdomains.length];
 
-          const tileUrl =
-            mapStyle === 'minimal'
-              ? `https://${sub}.basemaps.cartocdn.com/light_all/${zoom}/${wrappedX}/${y}.png`
-              : `https://tile.openstreetmap.org/${zoom}/${wrappedX}/${y}.png`;
+          // CARTO Positron: https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png
+          // Free public CDN, zero API key watermark, clean light-grey aesthetic
+          const tileUrl = `https://${sub}.basemaps.cartocdn.com/light_all/${zoom}/${wrappedX}/${y}${r}.png`;
 
           tiles.push({
-            key: `${mapStyle}-${zoom}-${x}-${y}`,
+            key: `carto-positron-${zoom}-${x}-${y}`,
             url: tileUrl,
             screenX,
             screenY,
@@ -112,7 +112,7 @@ export function HawkerMap({
       }
     }
     return tiles;
-  }, [centerProj, dimensions, zoom, mapStyle]);
+  }, [centerProj, dimensions, zoom]);
 
   // Mouse & touch dragging handlers
   const handlePointerDown = (clientX: number, clientY: number) => {
@@ -283,7 +283,7 @@ export function HawkerMap({
           type="button"
           onClick={(e) => {
             e.stopPropagation();
-            setZoom((z) => Math.min(18, z + 1));
+            setZoom((z) => Math.min(20, z + 1));
           }}
           className="flex h-9 w-9 items-center justify-center rounded-full bg-white/95 text-[#1d1d1f] shadow-md hover:bg-white active:scale-95 transition-all border border-black/5"
           aria-label="Zoom in"
@@ -314,18 +314,6 @@ export function HawkerMap({
           aria-label="Recenter to my location"
         >
           <Locate className="h-4 w-4" />
-        </button>
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            setMapStyle((s) => (s === 'minimal' ? 'detailed' : 'minimal'));
-          }}
-          className="flex h-9 w-9 items-center justify-center rounded-full bg-white/95 text-[#6e6e73] hover:text-[#1d1d1f] shadow-md hover:bg-white active:scale-95 transition-all border border-black/5"
-          title={`Switch to ${mapStyle === 'minimal' ? 'Detailed OSM' : 'Minimalist'} map`}
-          aria-label="Toggle map style"
-        >
-          <Layers className="h-4 w-4" />
         </button>
       </div>
 
@@ -362,7 +350,7 @@ export function HawkerMap({
 
       {/* Map Attribution */}
       <div className={`absolute left-2.5 ${fullScreen ? 'bottom-20 sm:bottom-24' : 'bottom-1.5'} z-10 text-[9px] text-[#6e6e73]/80 bg-white/70 backdrop-blur-xs px-1.5 py-0.5 rounded-md pointer-events-none`}>
-        {mapStyle === 'minimal' ? '© CARTO Positron • OSM' : '© OpenStreetMap contributors'}
+        © CARTO Positron • © OpenStreetMap contributors
       </div>
     </div>
   );

@@ -1,12 +1,13 @@
 'use client';
 
 import React from 'react';
-import { House, Store, ClipboardList, UserRound } from 'lucide-react';
+import { House, Store, UtensilsCrossed, ClipboardList, UserRound } from 'lucide-react';
 import { ClientBottomNav } from '@/components/shared/client-bottom-nav';
 
 const customerNavItems = [
   { href: '/home', label: 'Home', icon: House },
   { href: '/stall', label: 'Stall', icon: Store },
+  { href: '/menu', label: 'Menu', icon: UtensilsCrossed },
   { href: '/orders', label: 'Orders', icon: ClipboardList },
   { href: '/profile', label: 'Profile', icon: UserRound },
 ];

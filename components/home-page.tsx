@@ -85,7 +85,9 @@ export function HomePage() {
 
   useEffect(() => {
     // Initial geolocation poll on mount
-    pollLocation();
+    const initialPoll = setTimeout(() => {
+      pollLocation();
+    }, 0);
 
     let timer: NodeJS.Timeout | null = null;
 
@@ -123,6 +125,7 @@ export function HomePage() {
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
     return () => {
+      clearTimeout(initialPoll);
       stopTimer();
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };

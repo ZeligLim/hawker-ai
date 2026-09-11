@@ -1,12 +1,15 @@
 'use client';
 
-import { CupSoda, IceCreamCone, UtensilsCrossed } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { ArrowRight, CupSoda, IceCreamCone, MapPin, UtensilsCrossed } from 'lucide-react';
+import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
+import { Suspense, useEffect, useState } from 'react';
 import { HawkerSearchBar } from '@/components/hawker-search-bar';
 import { CustomizationCard } from '@/components/customization-card';
 import { DishCard } from '@/components/dish-card';
 import { addItemToCart, getDishQuantity, removeCartItem, updateCartItemQuantity, useCartItems } from '@/lib/order/cart';
 import { getDishCustomization } from '@/lib/order/customizations';
+import { getStoredTableSession } from '@/lib/table-session';
 
 function MainCourseIcon() {
   return <UtensilsCrossed className="h-[18px] w-[18px]" strokeWidth={1.8} />;
@@ -47,7 +50,11 @@ function categorizeDish(name: string, tags: string[] = []): 'main-course' | 'dri
   return 'main-course';
 }
 
-export function MenuPage() {
+function MenuContent() {
+  const searchParams = useSearchParams();
+  const rawCentre = searchParams.get('centre') || searchParams.get('slug') || '';
+  const [centreName, setCentreName] = useState<string>('');
+
   const [searchValue, setSearchValue] = useState('');
   const [items, setItems] = useState<MenuItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -58,7 +65,12 @@ export function MenuPage() {
     let active = true;
     const loadDishes = async () => {
       try {
-        const res = await fetch('/api/outlets');
+        const stored = getStoredTableSession();
+        const targetCentre = rawCentre || stored?.centreSlug || '';
+        if (stored?.centreName) setCentreName(stored.centreName);
+
+        const centreQuery = targetCentre ? `?centre=${encodeURIComponent(targetCentre)}` : '';
+        const res = await fetch(`/api/outlets${centreQuery}`);
         if (!res.ok) return;
         const data = await res.json();
         if (!active || !Array.isArray(data.outlets)) return;
@@ -66,6 +78,9 @@ export function MenuPage() {
         const loaded: MenuItem[] = [];
         for (const outlet of data.outlets) {
           const restaurantName = outlet.restaurants?.name || outlet.name;
+          if (!centreName && outlet.restaurants?.name) {
+            setCentreName(outlet.restaurants.name);
+          }
           for (const dish of outlet.dishes ?? []) {
             if (dish.is_available === false) continue;
             loaded.push({
@@ -95,7 +110,7 @@ export function MenuPage() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [rawCentre, centreName]);
 
   const filteredItems = items.filter((item) =>
     searchValue.trim() ? item.name.toLowerCase().includes(searchValue.toLowerCase().trim()) : true,
@@ -163,10 +178,21 @@ export function MenuPage() {
     document.getElementById(`category-${id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
+  const totalCartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
+  const cartSubtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+
   return (
     <main className="min-h-screen bg-[#f5f5f7] text-[#1d1d1f]">
       <div className="mx-auto min-h-screen w-full max-w-md sm:max-w-xl md:max-w-3xl lg:max-w-5xl px-4 pb-32 pt-5 sm:px-6">
         <div>
+          {centreName && (
+            <div className="mb-3 flex items-center gap-1.5 text-xs text-[#6e6e73]">
+              <MapPin className="h-3.5 w-3.5 text-red-500 shrink-0" />
+              <span className="font-semibold text-[#1d1d1f]">{centreName}</span>
+              <span>• Full Food Menu</span>
+            </div>
+          )}
+
           <div className="sticky top-0 z-10 bg-transparent pb-3 pt-1">
             <HawkerSearchBar
               placeholder="Search the menu"
@@ -193,51 +219,58 @@ export function MenuPage() {
             </section>
           </div>
 
-          <section className="mt-8 space-y-8">
-            {categories.map(({ id, label, icon: Icon }) => {
-              const categoryDishes = menuItems[id as keyof typeof menuItems] ?? [];
-              if (categoryDishes.length === 0) return null;
+          {loading ? (
+            <div className="py-16 text-center text-xs sm:text-sm text-[#86868b]">
+              Loading menu items...
+            </div>
+          ) : (
+            <section className="mt-8 space-y-8">
+              {categories.map(({ id, label, icon: Icon }) => {
+                const categoryDishes = menuItems[id as keyof typeof menuItems] ?? [];
+                if (categoryDishes.length === 0) return null;
 
-              return (
-                <section key={id} id={`category-${id}`} className="scroll-mt-24">
-                  <div className="mb-4 flex items-center gap-2.5">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#111827] text-white shadow-xs">
-                      <Icon />
+                return (
+                  <section key={id} id={`category-${id}`} className="scroll-mt-24">
+                    <div className="mb-4 flex items-center gap-2.5">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#111827] text-white shadow-xs">
+                        <Icon />
+                      </div>
+                      <h2 className="text-base sm:text-lg font-bold text-[#1d1d1f]">
+                        {label}
+                      </h2>
+                      <span className="text-xs text-[#86868b] font-medium">
+                        ({categoryDishes.length})
+                      </span>
                     </div>
-                    <h2 className="text-base sm:text-lg font-bold text-[#1d1d1f]">
-                      {label}
-                    </h2>
-                    <span className="text-xs text-[#86868b] font-medium">
-                      ({categoryDishes.length})
-                    </span>
-                  </div>
 
-                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
-                    {categoryDishes.map((item) => {
-                      const quantity = getDishQuantity(cartItems, item.id);
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+                      {categoryDishes.map((item) => {
+                        const quantity = getDishQuantity(cartItems, item.id);
 
-                      return (
-                        <DishCard
-                          key={item.id}
-                          id={item.id}
-                          name={item.name}
-                          price={item.price}
-                          isVegetarian={item.vegetarian}
-                          spiceLevel={item.spiceLevel}
-                          imageUrl={item.imageUrl}
-                          quantity={quantity}
-                          onAdd={() => addMenuItem(item)}
-                          onUpdateQuantity={(delta) =>
-                            delta > 0 ? addMenuItem(item) : updateQuantity(item, -1)
-                          }
-                        />
-                      );
-                    })}
-                  </div>
-                </section>
-              );
-            })}
-          </section>
+                        return (
+                          <DishCard
+                            key={item.id}
+                            id={item.id}
+                            name={item.name}
+                            price={item.price}
+                            isVegetarian={item.vegetarian}
+                            spiceLevel={item.spiceLevel}
+                            imageUrl={item.imageUrl}
+                            quantity={quantity}
+                            onAdd={() => addMenuItem(item)}
+                            onUpdateQuantity={(delta) =>
+                              delta > 0 ? addMenuItem(item) : updateQuantity(item, -1)
+                            }
+                          />
+                        );
+                      })}
+                    </div>
+                  </section>
+                );
+              })}
+            </section>
+          )}
+
           {customizingItem ? (
             <CustomizationCard
               dishName={customizingItem.name}
@@ -250,6 +283,39 @@ export function MenuPage() {
         </div>
       </div>
 
+      {totalCartCount > 0 && (
+        <div className="fixed bottom-20 left-4 right-4 z-40 mx-auto max-w-md animate-slide-up">
+          <Link
+            href="/orders"
+            className="flex items-center justify-between rounded-full bg-[#111827] px-5 py-3 text-white shadow-xl hover:bg-black transition-all"
+          >
+            <div className="flex items-center gap-2">
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-white/20 text-xs font-bold">
+                {totalCartCount}
+              </span>
+              <span className="text-sm font-semibold">View Order</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-bold">RM {cartSubtotal.toFixed(2)}</span>
+              <ArrowRight className="h-4 w-4" />
+            </div>
+          </Link>
+        </div>
+      )}
     </main>
+  );
+}
+
+export function MenuPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-[60vh] items-center justify-center text-xs text-[#86868b]">
+          Loading menu...
+        </div>
+      }
+    >
+      <MenuContent />
+    </Suspense>
   );
 }
