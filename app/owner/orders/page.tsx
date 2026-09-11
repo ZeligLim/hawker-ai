@@ -234,10 +234,7 @@ export default function OwnerOrdersPage() {
       <div className="mx-auto w-full max-w-md sm:max-w-xl md:max-w-3xl lg:max-w-5xl">
         <header className="flex items-center justify-between gap-3">
           <div className="min-w-0">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-[#0071e3] truncate block">
-              Live Kitchen Ticket Stream
-            </span>
-            <h1 className="mt-1 text-2xl sm:text-3xl font-bold tracking-tight text-[#1d1d1f] truncate">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#1d1d1f] truncate">
               Kitchen Tickets
             </h1>
           </div>

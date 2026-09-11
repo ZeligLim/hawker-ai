@@ -1,31 +1,31 @@
 # Current Project Context
 
 ## Current Phase
-Phase 16: Minimalist Map (CartoDB Positron), Restored Stall Tab in Customer Bottom Navigation, Scan-Gated Ordering with Camera-Only Logo
+Phase 17: Full-Screen Map UI, Auto-Location 5-Min Polling with Visibility Guard, Swipe-Up Bottom Sheet, and UI Cleanup
 
 ## Current Feature
-1. **Interactive Hawker Map & Minimalist Map Layer**:
-   - Implemented custom React Web Mercator map in `components/hawker-map.tsx` without heavy external map libraries.
-   - Built with **CartoDB Positron** (`https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png`) as the default minimalist map style (clean grayscale palette, muted roads, subtle labels, subdomain cycling `a`, `b`, `c`, `d`).
-   - Integrated a layer toggle (`<Layers>` button) allowing users to switch dynamically between **Minimalist** (CartoDB Positron) and **Detailed** (OpenStreetMap Standard).
-   - "Enter Centre & Order" link on the floating map card routes to `/stall?centre=${centre.slug}`.
+1. **Full-Screen Map UI ($100vw \times 100vh$)**:
+   - Refactored `components/home-page.tsx` into a full viewport map (`fixed inset-0 w-screen h-screen z-0`).
+   - Removed all static headers, titles, extra padding, and banner clutter from the home view.
+   - Built a floating top search bar (`fixed top-4 left-1/2 -translate-x-1/2 w-[calc(100%-32px)] max-w-md z-10`) with a clean search input, quick clear button, and GPS locate trigger.
+   - Implemented a swipe-up collapsible bottom sheet over the map (`z-20`) with drag handle, summary header, touch gesture swipe-up/swipe-down handling, and full scrollable list of food halls.
 
-2. **Restored Stall Tab as Second Customer Navigation Tab**:
-   - In `components/customer/customer-shell.tsx`, updated `customerNavItems`:
-     1. Home (`/home`)
-     2. Stall (`/stall`) [restored with `Store` icon]
-     3. Orders (`/orders`)
-     4. Profile (`/profile`)
-   - In `lib/shared/permissions.ts`, updated `getClientForPath` so `/owner` routes to `'stall'` (stall worker portal) and `/stall` defaults to `'customer'`.
-   - Updated `lib/multi-client-architecture.test.ts` to assert `/stall` maps to `'customer'`.
+2. **Auto-Location Polling & Visibility Guard**:
+   - Geolocation auto-detection polls `navigator.geolocation` every 5 minutes (`5 * 60 * 1000`).
+   - Added a `visibilitychange` guard: timer is paused when `document.visibilityState === 'hidden'` and immediately triggers a refresh upon active tab focus.
+   - Strict shortest distance sorting: recalculates distance via Haversine formula on every location update, sorting list items and map markers strictly by shortest distance first (`distanceKm`).
 
-3. **Camera-Only QR Scan Gate on Stall Tab ("do not add anything else")**:
-   - In `components/customer-stall-page.tsx` and `app/stall/page.tsx`:
-     - If table is NOT scanned (`!tableSession?.tableNumber`): renders exclusively a prominent camera logo button to scan QR for table number ("do not add anything else"). Clicking opens `/scan` with camera permissions.
-     - If table IS scanned: unlocks the stalls and dishes directory for that centre, with top table badge (`Table 04`) + camera re-scan icon, stall category pills, dish customization modal, and floating multi-stall cart.
-   - Simplified `components/centre-diner-page.tsx` unscanned state to the same clean camera-only scan gate.
-   - In `components/home-page.tsx`, "Enter & Order" buttons now direct to `/stall?centre=${encodeURIComponent(centre.slug)}`.
-   - In `app/scan/page.tsx`, successful table link redirects directly to `/stall`.
+3. **Merchant & Shop-Owner UI Cleanup**:
+   - Removed legacy static text and unused widgets:
+     - `app/owner/orders/page.tsx`: Removed `"LIVE KITCHEN TICKET STREAM"`.
+     - `app/owner/page.tsx`: Removed `"Live kitchen metrics, ticket queue, and menu status"`, `"Database Connection"`, and `"Live PostgreSQL Stream"` widget.
+     - `app/owner/menu/page.tsx`: Removed `"Turn availability off when a dish is sold out. Customers will see the change immediately"`.
+     - `components/role-mode-switcher.tsx`: Removed `"Switch between ordering as a diner, cooking at your stall, or managing your venue."`.
+     - `app/shop-owner/analytics/page.tsx`: Removed the entire **Food Hall Actions** widget (`"Food Hall Actions"`, `"Quick operational links to scale your venue."`, `"Manage Booth Slots"`, `"Venue Overview"`).
+   - Matched `<select>` styling and exact heights to adjacent buttons (`h-9` in `app/owner/page.tsx`, `h-[44px]` in `app/shop-owner/analytics/page.tsx`).
+
+4. **Verification**:
+   - Verified with `npx tsc --noEmit` passing with 0 errors.
 
 ## Previous Phases
    - Updated `lib/order/customizations.ts` with polymorphic `CustomizationSource` type supporting both string dish names and full dish objects.

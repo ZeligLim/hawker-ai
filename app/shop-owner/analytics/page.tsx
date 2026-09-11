@@ -151,7 +151,7 @@ function ShopOwnerAnalyticsContent() {
 
           <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
             {/* Stall Focus Filter */}
-            <div className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 border border-black/[0.06] shadow-xs text-xs">
+            <div className="inline-flex h-[44px] items-center gap-1.5 rounded-full bg-white px-3.5 border border-black/[0.06] shadow-xs text-xs">
               <Store className="w-3.5 h-3.5 text-[#6e6e73]" />
               <select
                 value={selectedBoothId}
@@ -600,40 +600,6 @@ function ShopOwnerAnalyticsContent() {
 
               <div className="mt-4 rounded-xl bg-[#f5f5f7] p-3 text-[11px] text-[#6e6e73] leading-relaxed">
                 Zero monthly subscriptions. The platform only takes a nominal fee per processed transaction.
-              </div>
-            </div>
-
-            {/* Fast Management Actions */}
-            <div className="rounded-[26px] bg-[#111827] text-white p-5 sm:p-6 shadow-xs">
-              <h2 className="text-base font-semibold tracking-tight text-white">
-                Food Hall Actions
-              </h2>
-              <p className="mt-1 text-xs text-white/70">
-                Quick operational links to scale your venue.
-              </p>
-
-              <div className="mt-4 space-y-2">
-                <Link
-                  href={'/shop-owner/booths' as any}
-                  className="flex items-center justify-between rounded-xl bg-white/10 px-3.5 py-2.5 text-xs font-semibold text-white hover:bg-white/20 transition-all"
-                >
-                  <span className="inline-flex items-center gap-2">
-                    <Store className="w-3.5 h-3.5" />
-                    Manage Booth Slots
-                  </span>
-                  <ChevronRight className="w-3.5 h-3.5 text-white/60" />
-                </Link>
-
-                <Link
-                  href={'/shop-owner' as any}
-                  className="flex items-center justify-between rounded-xl bg-white/10 px-3.5 py-2.5 text-xs font-semibold text-white hover:bg-white/20 transition-all"
-                >
-                  <span className="inline-flex items-center gap-2">
-                    <Building2 className="w-3.5 h-3.5" />
-                    Venue Overview
-                  </span>
-                  <ChevronRight className="w-3.5 h-3.5 text-white/60" />
-                </Link>
               </div>
             </div>
           </div>

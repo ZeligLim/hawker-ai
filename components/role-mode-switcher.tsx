@@ -50,9 +50,6 @@ export function RoleModeSwitcher({ currentMode }: RoleModeSwitcherProps) {
           <p className="text-[11px] font-semibold uppercase tracking-wider text-[#86868b]">
             Switch Active Mode
           </p>
-          <p className="text-xs text-[#6e6e73] mt-0.5 line-clamp-2 sm:line-clamp-none">
-            Switch between ordering as a diner, cooking at your stall, or managing your venue.
-          </p>
         </div>
         <span className="text-[10px] sm:text-[11px] font-semibold px-2 sm:px-2.5 py-1 rounded-full bg-[#0071e3]/10 text-[#0071e3] shrink-0 whitespace-nowrap">
           {roles.hasShopOwner && roles.hasBooth

@@ -126,10 +126,6 @@ export default function OwnerMenuPage() {
           </Link>
         </header>
 
-        <p className="mt-2 text-xs sm:text-sm text-[#6e6e73] truncate">
-          Turn availability off when a dish is sold out. Customers will see the change immediately.
-        </p>
-
         {error ? (
           <div className="mt-4 rounded-[18px] border border-[#fecaca] bg-[#fff1f2] p-4 text-xs sm:text-sm text-[#9f1239] truncate">
             {error}

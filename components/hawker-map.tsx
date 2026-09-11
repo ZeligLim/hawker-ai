@@ -11,6 +11,7 @@ interface HawkerMapProps {
   selectedCentreId: string | null;
   onSelectCentre: (centre: HawkerCentreSummary) => void;
   className?: string;
+  fullScreen?: boolean;
 }
 
 // Convert geographic coordinates to Web Mercator pixel coordinates
@@ -29,6 +30,7 @@ export function HawkerMap({
   selectedCentreId,
   onSelectCentre,
   className = '',
+  fullScreen = false,
 }: HawkerMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 600, height: 380 });
@@ -166,7 +168,7 @@ export function HawkerMap({
   return (
     <div
       ref={containerRef}
-      className={`relative w-full h-[360px] sm:h-[420px] rounded-[28px] overflow-hidden select-none bg-[#f4f4f6] border border-black/10 shadow-[0_12px_32px_rgba(0,0,0,0.06)] cursor-grab active:cursor-grabbing ${className}`}
+      className={`relative w-full ${fullScreen ? 'h-full' : 'h-[360px] sm:h-[420px] rounded-[28px] overflow-hidden border border-black/10 shadow-[0_12px_32px_rgba(0,0,0,0.06)]'} select-none bg-[#f4f4f6] cursor-grab active:cursor-grabbing ${className}`}
       onMouseDown={(e) => {
         if (e.button === 0) handlePointerDown(e.clientX, e.clientY);
       }}
@@ -200,7 +202,9 @@ export function HawkerMap({
       </div>
 
       {/* Map Vignette Overlay */}
-      <div className="absolute inset-0 pointer-events-none ring-1 ring-inset ring-black/10 rounded-[28px]" />
+      {!fullScreen && (
+        <div className="absolute inset-0 pointer-events-none ring-1 ring-inset ring-black/10 rounded-[28px]" />
+      )}
 
       {/* User Location Radar Marker */}
       {userScreen && (
@@ -274,7 +278,7 @@ export function HawkerMap({
       })}
 
       {/* Map Controls */}
-      <div className="absolute right-3 top-3 z-30 flex flex-col gap-1.5">
+      <div className={`absolute right-3 ${fullScreen ? 'top-20' : 'top-3'} z-30 flex flex-col gap-1.5`}>
         <button
           type="button"
           onClick={(e) => {
@@ -326,7 +330,7 @@ export function HawkerMap({
       </div>
 
       {/* Selected Centre Floating Info Card */}
-      {selectedCentre && (
+      {selectedCentre && !fullScreen && (
         <div className="absolute left-3 right-3 bottom-3 z-40 sm:left-4 sm:right-auto sm:max-w-xs animate-scale-in">
           <div className="rounded-[22px] bg-white/95 backdrop-blur-md p-3.5 shadow-[0_12px_28px_rgba(0,0,0,0.15)] border border-black/10">
             <div className="flex items-start justify-between gap-2">
@@ -357,7 +361,7 @@ export function HawkerMap({
       )}
 
       {/* Map Attribution */}
-      <div className="absolute left-2.5 bottom-1.5 z-10 text-[9px] text-[#6e6e73]/80 bg-white/70 backdrop-blur-xs px-1.5 py-0.5 rounded-md pointer-events-none">
+      <div className={`absolute left-2.5 ${fullScreen ? 'bottom-20 sm:bottom-24' : 'bottom-1.5'} z-10 text-[9px] text-[#6e6e73]/80 bg-white/70 backdrop-blur-xs px-1.5 py-0.5 rounded-md pointer-events-none`}>
         {mapStyle === 'minimal' ? '© CARTO Positron • OSM' : '© OpenStreetMap contributors'}
       </div>
     </div>

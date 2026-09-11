@@ -299,12 +299,21 @@ export default function StallOverviewPage() {
             <h1 className="text-2xl sm:text-3xl font-semibold tracking-[-0.035em] text-[#1d1d1f] truncate">
               Stall Overview
             </h1>
-            <p className="mt-1 text-xs sm:text-sm text-[#6e6e73] truncate">
-              Live kitchen metrics, ticket queue, and menu status linked directly to your database.
-            </p>
           </div>
 
           <div className="flex items-center gap-2 shrink-0">
+            {roles.booths && roles.booths.length > 1 && (
+              <select
+                className="inline-flex h-9 items-center justify-center rounded-full border border-black/10 bg-white px-3 text-xs font-semibold text-[#1d1d1f] shadow-xs outline-none cursor-pointer"
+                aria-label="Select booth"
+              >
+                {roles.booths.map((b) => (
+                  <option key={b.id} value={b.id}>
+                    {b.name}
+                  </option>
+                ))}
+              </select>
+            )}
             {roles.booths?.[0]?.id && (
               <button
                 type="button"
@@ -430,14 +439,6 @@ export default function StallOverviewPage() {
                   </span>
                 </Link>
               </div>
-            </div>
-
-            <div className="mt-5 pt-4 border-t border-black/5 flex items-center justify-between text-xs text-[#6e6e73]">
-              <span>Database Connection</span>
-              <span className="inline-flex items-center gap-1 font-medium text-emerald-700">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                Live PostgreSQL Stream
-              </span>
             </div>
           </div>
 
