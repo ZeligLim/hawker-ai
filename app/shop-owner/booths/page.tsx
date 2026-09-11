@@ -747,8 +747,8 @@ export default function ShopOwnerBoothsPage() {
 
       {/* ADD BOOTH SLOT MODAL */}
       {isAddSlotOpen ? (
-        <div className="fixed inset-0 z-30 flex items-end justify-center bg-black/40 p-4 sm:items-center backdrop-blur-xs">
-          <div className="w-full max-w-md rounded-[28px] bg-white p-6 shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-xs">
+          <div className="w-full max-w-md rounded-[28px] bg-white p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Store className="h-5 w-5 text-[#111827]" />
@@ -833,10 +833,10 @@ export default function ShopOwnerBoothsPage() {
 
       {/* EDIT BOOTH SLOT MODAL */}
       {editing ? (
-        <div className="fixed inset-0 z-30 flex items-end justify-center bg-black/40 p-4 sm:items-center backdrop-blur-xs">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-xs">
           <form
             onSubmit={handleSaveBooth}
-            className="w-full max-w-md rounded-[28px] bg-white p-6 shadow-2xl space-y-4"
+            className="w-full max-w-md rounded-[28px] bg-white p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto"
           >
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-semibold text-[#1d1d1f]">Edit Booth Slot</h2>
@@ -870,7 +870,7 @@ export default function ShopOwnerBoothsPage() {
 
       {/* DELETE BOOTH SLOT CONFIRMATION MODAL */}
       {boothToDelete ? (
-        <div className="fixed inset-0 z-30 flex items-end justify-center bg-black/40 p-4 sm:items-center backdrop-blur-xs">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-xs">
           <div className="w-full max-w-md rounded-[28px] bg-white p-6 shadow-2xl space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">

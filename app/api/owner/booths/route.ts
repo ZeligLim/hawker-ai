@@ -39,6 +39,8 @@ export async function POST(request: NextRequest) {
     .insert({
       restaurant_id: restaurantId,
       name,
+      status: 'approved',
+      is_open: true,
     })
     .select('id, restaurant_id, name, created_at')
     .single();

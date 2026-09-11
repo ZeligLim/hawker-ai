@@ -1,10 +1,27 @@
 # Current Project Context
 
 ## Current Phase
-Phase 14: Mobile-First Landing Page, Table Session QR Gate, Dynamic Dish Customizations & Domain Isolation
+Phase 15: Database Constraint Fix for Food Outlets Status, Mobile Edit Modal Tab Bar Fix & Header Removal from Stall/Shop Apps
 
 ## Current Feature
-1. **Dynamic Menu Customizations on Customer Side**:
+1. **Resolved `food_outlets_status_check` Constraint Violation**:
+   - Migration `016_booth_status_check.sql`: Updated PostgreSQL check constraint on `food_outlets` to include `'closed'` (`CHECK (status IN ('draft', 'pending_review', 'approved', 'rejected', 'suspended', 'closed'))`). Successfully pushed to remote Supabase DB using `npx supabase db push`.
+   - Explicit Defaults: In `app/api/owner/booths/route.ts` and `app/api/owner/shops/route.ts`, guaranteed `status: 'approved'` and `is_open: true` are explicitly populated on every newly inserted booth.
+   - Handled boolean open/close mappings in `app/api/owner/booths/[id]/route.ts`.
+
+2. **Fixed Edit Booth Slot Modal Behind Mobile Bottom Tab Bar**:
+   - In `app/shop-owner/booths/page.tsx`:
+     - Raised modal overlay z-index from `z-30` to `z-50`, lifting it above `ClientBottomNav` (`z-30`).
+     - Replaced mobile bottom-anchoring (`items-end`) with centered viewport alignment (`flex items-center justify-center p-4`) so the modal is never covered by the bottom navigation bar or iOS home bar.
+     - Added `max-h-[90vh] overflow-y-auto` to allow comfortable scrolling on small screens and when the virtual keyboard is open.
+     - Applied the same centering and `z-50` elevation to Add Slot, Edit Slot, and Delete Slot modals.
+
+3. **Removed Headers from Stall and Shop App**:
+   - `components/stall/stall-shell.tsx`: Removed top sticky `<header>` ("Hawker Stall App") to maximize vertical screen space for kitchen workers on phones and tablet KDS.
+   - `components/owner/owner-shell.tsx`: Removed top sticky `<header>` ("Hawker Venue App") to provide clean, unencumbered viewing of booth slots and analytics for food hall operators.
+   - Cleaned up unused Lucide icon imports (`Store`, `Building2`).
+
+## Previous Phases
    - Updated `lib/order/customizations.ts` with polymorphic `CustomizationSource` type supporting both string dish names and full dish objects.
    - Parses dynamic `customizations` array `{ label, price }` from Supabase `dishes` table JSONB column, dynamic `spiceLevel` tiers (Level 0–3), with fallback to dish name string.
    - Updated `app/shop/[slug]/page.tsx`, `components/shop-detail-client.tsx`, `components/menu-page.tsx`, and `components/home-page.tsx` to query and pass `customizations` array directly into `getDishCustomization(dish)`.

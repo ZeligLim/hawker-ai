@@ -234,6 +234,8 @@ export async function POST(request: NextRequest) {
   const initialSlots = Array.from({ length: boothCount }, (_, i) => ({
     restaurant_id: restaurant.id,
     name: `Booth Slot #${String(i + 1).padStart(2, '0')}`,
+    status: 'approved',
+    is_open: true,
   }));
 
   const { data: initialBooths } = await dbClient
