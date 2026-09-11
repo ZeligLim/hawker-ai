@@ -14,17 +14,18 @@ export async function GET(request: NextRequest) {
   }
 
   // Check restaurant_memberships (Shop Owner)
-  let shops: Array<{ id: string; name: string; role: string }> = [];
+  let shops: Array<{ id: string; name: string; role: string; isActive?: boolean }> = [];
   try {
     const { data: restMemberships } = await auth.client
       .from('restaurant_memberships')
-      .select('restaurant_id, role, restaurants(id, name)')
+      .select('restaurant_id, role, restaurants(id, name, is_active)')
       .eq('user_id', auth.user.id);
 
     if (restMemberships) {
       shops = restMemberships.map((m: any) => ({
         id: m.restaurants?.id || m.restaurant_id,
         name: m.restaurants?.name || 'Food Hall',
+        isActive: m.restaurants?.is_active ?? true,
         role: m.role || 'owner',
       }));
     }
@@ -33,17 +34,18 @@ export async function GET(request: NextRequest) {
   }
 
   // Check merchant_memberships (Booth Owner)
-  let booths: Array<{ id: string; name: string; role: string }> = [];
+  let booths: Array<{ id: string; name: string; role: string; isOpen?: boolean }> = [];
   try {
     const { data: merchMemberships } = await auth.client
       .from('merchant_memberships')
-      .select('food_outlet_id, role, food_outlets(id, name)')
+      .select('food_outlet_id, role, food_outlets(id, name, is_open)')
       .eq('user_id', auth.user.id);
 
     if (merchMemberships) {
       booths = merchMemberships.map((m: any) => ({
         id: m.food_outlets?.id || m.food_outlet_id,
         name: m.food_outlets?.name || 'Stall',
+        isOpen: m.food_outlets?.is_open ?? true,
         role: m.role || 'owner',
       }));
     }

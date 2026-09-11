@@ -26,8 +26,8 @@ export type UserRoles = {
   hasShopOwner: boolean;
   hasBooth: boolean;
   isLoading: boolean;
-  shops: Array<{ id: string; name: string; role: string }>;
-  booths: Array<{ id: string; name: string; role: string }>;
+  shops: Array<{ id: string; name: string; role: string; isActive?: boolean }>;
+  booths: Array<{ id: string; name: string; role: string; isOpen?: boolean }>;
 };
 
 type AuthContextValue = {

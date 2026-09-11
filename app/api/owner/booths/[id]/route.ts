@@ -1,5 +1,72 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requireRequestUser } from '@/lib/supabase/server';
+import { requireRequestUser, createAdminClient } from '@/lib/supabase/server';
+
+async function checkBoothAccess(auth: Awaited<ReturnType<typeof requireRequestUser>>, boothId: string) {
+  if (!auth.client || !auth.user) {
+    return { booth: null, role: null, error: auth.error ?? 'Authentication required.' };
+  }
+
+  const dbClient = createAdminClient() ?? auth.client;
+
+  const { data: booth, error: boothError } = await dbClient
+    .from('food_outlets')
+    .select('id, restaurant_id, name, is_open, status, created_at')
+    .eq('id', boothId)
+    .maybeSingle();
+
+  if (boothError) {
+    return { booth: null, role: null, error: boothError.message };
+  }
+
+  if (!booth) {
+    return { booth: null, role: null, error: 'Booth not found.' };
+  }
+
+  // 1. Check if user is shop owner/manager
+  const { data: shopMembership } = await dbClient
+    .from('restaurant_memberships')
+    .select('role')
+    .eq('user_id', auth.user.id)
+    .eq('restaurant_id', booth.restaurant_id)
+    .maybeSingle();
+
+  if (shopMembership && ['owner', 'manager'].includes(shopMembership.role)) {
+    return { booth, role: `shop_${shopMembership.role}`, error: null };
+  }
+
+  // 2. Check if user is booth merchant/staff
+  const { data: boothMembership } = await dbClient
+    .from('merchant_memberships')
+    .select('role')
+    .eq('user_id', auth.user.id)
+    .eq('food_outlet_id', boothId)
+    .maybeSingle();
+
+  if (boothMembership) {
+    return { booth, role: `booth_${boothMembership.role}`, error: null };
+  }
+
+  return { booth: null, role: null, error: 'You do not have permission to manage this booth.' };
+}
+
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const auth = await requireRequestUser(request);
+  const { id } = await params;
+
+  const access = await checkBoothAccess(auth, id);
+  if (access.error || !access.booth) {
+    return NextResponse.json({ error: access.error }, { status: access.error === 'Booth not found.' ? 404 : 403 });
+  }
+
+  return NextResponse.json({
+    booth: {
+      ...access.booth,
+      isOpen: access.booth.is_open ?? true,
+      status: access.booth.status ?? (access.booth.is_open === false ? 'closed' : 'approved'),
+    },
+    role: access.role,
+  });
+}
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const auth = await requireRequestUser(request);
@@ -9,54 +76,64 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     return NextResponse.json({ error: auth.error }, { status: 401 });
   }
 
+  const access = await checkBoothAccess(auth, id);
+  if (access.error || !access.booth) {
+    return NextResponse.json({ error: access.error }, { status: access.error === 'Booth not found.' ? 404 : 403 });
+  }
+
   const body = await request.json().catch(() => null);
-  const name = typeof body?.name === 'string' ? body.name.trim() : '';
-
-  if (!name) {
-    return NextResponse.json({ error: 'Booth name is required.' }, { status: 400 });
+  if (!body || typeof body !== 'object') {
+    return NextResponse.json({ error: 'Invalid request body.' }, { status: 400 });
   }
 
-  const { data: booth, error: boothError } = await auth.client
+  const update: {
+    is_open?: boolean;
+    status?: string;
+    name?: string;
+  } = {};
+
+  const isOpenInput = body.is_open !== undefined ? body.is_open : body.isOpen;
+  if (typeof isOpenInput === 'boolean') {
+    update.is_open = isOpenInput;
+    update.status = isOpenInput ? 'approved' : 'closed';
+  } else if (typeof body.status === 'string') {
+    update.status = body.status;
+    if (body.status === 'closed') {
+      update.is_open = false;
+    } else if (body.status === 'approved') {
+      update.is_open = true;
+    }
+  }
+
+  if (typeof body.name === 'string' && body.name.trim()) {
+    update.name = body.name.trim();
+  }
+
+  if (Object.keys(update).length === 0) {
+    return NextResponse.json({ error: 'No fields provided for update.' }, { status: 400 });
+  }
+
+  const dbClient = createAdminClient() ?? auth.client;
+
+  const { data: updatedBooth, error: updateError } = await dbClient
     .from('food_outlets')
-    .select('id, restaurant_id, name')
+    .update(update)
     .eq('id', id)
-    .maybeSingle();
-
-  if (boothError) {
-    return NextResponse.json({ error: boothError.message }, { status: 500 });
-  }
-
-  if (!booth) {
-    return NextResponse.json({ error: 'Booth not found.' }, { status: 404 });
-  }
-
-  const { data: membership, error: membershipError } = await auth.client
-    .from('restaurant_memberships')
-    .select('restaurant_id, role')
-    .eq('user_id', auth.user.id)
-    .eq('restaurant_id', booth.restaurant_id)
-    .maybeSingle();
-
-  if (membershipError) {
-    return NextResponse.json({ error: membershipError.message }, { status: 500 });
-  }
-
-  if (!membership || !['owner', 'manager'].includes(membership.role)) {
-    return NextResponse.json({ error: 'You do not have permission to manage this booth.' }, { status: 403 });
-  }
-
-  const { data: updatedBooth, error: updateError } = await auth.client
-    .from('food_outlets')
-    .update({ name })
-    .eq('id', id)
-    .select('id, restaurant_id, name, created_at')
+    .select('id, restaurant_id, name, is_open, status, created_at')
     .single();
 
   if (updateError || !updatedBooth) {
     return NextResponse.json({ error: updateError?.message ?? 'Unable to update booth.' }, { status: 500 });
   }
 
-  return NextResponse.json({ booth: updatedBooth, status: 'updated' });
+  return NextResponse.json({
+    booth: {
+      ...updatedBooth,
+      isOpen: updatedBooth.is_open ?? true,
+      status: updatedBooth.status ?? (updatedBooth.is_open === false ? 'closed' : 'approved'),
+    },
+    status: 'updated',
+  });
 }
 
 export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {

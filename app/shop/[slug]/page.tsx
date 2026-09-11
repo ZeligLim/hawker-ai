@@ -11,10 +11,10 @@ async function fetchShopBySlug(slug: string): Promise<ShopData | null> {
   // Step 1: fetch outlets + restaurants (typed relation)
   const { data: outlets } = await supabase
     .from('food_outlets')
-    .select('id, name, restaurant_id, restaurants ( id, name, slug, address )');
+    .select('id, name, restaurant_id, is_open, restaurants ( id, name, slug, address, is_active )');
 
   const matched = outlets?.find((o) => {
-    const rest = o.restaurants as { slug?: string; name?: string } | null;
+    const rest = o.restaurants as { slug?: string; name?: string; is_active?: boolean } | null;
     const restSlug = rest?.slug;
     const outletSlug = o.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
     return restSlug === slug || outletSlug === slug || o.id === slug;
@@ -29,7 +29,10 @@ async function fetchShopBySlug(slug: string): Promise<ShopData | null> {
     .eq('food_outlet_id', matched.id)
     .eq('is_available', true);
 
-  const rest = matched.restaurants as { name?: string } | null;
+  const rest = matched.restaurants as { name?: string; is_active?: boolean } | null;
+  const isStallOpen = matched.is_open ?? true;
+  const isShopActive = rest?.is_active ?? true;
+  const isClosed = !isStallOpen || !isShopActive;
 
   return {
     id: matched.id,
@@ -37,7 +40,7 @@ async function fetchShopBySlug(slug: string): Promise<ShopData | null> {
     restaurantName: rest?.name ?? matched.name,
     name: matched.name,
     eta: '10 min',
-    busy: 'Open',
+    busy: isClosed ? 'Closed' : 'Open',
     description: `${rest?.name ?? 'Hawker Stall'} · Freshly cooked daily`,
     dishes: (dishes ?? []).map((d) => ({
       id: d.id,

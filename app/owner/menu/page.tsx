@@ -112,41 +112,40 @@ export default function OwnerMenuPage() {
     <main className="min-h-screen bg-[#f5f5f7] px-4 pb-32 pt-5 text-[#1d1d1f] sm:px-6">
       <div className="mx-auto w-full max-w-md sm:max-w-xl md:max-w-3xl lg:max-w-5xl">
         <header className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <div>
-              <h1 className="mt-1 text-2xl sm:text-3xl font-bold tracking-tight text-[#1d1d1f]">Menu</h1>
-            </div>
+          <div className="min-w-0">
+            <h1 className="mt-1 text-2xl sm:text-3xl font-bold tracking-tight text-[#1d1d1f] truncate">Menu</h1>
           </div>
           <Link
             href={'/owner/menu/new' as any}
-            className="inline-flex items-center gap-1.5 rounded-full bg-[#111827] px-3.5 sm:px-4 py-2 sm:py-2.5 text-xs font-semibold text-white shadow-xs hover:bg-black transition-colors shrink-0"
+            className="inline-flex h-9 items-center justify-center gap-1.5 rounded-full bg-[#111827] px-4 text-xs font-semibold text-white shadow-xs hover:bg-black transition-colors shrink-0"
             aria-label="Add dish"
+            title="Add dish"
           >
             <Plus className="h-4 w-4" />
             <span className="hidden xs:inline">Add dish</span>
           </Link>
         </header>
 
-        <p className="mt-2 text-xs sm:text-sm text-[#6e6e73]">
+        <p className="mt-2 text-xs sm:text-sm text-[#6e6e73] truncate">
           Turn availability off when a dish is sold out. Customers will see the change immediately.
         </p>
 
         {error ? (
-          <div className="mt-4 rounded-[18px] border border-[#fecaca] bg-[#fff1f2] p-4 text-xs sm:text-sm text-[#9f1239]">
+          <div className="mt-4 rounded-[18px] border border-[#fecaca] bg-[#fff1f2] p-4 text-xs sm:text-sm text-[#9f1239] truncate">
             {error}
           </div>
         ) : null}
 
         <section className="mt-6">
           {isLoading ? (
-            <div className="rounded-[24px] bg-white p-8 text-center text-xs sm:text-sm text-[#6e6e73]">Loading menu...</div>
+            <div className="rounded-[24px] bg-white p-8 text-center text-xs sm:text-sm text-[#6e6e73] truncate">Loading menu...</div>
           ) : null}
 
           {!isLoading && dishes.length === 0 && !error ? (
             <div className="rounded-[24px] bg-white p-8 text-center shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
               <UtensilsCrossed className="mx-auto h-8 w-8 text-[#86868b] mb-3" />
-              <h3 className="text-base font-semibold text-[#1d1d1f]">No dishes on your menu yet</h3>
-              <p className="mt-1 text-xs text-[#6e6e73] max-w-sm mx-auto">
+              <h3 className="text-base font-semibold text-[#1d1d1f] truncate">No dishes on your menu yet</h3>
+              <p className="mt-1 text-xs text-[#6e6e73] max-w-sm mx-auto truncate">
                 {foodOutletIds.length === 0
                   ? 'You have not joined a booth yet. Use an invitation code to link your account, or add a dish below.'
                   : 'Add your first dish to start receiving table-side customer orders.'}
@@ -154,14 +153,14 @@ export default function OwnerMenuPage() {
               <div className="mt-5 flex flex-wrap justify-center gap-3">
                 <Link
                   href={'/owner/menu/new' as any}
-                  className="rounded-full bg-[#111827] px-4 py-2 text-xs font-semibold text-white hover:bg-black transition-colors"
+                  className="inline-flex h-9 items-center rounded-full bg-[#111827] px-4 text-xs font-semibold text-white hover:bg-black transition-colors shadow-xs"
                 >
                   Add your first dish
                 </Link>
                 {foodOutletIds.length === 0 && (
                   <Link
                     href="/booths/join"
-                    className="rounded-full border border-black/15 bg-white px-4 py-2 text-xs font-semibold text-[#1d1d1f] hover:bg-black/[0.04] transition-colors"
+                    className="inline-flex h-9 items-center rounded-full border border-black/15 bg-white px-4 text-xs font-semibold text-[#1d1d1f] hover:bg-black/[0.04] transition-colors shadow-xs"
                   >
                     Join booth with code
                   </Link>
@@ -186,7 +185,7 @@ export default function OwnerMenuPage() {
                   )}
                   <div className="min-w-0">
                     <h2 className="truncate text-base font-semibold">{dish.name}</h2>
-                    <p className="mt-1 text-xs text-[#6e6e73]">
+                    <p className="mt-1 text-xs text-[#6e6e73] truncate">
                       {dish.category} · RM {dish.price.toFixed(2)}
                       {dish.vegetarian ? ' · Vegetarian' : ''}
                     </p>
@@ -194,10 +193,11 @@ export default function OwnerMenuPage() {
                 </Link>
                 <Link
                   href={`/owner/menu/${dish.id}` as any}
-                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#f5f5f7] text-[#1d1d1f] hover:bg-black/[0.06] transition-colors"
+                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-black/10 bg-[#f5f5f7] text-[#1d1d1f] hover:bg-black/5 transition-all shadow-xs"
                   aria-label={`Edit ${dish.name}`}
+                  title={`Edit ${dish.name}`}
                 >
-                  <Edit3 className="h-4 w-4" />
+                  <Edit3 className="h-3.5 w-3.5" />
                 </Link>
                 <button
                   type="button"

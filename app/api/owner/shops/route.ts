@@ -7,7 +7,7 @@ export async function GET(request: NextRequest) {
 
   const { data: memberships, error: membershipsError } = await auth.client
     .from('restaurant_memberships')
-    .select('restaurant_id, role, restaurants(id, name, slug, address, created_at)')
+    .select('restaurant_id, role, restaurants(id, name, slug, address, is_active, status, created_at)')
     .eq('user_id', auth.user.id)
     .order('created_at', { ascending: false });
 
@@ -17,11 +17,11 @@ export async function GET(request: NextRequest) {
 
   const restaurantIds = memberships?.map((membership) => membership.restaurant_id) ?? [];
 
-  let booths: { id: string; restaurant_id: string; name: string; created_at: string }[] = [];
+  let booths: { id: string; restaurant_id: string; name: string; is_open?: boolean; status?: string; created_at: string }[] = [];
   if (restaurantIds.length > 0) {
     const { data, error } = await auth.client
       .from('food_outlets')
-      .select('id, restaurant_id, name, created_at')
+      .select('id, restaurant_id, name, is_open, status, created_at')
       .in('restaurant_id', restaurantIds);
 
     if (error) {
@@ -77,6 +77,8 @@ export async function GET(request: NextRequest) {
     Array<{
       id: string;
       name: string;
+      isOpen: boolean;
+      status: string;
       members: Array<{ userId: string; email: string; role: string; createdAt: string }>;
       invitations: Array<{ id: string; email: string; expiresAt: string; createdAt: string }>;
     }>
@@ -86,6 +88,8 @@ export async function GET(request: NextRequest) {
     existing.push({
       id: booth.id,
       name: booth.name,
+      isOpen: booth.is_open ?? true,
+      status: booth.status ?? (booth.is_open === false ? 'closed' : 'approved'),
       members: membersByBooth.get(booth.id) ?? [],
       invitations: invitationsByBooth.get(booth.id) ?? [],
     });
@@ -95,6 +99,9 @@ export async function GET(request: NextRequest) {
   const shops = (memberships ?? []).map((membership) => {
     const restaurant = Array.isArray(membership.restaurants) ? membership.restaurants[0] : membership.restaurants;
 
+    const isActive = restaurant?.is_active ?? true;
+    const status = restaurant?.status ?? (isActive ? 'approved' : 'suspended');
+
     return {
       id: membership.restaurant_id,
       name: restaurant?.name ?? 'Unknown shop',
@@ -102,7 +109,8 @@ export async function GET(request: NextRequest) {
       address: restaurant?.address ?? null,
       createdAt: restaurant?.created_at ?? null,
       role: membership.role,
-      status: 'approved',
+      isActive,
+      status,
       booths: boothsByRestaurant.get(membership.restaurant_id) ?? [],
     };
   });

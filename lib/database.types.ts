@@ -14,6 +14,8 @@ export type Database = {
           fee_payer: 'CUSTOMER' | 'MERCHANT';
           platform_fee_fixed: number;
           platform_fee_percent: number;
+          is_active?: boolean;
+          status?: string;
           created_at: string;
         };
         Insert: Omit<Database['public']['Tables']['restaurants']['Row'], 'id' | 'created_at' | 'fee_payer' | 'platform_fee_fixed' | 'platform_fee_percent'> & {
@@ -22,6 +24,8 @@ export type Database = {
           fee_payer?: 'CUSTOMER' | 'MERCHANT';
           platform_fee_fixed?: number;
           platform_fee_percent?: number;
+          is_active?: boolean;
+          status?: string;
         };
         Update: Partial<Database['public']['Tables']['restaurants']['Insert']>;
         Relationships: [];
@@ -34,6 +38,8 @@ export type Database = {
           fee_payer: 'CUSTOMER' | 'MERCHANT' | null;
           platform_fee_fixed: number | null;
           platform_fee_percent: number | null;
+          is_open?: boolean;
+          status?: string;
           created_at: string;
         };
         Insert: Omit<Database['public']['Tables']['food_outlets']['Row'], 'id' | 'created_at' | 'fee_payer' | 'platform_fee_fixed' | 'platform_fee_percent'> & {
@@ -42,6 +48,8 @@ export type Database = {
           fee_payer?: 'CUSTOMER' | 'MERCHANT' | null;
           platform_fee_fixed?: number | null;
           platform_fee_percent?: number | null;
+          is_open?: boolean;
+          status?: string;
         };
         Update: Partial<Database['public']['Tables']['food_outlets']['Insert']>;
         Relationships: [];

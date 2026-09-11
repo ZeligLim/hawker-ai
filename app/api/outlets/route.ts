@@ -16,11 +16,13 @@ export async function GET(request: NextRequest) {
       id,
       name,
       restaurant_id,
+      is_open,
       restaurants (
         id,
         name,
         slug,
-        address
+        address,
+        is_active
       ),
       dishes (
         id,

@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Check, Clock3, PackageCheck, AlertCircle, RefreshCw, XCircle, ChevronRight, CheckCircle2 } from 'lucide-react';
+import { Check, Clock3, PackageCheck, AlertCircle, RefreshCw, XCircle, ChevronRight, CheckCircle2, LoaderCircle } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { supabase } from '@/lib/supabase/client';
 
@@ -232,19 +232,23 @@ export default function OwnerOrdersPage() {
   return (
     <main className="min-h-screen bg-[#f5f5f7] px-4 pb-32 pt-6 text-[#1d1d1f] sm:px-6">
       <div className="mx-auto w-full max-w-md sm:max-w-xl md:max-w-3xl lg:max-w-5xl">
-        <header className="flex items-center justify-between">
-          <div>
-            <span className="text-[11px] font-bold uppercase tracking-wider text-[#0071e3]">
+        <header className="flex items-center justify-between gap-3">
+          <div className="min-w-0">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-[#0071e3] truncate block">
               Live Kitchen Ticket Stream
             </span>
-            <h1 className="mt-1 text-2xl sm:text-3xl font-bold tracking-tight text-[#1d1d1f]">Kitchen Tickets</h1>
+            <h1 className="mt-1 text-2xl sm:text-3xl font-bold tracking-tight text-[#1d1d1f] truncate">
+              Kitchen Tickets
+            </h1>
           </div>
           <button
             type="button"
             onClick={() => setRefreshTrigger((c) => c + 1)}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white border border-black/10 text-xs font-semibold text-[#1d1d1f] hover:bg-black/5 shadow-xs transition-colors"
+            title="Refresh tickets"
+            aria-label="Refresh tickets"
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-white border border-black/10 text-[#1d1d1f] hover:bg-black/5 shadow-xs transition-colors shrink-0"
           >
-            <RefreshCw className="w-3.5 h-3.5" /> Refresh
+            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin text-amber-600' : 'text-[#6e6e73]'}`} />
           </button>
         </header>
 
@@ -255,8 +259,8 @@ export default function OwnerOrdersPage() {
               key={option}
               type="button"
               onClick={() => setFilter(option)}
-              className={`rounded-[16px] px-4 py-2.5 text-xs font-bold capitalize transition-all ${
-                filter === option ? 'bg-[#111827] text-white shadow-sm' : 'text-[#6e6e73] hover:text-[#1d1d1f]'
+              className={`inline-flex h-9 items-center justify-center rounded-[16px] px-4 text-xs font-bold capitalize transition-all ${
+                filter === option ? 'bg-[#111827] text-white shadow-xs' : 'text-[#6e6e73] hover:text-[#1d1d1f]'
               }`}
             >
               {option} tickets
@@ -395,11 +399,14 @@ export default function OwnerOrdersPage() {
                                   onClick={() => void handleItemSoldOut(order, item)}
                                   disabled={isRefundingThis}
                                   title="Mark item sold out & trigger customer refund"
-                                  className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-1 rounded-full text-[11px] font-semibold bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 transition-colors disabled:opacity-50"
+                                  aria-label="Mark item sold out & trigger customer refund"
+                                  className="flex h-7 w-7 items-center justify-center rounded-lg bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 transition-colors disabled:opacity-50 shrink-0 shadow-xs"
                                 >
-                                  <XCircle className="h-3 w-3 shrink-0" />
-                                  <span className="hidden sm:inline">{isRefundingThis ? 'Refunding…' : 'Item Sold Out / Refund'}</span>
-                                  <span className="sm:hidden">{isRefundingThis ? 'Refunding…' : 'Refund'}</span>
+                                  {isRefundingThis ? (
+                                    <LoaderCircle className="h-3.5 w-3.5 animate-spin" />
+                                  ) : (
+                                    <XCircle className="h-3.5 w-3.5" />
+                                  )}
                                 </button>
                               ) : null}
                             </div>
@@ -412,17 +419,17 @@ export default function OwnerOrdersPage() {
                   {/* Hawker Earnings Subtotal (Customer Platform Fee OMITTED) */}
                   <div className="mt-4 pt-3.5 border-t border-black/[0.06] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div className="min-w-0">
-                      <p className="text-[11px] font-bold uppercase tracking-wider text-[#86868b]">
+                      <p className="text-[11px] font-bold uppercase tracking-wider text-[#86868b] truncate">
                         Stall Payout (0% Commission)
                       </p>
-                      <p className="text-sm font-bold text-[#1d1d1f]">
+                      <p className="text-sm font-bold text-[#1d1d1f] truncate">
                         STALL TOTAL: RM {order.merchantPayout.toFixed(2)}{' '}
                         <span className="text-[10px] font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
                           [PAID]
                         </span>
                       </p>
                       {hasRefund ? (
-                        <p className="text-[11px] text-rose-600">
+                        <p className="text-[11px] text-rose-600 truncate">
                           (Original: RM {order.stallSubtotal.toFixed(2)} &bull; Refunded: -RM {order.refundAmount.toFixed(2)})
                         </p>
                       ) : null}
@@ -432,7 +439,7 @@ export default function OwnerOrdersPage() {
                       <button
                         type="button"
                         onClick={() => advanceOrder(order.backendId, order.status)}
-                        className="inline-flex items-center justify-center gap-1.5 rounded-full bg-[#111827] px-4 py-2.5 text-xs font-semibold text-white shadow-sm hover:bg-black transition-colors shrink-0"
+                        className="inline-flex h-9 items-center justify-center gap-1.5 rounded-full bg-[#111827] px-4 text-xs font-semibold text-white shadow-xs hover:bg-black transition-colors shrink-0"
                       >
                         {order.status === 'Ready' ? <Check className="h-3.5 w-3.5" /> : <Clock3 className="h-3.5 w-3.5" />}
                         <span>Mark {nextStatus(order.status)}</span>

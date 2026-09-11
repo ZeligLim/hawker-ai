@@ -16,18 +16,22 @@ export default async function ShopPage() {
   if (supabase) {
     const { data: outlets } = await supabase
       .from('food_outlets')
-      .select('id, name, restaurant_id, restaurants(name, slug)');
+      .select('id, name, restaurant_id, is_open, restaurants(name, slug, is_active)');
 
     if (outlets && outlets.length > 0) {
       shops = outlets.map((outlet: any) => {
         const slug = outlet.restaurants?.slug || outlet.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        const isOpen = outlet.is_open ?? true;
+        const isShopActive = outlet.restaurants?.is_active ?? true;
+        const isClosed = !isOpen || !isShopActive;
+
         return {
           id: outlet.id,
           name: outlet.name,
           slug,
           description: `${outlet.restaurants?.name ?? 'Hawker Stall'} · Local specialty`,
           eta: '10 min',
-          busy: 'Open',
+          busy: isClosed ? 'Closed' : 'Open',
         };
       });
     }
@@ -57,8 +61,8 @@ export default async function ShopPage() {
                           .join('')}
                       </div>
                       <div className="min-w-0">
-                        <p className="text-base font-semibold text-[#1d1d1f]">{shop.name}</p>
-                        <p className="mt-0.5 text-xs text-[#6e6e73]">{shop.description}</p>
+                        <p className="text-base font-semibold text-[#1d1d1f] truncate">{shop.name}</p>
+                        <p className="mt-0.5 text-xs text-[#6e6e73] truncate">{shop.description}</p>
                       </div>
                     </div>
 

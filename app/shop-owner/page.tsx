@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   BarChart3,
   Building2,
@@ -9,6 +9,7 @@ import {
   ChevronRight,
   LoaderCircle,
   Plus,
+  Power,
   ShieldCheck,
   Store,
   Users,
@@ -33,38 +34,77 @@ type ShopMembership = {
   slug: string | null;
   address: string | null;
   role: string;
+  isActive?: boolean;
+  status?: string;
   booths: Array<{
     id: string;
     name: string;
+    status: string;
+    isOpen?: boolean;
     members?: BoothMember[];
     invitations?: BoothInvitation[];
   }>;
 };
 
-export default function ShopOwnerPage() {
+export default function ShopOwnerDashboard() {
   const [shops, setShops] = useState<ShopMembership[]>([]);
   const [loading, setLoading] = useState(true);
+  const [togglingShopId, setTogglingShopId] = useState<string | null>(null);
+
+  const loadShops = useCallback(async () => {
+    try {
+      const response = await authenticatedFetch('/api/owner/shops');
+      if (!response.ok) {
+        setShops([]);
+        return;
+      }
+
+      const payload = (await response.json()) as { shops?: ShopMembership[] };
+      setShops(payload.shops ?? []);
+    } catch {
+      setShops([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    const loadShops = async () => {
-      try {
-        const response = await authenticatedFetch('/api/owner/shops');
-        if (!response.ok) {
-          setShops([]);
-          return;
-        }
+    const timeoutId = window.setTimeout(() => {
+      void loadShops();
+    }, 0);
 
-        const payload = (await response.json()) as { shops?: ShopMembership[] };
-        setShops(payload.shops ?? []);
-      } catch {
-        setShops([]);
-      } finally {
-        setLoading(false);
+    return () => window.clearTimeout(timeoutId);
+  }, [loadShops]);
+
+  const handleToggleShopActive = async (shopId: string, currentIsActive: boolean) => {
+    const nextActive = !currentIsActive;
+    setTogglingShopId(shopId);
+
+    // Optimistic UI update
+    setShops((prev) =>
+      prev.map((s) => (s.id === shopId ? { ...s, isActive: nextActive } : s))
+    );
+
+    try {
+      const res = await authenticatedFetch(`/api/owner/shops/${shopId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ is_active: nextActive }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error ?? 'Failed to update shop status');
       }
-    };
-
-    void loadShops();
-  }, []);
+      await loadShops();
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Failed to update shop status');
+      setShops((prev) =>
+        prev.map((s) => (s.id === shopId ? { ...s, isActive: currentIsActive } : s))
+      );
+    } finally {
+      setTogglingShopId(null);
+    }
+  };
 
   const totalBooths = shops.reduce((sum, shop) => sum + shop.booths.length, 0);
   const activeVendorsCount = shops.reduce(
@@ -82,23 +122,23 @@ export default function ShopOwnerPage() {
       <div className="mx-auto max-w-7xl">
         {/* Top Header */}
         <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
+          <div className="min-w-0">
             <div className="inline-flex items-center gap-1.5 rounded-full bg-black/5 px-2.5 py-0.5 text-[11px] font-semibold text-[#1d1d1f] mb-1.5">
               <Building2 className="w-3.5 h-3.5" />
               <span>Food Hall Operations</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-semibold tracking-[-0.035em] text-[#1d1d1f]">
+            <h1 className="text-2xl sm:text-3xl font-semibold tracking-[-0.035em] text-[#1d1d1f] truncate">
               {shops[0]?.name ? `${shops[0].name} Overview` : 'Venue Command Center'}
             </h1>
-            <p className="mt-1 text-xs sm:text-sm text-[#6e6e73]">
+            <p className="mt-1 text-xs sm:text-sm text-[#6e6e73] truncate">
               Manage stall allocations, dispatch vendor invitation links, and inspect food hall performance.
             </p>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0">
             <Link
               href={'/shop-owner/booths' as any}
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-[#111827] px-4 py-2.5 text-xs font-semibold text-white hover:bg-black transition-all shadow-sm shrink-0"
+              className="inline-flex h-9 items-center justify-center gap-1.5 rounded-full bg-[#111827] px-4 text-xs font-semibold text-white hover:bg-black transition-all shadow-xs shrink-0"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>Add Booth Slot</span>
@@ -210,34 +250,62 @@ export default function ShopOwnerPage() {
                       key={shop.id}
                       className="rounded-2xl bg-[#f5f5f7]/80 border border-black/[0.04] p-4 sm:p-5"
                     >
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-3 border-b border-black/[0.06]">
-                        <div className="flex items-center gap-3">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-black/[0.06]">
+                        <div className="flex items-center gap-3 min-w-0">
                           <div className="w-9 h-9 rounded-xl bg-[#111827] text-white flex items-center justify-center font-bold text-sm shadow-xs shrink-0">
                             {shop.name.charAt(0).toUpperCase()}
                           </div>
-                          <div>
-                            <h3 className="text-sm sm:text-base font-semibold text-[#1d1d1f]">
+                          <div className="min-w-0">
+                            <h3 className="text-sm sm:text-base font-semibold text-[#1d1d1f] truncate">
                               {shop.name}
                             </h3>
-                            <p className="text-[11px] text-[#6e6e73]">
+                            <p className="text-[11px] text-[#6e6e73] truncate">
                               {shop.address || 'Central Food Court'} &bull; {shop.booths.length} configured slots
                             </p>
                           </div>
                         </div>
 
-                        <span className="self-start sm:self-auto inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-700 border border-emerald-200">
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                          Live Operations
-                        </span>
+                        <div className="flex items-center gap-2 shrink-0 self-start sm:self-auto">
+                          <span
+                            className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-semibold border ${
+                              shop.isActive !== false
+                                ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                                : 'bg-zinc-100 text-zinc-600 border-zinc-200'
+                            }`}
+                          >
+                            <span
+                              className={`w-1.5 h-1.5 rounded-full ${
+                                shop.isActive !== false ? 'bg-emerald-500 animate-pulse' : 'bg-zinc-400'
+                              }`}
+                            />
+                            {shop.isActive !== false ? 'Active' : 'Inactive'}
+                          </span>
+
+                          <button
+                            type="button"
+                            disabled={togglingShopId === shop.id}
+                            onClick={() => handleToggleShopActive(shop.id, shop.isActive !== false)}
+                            title={shop.isActive !== false ? 'Put shop as inactive' : 'Set shop as active'}
+                            aria-label={shop.isActive !== false ? 'Put shop as inactive' : 'Set shop as active'}
+                            className={`flex h-8 items-center justify-center gap-1.5 rounded-xl border px-2.5 text-xs font-semibold transition-all shadow-xs disabled:opacity-50 shrink-0 ${
+                              shop.isActive !== false
+                                ? 'border-amber-200 bg-amber-50/80 text-amber-700 hover:bg-amber-100'
+                                : 'border-emerald-200 bg-emerald-50/80 text-emerald-700 hover:bg-emerald-100'
+                            }`}
+                          >
+                            <Power className="w-3.5 h-3.5" />
+                            <span>{shop.isActive !== false ? 'Put Inactive' : 'Activate'}</span>
+                          </button>
+                        </div>
                       </div>
 
                       {/* Stall Slots List */}
                       <div className="mt-3.5">
-                        <p className="text-[11px] font-semibold uppercase tracking-wider text-[#86868b] mb-2">
+                        <p className="text-[11px] font-semibold uppercase tracking-wider text-[#86868b] mb-2 truncate">
                           Stall Slots
                         </p>
                         {shop.booths.length === 0 ? (
-                          <div className="rounded-xl bg-white p-3 text-center text-xs text-[#86868b]">
+                          <div className="rounded-xl bg-white p-3 text-center text-xs text-[#86868b] truncate">
                             No stall slots created yet. Click below to add your first stall counter.
                           </div>
                         ) : (
@@ -269,11 +337,11 @@ export default function ShopOwnerPage() {
                                     </span>
                                     <Link
                                       href={`/shop-owner/analytics?boothId=${booth.id}`}
-                                      className="inline-flex items-center gap-1 rounded-full border border-black/10 bg-[#f5f5f7] px-2 py-0.5 text-[10px] font-semibold text-[#1d1d1f] hover:bg-black/5 transition-all"
+                                      className="flex h-8 w-8 items-center justify-center rounded-xl border border-black/10 bg-[#f5f5f7] text-[#1d1d1f] hover:bg-black/5 transition-all shrink-0 shadow-xs"
                                       title={`View analytics for ${booth.name}`}
+                                      aria-label={`View analytics for ${booth.name}`}
                                     >
-                                      <BarChart3 className="w-3 h-3 text-[#111827]" />
-                                      <span>Analytics</span>
+                                      <BarChart3 className="w-4 h-4 text-[#111827]" />
                                     </Link>
                                   </div>
                                 </div>
@@ -295,7 +363,7 @@ export default function ShopOwnerPage() {
               <h2 className="text-base sm:text-lg font-semibold tracking-tight text-[#1d1d1f]">
                 Quick Operations
               </h2>
-              <p className="text-xs text-[#6e6e73] mt-0.5">
+              <p className="text-xs text-[#6e6e73] mt-0.5 truncate">
                 Direct shortcuts for food hall operators.
               </p>
 
@@ -304,54 +372,54 @@ export default function ShopOwnerPage() {
                   href={'/shop-owner/booths' as any}
                   className="group flex items-center justify-between rounded-2xl bg-[#f5f5f7] p-3.5 hover:bg-black/5 transition-all border border-black/[0.02]"
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-xl bg-[#111827] text-white flex items-center justify-center shadow-xs">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-8 h-8 rounded-xl bg-[#111827] text-white flex items-center justify-center shadow-xs shrink-0">
                       <Store className="w-4 h-4" />
                     </div>
-                    <div>
-                      <p className="text-xs font-semibold text-[#1d1d1f] group-hover:text-black">
+                    <div className="min-w-0">
+                      <p className="text-xs font-semibold text-[#1d1d1f] group-hover:text-black truncate">
                         Manage Booths & Invites
                       </p>
-                      <p className="text-[11px] text-[#86868b]">Send setup links to vendors</p>
+                      <p className="text-[11px] text-[#86868b] truncate">Send setup links to vendors</p>
                     </div>
                   </div>
-                  <ChevronRight className="w-4 h-4 text-[#86868b] group-hover:translate-x-0.5 transition-transform" />
+                  <ChevronRight className="w-4 h-4 text-[#86868b] group-hover:translate-x-0.5 transition-transform shrink-0" />
                 </Link>
 
                 <Link
                   href={'/shop-owner/analytics' as any}
                   className="group flex items-center justify-between rounded-2xl bg-[#f5f5f7] p-3.5 hover:bg-black/5 transition-all border border-black/[0.02]"
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-xl bg-[#111827] text-white flex items-center justify-center shadow-xs">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-8 h-8 rounded-xl bg-[#111827] text-white flex items-center justify-center shadow-xs shrink-0">
                       <CalendarRange className="w-4 h-4" />
                     </div>
-                    <div>
-                      <p className="text-xs font-semibold text-[#1d1d1f] group-hover:text-black">
+                    <div className="min-w-0">
+                      <p className="text-xs font-semibold text-[#1d1d1f] group-hover:text-black truncate">
                         Venue Analytics
                       </p>
-                      <p className="text-[11px] text-[#86868b]">Sales volume & ticket metrics</p>
+                      <p className="text-[11px] text-[#86868b] truncate">Sales volume & ticket metrics</p>
                     </div>
                   </div>
-                  <ChevronRight className="w-4 h-4 text-[#86868b] group-hover:translate-x-0.5 transition-transform" />
+                  <ChevronRight className="w-4 h-4 text-[#86868b] group-hover:translate-x-0.5 transition-transform shrink-0" />
                 </Link>
 
                 <Link
                   href={'/shop-owner/profile' as any}
                   className="group flex items-center justify-between rounded-2xl bg-[#f5f5f7] p-3.5 hover:bg-black/5 transition-all border border-black/[0.02]"
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-xl bg-[#111827] text-white flex items-center justify-center shadow-xs">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-8 h-8 rounded-xl bg-[#111827] text-white flex items-center justify-center shadow-xs shrink-0">
                       <Building2 className="w-4 h-4" />
                     </div>
-                    <div>
-                      <p className="text-xs font-semibold text-[#1d1d1f] group-hover:text-black">
+                    <div className="min-w-0">
+                      <p className="text-xs font-semibold text-[#1d1d1f] group-hover:text-black truncate">
                         Food Hall Settings
                       </p>
-                      <p className="text-[11px] text-[#86868b]">Venue details and addresses</p>
+                      <p className="text-[11px] text-[#86868b] truncate">Venue details and addresses</p>
                     </div>
                   </div>
-                  <ChevronRight className="w-4 h-4 text-[#86868b] group-hover:translate-x-0.5 transition-transform" />
+                  <ChevronRight className="w-4 h-4 text-[#86868b] group-hover:translate-x-0.5 transition-transform shrink-0" />
                 </Link>
               </div>
             </div>
@@ -359,11 +427,11 @@ export default function ShopOwnerPage() {
             {/* Operator Safety Notice */}
             <div className="rounded-[24px] bg-[#111827] text-white p-5 shadow-xs">
               <div className="flex items-center gap-2 text-xs font-semibold text-emerald-400">
-                <ShieldCheck className="w-4 h-4" />
+                <ShieldCheck className="w-4 h-4 shrink-0" />
                 <span>Isolated Merchant Security</span>
               </div>
-              <p className="mt-2 text-xs text-white/80 leading-relaxed">
-                Each stall vendor operates independently. Once claimed, vendors manage their own live orders, menu pricing, and kitchen tickets without seeing other stalls&apos; financials.
+              <p className="mt-2 text-xs text-white/80 leading-relaxed truncate">
+                Each stall vendor operates independently with isolated permissions.
               </p>
             </div>
           </div>

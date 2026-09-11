@@ -1,10 +1,39 @@
 # Current Project Context
 
 ## Current Phase
-Phase 12: Safari Extension Error Isolation & Turbopack Dev Overlay Immunity
+Phase 13: Shop Inactive Toggle, Booth Closed Toggle, Button Standardization & Single-Line Descriptions
 
 ## Current Feature
-1. **Safari WebKit AdBlock `e.useCache` Error Isolation**:
+1. **Shop Inactive Toggle & Booth Closed Toggle**:
+   - **Database Migration (`supabase/migrations/015_shop_active_and_booth_open.sql`)**:
+     - Added `is_active BOOLEAN NOT NULL DEFAULT true` to `restaurants` with index `idx_restaurants_is_active`.
+     - Added `is_open BOOLEAN NOT NULL DEFAULT true` to `food_outlets` with index `idx_food_outlets_is_open`.
+     - Added RLS policy `Stall members can update own booth open status` on `food_outlets` allowing stall operators in `merchant_memberships` to toggle `is_open`.
+     - Pushed migration directly to remote Supabase DB using `npx supabase db push`.
+   - **Backend API Routes**:
+     - `app/api/owner/shops/[id]/route.ts`: Supports partial PATCH for `is_active` and `status` ('approved' vs 'suspended').
+     - `app/api/owner/shops/route.ts`: Returns `isActive` and `isOpen` in payload.
+     - `app/api/owner/booths/[id]/route.ts`: Supports PATCH for `is_open` and `status` ('approved' vs 'closed') with access control for stall merchants and food hall operators.
+     - `app/api/user/roles/route.ts`: Returns `isActive` on shops and `isOpen` on booths.
+     - `lib/hawker-centres/service.ts` & `app/api/outlets/route.ts`: Expose `is_active` and `is_open` to customer listings and queries.
+   - **Customer App Closed & Inactive State Enforcement**:
+     - `app/shop/[slug]/page.tsx`: Computes `isClosed = !isStallOpen || !isShopActive`. Sets `busy: 'Closed'` which displays the closed banner and disables adding items to the cart.
+     - Customer directory pages check `is_open` and show closed states.
+   - **Shop Owner & Booth Owner Controls**:
+     - `app/shop-owner/page.tsx` & `app/shop-owner/booths/page.tsx`: Added Active/Inactive toggle in header and booth cards.
+     - `app/owner/page.tsx`: Added booth owner Stall Open / Closed toggle button (`h-9`) with `Power` icon.
+
+2. **Button Size Standardization & Logo-Only Space Saving**:
+   - Primary action buttons: standardized to uniform `h-9` height across owner, shop-owner, menu, orders, and booths pages.
+   - Action icon buttons: standardized to uniform `h-8 w-8` icon buttons on booth cards, shop cards, dish edit cards, etc.
+   - Item / list actions: standardized to uniform `h-7 w-7` icon buttons (sold out refund, revoke member, copy link, remove invite).
+   - Refresh buttons: standardized to uniform `h-9 w-9` icon-only buttons with `RefreshCw` and accessible `title`/`aria-label`.
+   - Used logo-only buttons where possible to save valuable horizontal space on mobile devices.
+
+3. **Single-Line Description Rule**:
+   - Added single-line truncation (`truncate`) across shop, stall, booth, and dish descriptions, card subheadings, and headers across `components/shop-detail-client.tsx`, `components/home-page.tsx`, `app/shop/page.tsx`, `app/shop/[slug]/page.tsx`, `app/shop-owner/page.tsx`, `app/shop-owner/booths/page.tsx`, `app/owner/page.tsx`, `app/owner/menu/page.tsx`, and `app/owner/orders/page.tsx`.
+
+4. **Safari WebKit AdBlock `e.useCache` Error Isolation**:
    - **Root Cause Analysis**:
      - Stack trace `undefined is not an object (evaluating 'e.useCache') at he (webkit-masked-url://hidden/:18:81058)` is caused by Safari's installed AdBlock extension (`/Applications/AdBlock.app/Contents/PlugIns/AdblockPlusSafari Extension.appex/Contents/Resources/ewe-content.js`).
      - Line 18, Column 81058 in `ewe-content.js` defines `function he(e)` which accesses `e.useCache` without null/undefined guards.

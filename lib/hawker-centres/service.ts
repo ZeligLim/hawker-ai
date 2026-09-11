@@ -5,6 +5,7 @@ export interface HawkerCentreStall {
   id: string;
   name: string;
   dishCount: number;
+  isOpen?: boolean;
 }
 
 export interface HawkerCentreSummary {
@@ -14,6 +15,7 @@ export interface HawkerCentreSummary {
   address: string;
   lat: number | null;
   lng: number | null;
+  isActive?: boolean;
   stallsCount: number;
   activeStallsCount: number;
   dishesCount: number;
@@ -45,7 +47,7 @@ export async function fetchHawkerCentres(options?: {
 
   let query = supabase
     .from('restaurants')
-    .select('id, name, slug, address, lat, lng, created_at')
+    .select('id, name, slug, address, lat, lng, is_active, created_at')
     .order('name');
 
   if (options?.slug) {
@@ -62,7 +64,7 @@ export async function fetchHawkerCentres(options?: {
   // Fetch stalls / food outlets
   const { data: outlets } = await supabase
     .from('food_outlets')
-    .select('id, name, restaurant_id, created_at')
+    .select('id, name, restaurant_id, is_open, created_at')
     .in('restaurant_id', restaurantIds);
 
   const outletIds = (outlets ?? []).map((o) => o.id);
@@ -105,6 +107,7 @@ export async function fetchHawkerCentres(options?: {
         id: o.id,
         name: o.name,
         dishCount: stallDishes.length,
+        isOpen: (o as any).is_open ?? true,
       });
     });
 
@@ -141,6 +144,7 @@ export async function fetchHawkerCentres(options?: {
       address: r.address || 'Kuala Lumpur, Malaysia',
       lat: r.lat ? Number(r.lat) : null,
       lng: r.lng ? Number(r.lng) : null,
+      isActive: (r as any).is_active ?? true,
       stallsCount: venueOutlets.length,
       activeStallsCount: Math.max(activeStallsCount, 1),
       dishesCount: venueDishes.length,

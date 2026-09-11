@@ -12,6 +12,7 @@ import {
   ChefHat,
   ArrowRight,
   TrendingUp,
+  Power,
 } from 'lucide-react';
 import { useAuth } from '@/components/auth-provider';
 import { useEffect, useState, useMemo, useCallback } from 'react';
@@ -64,10 +65,45 @@ export default function StallOverviewPage() {
   const [dishes, setDishes] = useState<LiveDish[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isOpenOverride, setIsOpenOverride] = useState<boolean | null>(null);
+  const [isTogglingOpen, setIsTogglingOpen] = useState(false);
   const [error, setError] = useState('');
 
   const stallName = roles.booths?.[0]?.name || 'Stall';
   const venueName = roles.shops?.[0]?.name;
+  const isOpen = isOpenOverride ?? (roles.booths?.[0]?.isOpen !== false);
+
+  const handleToggleStallOpen = async () => {
+    const boothId = roles.booths?.[0]?.id;
+    if (!boothId) return;
+
+    const nextOpen = !isOpen;
+    setIsOpenOverride(nextOpen);
+    setIsTogglingOpen(true);
+
+    try {
+      if (!supabase) return;
+      const session = (await supabase.auth.getSession())?.data?.session;
+      const token = session?.access_token;
+      const res = await fetch(`/api/owner/booths/${boothId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ is_open: nextOpen }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error ?? 'Failed to update stall status');
+      }
+    } catch (err) {
+      setIsOpenOverride(!nextOpen);
+      setError(err instanceof Error ? err.message : 'Failed to update stall status');
+    } finally {
+      setIsTogglingOpen(false);
+    }
+  };
 
   const handleManualRefresh = async () => {
     setIsRefreshing(true);
@@ -255,28 +291,49 @@ export default function StallOverviewPage() {
       <div className="mx-auto w-full max-w-md sm:max-w-xl md:max-w-3xl lg:max-w-5xl">
         {/* Stall Header */}
         <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
+          <div className="min-w-0">
             <div className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 px-2.5 py-0.5 text-[11px] font-semibold text-amber-800 mb-1.5">
-              <Store className="h-3 w-3" />
-              <span>{stallName}{venueName ? ` • ${venueName}` : ''}</span>
+              <Store className="h-3 w-3 shrink-0" />
+              <span className="truncate">{stallName}{venueName ? ` • ${venueName}` : ''}</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-semibold tracking-[-0.035em] text-[#1d1d1f]">
+            <h1 className="text-2xl sm:text-3xl font-semibold tracking-[-0.035em] text-[#1d1d1f] truncate">
               Stall Overview
             </h1>
-            <p className="mt-1 text-xs sm:text-sm text-[#6e6e73]">
+            <p className="mt-1 text-xs sm:text-sm text-[#6e6e73] truncate">
               Live kitchen metrics, ticket queue, and menu status linked directly to your database.
             </p>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0">
+            {roles.booths?.[0]?.id && (
+              <button
+                type="button"
+                onClick={() => void handleToggleStallOpen()}
+                disabled={isTogglingOpen}
+                title={isOpen ? 'Set stall as closed' : 'Set stall as open'}
+                aria-label={isOpen ? 'Set stall as closed' : 'Set stall as open'}
+                className={`inline-flex h-9 items-center justify-center gap-1.5 rounded-full border px-3 text-xs font-semibold transition-all shadow-xs disabled:opacity-50 shrink-0 ${
+                  isOpen
+                    ? 'border-emerald-200 bg-emerald-50/80 text-emerald-700 hover:bg-emerald-100'
+                    : 'border-zinc-200 bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
+                }`}
+              >
+                <Power className={`h-3.5 w-3.5 ${isOpen ? 'text-emerald-600' : 'text-zinc-500'}`} />
+                <span>{isOpen ? 'Stall Open' : 'Stall Closed'}</span>
+              </button>
+            )}
+
             <button
               type="button"
               onClick={() => void handleManualRefresh()}
               disabled={isRefreshing || isLoading}
-              className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-[#1d1d1f] shadow-xs border border-black/5 hover:bg-black/[0.03] transition-all disabled:opacity-50"
+              title="Refresh stall data"
+              aria-label="Refresh stall data"
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-[#1d1d1f] shadow-xs border border-black/5 hover:bg-black/[0.03] transition-all disabled:opacity-50 shrink-0"
             >
-              <RefreshCw className={`h-3.5 w-3.5 ${isRefreshing ? 'animate-spin text-amber-600' : 'text-[#6e6e73]'}`} />
-              <span>{isRefreshing ? 'Syncing...' : 'Refresh'}</span>
+              <RefreshCw
+                className={`h-4 w-4 ${isRefreshing ? 'animate-spin text-amber-600' : 'text-[#6e6e73]'}`}
+              />
             </button>
           </div>
         </header>
@@ -284,7 +341,7 @@ export default function StallOverviewPage() {
         {error && (
           <div className="mt-4 flex items-center gap-2 rounded-2xl bg-amber-50 p-3 text-xs text-amber-800 border border-amber-200">
             <AlertCircle className="h-4 w-4 shrink-0 text-amber-600" />
-            <span>{error}</span>
+            <span className="truncate">{error}</span>
           </div>
         )}
 
@@ -295,7 +352,7 @@ export default function StallOverviewPage() {
               key={stat.label}
               className="rounded-[24px] bg-white p-4 sm:p-5 shadow-[0_12px_26px_rgba(15,23,42,0.04)] border border-black/[0.04]"
             >
-              <p className="text-xs sm:text-sm font-medium text-[#6e6e73]">{stat.label}</p>
+              <p className="text-xs sm:text-sm font-medium text-[#6e6e73] truncate">{stat.label}</p>
               <p className="mt-2 text-2xl sm:text-3xl font-semibold tracking-[-0.05em] text-[#1d1d1f]">
                 {isLoading ? (
                   <span className="inline-block h-8 w-20 animate-pulse rounded bg-black/5" />
@@ -303,7 +360,7 @@ export default function StallOverviewPage() {
                   stat.value
                 )}
               </p>
-              <p className="mt-1 text-[11px] sm:text-xs text-[#6e6e73]">
+              <p className="mt-1 text-[11px] sm:text-xs text-[#6e6e73] truncate">
                 {isLoading ? 'Loading metrics...' : stat.detail}
               </p>
             </div>
@@ -316,11 +373,11 @@ export default function StallOverviewPage() {
           <div className="rounded-[26px] bg-white p-5 sm:p-6 shadow-[0_12px_26px_rgba(15,23,42,0.04)] border border-black/[0.04] flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between gap-3">
-                <div>
-                  <h2 className="text-lg sm:text-xl font-semibold tracking-[-0.03em] text-[#1d1d1f]">
+                <div className="min-w-0">
+                  <h2 className="text-lg sm:text-xl font-semibold tracking-[-0.03em] text-[#1d1d1f] truncate">
                     Kitchen Station
                   </h2>
-                  <p className="mt-0.5 text-xs sm:text-sm text-[#6e6e73]">
+                  <p className="mt-0.5 text-xs sm:text-sm text-[#6e6e73] truncate">
                     Fulfill incoming table tickets and adjust real-time dish availability.
                   </p>
                 </div>
@@ -334,13 +391,13 @@ export default function StallOverviewPage() {
                   href="/owner/orders"
                   className="group rounded-[20px] bg-[#111827] p-4 text-white hover:bg-black transition-all flex flex-col justify-between"
                 >
-                  <div>
+                  <div className="min-w-0">
                     <div className="flex items-center justify-between">
                       <ClipboardList className="h-5 w-5 text-amber-400" />
                       <ArrowRight className="h-4 w-4 text-white/50 group-hover:translate-x-0.5 transition-transform" />
                     </div>
-                    <p className="mt-3 text-sm font-semibold">Kitchen Display (KDS)</p>
-                    <p className="mt-0.5 text-xs text-white/70">
+                    <p className="mt-3 text-sm font-semibold truncate">Kitchen Display (KDS)</p>
+                    <p className="mt-0.5 text-xs text-white/70 truncate">
                       {activeOrdersCount > 0
                         ? `${activeOrdersCount} order${activeOrdersCount === 1 ? '' : 's'} need attention`
                         : 'No orders waiting'}
@@ -358,13 +415,13 @@ export default function StallOverviewPage() {
                   href="/owner/menu"
                   className="group rounded-[20px] bg-[#f5f5f7] p-4 text-[#1d1d1f] hover:bg-[#ebebeb] transition-all flex flex-col justify-between border border-black/5"
                 >
-                  <div>
+                  <div className="min-w-0">
                     <div className="flex items-center justify-between">
                       <UtensilsCrossed className="h-5 w-5 text-[#1d1d1f]" />
                       <ArrowRight className="h-4 w-4 text-black/40 group-hover:translate-x-0.5 transition-transform" />
                     </div>
-                    <p className="mt-3 text-sm font-semibold">Stall Menu</p>
-                    <p className="mt-0.5 text-xs text-[#6e6e73]">
+                    <p className="mt-3 text-sm font-semibold truncate">Stall Menu</p>
+                    <p className="mt-0.5 text-xs text-[#6e6e73] truncate">
                       {dishes.length > 0 ? `${dishes.length} dishes in menu` : 'Add first dish'}
                     </p>
                   </div>

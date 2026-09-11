@@ -98,7 +98,7 @@ export function ShopDetailClient({ shop, slug }: { shop: ShopData; slug: string 
                 <h1 className="text-xl sm:text-3xl font-bold tracking-tight text-[#1d1d1f] truncate">
                   {shop.name}
                 </h1>
-                <p className="mt-0.5 sm:mt-1 text-xs sm:text-sm text-[#6e6e73] line-clamp-2">
+                <p className="mt-0.5 sm:mt-1 text-xs sm:text-sm text-[#6e6e73] truncate">
                   {shop.description}
                 </p>
               </div>

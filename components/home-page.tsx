@@ -354,8 +354,8 @@ export function HomePage() {
                               .join('')}
                           </div>
                           <div className="min-w-0">
-                            <p className="text-base font-semibold text-[#1d1d1f]">{stall.name}</p>
-                            <p className="mt-0.5 text-xs text-[#6e6e73]">{stall.description}</p>
+                            <p className="text-base font-semibold text-[#1d1d1f] truncate">{stall.name}</p>
+                            <p className="mt-0.5 text-xs text-[#6e6e73] truncate">{stall.description}</p>
                           </div>
                         </div>
 
