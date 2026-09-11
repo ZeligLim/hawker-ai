@@ -65,13 +65,30 @@ export async function GET(request: NextRequest) {
   if (restaurantId) {
     results = results.filter((o: any) => o.restaurant_id === restaurantId);
   } else if (targetSlug) {
-    results = results.filter((outlet: any) => {
-      const restSlug = outlet.restaurants?.slug?.toLowerCase();
-      const restName = outlet.restaurants?.name?.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    const s = decodeURIComponent(targetSlug).toLowerCase().trim();
+    const sNorm = s.replace(/[^a-z0-9]/g, '');
+
+    const matchedOutlets = results.filter((outlet: any) => {
+      const restSlug = outlet.restaurants?.slug?.toLowerCase() ?? '';
+      const restSlugNorm = restSlug.replace(/[^a-z0-9]/g, '');
+      const restName = outlet.restaurants?.name?.toLowerCase() ?? '';
+      const restNameNorm = restName.replace(/[^a-z0-9]/g, '');
       const outletSlug = outlet.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-      const s = targetSlug.toLowerCase();
-      return restSlug === s || restName === s || outletSlug === s || outlet.restaurant_id === s;
+
+      return (
+        restSlug === s ||
+        restSlugNorm === sNorm ||
+        restNameNorm === sNorm ||
+        (sNorm.length >= 3 && (restSlugNorm.includes(sNorm) || sNorm.includes(restSlugNorm))) ||
+        (sNorm.length >= 3 && (restNameNorm.includes(sNorm) || sNorm.includes(restNameNorm))) ||
+        outletSlug === s ||
+        outlet.restaurant_id === s
+      );
     });
+
+    if (matchedOutlets.length > 0) {
+      results = matchedOutlets;
+    }
   } else if (results.length > 0) {
     // If no centre parameter or subdomain is specified, isolate to the first/active hawker centre
     // so stalls from different food courts are never mixed in the same customer app domain

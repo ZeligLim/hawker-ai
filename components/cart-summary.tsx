@@ -5,6 +5,7 @@ export function CartSummary({
   subtotal,
   serviceFee,
   total,
+  feeLabel,
   onUpdateQuantity,
   onRemoveItem,
   onCheckout,
@@ -13,6 +14,7 @@ export function CartSummary({
   subtotal: number;
   serviceFee: number;
   total: number;
+  feeLabel?: string;
   onUpdateQuantity: (itemId: string, quantity: number) => void;
   onRemoveItem: (itemId: string) => void;
   onCheckout: () => void;
@@ -85,7 +87,7 @@ export function CartSummary({
           <span>RM {subtotal.toFixed(2)}</span>
         </div>
         <div className="flex items-center justify-between">
-          <span>Service fee</span>
+          <span>{feeLabel ?? 'Service fee'}</span>
           <span>RM {serviceFee.toFixed(2)}</span>
         </div>
         <div className="flex items-center justify-between text-base font-semibold text-[#1d1d1f]">

@@ -37,7 +37,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
   const { data: restaurant, error: restaurantError } = await auth.client
     .from('restaurants')
-    .select('id, name, slug, address, lat, lng, is_active, status, created_at')
+    .select('id, name, slug, address, lat, lng, is_active, status, fee_payer, platform_fee_fixed, platform_fee_percent, created_at')
     .eq('id', id)
     .maybeSingle();
 
@@ -50,6 +50,9 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       ...restaurant,
       is_active: restaurant.is_active ?? true,
       status: restaurant.status ?? (restaurant.is_active === false ? 'suspended' : 'approved'),
+      fee_payer: (restaurant.fee_payer ?? 'CUSTOMER') as 'CUSTOMER' | 'MERCHANT',
+      platform_fee_fixed: Number(restaurant.platform_fee_fixed ?? 0.50),
+      platform_fee_percent: Number(restaurant.platform_fee_percent ?? 0.0000),
     },
     role: membership.role,
   });
@@ -81,6 +84,9 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     address?: string;
     lat?: number;
     lng?: number;
+    fee_payer?: 'CUSTOMER' | 'MERCHANT';
+    platform_fee_fixed?: number;
+    platform_fee_percent?: number;
   } = {};
 
   if (typeof body.is_active === 'boolean') {
@@ -111,6 +117,18 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
   if (typeof body.lat === 'number') update.lat = body.lat;
   if (typeof body.lng === 'number') update.lng = body.lng;
 
+  if (typeof body.fee_payer === 'string' && ['CUSTOMER', 'MERCHANT'].includes(body.fee_payer)) {
+    update.fee_payer = body.fee_payer as 'CUSTOMER' | 'MERCHANT';
+  }
+
+  if (typeof body.platform_fee_fixed === 'number' && !isNaN(body.platform_fee_fixed) && body.platform_fee_fixed >= 0) {
+    update.platform_fee_fixed = Number(body.platform_fee_fixed.toFixed(2));
+  }
+
+  if (typeof body.platform_fee_percent === 'number' && !isNaN(body.platform_fee_percent) && body.platform_fee_percent >= 0 && body.platform_fee_percent <= 1) {
+    update.platform_fee_percent = Number(body.platform_fee_percent.toFixed(4));
+  }
+
   if (Object.keys(update).length === 0) {
     return NextResponse.json({ error: 'No fields provided for update.' }, { status: 400 });
   }
@@ -119,7 +137,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     .from('restaurants')
     .update(update)
     .eq('id', id)
-    .select('id, name, slug, address, lat, lng, is_active, status, created_at')
+    .select('id, name, slug, address, lat, lng, is_active, status, fee_payer, platform_fee_fixed, platform_fee_percent, created_at')
     .maybeSingle();
 
   if (updateError || !restaurant) {
@@ -131,6 +149,9 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
       ...restaurant,
       is_active: restaurant.is_active ?? true,
       status: restaurant.status ?? (restaurant.is_active === false ? 'suspended' : 'approved'),
+      fee_payer: (restaurant.fee_payer ?? 'CUSTOMER') as 'CUSTOMER' | 'MERCHANT',
+      platform_fee_fixed: Number(restaurant.platform_fee_fixed ?? 0.50),
+      platform_fee_percent: Number(restaurant.platform_fee_percent ?? 0.0000),
     },
     role: membership.role,
     status: 'updated',

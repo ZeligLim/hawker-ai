@@ -1,0 +1,343 @@
+'use client';
+
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import Link from 'next/link';
+import { ArrowRight, Locate, Minus, Plus, Store } from 'lucide-react';
+import type { HawkerCentreSummary } from '@/lib/hawker-centres/service';
+
+interface HawkerMapProps {
+  userLocation: { lat: number; lng: number };
+  centres: HawkerCentreSummary[];
+  selectedCentreId: string | null;
+  onSelectCentre: (centre: HawkerCentreSummary) => void;
+  className?: string;
+}
+
+// Convert geographic coordinates to Web Mercator pixel coordinates
+function project(lat: number, lng: number, zoom: number) {
+  const sinLat = Math.sin((lat * Math.PI) / 180);
+  const clampedSin = Math.max(-0.9999, Math.min(0.9999, sinLat));
+  const scale = 256 * Math.pow(2, zoom);
+  const x = scale * ((lng + 180) / 360);
+  const y = scale * (0.5 - Math.log((1 + clampedSin) / (1 - clampedSin)) / (4 * Math.PI));
+  return { x, y };
+}
+
+export function HawkerMap({
+  userLocation,
+  centres,
+  selectedCentreId,
+  onSelectCentre,
+  className = '',
+}: HawkerMapProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [dimensions, setDimensions] = useState({ width: 600, height: 380 });
+  const [zoom, setZoom] = useState(15);
+
+  const selectedCentre = useMemo(
+    () => centres.find((c) => c.id === selectedCentreId) ?? null,
+    [centres, selectedCentreId]
+  );
+
+  const [manualCenter, setManualCenter] = useState<{ lat: number; lng: number } | null>(null);
+
+  const center = useMemo(() => {
+    if (manualCenter) return manualCenter;
+    if (selectedCentre && selectedCentre.lat && selectedCentre.lng) {
+      return { lat: selectedCentre.lat, lng: selectedCentre.lng };
+    }
+    return {
+      lat: userLocation.lat || 3.1432,
+      lng: userLocation.lng || 101.6985,
+    };
+  }, [manualCenter, selectedCentre, userLocation]);
+
+  const [isDragging, setIsDragging] = useState(false);
+  const dragStartRef = useRef<{ x: number; y: number; centerProj: { x: number; y: number } } | null>(null);
+
+  // Resize observer to track map dimensions
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    const updateSize = () => {
+      const rect = el.getBoundingClientRect();
+      if (rect.width > 0 && rect.height > 0) {
+        setDimensions({ width: rect.width, height: rect.height });
+      }
+    };
+
+    updateSize();
+    const observer = new ResizeObserver(updateSize);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  const centerProj = useMemo(() => project(center.lat, center.lng, zoom), [center, zoom]);
+
+  // Calculate visible tiles
+  const visibleTiles = useMemo(() => {
+    const tileCount = Math.pow(2, zoom);
+    const startTileX = Math.floor((centerProj.x - dimensions.width / 2) / 256);
+    const endTileX = Math.floor((centerProj.x + dimensions.width / 2) / 256);
+    const startTileY = Math.floor((centerProj.y - dimensions.height / 2) / 256);
+    const endTileY = Math.floor((centerProj.y + dimensions.height / 2) / 256);
+
+    const tiles = [];
+    for (let x = startTileX; x <= endTileX; x++) {
+      for (let y = startTileY; y <= endTileY; y++) {
+        const wrappedX = ((x % tileCount) + tileCount) % tileCount;
+        if (y >= 0 && y < tileCount) {
+          const screenX = x * 256 - (centerProj.x - dimensions.width / 2);
+          const screenY = y * 256 - (centerProj.y - dimensions.height / 2);
+          tiles.push({
+            key: `${zoom}-${x}-${y}`,
+            url: `https://tile.openstreetmap.org/${zoom}/${wrappedX}/${y}.png`,
+            screenX,
+            screenY,
+          });
+        }
+      }
+    }
+    return tiles;
+  }, [centerProj, dimensions, zoom]);
+
+  // Mouse & touch dragging handlers
+  const handlePointerDown = (clientX: number, clientY: number) => {
+    setIsDragging(true);
+    dragStartRef.current = {
+      x: clientX,
+      y: clientY,
+      centerProj: { ...centerProj },
+    };
+  };
+
+  const handlePointerMove = (clientX: number, clientY: number) => {
+    if (!isDragging || !dragStartRef.current) return;
+    const dx = clientX - dragStartRef.current.x;
+    const dy = clientY - dragStartRef.current.y;
+
+    const newProjX = dragStartRef.current.centerProj.x - dx;
+    const newProjY = dragStartRef.current.centerProj.y - dy;
+
+    // Inverse Web Mercator
+    const scale = 256 * Math.pow(2, zoom);
+    const newLng = (newProjX / scale) * 360 - 180;
+    const n = Math.PI - (2 * Math.PI * newProjY) / scale;
+    const newLat = (180 / Math.PI) * Math.atan(0.5 * (Math.exp(n) - Math.exp(-n)));
+
+    setManualCenter({
+      lat: Math.max(-85, Math.min(85, newLat)),
+      lng: Math.max(-180, Math.min(180, newLng)),
+    });
+  };
+
+  const handlePointerUp = () => {
+    setIsDragging(false);
+    dragStartRef.current = null;
+  };
+
+  // Convert marker lat/lng to screen pixel coordinates
+  const getScreenCoordinates = useCallback(
+    (lat: number, lng: number) => {
+      const p = project(lat, lng, zoom);
+      const screenX = dimensions.width / 2 + (p.x - centerProj.x);
+      const screenY = dimensions.height / 2 + (p.y - centerProj.y);
+      return { x: screenX, y: screenY };
+    },
+    [centerProj, dimensions, zoom]
+  );
+
+  const userScreen = useMemo(
+    () => (userLocation.lat && userLocation.lng ? getScreenCoordinates(userLocation.lat, userLocation.lng) : null),
+    [userLocation, getScreenCoordinates]
+  );
+
+  return (
+    <div
+      ref={containerRef}
+      className={`relative w-full h-[360px] sm:h-[420px] rounded-[28px] overflow-hidden select-none bg-[#e5e7eb] border border-black/10 shadow-[0_12px_32px_rgba(0,0,0,0.06)] cursor-grab active:cursor-grabbing ${className}`}
+      onMouseDown={(e) => {
+        if (e.button === 0) handlePointerDown(e.clientX, e.clientY);
+      }}
+      onMouseMove={(e) => handlePointerMove(e.clientX, e.clientY)}
+      onMouseUp={handlePointerUp}
+      onMouseLeave={handlePointerUp}
+      onTouchStart={(e) => {
+        if (e.touches.length === 1) handlePointerDown(e.touches[0].clientX, e.touches[0].clientY);
+      }}
+      onTouchMove={(e) => {
+        if (e.touches.length === 1) handlePointerMove(e.touches[0].clientX, e.touches[0].clientY);
+      }}
+      onTouchEnd={handlePointerUp}
+    >
+      {/* Map Tile Layer */}
+      <div className="absolute inset-0 pointer-events-none">
+        {visibleTiles.map((tile) => (
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img
+            key={tile.key}
+            src={tile.url}
+            alt=""
+            loading="lazy"
+            decoding="async"
+            className="absolute w-[256px] h-[256px] transition-opacity duration-300"
+            style={{
+              transform: `translate3d(${tile.screenX}px, ${tile.screenY}px, 0)`,
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Map Vignette Overlay */}
+      <div className="absolute inset-0 pointer-events-none ring-1 ring-inset ring-black/10 rounded-[28px]" />
+
+      {/* User Location Radar Marker */}
+      {userScreen && (
+        <div
+          className="absolute z-20 -translate-x-1/2 -translate-y-1/2 pointer-events-none transition-transform duration-100"
+          style={{
+            transform: `translate3d(${userScreen.x}px, ${userScreen.y}px, 0)`,
+          }}
+        >
+          <div className="relative flex items-center justify-center">
+            <span className="absolute h-10 w-10 rounded-full bg-blue-500/20 animate-ping" />
+            <span className="absolute h-6 w-6 rounded-full bg-blue-500/40" />
+            <span className="relative flex h-3.5 w-3.5 rounded-full bg-blue-600 border-2 border-white shadow-md" />
+          </div>
+        </div>
+      )}
+
+      {/* Hawker Centre Pins */}
+      {centres.map((c) => {
+        if (!c.lat || !c.lng) return null;
+        const pos = getScreenCoordinates(c.lat, c.lng);
+        const isSelected = c.id === selectedCentreId;
+
+        // Skip rendering if completely off screen
+        if (pos.x < -60 || pos.x > dimensions.width + 60 || pos.y < -60 || pos.y > dimensions.height + 60) {
+          return null;
+        }
+
+        return (
+          <div
+            key={c.id}
+            className={`absolute z-30 -translate-x-1/2 -translate-y-full transition-transform duration-200 cursor-pointer ${
+              isSelected ? 'scale-110 z-40' : 'hover:scale-105'
+            }`}
+            style={{
+              transform: `translate3d(${pos.x}px, ${pos.y}px, 0) ${isSelected ? 'scale(1.1)' : ''}`,
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              onSelectCentre(c);
+              if (c.lat && c.lng) {
+                setManualCenter({ lat: c.lat, lng: c.lng });
+              }
+            }}
+          >
+            {/* Custom Marker Pin */}
+            <div className="flex flex-col items-center group">
+              <div
+                className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold shadow-lg transition-all border ${
+                  isSelected
+                    ? 'bg-[#111827] text-white border-white ring-2 ring-emerald-500 shadow-xl'
+                    : 'bg-white text-[#1d1d1f] border-black/10 hover:border-black/30'
+                }`}
+              >
+                <Store className={`h-3.5 w-3.5 ${isSelected ? 'text-amber-400' : 'text-amber-600'}`} />
+                <span className="max-w-[120px] truncate">{c.name}</span>
+                <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-semibold ${isSelected ? 'bg-white/20 text-white' : 'bg-[#f5f5f7] text-[#6e6e73]'}`}>
+                  {c.stallsCount}
+                </span>
+              </div>
+
+              {/* Pin Arrow Indicator */}
+              <div
+                className={`w-2.5 h-2.5 rotate-45 -mt-1.5 shadow-sm border-r border-b ${
+                  isSelected ? 'bg-[#111827] border-white' : 'bg-white border-black/10'
+                }`}
+              />
+            </div>
+          </div>
+        );
+      })}
+
+      {/* Map Controls */}
+      <div className="absolute right-3 top-3 z-30 flex flex-col gap-1.5">
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            setZoom((z) => Math.min(18, z + 1));
+          }}
+          className="flex h-9 w-9 items-center justify-center rounded-full bg-white/95 text-[#1d1d1f] shadow-md hover:bg-white active:scale-95 transition-all border border-black/5"
+          aria-label="Zoom in"
+        >
+          <Plus className="h-4 w-4" />
+        </button>
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            setZoom((z) => Math.max(12, z - 1));
+          }}
+          className="flex h-9 w-9 items-center justify-center rounded-full bg-white/95 text-[#1d1d1f] shadow-md hover:bg-white active:scale-95 transition-all border border-black/5"
+          aria-label="Zoom out"
+        >
+          <Minus className="h-4 w-4" />
+        </button>
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            if (userLocation.lat && userLocation.lng) {
+              setManualCenter(userLocation);
+              setZoom(16);
+            }
+          }}
+          className="flex h-9 w-9 items-center justify-center rounded-full bg-white/95 text-blue-600 shadow-md hover:bg-white active:scale-95 transition-all border border-black/5"
+          aria-label="Recenter to my location"
+        >
+          <Locate className="h-4 w-4" />
+        </button>
+      </div>
+
+      {/* Selected Centre Floating Info Card */}
+      {selectedCentre && (
+        <div className="absolute left-3 right-3 bottom-3 z-40 sm:left-4 sm:right-auto sm:max-w-xs animate-scale-in">
+          <div className="rounded-[22px] bg-white/95 backdrop-blur-md p-3.5 shadow-[0_12px_28px_rgba(0,0,0,0.15)] border border-black/10">
+            <div className="flex items-start justify-between gap-2">
+              <div>
+                <h4 className="text-sm font-bold text-[#1d1d1f]">{selectedCentre.name}</h4>
+                <p className="mt-0.5 text-xs text-[#6e6e73] line-clamp-1">{selectedCentre.address}</p>
+              </div>
+              <span className="rounded-full bg-emerald-50 border border-emerald-200 px-2 py-0.5 text-[10px] font-bold text-emerald-800 shrink-0">
+                Open
+              </span>
+            </div>
+
+            <div className="mt-2.5 flex items-center justify-between text-xs text-[#6e6e73]">
+              <span>{selectedCentre.stallsCount} Food Stalls</span>
+              <span>•</span>
+              <span>★ {selectedCentre.rating}</span>
+            </div>
+
+            <Link
+              href={`/${selectedCentre.slug}/home` as any}
+              className="mt-3 flex w-full items-center justify-center gap-1.5 rounded-full bg-[#111827] py-2 text-xs font-bold text-white hover:bg-black transition-colors shadow-sm"
+            >
+              <span>Enter Centre & Order</span>
+              <ArrowRight className="h-3 w-3" />
+            </Link>
+          </div>
+        </div>
+      )}
+
+      {/* Map Attribution */}
+      <div className="absolute left-2.5 bottom-1.5 z-10 text-[9px] text-[#6e6e73]/80 bg-white/70 backdrop-blur-xs px-1.5 py-0.5 rounded-md pointer-events-none">
+        © OpenStreetMap contributors
+      </div>
+    </div>
+  );
+}

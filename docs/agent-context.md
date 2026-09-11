@@ -339,22 +339,37 @@ Phase 15: Database Constraint Fix for Food Outlets Status, Mobile Edit Modal Tab
   - Documented HTTP methods, access tiers (Public, Diner, Stall Merchant, Shop Owner), request schemas, success response formats, and error codes.
   - Updated `README.md` to reference the central endpoint catalog.
 
+- **Phase 16: Percentage Charge, Dynamic Centre Slug Routing, and Nearby Hawker Centres Map**:
+  - **Charge by Percentage & Monetization Settings**:
+    - **Database Migration 017 (`supabase/migrations/017_restaurant_coordinates_and_fees.sql`)**: Updated `restaurants` table with GPS coordinates (`888-restoran`: `3.1432, 101.6985`, `lim-s-foodcourt`: `3.1465, 101.7015`).
+    - **Backend APIs (`app/api/owner/shops/[id]/route.ts` & `app/api/owner/shops/route.ts`)**: Supported `fee_payer`, `platform_fee_fixed`, and `platform_fee_percent` in GET and PATCH handlers.
+    - **Shop Owner UI (`app/shop-owner/profile/page.tsx`)**: Built Monetization & Charge Settings card supporting Percentage, Flat Fee, and Mixed modes with live RM 20.00 simulator.
+    - **Cart & Order Engine (`lib/order/cart.ts` & `app/api/orders/route.ts`)**: Authoritative calculation for percentage fees (`subtotal * feePercent + feeFixed`), dynamic fee labels in `CartSummary`, and 100% test coverage in `lib/order/cart.test.ts`.
+  - **Dynamic Hawker Centre Route Resolution (`/[centreSlug]` & `/[centreSlug]/home`)**:
+    - Implemented `resolveHawkerCentreBySlug` in `lib/hawker-centres/service.ts` with heuristic fuzzy matching for slugs (`restaurent888` -> `888 Restoran`, `lim'shawker` -> `Lim's Foodcourt`).
+    - Guarded against static reserved paths (`RESERVED_CENTRE_SLUGS`).
+    - Created `components/centre-diner-page.tsx` for centre-specific diner ordering (QR table sessions, stall filtering, menu browsing, and cart).
+    - Created `app/[centreSlug]/page.tsx` and `app/[centreSlug]/home/page.tsx` to handle direct customer links.
+  - **Customer Home Tab Redesign with Interactive Map (`components/home-page.tsx` & `components/hawker-map.tsx`)**:
+    - Replaced old single-centre ordering UI on `/home` with a mobile-first Map and nearby hawker centres directory.
+    - Built zero-external-dependency interactive OpenStreetMap map (`HawkerMap`) with Web Mercator coordinates projection, touch/mouse dragging, zoom controls, live geolocation radar marker, and centre pins.
+    - Haversine distance calculation and walking time estimation to sort centres by proximity.
+    - Search bar and filters to quickly find hawker centres by name, area, or dish specialties.
+
 ## Current Architecture
 - Frontend: Next.js App Router, TypeScript, React, Tailwind
 - AI boundary: OpenRouter via Vercel AI SDK for `SearchIntent` extraction only
 - Backend: route handlers, deterministic `SearchService`, and payment refund handlers
-- Database: Supabase/PostgreSQL with raw SQL migrations (001-013), generated-style TypeScript types, RLS, and fallback data paths
+- Database: Supabase/PostgreSQL with raw SQL migrations (001-017), generated-style TypeScript types, RLS, and fallback data paths
 - Security: AI never touches SQL or database access directly; merchant isolation verified via memberships before processing refunds; booth activation is strictly invite-only
-- Monetization: Zero monthly software subscriptions; platform revenue is generated via a transparent payment cut on processed orders
+- Monetization: Configurable platform fee models per venue (percentage rate, flat fee, or mixed), payable by diner or deducted from merchant payout
 
 ## Important Decisions
 - AI output is validated with Zod before it can affect backend logic
 - Search remains deterministic and database-backed when credentials are present
-- Platform Monetization: No monthly RM software subscriptions. Transparent cut taken from transactions; configurable between diner platform fee (flat RM 0.50) and merchant payout deduction
-- Refunds: When an item is sold out, hawker triggers 1-tap refund from kitchen ticket; customer receives automated eWallet refund and dish is marked unavailable automatically
-- Kitchen ticket privacy: Customer platform fee line item is strictly omitted from merchant kitchen tickets
-- Business Model & Launchpad: Completely eliminated legacy subscription tiers (Starter, Food Hall Pro, Enterprise) and checkout artifacts. Centered entire landing page (#pricing) and venue launchpad (/subscribe) around "Zero monthly subscriptions. We only win when you sell."
-- Role Separation & Strict Membership Gating: Shop owners generate tokens for booth slots; they do not configure stalls. Stall vendors redeem tokens to name their stall and set menus. Mode switcher pills are only visible when the user holds verified server-side memberships.
+- Dynamic centre slug matching resolves typos and colloquial names (e.g. `restaurent888` and `lim'shawker`) to verified hawker centre records
+- Customer Home tab is dedicated to geographic food hall discovery and map-based exploration; specific venue menus are served on dynamic centre paths `/[centreSlug]/home`
+- Platform Monetization: Support for percentage fee cuts (e.g. 5%, 8%) alongside flat fee rates (RM 0.50), dynamically persisted per food hall and simulated in real time for operators
 
 ## Known Issues
 - Password recovery depends on Supabase Auth email configuration

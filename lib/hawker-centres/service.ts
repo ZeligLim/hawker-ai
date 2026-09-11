@@ -170,3 +170,90 @@ export async function fetchHawkerCentres(options?: {
 
   return results;
 }
+
+export const RESERVED_CENTRE_SLUGS = new Set([
+  'api',
+  'apply',
+  'auth',
+  'booths',
+  'customer',
+  'home',
+  'menu',
+  'orders',
+  'owner',
+  'plans',
+  'pricing',
+  'profile',
+  'results',
+  'scan',
+  'shop',
+  'shop-owner',
+  'stall',
+  'subscribe',
+  'favicon.ico',
+  '_next',
+]);
+
+export async function resolveHawkerCentreBySlug(rawSlug: string): Promise<HawkerCentreSummary | null> {
+  if (!rawSlug) return null;
+  const decoded = decodeURIComponent(rawSlug).trim();
+  if (RESERVED_CENTRE_SLUGS.has(decoded.toLowerCase())) {
+    return null;
+  }
+
+  const allCentres = await fetchHawkerCentres();
+  if (allCentres.length === 0) return null;
+
+  const rawLower = decoded.toLowerCase();
+  const normalizedInput = rawLower.replace(/[^a-z0-9]/g, '');
+
+  // 1. Exact slug match
+  const exactSlug = allCentres.find((c) => c.slug.toLowerCase() === rawLower);
+  if (exactSlug) return exactSlug;
+
+  // 2. Exact name match
+  const exactName = allCentres.find((c) => c.name.toLowerCase() === rawLower);
+  if (exactName) return exactName;
+
+  // 3. Normalized alphanumeric match
+  const normMatch = allCentres.find((c) => {
+    const slugNorm = c.slug.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const nameNorm = c.name.toLowerCase().replace(/[^a-z0-9]/g, '');
+    return normalizedInput === slugNorm || normalizedInput === nameNorm;
+  });
+  if (normMatch) return normMatch;
+
+  // 4. Token & number heuristics (e.g. "restaurent888" matching "888-restoran", "lim'shawker" matching "lim-s-foodcourt")
+  const inputDigits = normalizedInput.replace(/[^0-9]/g, '');
+  if (inputDigits.length > 0) {
+    const digitMatch = allCentres.find((c) => {
+      const centreDigits = c.slug.replace(/[^0-9]/g, '') || c.name.replace(/[^0-9]/g, '');
+      return centreDigits.length > 0 && (centreDigits.includes(inputDigits) || inputDigits.includes(centreDigits));
+    });
+    if (digitMatch) return digitMatch;
+  }
+
+  const inputTokens = decoded.toLowerCase().split(/[^a-z0-9]+/).filter((t) => t.length >= 3);
+  for (const token of inputTokens) {
+    const isGeneric = ['restaurant', 'restaurent', 'restoran', 'foodcourt', 'hawker', 'centre', 'center', 'food'].includes(token);
+    if (!isGeneric) {
+      const tokenMatch = allCentres.find((c) => `${c.name} ${c.slug}`.toLowerCase().includes(token));
+      if (tokenMatch) return tokenMatch;
+    }
+  }
+
+  // 5. Broad substring match as fallback
+  const broadMatch = allCentres.find((c) => {
+    const slugNorm = c.slug.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const nameNorm = c.name.toLowerCase().replace(/[^a-z0-9]/g, '');
+    return (
+      (slugNorm.length >= 3 && normalizedInput.includes(slugNorm)) ||
+      (normalizedInput.length >= 3 && slugNorm.includes(normalizedInput)) ||
+      (nameNorm.length >= 3 && normalizedInput.includes(nameNorm)) ||
+      (normalizedInput.length >= 3 && nameNorm.includes(normalizedInput))
+    );
+  });
+  if (broadMatch) return broadMatch;
+
+  return null;
+}

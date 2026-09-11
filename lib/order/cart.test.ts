@@ -51,3 +51,31 @@ test('updates cart quantities and removes zero or negative quantities', () => {
   assert.equal(updated[0].quantity, 3);
   assert.equal(cleared.length, 0);
 });
+
+test('calculates platform fee charged by percentage', () => {
+  const items = addItemToCart([], { ...dishOne, price: 20 }); // RM 20 subtotal
+  
+  // 5% percentage charge with 0 fixed fee
+  const summary5Pct = buildCartSummary(items, {
+    feePayer: 'CUSTOMER',
+    platformFeeFixed: 0.00,
+    platformFeePercent: 0.0500, // 5%
+  });
+
+  assert.equal(summary5Pct.subtotal, 20.00);
+  assert.equal(summary5Pct.serviceFee, 1.00); // 5% of 20 = 1.00
+  assert.equal(summary5Pct.total, 21.00);
+  assert.equal(summary5Pct.merchantPayoutAmount, 20.00);
+
+  // 10% percentage charge paid by merchant
+  const summaryMerchant10Pct = buildCartSummary(items, {
+    feePayer: 'MERCHANT',
+    platformFeeFixed: 0.00,
+    platformFeePercent: 0.1000, // 10%
+  });
+
+  assert.equal(summaryMerchant10Pct.subtotal, 20.00);
+  assert.equal(summaryMerchant10Pct.serviceFee, 2.00); // 10% of 20 = 2.00
+  assert.equal(summaryMerchant10Pct.total, 20.00);
+  assert.equal(summaryMerchant10Pct.merchantPayoutAmount, 18.00); // 20 - 2 = 18
+});
