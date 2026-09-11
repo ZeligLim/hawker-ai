@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, ArrowRight, MapPin, QrCode, ScanLine, UtensilsCrossed, Store } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Camera, MapPin, QrCode, ScanLine, UtensilsCrossed, Store } from 'lucide-react';
 import { HawkerSearchBar } from '@/components/hawker-search-bar';
 import { CustomizationCard } from '@/components/customization-card';
 import { DishCard } from '@/components/dish-card';
@@ -281,81 +281,21 @@ export function CentreDinerPage({ centre }: { centre: HawkerCentreSummary }) {
   const cartTotalItems = cartItems.reduce((acc, item) => acc + item.quantity, 0);
   const cartSubtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
-  // Diner App Should Not Show Until Scan QR Code or select table
+  // Diner App Should Not Show Until Scan QR Code
   if (hasCheckedSession && (!tableSession || !tableSession.tableNumber)) {
     return (
-      <main className="min-h-screen bg-[#f5f5f7] px-4 py-8 text-[#1d1d1f] flex flex-col justify-center items-center selection:bg-[#0071e3] selection:text-white">
-        <div className="w-full max-w-sm rounded-[28px] bg-white p-6 shadow-[0_16px_36px_rgba(0,0,0,0.06)] border border-black/[0.05] text-center">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#30d158]/10 text-[#30d158] text-xs font-semibold mb-4">
-            <span className="w-2 h-2 rounded-full bg-[#30d158] animate-pulse" />
-            <span>{centre.name}</span>
-          </div>
-
-          <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-[#0071e3]/10 text-[#0071e3] flex items-center justify-center">
-            <QrCode className="w-10 h-10" />
-          </div>
-
-          <h1 className="text-2xl font-bold tracking-tight text-[#1d1d1f]">
-            Scan Table QR to Order
-          </h1>
-
-          <p className="mt-2 text-xs sm:text-sm text-[#6e6e73] leading-relaxed">
-            Please scan the QR code located on your table to view menus and order dishes at <span className="font-semibold text-[#1d1d1f]">{centre.name}</span>.
-          </p>
-
-          <div className="mt-6 space-y-3">
-            <Link
-              href={`/scan?centre=${encodeURIComponent(centre.slug)}`}
-              className="w-full py-3.5 rounded-full bg-[#0071e3] hover:bg-[#0077ed] text-white font-semibold text-sm flex items-center justify-center gap-2 shadow-[0_2px_10px_rgba(0,113,227,0.25)] transition-all"
-            >
-              <ScanLine className="w-4 h-4" />
-              Open Camera Scanner
-            </Link>
-
-            <div className="pt-3 border-t border-black/[0.06]">
-              <p className="text-[11px] font-semibold text-[#86868b] uppercase tracking-wider mb-2">
-                Quick Table Selection (Demo)
-              </p>
-              <div className="grid grid-cols-3 gap-2">
-                {['04', '12', '01'].map((tbl) => (
-                  <button
-                    key={tbl}
-                    type="button"
-                    onClick={() => unlockTable(tbl)}
-                    className="py-2 px-2.5 rounded-xl bg-[#f5f5f7] hover:bg-black/5 font-semibold text-xs text-[#1d1d1f] border border-black/[0.04] transition-colors"
-                  >
-                    Table {tbl}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="pt-3 flex gap-2">
-              <input
-                value={manualTableInput}
-                onChange={(e) => setManualTableInput(e.target.value)}
-                placeholder="Table No. (e.g. 04)"
-                className="w-full rounded-full border border-black/[0.08] bg-[#f5f5f7] px-3.5 py-2 text-xs outline-none focus:border-[#1d1d1f]"
-              />
-              <button
-                type="button"
-                onClick={() => unlockTable(manualTableInput)}
-                className="px-4 py-2 rounded-full bg-[#1d1d1f] hover:bg-black text-white text-xs font-semibold shrink-0"
-              >
-                Unlock
-              </button>
+      <main className="min-h-[82vh] flex flex-col items-center justify-center px-4">
+        <Link
+          href={`/scan?centre=${encodeURIComponent(centre.slug)}` as any}
+          className="group flex flex-col items-center justify-center"
+          aria-label="Scan QR for table number"
+        >
+          <div className="flex h-32 w-32 sm:h-36 sm:w-36 items-center justify-center rounded-full bg-white border border-black/10 shadow-[0_12px_36px_rgba(0,0,0,0.08)] group-hover:scale-105 active:scale-95 transition-all">
+            <div className="flex h-24 w-24 sm:h-28 sm:w-28 items-center justify-center rounded-full bg-[#111827] text-white shadow-md group-hover:bg-black transition-colors">
+              <Camera className="h-12 w-12 sm:h-14 sm:w-14" strokeWidth={1.8} />
             </div>
           </div>
-
-          <div className="mt-5 flex items-center justify-center gap-2">
-            <Link
-              href="/home"
-              className="text-xs text-blue-600 hover:underline flex items-center gap-1 font-medium"
-            >
-              <ArrowLeft className="w-3.5 h-3.5" /> Back to nearby centres
-            </Link>
-          </div>
-        </div>
+        </Link>
       </main>
     );
   }

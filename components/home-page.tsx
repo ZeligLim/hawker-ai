@@ -340,7 +340,7 @@ export function HomePage() {
                       </button>
 
                       <Link
-                        href={`/${centre.slug}/home` as any}
+                        href={`/stall?centre=${encodeURIComponent(centre.slug)}` as any}
                         className="w-1/2 flex items-center justify-center gap-1.5 rounded-full bg-[#111827] py-2.5 text-xs font-bold text-white hover:bg-black transition-colors shadow-sm"
                       >
                         <span>Enter & Order</span>

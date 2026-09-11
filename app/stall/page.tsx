@@ -1,5 +1,5 @@
-import { redirect } from 'next/navigation';
+import { CustomerStallPage } from '@/components/customer-stall-page';
 
-export default function StallRootPage() {
-  redirect('/owner');
+export default function StallPage() {
+  return <CustomerStallPage />;
 }

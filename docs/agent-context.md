@@ -1,25 +1,31 @@
 # Current Project Context
 
 ## Current Phase
-Phase 15: Database Constraint Fix for Food Outlets Status, Mobile Edit Modal Tab Bar Fix & Header Removal from Stall/Shop Apps
+Phase 16: Minimalist Map (CartoDB Positron), Restored Stall Tab in Customer Bottom Navigation, Scan-Gated Ordering with Camera-Only Logo
 
 ## Current Feature
-1. **Resolved `food_outlets_status_check` Constraint Violation**:
-   - Migration `016_booth_status_check.sql`: Updated PostgreSQL check constraint on `food_outlets` to include `'closed'` (`CHECK (status IN ('draft', 'pending_review', 'approved', 'rejected', 'suspended', 'closed'))`). Successfully pushed to remote Supabase DB using `npx supabase db push`.
-   - Explicit Defaults: In `app/api/owner/booths/route.ts` and `app/api/owner/shops/route.ts`, guaranteed `status: 'approved'` and `is_open: true` are explicitly populated on every newly inserted booth.
-   - Handled boolean open/close mappings in `app/api/owner/booths/[id]/route.ts`.
+1. **Interactive Hawker Map & Minimalist Map Layer**:
+   - Implemented custom React Web Mercator map in `components/hawker-map.tsx` without heavy external map libraries.
+   - Built with **CartoDB Positron** (`https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png`) as the default minimalist map style (clean grayscale palette, muted roads, subtle labels, subdomain cycling `a`, `b`, `c`, `d`).
+   - Integrated a layer toggle (`<Layers>` button) allowing users to switch dynamically between **Minimalist** (CartoDB Positron) and **Detailed** (OpenStreetMap Standard).
+   - "Enter Centre & Order" link on the floating map card routes to `/stall?centre=${centre.slug}`.
 
-2. **Fixed Edit Booth Slot Modal Behind Mobile Bottom Tab Bar**:
-   - In `app/shop-owner/booths/page.tsx`:
-     - Raised modal overlay z-index from `z-30` to `z-50`, lifting it above `ClientBottomNav` (`z-30`).
-     - Replaced mobile bottom-anchoring (`items-end`) with centered viewport alignment (`flex items-center justify-center p-4`) so the modal is never covered by the bottom navigation bar or iOS home bar.
-     - Added `max-h-[90vh] overflow-y-auto` to allow comfortable scrolling on small screens and when the virtual keyboard is open.
-     - Applied the same centering and `z-50` elevation to Add Slot, Edit Slot, and Delete Slot modals.
+2. **Restored Stall Tab as Second Customer Navigation Tab**:
+   - In `components/customer/customer-shell.tsx`, updated `customerNavItems`:
+     1. Home (`/home`)
+     2. Stall (`/stall`) [restored with `Store` icon]
+     3. Orders (`/orders`)
+     4. Profile (`/profile`)
+   - In `lib/shared/permissions.ts`, updated `getClientForPath` so `/owner` routes to `'stall'` (stall worker portal) and `/stall` defaults to `'customer'`.
+   - Updated `lib/multi-client-architecture.test.ts` to assert `/stall` maps to `'customer'`.
 
-3. **Removed Headers from Stall and Shop App**:
-   - `components/stall/stall-shell.tsx`: Removed top sticky `<header>` ("Hawker Stall App") to maximize vertical screen space for kitchen workers on phones and tablet KDS.
-   - `components/owner/owner-shell.tsx`: Removed top sticky `<header>` ("Hawker Venue App") to provide clean, unencumbered viewing of booth slots and analytics for food hall operators.
-   - Cleaned up unused Lucide icon imports (`Store`, `Building2`).
+3. **Camera-Only QR Scan Gate on Stall Tab ("do not add anything else")**:
+   - In `components/customer-stall-page.tsx` and `app/stall/page.tsx`:
+     - If table is NOT scanned (`!tableSession?.tableNumber`): renders exclusively a prominent camera logo button to scan QR for table number ("do not add anything else"). Clicking opens `/scan` with camera permissions.
+     - If table IS scanned: unlocks the stalls and dishes directory for that centre, with top table badge (`Table 04`) + camera re-scan icon, stall category pills, dish customization modal, and floating multi-stall cart.
+   - Simplified `components/centre-diner-page.tsx` unscanned state to the same clean camera-only scan gate.
+   - In `components/home-page.tsx`, "Enter & Order" buttons now direct to `/stall?centre=${encodeURIComponent(centre.slug)}`.
+   - In `app/scan/page.tsx`, successful table link redirects directly to `/stall`.
 
 ## Previous Phases
    - Updated `lib/order/customizations.ts` with polymorphic `CustomizationSource` type supporting both string dish names and full dish objects.

@@ -48,9 +48,9 @@ function ScanTableContent() {
             const resolvedTableId = payload.table?.id ?? tableId;
             setCurrentTableSession(sessionTable, resolvedTableId, { centreSlug: rawCentre || undefined });
             setStatus('success');
-            setMessage(`Linked to ${formatTableLabel(sessionTable)}. Redirecting to menu...`);
+            setMessage(`Linked to ${formatTableLabel(sessionTable)}. Redirecting to stall...`);
             setTimeout(() => {
-              router.push('/home' as any);
+              router.push('/stall' as any);
             }, 600);
             return;
           }
@@ -59,16 +59,16 @@ function ScanTableContent() {
 
       setCurrentTableSession(tableNumber, tableId ?? null, { centreSlug: rawCentre || undefined });
       setStatus('success');
-      setMessage(`Saved ${label}. Redirecting to ordering menu...`);
+      setMessage(`Saved ${label}. Redirecting to stall...`);
       setTimeout(() => {
-        router.push('/home' as any);
+        router.push('/stall' as any);
       }, 600);
     } catch {
       setCurrentTableSession(tableNumber, tableId ?? null, { centreSlug: rawCentre || undefined });
       setStatus('success');
-      setMessage(`Saved ${label}. Proceeding to menu...`);
+      setMessage(`Saved ${label}. Proceeding to stall...`);
       setTimeout(() => {
-        router.push('/home' as any);
+        router.push('/stall' as any);
       }, 600);
     }
   };
@@ -92,9 +92,9 @@ function ScanTableContent() {
     <div className="rounded-[28px] bg-white p-5 sm:p-6 shadow-[0_12px_28px_rgba(15,23,42,0.04)] border border-black/[0.04]">
       <div className="flex items-center gap-3">
         <Link
-          href="/home"
+          href="/stall"
           className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-full bg-[#f5f5f7] text-[#1d1d1f] hover:bg-black/[0.04] transition-colors"
-          aria-label="Back to diner menu"
+          aria-label="Back to stalls"
         >
           <ArrowLeft className="h-5 w-5" />
         </Link>

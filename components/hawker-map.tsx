@@ -2,7 +2,7 @@
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
-import { ArrowRight, Locate, Minus, Plus, Store } from 'lucide-react';
+import { ArrowRight, Layers, Locate, Minus, Plus, Store } from 'lucide-react';
 import type { HawkerCentreSummary } from '@/lib/hawker-centres/service';
 
 interface HawkerMapProps {
@@ -33,6 +33,7 @@ export function HawkerMap({
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 600, height: 380 });
   const [zoom, setZoom] = useState(15);
+  const [mapStyle, setMapStyle] = useState<'minimal' | 'detailed'>('minimal');
 
   const selectedCentre = useMemo(
     () => centres.find((c) => c.id === selectedCentreId) ?? null,
@@ -75,7 +76,7 @@ export function HawkerMap({
 
   const centerProj = useMemo(() => project(center.lat, center.lng, zoom), [center, zoom]);
 
-  // Calculate visible tiles
+  // Calculate visible tiles (supporting Minimalist CartoDB Positron and Detailed OpenStreetMap)
   const visibleTiles = useMemo(() => {
     const tileCount = Math.pow(2, zoom);
     const startTileX = Math.floor((centerProj.x - dimensions.width / 2) / 256);
@@ -83,16 +84,25 @@ export function HawkerMap({
     const startTileY = Math.floor((centerProj.y - dimensions.height / 2) / 256);
     const endTileY = Math.floor((centerProj.y + dimensions.height / 2) / 256);
 
+    const subdomains = ['a', 'b', 'c', 'd'];
     const tiles = [];
+
     for (let x = startTileX; x <= endTileX; x++) {
       for (let y = startTileY; y <= endTileY; y++) {
         const wrappedX = ((x % tileCount) + tileCount) % tileCount;
         if (y >= 0 && y < tileCount) {
           const screenX = x * 256 - (centerProj.x - dimensions.width / 2);
           const screenY = y * 256 - (centerProj.y - dimensions.height / 2);
+          const sub = subdomains[Math.abs(x + y) % subdomains.length];
+
+          const tileUrl =
+            mapStyle === 'minimal'
+              ? `https://${sub}.basemaps.cartocdn.com/light_all/${zoom}/${wrappedX}/${y}.png`
+              : `https://tile.openstreetmap.org/${zoom}/${wrappedX}/${y}.png`;
+
           tiles.push({
-            key: `${zoom}-${x}-${y}`,
-            url: `https://tile.openstreetmap.org/${zoom}/${wrappedX}/${y}.png`,
+            key: `${mapStyle}-${zoom}-${x}-${y}`,
+            url: tileUrl,
             screenX,
             screenY,
           });
@@ -100,7 +110,7 @@ export function HawkerMap({
       }
     }
     return tiles;
-  }, [centerProj, dimensions, zoom]);
+  }, [centerProj, dimensions, zoom, mapStyle]);
 
   // Mouse & touch dragging handlers
   const handlePointerDown = (clientX: number, clientY: number) => {
@@ -156,7 +166,7 @@ export function HawkerMap({
   return (
     <div
       ref={containerRef}
-      className={`relative w-full h-[360px] sm:h-[420px] rounded-[28px] overflow-hidden select-none bg-[#e5e7eb] border border-black/10 shadow-[0_12px_32px_rgba(0,0,0,0.06)] cursor-grab active:cursor-grabbing ${className}`}
+      className={`relative w-full h-[360px] sm:h-[420px] rounded-[28px] overflow-hidden select-none bg-[#f4f4f6] border border-black/10 shadow-[0_12px_32px_rgba(0,0,0,0.06)] cursor-grab active:cursor-grabbing ${className}`}
       onMouseDown={(e) => {
         if (e.button === 0) handlePointerDown(e.clientX, e.clientY);
       }}
@@ -301,6 +311,18 @@ export function HawkerMap({
         >
           <Locate className="h-4 w-4" />
         </button>
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            setMapStyle((s) => (s === 'minimal' ? 'detailed' : 'minimal'));
+          }}
+          className="flex h-9 w-9 items-center justify-center rounded-full bg-white/95 text-[#6e6e73] hover:text-[#1d1d1f] shadow-md hover:bg-white active:scale-95 transition-all border border-black/5"
+          title={`Switch to ${mapStyle === 'minimal' ? 'Detailed OSM' : 'Minimalist'} map`}
+          aria-label="Toggle map style"
+        >
+          <Layers className="h-4 w-4" />
+        </button>
       </div>
 
       {/* Selected Centre Floating Info Card */}
@@ -324,7 +346,7 @@ export function HawkerMap({
             </div>
 
             <Link
-              href={`/${selectedCentre.slug}/home` as any}
+              href={`/stall?centre=${encodeURIComponent(selectedCentre.slug)}` as any}
               className="mt-3 flex w-full items-center justify-center gap-1.5 rounded-full bg-[#111827] py-2 text-xs font-bold text-white hover:bg-black transition-colors shadow-sm"
             >
               <span>Enter Centre & Order</span>
@@ -336,7 +358,7 @@ export function HawkerMap({
 
       {/* Map Attribution */}
       <div className="absolute left-2.5 bottom-1.5 z-10 text-[9px] text-[#6e6e73]/80 bg-white/70 backdrop-blur-xs px-1.5 py-0.5 rounded-md pointer-events-none">
-        © OpenStreetMap contributors
+        {mapStyle === 'minimal' ? '© CARTO Positron • OSM' : '© OpenStreetMap contributors'}
       </div>
     </div>
   );
