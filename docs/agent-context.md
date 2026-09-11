@@ -1,9 +1,20 @@
 # Current Project Context
 
 ## Current Phase
-Phase 11: Booth Deletion with Cascade Cleanup & Booth-Level Analytics Spotlight
+Phase 12: Safari Extension Error Isolation & Turbopack Dev Overlay Immunity
 
 ## Current Feature
+1. **Safari WebKit AdBlock `e.useCache` Error Isolation**:
+   - **Root Cause Analysis**:
+     - Stack trace `undefined is not an object (evaluating 'e.useCache') at he (webkit-masked-url://hidden/:18:81058)` is caused by Safari's installed AdBlock extension (`/Applications/AdBlock.app/Contents/PlugIns/AdblockPlusSafari Extension.appex/Contents/Resources/ewe-content.js`).
+     - Line 18, Column 81058 in `ewe-content.js` defines `function he(e)` which accesses `e.useCache` without null/undefined guards.
+     - WebKit masks Safari extension URLs as `webkit-masked-url://hidden/` as part of Apple's anti-fingerprinting privacy protection.
+     - Next.js development server (Turbopack) listens to `window.addEventListener('error')`, intercepting unhandled extension runtime crashes and presenting them in the red dev error modal.
+   - **Resolution & Mitigation**:
+     - Added early capturing `<head>` error interceptor in `app/layout.tsx`.
+     - Calls `stopImmediatePropagation()` and `preventDefault()` exclusively on unhandled errors originating from masked extension scripts (`webkit-masked-url`, `chrome-extension`, `moz-extension`) or matching the AdBlock `useCache` bug.
+     - Leaves all legitimate application errors and console diagnostics completely intact.
+
 1. **Booth Slot Deletion with Relational Cascade Cleanup**:
    - **Database Migration (`supabase/migrations/014_delete_booth_slot.sql`)**:
      - Created `delete_booth_slot(p_booth_id UUID)` stored procedure with `SECURITY DEFINER`.
