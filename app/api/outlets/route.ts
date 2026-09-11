@@ -7,8 +7,16 @@ export async function GET(request: NextRequest) {
   }
 
   const { searchParams } = new URL(request.url);
-  const slug = searchParams.get('slug');
+  const slug = searchParams.get('slug') || searchParams.get('centre');
+  const restaurantId = searchParams.get('restaurantId');
   const outletId = searchParams.get('id');
+
+  // Domain / subdomain resolution for per-hawker-centre customer apps
+  const host = request.headers.get('x-forwarded-host') || request.headers.get('host') || '';
+  const hostParts = host.split(':')[0].split('.');
+  const subdomain = hostParts.length > 2 && !['www', 'app', 'api', 'admin'].includes(hostParts[0])
+    ? hostParts[0].toLowerCase()
+    : null;
 
   let query = supabase
     .from('food_outlets')
@@ -52,12 +60,23 @@ export async function GET(request: NextRequest) {
 
   let results = outlets ?? [];
 
-  if (slug) {
+  // Filter strictly by target centre to prevent mixing stalls across venues
+  const targetSlug = slug || subdomain;
+  if (restaurantId) {
+    results = results.filter((o: any) => o.restaurant_id === restaurantId);
+  } else if (targetSlug) {
     results = results.filter((outlet: any) => {
-      const shopSlug = outlet.restaurants?.slug;
+      const restSlug = outlet.restaurants?.slug?.toLowerCase();
+      const restName = outlet.restaurants?.name?.toLowerCase().replace(/[^a-z0-9]+/g, '-');
       const outletSlug = outlet.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-      return shopSlug === slug || outletSlug === slug;
+      const s = targetSlug.toLowerCase();
+      return restSlug === s || restName === s || outletSlug === s || outlet.restaurant_id === s;
     });
+  } else if (results.length > 0) {
+    // If no centre parameter or subdomain is specified, isolate to the first/active hawker centre
+    // so stalls from different food courts are never mixed in the same customer app domain
+    const activeCentreId = results.find((o: any) => o.restaurants?.is_active !== false)?.restaurant_id || results[0].restaurant_id;
+    results = results.filter((o: any) => o.restaurant_id === activeCentreId);
   }
 
   return NextResponse.json({ outlets: results });

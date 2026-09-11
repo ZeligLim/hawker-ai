@@ -37,6 +37,7 @@ type MenuItem = {
   spiceLevel?: number;
   category: 'main-course' | 'drinks' | 'desserts';
   imageUrl?: string | null;
+  customizations?: any[];
 };
 
 function categorizeDish(name: string, tags: string[] = []): 'main-course' | 'drinks' | 'desserts' {
@@ -78,6 +79,7 @@ export function MenuPage() {
               spiceLevel: Number(dish.spice_level ?? 0),
               category: categorizeDish(dish.name, dish.tags),
               imageUrl: dish.image_url ?? null,
+              customizations: dish.customizations ?? [],
             });
           }
         }
@@ -133,7 +135,7 @@ export function MenuPage() {
   };
 
   const addMenuItem = (item: MenuItem) => {
-    if (getDishCustomization(item.name)) {
+    if (getDishCustomization(item)) {
       setCustomizingItem(item);
       return;
     }
@@ -240,7 +242,7 @@ export function MenuPage() {
             <CustomizationCard
               dishName={customizingItem.name}
               basePrice={customizingItem.price}
-              customization={getDishCustomization(customizingItem.name)!}
+              customization={getDishCustomization(customizingItem)!}
               onCancel={() => setCustomizingItem(null)}
               onConfirm={(selection) => confirmCustomization(customizingItem, selection)}
             />

@@ -16,7 +16,7 @@ export type ShopData = {
   eta: string;
   busy: string;
   description: string;
-  dishes: ReadonlyArray<{ id?: string; name: string; price: number; vegetarian: boolean; spiceLevel?: number; imageUrl?: string | null }>;
+  dishes: ReadonlyArray<{ id?: string; name: string; price: number; vegetarian: boolean; spiceLevel?: number; imageUrl?: string | null; customizations?: any[] }>;
 };
 
 export function ShopDetailClient({ shop, slug }: { shop: ShopData; slug: string }) {
@@ -54,7 +54,7 @@ export function ShopDetailClient({ shop, slug }: { shop: ShopData; slug: string 
   };
 
   const addDish = (dish: ShopData['dishes'][number]) => {
-    if (getDishCustomization(dish.name)) {
+    if (getDishCustomization(dish)) {
       setCustomizingDish(dish);
       return;
     }
@@ -174,7 +174,7 @@ export function ShopDetailClient({ shop, slug }: { shop: ShopData; slug: string 
           <CustomizationCard
             dishName={customizingDish.name}
             basePrice={customizingDish.price}
-            customization={getDishCustomization(customizingDish.name)!}
+            customization={getDishCustomization(customizingDish)!}
             onCancel={() => setCustomizingDish(null)}
             onConfirm={(selection) => confirmCustomization(customizingDish, selection)}
           />

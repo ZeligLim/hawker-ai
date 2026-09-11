@@ -3,12 +3,20 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
+import { ArrowRight, QrCode, ScanLine, UtensilsCrossed } from 'lucide-react';
 import { HawkerSearchBar } from '@/components/hawker-search-bar';
 import { CustomizationCard } from '@/components/customization-card';
 import { DishCard } from '@/components/dish-card';
 import { addItemToCart, getDishQuantity, removeCartItem, updateCartItemQuantity, useCartItems } from '@/lib/order/cart';
 import { getDishCustomization } from '@/lib/order/customizations';
-import { formatTableLabel, getCurrentTableSession } from '@/lib/table-session';
+import {
+  clearTableSession,
+  formatTableLabel,
+  getCurrentTableSession,
+  getStoredTableSession,
+  setCurrentTableSession,
+  type CurrentTableSession,
+} from '@/lib/table-session';
 
 type FeaturedDish = {
   id: string;
@@ -22,6 +30,7 @@ type FeaturedDish = {
   spiceLevel: number;
   proteinGrams: number;
   imageUrl?: string | null;
+  customizations?: any[];
 };
 
 const quickFilters = [
@@ -50,16 +59,28 @@ export function HomePage() {
   const [initialDishes, setInitialDishes] = useState<FeaturedDish[]>([]);
   const [stalls, setStalls] = useState<StallDirectoryItem[]>([]);
   const [venueName, setVenueName] = useState('Hawker Centre');
-  const [tableLabel] = useState(() => formatTableLabel(getCurrentTableSession().tableNumber));
+  const [tableSession, setTableSession] = useState<CurrentTableSession | null>(null);
+  const [hasCheckedSession, setHasCheckedSession] = useState(false);
+  const [manualTableInput, setManualTableInput] = useState('04');
+
   const router = useRouter();
   const { cartItems, setCartItems } = useCartItems();
   const [customizingDish, setCustomizingDish] = useState<FeaturedDish | null>(null);
 
   useEffect(() => {
+    const timer = setTimeout(() => {
+      setTableSession(getStoredTableSession());
+      setHasCheckedSession(true);
+    }, 0);
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
     let active = true;
     const fetchInitial = async () => {
       try {
-        const res = await fetch('/api/outlets');
+        const centreParam = tableSession?.centreSlug ? `?centre=${encodeURIComponent(tableSession.centreSlug)}` : '';
+        const res = await fetch(`/api/outlets${centreParam}`);
         if (!res.ok) return;
         const data = await res.json();
         if (!active || !Array.isArray(data.outlets)) return;
@@ -96,6 +117,7 @@ export function HomePage() {
               spiceLevel: Number(dish.spice_level ?? 0),
               proteinGrams: Number(dish.protein_grams ?? 0),
               imageUrl: dish.image_url ?? null,
+              customizations: dish.customizations ?? [],
             });
             if (loaded.length >= 8) break;
           }
@@ -118,7 +140,17 @@ export function HomePage() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [tableSession?.centreSlug]);
+
+  const unlockTable = (selectedTable: string) => {
+    const trimmed = selectedTable.trim();
+    if (!trimmed) return;
+    setCurrentTableSession(trimmed, null, {
+      centreName: venueName,
+      centreSlug: tableSession?.centreSlug,
+    });
+    setTableSession(getStoredTableSession());
+  };
 
   const featuredDishes = useMemo<FeaturedDish[]>(() => {
     if (results.length > 0) return results;
@@ -208,7 +240,7 @@ export function HomePage() {
   };
 
   const addDish = (dish: FeaturedDish) => {
-    const customization = getDishCustomization(dish.name);
+    const customization = getDishCustomization(dish);
     if (customization) {
       setCustomizingDish(dish);
       return;
@@ -234,6 +266,80 @@ export function HomePage() {
     setCustomizingDish(null);
   };
 
+  // Diner App Should Not Show Until Scan QR Code
+  if (hasCheckedSession && (!tableSession || !tableSession.tableNumber)) {
+    return (
+      <main className="min-h-screen bg-[#f5f5f7] px-4 py-8 text-[#1d1d1f] flex flex-col justify-center items-center selection:bg-[#0071e3] selection:text-white">
+        <div className="w-full max-w-sm rounded-[28px] bg-white p-6 shadow-[0_16px_36px_rgba(0,0,0,0.06)] border border-black/[0.05] text-center">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#30d158]/10 text-[#30d158] text-xs font-semibold mb-4">
+            <span className="w-2 h-2 rounded-full bg-[#30d158] animate-pulse" />
+            {venueName}
+          </div>
+
+          <div className="w-20 h-20 rounded-[24px] bg-[#1d1d1f] text-white flex items-center justify-center mx-auto mb-4 shadow-md">
+            <QrCode className="w-10 h-10" />
+          </div>
+
+          <h1 className="text-2xl font-bold tracking-tight text-[#1d1d1f]">
+            Scan Table QR to Order
+          </h1>
+
+          <p className="mt-2 text-xs sm:text-sm text-[#6e6e73] leading-relaxed">
+            Please scan the QR code located on your table to view menus and order dishes directly to your seat.
+          </p>
+
+          <div className="mt-6 space-y-3">
+            <Link
+              href="/scan"
+              className="w-full py-3.5 rounded-full bg-[#0071e3] hover:bg-[#0077ed] text-white font-semibold text-sm flex items-center justify-center gap-2 shadow-[0_2px_10px_rgba(0,113,227,0.25)] transition-all"
+            >
+              <ScanLine className="w-4 h-4" />
+              Open Camera Scanner
+            </Link>
+
+            <div className="pt-3 border-t border-black/[0.06]">
+              <p className="text-[11px] font-semibold text-[#86868b] uppercase tracking-wider mb-2">
+                Quick Table Selection (Demo)
+              </p>
+              <div className="grid grid-cols-3 gap-2">
+                {['04', '12', '01'].map((tbl) => (
+                  <button
+                    key={tbl}
+                    type="button"
+                    onClick={() => unlockTable(tbl)}
+                    className="py-2 px-2.5 rounded-xl bg-[#f5f5f7] hover:bg-black/5 font-semibold text-xs text-[#1d1d1f] border border-black/[0.04] transition-colors"
+                  >
+                    Table {tbl}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="pt-3 flex gap-2">
+              <input
+                value={manualTableInput}
+                onChange={(e) => setManualTableInput(e.target.value)}
+                placeholder="Table No. (e.g. 04)"
+                className="w-full rounded-full border border-black/[0.08] bg-[#f5f5f7] px-3.5 py-2 text-xs outline-none focus:border-[#1d1d1f]"
+              />
+              <button
+                type="button"
+                onClick={() => unlockTable(manualTableInput)}
+                className="px-4 py-2 rounded-full bg-[#1d1d1f] hover:bg-black text-white text-xs font-semibold shrink-0"
+              >
+                Unlock
+              </button>
+            </div>
+          </div>
+
+          <p className="mt-5 text-[11px] text-[#86868b]">
+            0% extra fees &bull; Hot food delivered straight to table
+          </p>
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main className="min-h-screen bg-[#f5f5f7] text-[#1d1d1f]">
       <div className="mx-auto min-h-screen w-full max-w-md sm:max-w-xl md:max-w-3xl lg:max-w-5xl px-4 pb-32 pt-5 sm:px-6">
@@ -245,13 +351,21 @@ export function HomePage() {
               </div>
               <p className="text-sm font-semibold text-[#1d1d1f] truncate">{venueName}</p>
             </div>
-            <button
-              type="button"
-              onClick={() => router.push('/scan' as any)}
-              className="rounded-full bg-[#f5f5f7] px-3 py-1 text-xs font-semibold text-[#1d1d1f] hover:bg-black/5 transition-colors shrink-0 whitespace-nowrap"
-            >
-              {tableLabel}
-            </button>
+            <div className="flex items-center gap-2 shrink-0">
+              <span className="rounded-full bg-[#1d1d1f] text-white px-3 py-1 text-xs font-semibold whitespace-nowrap">
+                {formatTableLabel(tableSession?.tableNumber ?? '')}
+              </span>
+              <button
+                type="button"
+                onClick={() => {
+                  clearTableSession();
+                  setTableSession(null);
+                }}
+                className="text-[11px] font-medium text-[#6e6e73] hover:text-[#1d1d1f] underline whitespace-nowrap"
+              >
+                Change
+              </button>
+            </div>
           </div>
 
           <HawkerSearchBar
@@ -324,7 +438,7 @@ export function HomePage() {
             <CustomizationCard
               dishName={customizingDish.name}
               basePrice={customizingDish.price}
-              customization={getDishCustomization(customizingDish.name)!}
+              customization={getDishCustomization(customizingDish)!}
               onCancel={() => setCustomizingDish(null)}
               onConfirm={(selection) => confirmCustomization(customizingDish, selection)}
             />
@@ -342,7 +456,7 @@ export function HomePage() {
                 const slug = stall.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 
                 return (
-                  <Link key={stall.name} href={`/shop/${slug}`} className="block">
+                  <Link key={stall.id} href={`/shop/${slug}`} className="block">
                     <article className="rounded-[22px] bg-white p-3 shadow-[0_8px_18px_rgba(15,23,42,0.02)]">
                       <div className="flex items-start justify-between gap-3">
                         <div className="flex min-w-0 items-start gap-3">

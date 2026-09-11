@@ -15,33 +15,25 @@ import {
   QrCode,
   Sparkles,
   Clock,
-  Users,
   ShieldCheck,
   Zap,
-  Search,
-  ArrowUpRight,
   Copy,
   CheckCircle2,
   SlidersHorizontal,
-  Layers,
   TrendingUp,
-  Menu,
   X,
   ChefHat,
   Receipt,
-  Laptop,
-  Activity,
-  Flame,
   CreditCard,
   Building2,
   KeyRound,
   HelpCircle,
   Mail,
+  ScanLine,
 } from 'lucide-react';
 
 export default function LandingPage() {
   const { user, status, roles } = useAuth();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeShowcaseTab, setActiveShowcaseTab] = useState<'operator' | 'kitchen' | 'customer'>('operator');
   const [activeAiIndex, setActiveAiIndex] = useState(0);
   const [copiedInvite, setCopiedInvite] = useState(false);
@@ -100,7 +92,7 @@ export default function LandingPage() {
         stall: 'Booth 01 • Western',
         price: 'RM 10.01',
         prepTime: '6 mins',
-        matchReason: '100% match • Fresh pasta prepared on order at Lim\'s Foodcourt',
+        matchReason: "100% match • Fresh pasta prepared on order at Lim's Foodcourt",
       },
     },
     {
@@ -138,202 +130,188 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-[#f5f5f7] text-[#1d1d1f] antialiased selection:bg-[#0071e3] selection:text-white">
-      {/* ── Apple Top Ribbon ── */}
-      <div className="bg-[#1d1d1f] text-white text-[11px] sm:text-xs py-2 px-4 text-center font-medium tracking-tight">
-        <span>Introducing Hawker OS 2.0</span>
-        <span className="mx-2 text-white/40">•</span>
-        <span className="text-white/80">The complete operating system for modern food halls & hawker centres.</span>
-        <Link href="/pricing" className="ml-2 inline-flex items-center text-[#2997ff] hover:underline font-semibold">
-          Explore pricing <ChevronRight className="w-3 h-3 ml-0.5 inline" />
-        </Link>
+      {/* Top Banner Ribbon */}
+      <div className="bg-[#1d1d1f] text-white text-[11px] sm:text-xs py-2 px-3 text-center font-medium tracking-tight">
+        <span>🚀 Zero monthly subscriptions • Free food hall operating system</span>
+        <span className="hidden sm:inline text-white/50 ml-2">• 15-minute setup</span>
       </div>
 
-      {/* ── Sticky Navigation Bar (Auth-Aware) ── */}
-      <MarketingNav currentPath="/" />
+      <MarketingNav />
 
-      {/* ── HERO SECTION (Apple Product Hero) ── */}
-      <section className="relative pt-12 pb-16 sm:pt-20 sm:pb-24 lg:pt-28 lg:pb-32 overflow-hidden">
-        {/* Subtle radial ambient light */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-gradient-to-b from-[#0071e3]/8 to-transparent rounded-full blur-3xl pointer-events-none -z-10" />
-
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          {/* Eyebrow */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/80 border border-black/[0.08] shadow-[0_2px_8px_rgba(0,0,0,0.03)] backdrop-blur-md mb-6">
-            <span className="flex h-2 w-2 rounded-full bg-[#30d158] animate-pulse" />
-            <span className="text-xs font-semibold tracking-tight text-[#1d1d1f]">
-              Hawker Centre Operating System
-            </span>
+      {/* ── HERO SECTION (Mobile-First) ── */}
+      <section className="relative overflow-hidden pt-8 pb-12 sm:pt-16 sm:pb-20 lg:pt-24 lg:pb-28">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          {/* Status Badge */}
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/[0.04] border border-black/[0.05] text-[11px] sm:text-xs font-semibold text-[#1d1d1f] mb-4 shadow-2xs">
+            <span className="w-2 h-2 rounded-full bg-[#30d158] animate-pulse" />
+            Next-Generation Hawker OS
           </div>
 
-          {/* Grand Headline */}
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-semibold tracking-[-0.035em] text-[#1d1d1f] leading-[1.06] max-w-4xl mx-auto">
-            Run your hawker centre with quiet precision.
+          {/* Headline - fluid on mobile, grand on desktop */}
+          <h1 className="text-[32px] xs:text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-[#1d1d1f] leading-[1.12] max-w-4xl mx-auto">
+            The unified operating system for modern food halls.
           </h1>
 
           {/* Subtitle */}
-          <p className="mt-6 text-lg sm:text-xl lg:text-[22px] text-[#6e6e73] font-normal leading-relaxed max-w-2xl mx-auto tracking-[-0.01em]">
-            Manage multi-stall menus, route kitchen orders without chaos, and track live venue sales from one unified, beautifully engineered platform.
+          <p className="mt-3.5 sm:mt-5 text-sm sm:text-base md:text-lg text-[#6e6e73] max-w-2xl mx-auto leading-relaxed">
+            One QR code per table for diners. Instant kitchen displays for stall woks. Complete venue telemetry for operators with zero monthly subscriptions.
           </p>
 
-          {/* Apple Call to Actions */}
-          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3.5">
+          {/* Hero CTAs - Full-width on mobile, auto on desktop */}
+          <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 w-full max-w-xs sm:max-w-none mx-auto">
             {roles.hasShopOwner ? (
               <Link
                 href="/shop-owner/booths"
-                className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-3 rounded-full text-sm font-medium text-white bg-[#1d1d1f] hover:bg-black transition-all shadow-[0_2px_10px_rgba(0,0,0,0.15)]"
+                className="w-full sm:w-auto h-12 px-7 rounded-full text-sm font-semibold bg-[#1d1d1f] text-white hover:bg-black transition-all shadow-md flex items-center justify-center gap-2"
               >
-                Go to Shop Dashboard
-                <ArrowRight className="w-4 h-4 ml-2" />
+                Shop Dashboard <ArrowRight className="w-4 h-4" />
               </Link>
             ) : (
               <Link
                 href={'/apply' as any}
-                className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-3 rounded-full text-sm font-medium text-white bg-[#0071e3] hover:bg-[#0077ed] transition-all shadow-[0_2px_10px_rgba(0,113,227,0.25)] hover:shadow-[0_4px_16px_rgba(0,113,227,0.35)]"
+                className="w-full sm:w-auto h-12 px-7 rounded-full text-sm font-semibold bg-[#0071e3] text-white hover:bg-[#0077ed] transition-all shadow-[0_4px_16px_rgba(0,113,227,0.3)] flex items-center justify-center gap-2"
               >
-                Start Free
-                <ArrowRight className="w-4 h-4 ml-2" />
+                Start Free as Operator <ArrowRight className="w-4 h-4" />
               </Link>
             )}
-            <a
-              href="#product"
-              className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3 rounded-full text-sm font-medium text-[#1d1d1f] bg-white/90 border border-black/[0.1] hover:bg-white hover:border-black/[0.2] transition-all shadow-sm"
+            <Link
+              href="/scan"
+              className="w-full sm:w-auto h-12 px-6 rounded-full text-sm font-semibold bg-white text-[#1d1d1f] hover:bg-black/5 border border-black/[0.08] transition-all flex items-center justify-center gap-2"
             >
-              See how it works
-              <ChevronRight className="w-4 h-4 ml-1 text-[#6e6e73]" />
-            </a>
+              <QrCode className="w-4 h-4 text-[#0071e3]" /> Scan Table QR
+            </Link>
           </div>
 
-          {/* Apple Micro Footnote */}
-          <p className="mt-4 text-xs text-[#86868b]">
-            Zero monthly subscriptions &bull; Small cut from payments &bull; 1-tap automated out-of-stock refunds
-          </p>
-
-          {/* High-level Apple Metric Strip */}
-          <div className="mt-14 pt-8 border-t border-black/[0.06] grid grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl mx-auto">
-            <div>
-              <p className="text-2xl sm:text-3xl font-semibold tracking-tight text-[#1d1d1f]">15 min</p>
-              <p className="text-xs sm:text-sm text-[#86868b] mt-0.5">Average venue setup</p>
+          {/* Key Value Strip */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-4 mt-8 sm:mt-14 max-w-4xl mx-auto">
+            <div className="bg-white/80 backdrop-blur-sm p-3 sm:p-4 rounded-2xl border border-black/[0.04] text-center shadow-2xs">
+              <p className="text-xl sm:text-2xl font-bold tracking-tight text-[#1d1d1f]">RM 0.00</p>
+              <p className="text-[11px] sm:text-xs text-[#86868b] mt-0.5 truncate">Zero subscription</p>
             </div>
-            <div>
-              <p className="text-2xl sm:text-3xl font-semibold tracking-tight text-[#1d1d1f]">0 sec</p>
-              <p className="text-xs sm:text-sm text-[#86868b] mt-0.5">Customer app download</p>
+            <div className="bg-white/80 backdrop-blur-sm p-3 sm:p-4 rounded-2xl border border-black/[0.04] text-center shadow-2xs">
+              <p className="text-xl sm:text-2xl font-bold tracking-tight text-[#1d1d1f]">&lt; 1 sec</p>
+              <p className="text-[11px] sm:text-xs text-[#86868b] mt-0.5 truncate">Instant web app</p>
             </div>
-            <div>
-              <p className="text-2xl sm:text-3xl font-semibold tracking-tight text-[#1d1d1f]">100%</p>
-              <p className="text-xs sm:text-sm text-[#86868b] mt-0.5">Direct kitchen dispatch</p>
+            <div className="bg-white/80 backdrop-blur-sm p-3 sm:p-4 rounded-2xl border border-black/[0.04] text-center shadow-2xs">
+              <p className="text-xl sm:text-2xl font-bold tracking-tight text-[#1d1d1f]">100%</p>
+              <p className="text-[11px] sm:text-xs text-[#86868b] mt-0.5 truncate">Direct food cut</p>
             </div>
-            <div>
-              <p className="text-2xl sm:text-3xl font-semibold tracking-tight text-[#1d1d1f]">1 Tap</p>
-              <p className="text-xs sm:text-sm text-[#86868b] mt-0.5">Multi-stall checkout</p>
+            <div className="bg-white/80 backdrop-blur-sm p-3 sm:p-4 rounded-2xl border border-black/[0.04] text-center shadow-2xs">
+              <p className="text-xl sm:text-2xl font-bold tracking-tight text-[#1d1d1f]">1 Tap</p>
+              <p className="text-[11px] sm:text-xs text-[#86868b] mt-0.5 truncate">Multi-stall cart</p>
             </div>
           </div>
         </div>
 
         {/* ── INTERACTIVE PRODUCT STUDIO DISPLAY SHOWCASE ── */}
-        <div id="product" className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-14 sm:mt-18">
-          {/* Segmented Control Switcher */}
-          <div className="flex justify-center mb-6">
-            <div className="inline-flex p-1 bg-black/[0.06] backdrop-blur-md rounded-full border border-black/[0.04]">
+        <div id="product" className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-10 sm:mt-16">
+          {/* Segmented Control Switcher - Compact on mobile */}
+          <div className="flex justify-center mb-5 sm:mb-6">
+            <div className="inline-flex w-full sm:w-auto p-1 bg-black/[0.06] backdrop-blur-md rounded-full border border-black/[0.04]">
               <button
                 onClick={() => setActiveShowcaseTab('operator')}
-                className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all ${
+                className={`flex-1 sm:flex-initial px-3 sm:px-5 py-2 rounded-full text-xs font-semibold transition-all ${
                   activeShowcaseTab === 'operator'
                     ? 'bg-white text-[#1d1d1f] shadow-sm'
                     : 'text-[#6e6e73] hover:text-[#1d1d1f]'
                 }`}
               >
-                Food Court Operator
+                <span className="sm:hidden">🏢 Operator</span>
+                <span className="hidden sm:inline">🏢 Food Court Operator</span>
               </button>
               <button
                 onClick={() => setActiveShowcaseTab('kitchen')}
-                className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all ${
+                className={`flex-1 sm:flex-initial px-3 sm:px-5 py-2 rounded-full text-xs font-semibold transition-all ${
                   activeShowcaseTab === 'kitchen'
                     ? 'bg-white text-[#1d1d1f] shadow-sm'
                     : 'text-[#6e6e73] hover:text-[#1d1d1f]'
                 }`}
               >
-                Stall Kitchen View
+                <span className="sm:hidden">🍳 Kitchen</span>
+                <span className="hidden sm:inline">🍳 Stall Kitchen View</span>
               </button>
               <button
                 onClick={() => setActiveShowcaseTab('customer')}
-                className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all ${
+                className={`flex-1 sm:flex-initial px-3 sm:px-5 py-2 rounded-full text-xs font-semibold transition-all ${
                   activeShowcaseTab === 'customer'
                     ? 'bg-white text-[#1d1d1f] shadow-sm'
                     : 'text-[#6e6e73] hover:text-[#1d1d1f]'
                 }`}
               >
-                Diner QR Experience
+                <span className="sm:hidden">📱 Diner QR</span>
+                <span className="hidden sm:inline">📱 Diner QR Experience</span>
               </button>
             </div>
           </div>
 
-          {/* Apple Hardware Display Frame */}
-          <div className="relative rounded-[28px] sm:rounded-[36px] bg-[#1d1d1f] p-2.5 sm:p-4 shadow-[0_30px_100px_rgba(0,0,0,0.18)] border border-black/10">
-            {/* Top Bar of Hardware Display */}
+          {/* Hardware Display Frame */}
+          <div className="relative rounded-[22px] sm:rounded-[36px] bg-[#1d1d1f] p-2 sm:p-4 shadow-[0_24px_60px_rgba(0,0,0,0.14)] border border-black/10">
+            {/* Top Bar */}
             <div className="flex items-center justify-between px-3 py-2 text-white/50 text-[11px] border-b border-white/[0.06]">
-              <div className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-[#ff5f56]" />
-                <span className="w-2.5 h-2.5 rounded-full bg-[#ffbd2e]" />
-                <span className="w-2.5 h-2.5 rounded-full bg-[#27c93f]" />
-                <span className="ml-3 text-white/70 font-mono text-[10px]">app.hawker.com &mdash; Lim&apos;s Foodcourt</span>
+              <div className="flex items-center gap-1.5 min-w-0">
+                <span className="w-2.5 h-2.5 rounded-full bg-[#ff5f56] shrink-0" />
+                <span className="w-2.5 h-2.5 rounded-full bg-[#ffbd2e] shrink-0" />
+                <span className="w-2.5 h-2.5 rounded-full bg-[#27c93f] shrink-0" />
+                <span className="ml-2 text-white/70 font-mono text-[10px] truncate">
+                  app.hawker.com &mdash; Lim&apos;s Foodcourt
+                </span>
               </div>
-              <div className="flex items-center gap-3">
-                <span className="inline-flex items-center gap-1.5 text-[#30d158] font-medium">
+              <div className="flex items-center gap-2 shrink-0">
+                <span className="inline-flex items-center gap-1.5 text-[#30d158] font-medium text-[10px] sm:text-xs">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#30d158] animate-ping" />
                   Live Sync
                 </span>
-                <span className="text-white/40">10 Booth Slots &bull; Western Kitchen Active</span>
               </div>
             </div>
 
             {/* Display Canvas */}
-            <div className="bg-[#fbfbfd] rounded-[20px] sm:rounded-[26px] p-4 sm:p-7 text-[#1d1d1f] min-h-[460px] overflow-hidden">
+            <div className="bg-[#fbfbfd] rounded-[16px] sm:rounded-[26px] p-3.5 sm:p-6 text-[#1d1d1f] min-h-[360px] overflow-hidden">
               {/* TAB 1: Operator View */}
               {activeShowcaseTab === 'operator' && (
-                <div className="space-y-6">
-                  {/* Top Stats Banner */}
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
-                    <div className="bg-white p-4 rounded-2xl border border-black/[0.06] shadow-sm">
-                      <p className="text-xs text-[#86868b] font-medium">Today&apos;s Gross Sales</p>
-                      <p className="text-xl sm:text-2xl font-semibold mt-1 tracking-tight">RM 1,420.00</p>
-                      <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#30d158] mt-1">
-                        <TrendingUp className="w-3 h-3" /> +18.5% vs yesterday
+                <div className="space-y-4 sm:space-y-6">
+                  {/* Stats Grid */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-4">
+                    <div className="bg-white p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-black/[0.06] shadow-2xs">
+                      <p className="text-[10px] sm:text-xs text-[#86868b] font-medium truncate">Today&apos;s Sales</p>
+                      <p className="text-lg sm:text-2xl font-bold mt-0.5 tracking-tight">RM 1,420.00</p>
+                      <span className="inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-semibold text-[#30d158] mt-0.5">
+                        <TrendingUp className="w-3 h-3" /> +18.5%
                       </span>
                     </div>
 
-                    <div className="bg-white p-4 rounded-2xl border border-black/[0.06] shadow-sm">
-                      <p className="text-xs text-[#86868b] font-medium">Total Orders Fulfilled</p>
-                      <p className="text-xl sm:text-2xl font-semibold mt-1 tracking-tight">142</p>
-                      <span className="inline-flex items-center gap-1 text-[11px] font-medium text-[#86868b] mt-1">
-                        Peak: 12:45 PM &bull; 4.2/min
+                    <div className="bg-white p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-black/[0.06] shadow-2xs">
+                      <p className="text-[10px] sm:text-xs text-[#86868b] font-medium truncate">Total Orders</p>
+                      <p className="text-lg sm:text-2xl font-bold mt-0.5 tracking-tight">142</p>
+                      <span className="text-[10px] sm:text-[11px] font-medium text-[#86868b] mt-0.5 block truncate">
+                        Peak: 12:45 PM
                       </span>
                     </div>
 
-                    <div className="bg-white p-4 rounded-2xl border border-black/[0.06] shadow-sm">
-                      <p className="text-xs text-[#86868b] font-medium">Average Prep Velocity</p>
-                      <p className="text-xl sm:text-2xl font-semibold mt-1 tracking-tight">6.0 mins</p>
-                      <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#30d158] mt-1">
+                    <div className="bg-white p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-black/[0.06] shadow-2xs hidden md:block">
+                      <p className="text-xs text-[#86868b] font-medium">Prep Velocity</p>
+                      <p className="text-2xl font-bold mt-0.5 tracking-tight">6.0 mins</p>
+                      <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#30d158] mt-0.5">
                         <Zap className="w-3 h-3" /> Western Kitchen
                       </span>
                     </div>
 
-                    <div className="bg-white p-4 rounded-2xl border border-black/[0.06] shadow-sm">
-                      <p className="text-xs text-[#86868b] font-medium">Active Booth Slots</p>
-                      <p className="text-xl sm:text-2xl font-semibold mt-1 tracking-tight">10 Slots</p>
-                      <span className="inline-flex items-center gap-1 text-[11px] font-medium text-[#0071e3] mt-1">
-                        1 Active &bull; 9 Ready to Invite
+                    <div className="bg-white p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-black/[0.06] shadow-2xs hidden md:block">
+                      <p className="text-xs text-[#86868b] font-medium">Active Booths</p>
+                      <p className="text-2xl font-bold mt-0.5 tracking-tight">10 Slots</p>
+                      <span className="text-[11px] font-medium text-[#0071e3] mt-0.5 block">
+                        1 Active • 9 Invited
                       </span>
                     </div>
                   </div>
 
-                  {/* Real-time Booth Roster Grid */}
+                  {/* Booth Roster */}
                   <div>
-                    <div className="flex items-center justify-between mb-3">
-                      <h4 className="text-sm font-semibold tracking-tight text-[#1d1d1f]">Live Booth Operations</h4>
-                      <span className="text-xs text-[#86868b]">Lim&apos;s Foodcourt &bull; Auto-sync</span>
+                    <div className="flex items-center justify-between mb-2.5">
+                      <h4 className="text-xs sm:text-sm font-semibold tracking-tight text-[#1d1d1f]">Live Booth Operations</h4>
+                      <span className="text-[10px] sm:text-xs text-[#86868b]">Lim&apos;s Foodcourt</span>
                     </div>
 
-                    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-3">
                       {[
                         {
                           name: 'Western',
@@ -351,7 +329,7 @@ export default function LandingPage() {
                           orders: 0,
                           status: 'Ready to Invite',
                           statusColor: 'text-[#0071e3] bg-[#0071e3]/10',
-                          badge: 'Invitation Link Ready',
+                          badge: 'Token: HKR-8F92-KL',
                         },
                         {
                           name: 'Booth Slot #03',
@@ -362,52 +340,25 @@ export default function LandingPage() {
                           statusColor: 'text-[#0071e3] bg-[#0071e3]/10',
                           badge: 'Invitation Link Ready',
                         },
-                        {
-                          name: 'Booth Slot #04',
-                          stall: 'Booth #04',
-                          revenue: 'RM 0.00',
-                          orders: 0,
-                          status: 'Ready to Invite',
-                          statusColor: 'text-[#0071e3] bg-[#0071e3]/10',
-                          badge: 'Invitation Link Ready',
-                        },
-                        {
-                          name: 'Booth Slot #05',
-                          stall: 'Booth #05',
-                          revenue: 'RM 0.00',
-                          orders: 0,
-                          status: 'Ready to Invite',
-                          statusColor: 'text-[#0071e3] bg-[#0071e3]/10',
-                          badge: 'Invitation Link Ready',
-                        },
-                        {
-                          name: 'Booth Slot #06',
-                          stall: 'Booth #06',
-                          revenue: 'RM 0.00',
-                          orders: 0,
-                          status: 'Ready to Invite',
-                          statusColor: 'text-[#0071e3] bg-[#0071e3]/10',
-                          badge: 'Invitation Link Ready',
-                        },
                       ].map((booth) => (
                         <div
-                          key={booth.name}
-                          className="bg-white p-3.5 rounded-xl border border-black/[0.05] hover:border-black/[0.12] transition-colors"
+                          key={booth.stall}
+                          className="bg-white p-3 rounded-xl border border-black/[0.05] shadow-2xs"
                         >
                           <div className="flex items-start justify-between">
                             <div>
-                              <span className="text-[10px] font-semibold text-[#86868b] uppercase tracking-wider">
+                              <span className="text-[9px] font-bold text-[#86868b] uppercase tracking-wider">
                                 {booth.stall}
                               </span>
-                              <p className="text-xs font-semibold text-[#1d1d1f] truncate max-w-[150px]">{booth.name}</p>
+                              <p className="text-xs sm:text-sm font-bold text-[#1d1d1f] truncate">{booth.name}</p>
                             </div>
                             <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${booth.statusColor}`}>
                               {booth.status}
                             </span>
                           </div>
-                          <div className="mt-3 flex items-center justify-between text-xs pt-2 border-t border-black/[0.04]">
-                            <span className="font-semibold text-[#1d1d1f]">{booth.revenue}</span>
-                            <span className="text-[#86868b]">{booth.badge}</span>
+                          <div className="mt-2.5 flex items-center justify-between text-xs pt-2 border-t border-black/[0.04]">
+                            <span className="font-bold text-[#1d1d1f]">{booth.revenue}</span>
+                            <span className="text-[10px] text-[#86868b] truncate">{booth.badge}</span>
                           </div>
                         </div>
                       ))}
@@ -418,75 +369,74 @@ export default function LandingPage() {
 
               {/* TAB 2: Kitchen Display View */}
               {activeShowcaseTab === 'kitchen' && (
-                <div className="space-y-5">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-[#1d1d1f] text-white p-4 rounded-2xl">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center">
-                        <ChefHat className="w-5 h-5 text-[#f5f5f7]" />
+                <div className="space-y-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-[#1d1d1f] text-white p-3.5 sm:p-4 rounded-xl sm:rounded-2xl">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-white/10 flex items-center justify-center shrink-0">
+                        <ChefHat className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                       </div>
                       <div>
-                        <p className="text-xs text-white/60 font-medium">Stall Kitchen Display &bull; Booth #01</p>
-                        <h4 className="text-sm font-semibold tracking-tight text-white">Western &bull; Lim&apos;s Foodcourt</h4>
+                        <p className="text-[10px] sm:text-xs text-white/60 font-medium">Kitchen Display • Booth #01</p>
+                        <h4 className="text-xs sm:text-sm font-bold text-white">Western • Lim&apos;s Foodcourt</h4>
                       </div>
                     </div>
-                    <div className="flex items-center gap-3 text-xs">
-                      <span className="px-2.5 py-1 rounded-full bg-[#30d158]/20 text-[#30d158] font-medium flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full bg-[#30d158]" /> Audio Chimes Active
+                    <div className="flex items-center gap-2 text-xs">
+                      <span className="px-2 py-0.5 rounded-full bg-[#30d158]/20 text-[#30d158] text-[10px] font-medium flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#30d158]" /> Audio Active
                       </span>
-                      <span className="text-white/60">Live Wok Tickets</span>
                     </div>
                   </div>
 
-                  <div className="grid sm:grid-cols-2 gap-3">
-                    <div className="bg-white rounded-2xl border-2 border-[#ff9f0a] p-4 shadow-sm relative">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="bg-white rounded-2xl border-2 border-[#ff9f0a] p-3.5 sm:p-4 shadow-sm">
                       <div className="flex items-center justify-between text-xs">
                         <span className="font-bold text-[#1d1d1f]">Ticket #1042</span>
                         <span className="px-2 py-0.5 rounded-full bg-[#ff9f0a]/15 text-[#ff9f0a] font-bold text-[10px]">
-                          Table 04 &bull; 3m ago
+                          Table 04 • 3m ago
                         </span>
                       </div>
-                      <div className="mt-3 space-y-2 border-y border-black/[0.06] py-3 text-xs">
+                      <div className="mt-2.5 space-y-1.5 border-y border-black/[0.06] py-2.5 text-xs">
                         <div className="font-medium text-[#1d1d1f]">
                           <p className="font-bold text-sm">1x Spaghetti</p>
-                          <p className="text-[11px] text-[#0071e3] font-semibold mt-0.5">&bull; Freshly Prepared Pasta</p>
+                          <p className="text-[11px] text-[#0071e3] font-semibold mt-0.5">• Freshly Prepared Pasta</p>
                         </div>
                       </div>
                       <div className="mt-2.5 flex items-center justify-between text-xs">
-                        <span className="text-[11px] font-bold text-[#1d1d1f]">STALL TOTAL: RM 10.01</span>
+                        <span className="text-[11px] font-bold text-[#1d1d1f]">TOTAL: RM 10.01</span>
                         <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
                           PAID (0% Cut)
                         </span>
                       </div>
-                      <button className="mt-3 w-full py-2 rounded-xl text-xs font-semibold bg-[#30d158] text-white hover:bg-[#28b84d] transition-colors">
+                      <button className="mt-3 w-full py-2.5 rounded-xl text-xs font-semibold bg-[#30d158] text-white hover:bg-[#28b84d] transition-colors">
                         Mark Ready for Table 04
                       </button>
                     </div>
 
-                    <div className="bg-white rounded-2xl border border-black/[0.08] p-4 shadow-sm">
+                    <div className="bg-white rounded-2xl border border-black/[0.08] p-3.5 sm:p-4 shadow-sm hidden sm:block">
                       <div className="flex items-center justify-between text-xs">
                         <span className="font-bold text-[#1d1d1f]">Ticket #1043</span>
                         <span className="px-2 py-0.5 rounded-full bg-[#0071e3]/10 text-[#0071e3] font-bold text-[10px]">
-                          Table 02 &bull; 1m ago
+                          Table 02 • 1m ago
                         </span>
                       </div>
-                      <div className="mt-3 space-y-2 border-y border-black/[0.06] py-3 text-xs">
+                      <div className="mt-2.5 space-y-1.5 border-y border-black/[0.06] py-2.5 text-xs">
                         <div className="flex items-start justify-between gap-2">
                           <div className="font-medium text-[#1d1d1f]">
                             <p className="font-bold text-sm">1x Spaghetti</p>
-                            <p className="text-[11px] text-[#6e6e73]">&bull; Standard Serving</p>
+                            <p className="text-[11px] text-[#6e6e73]">• Standard Serving</p>
                           </div>
-                          <button className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-rose-50 text-rose-700 border border-rose-200 shrink-0 hover:bg-rose-100">
-                            Sold Out / Refund
-                          </button>
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-rose-50 text-rose-700 border border-rose-200 shrink-0">
+                            Refund
+                          </span>
                         </div>
                       </div>
                       <div className="mt-2.5 flex items-center justify-between text-xs">
-                        <span className="text-[11px] font-bold text-[#1d1d1f]">STALL TOTAL: RM 10.01</span>
+                        <span className="text-[11px] font-bold text-[#1d1d1f]">TOTAL: RM 10.01</span>
                         <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
                           PAID (0% Cut)
                         </span>
                       </div>
-                      <button className="mt-3 w-full py-2 rounded-xl text-xs font-semibold bg-[#1d1d1f] text-white hover:bg-black transition-colors">
+                      <button className="mt-3 w-full py-2.5 rounded-xl text-xs font-semibold bg-[#1d1d1f] text-white hover:bg-black transition-colors">
                         Move to Kitchen
                       </button>
                     </div>
@@ -494,28 +444,25 @@ export default function LandingPage() {
                 </div>
               )}
 
-              {/* TAB 3: Customer Mobile Experience */}
+              {/* TAB 3: Diner Mobile Experience */}
               {activeShowcaseTab === 'customer' && (
-                <div className="max-w-md mx-auto bg-white rounded-3xl border border-black/[0.1] shadow-xl p-5 space-y-4">
+                <div className="max-w-sm mx-auto bg-white rounded-2xl sm:rounded-3xl border border-black/[0.08] shadow-lg p-4 sm:p-5 space-y-3.5">
                   <div className="flex items-center justify-between border-b border-black/[0.06] pb-3">
                     <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-full bg-[#0071e3] text-white flex items-center justify-center font-bold text-xs">
+                      <div className="w-8 h-8 rounded-full bg-[#0071e3] text-white flex items-center justify-center font-bold text-xs shrink-0">
                         04
                       </div>
-                      <div>
-                        <p className="text-xs font-bold text-[#1d1d1f]">Table 04 &bull; Lim&apos;s Foodcourt</p>
-                        <p className="text-[10px] text-[#86868b]">Receipt &bull; Verified Digital Order</p>
+                      <div className="min-w-0">
+                        <p className="text-xs font-bold text-[#1d1d1f] truncate">Table 04 • Lim&apos;s Foodcourt</p>
+                        <p className="text-[10px] text-[#86868b]">Verified Table Session</p>
                       </div>
                     </div>
-                    <span className="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-[#30d158]/10 text-[#30d158]">
-                      PAID via eWallet
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#30d158]/10 text-[#30d158] shrink-0">
+                      PAID
                     </span>
                   </div>
 
-                  <div className="bg-[#f5f5f7] p-3.5 rounded-2xl space-y-2 text-xs">
-                    <p className="font-semibold text-[11px] text-[#86868b] uppercase tracking-wider">
-                      Ordered Dishes
-                    </p>
+                  <div className="bg-[#f5f5f7] p-3 rounded-xl space-y-2 text-xs">
                     <div className="flex items-center justify-between font-medium">
                       <span>1x Spaghetti (Western - Booth 01)</span>
                       <span className="font-bold text-[#1d1d1f]">RM 10.01</span>
@@ -525,7 +472,7 @@ export default function LandingPage() {
                       <span className="font-medium text-[#1d1d1f]">RM 10.01</span>
                     </div>
                     <div className="flex items-center justify-between text-xs text-[#6e6e73]">
-                      <span>Platform Fee (Flat Diner Fee)</span>
+                      <span>Convenience Fee (Diner Flat)</span>
                       <span className="font-medium text-[#1d1d1f]">RM 0.50</span>
                     </div>
                     <div className="pt-2 border-t border-black/[0.06] flex items-center justify-between font-bold text-sm">
@@ -534,11 +481,11 @@ export default function LandingPage() {
                     </div>
                   </div>
 
-                  <button className="w-full py-3 rounded-full text-xs font-bold bg-[#1d1d1f] text-white shadow-md hover:bg-black transition-colors flex items-center justify-center gap-2">
-                    <CreditCard className="w-4 h-4" /> Paid via DuitNow QR / Touch &apos;n Go
+                  <button className="w-full py-3 rounded-full text-xs font-bold bg-[#1d1d1f] text-white shadow-sm flex items-center justify-center gap-2">
+                    <CreditCard className="w-4 h-4" /> Paid via DuitNow QR
                   </button>
                   <p className="text-center text-[10px] text-[#86868b]">
-                    0% hawker cut &bull; 1-Tap out-of-stock refunds direct to eWallet &bull; No app download
+                    0% hawker cut • 1-Tap out-of-stock refunds direct to eWallet
                   </p>
                 </div>
               )}
@@ -548,73 +495,73 @@ export default function LandingPage() {
       </section>
 
       {/* ── THE PROBLEM & THE SOLUTION (Apple Contrast) ── */}
-      <section className="py-20 sm:py-28 bg-white border-y border-black/[0.06]">
+      <section className="py-14 sm:py-24 bg-white border-y border-black/[0.06]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-2xl mx-auto text-center mb-16">
-            <p className="text-xs font-semibold tracking-wider uppercase text-[#0071e3] mb-3">
+          <div className="max-w-2xl mx-auto text-center mb-10 sm:mb-16">
+            <p className="text-xs font-bold tracking-wider uppercase text-[#0071e3] mb-2">
               The Food Hall Paradigm
             </p>
-            <h2 className="text-3xl sm:text-5xl font-semibold tracking-[-0.03em] text-[#1d1d1f]">
+            <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-[#1d1d1f]">
               The friction of old food halls. Reimagined.
             </h2>
-            <p className="mt-4 text-base sm:text-lg text-[#6e6e73]">
+            <p className="mt-3 text-sm sm:text-base text-[#6e6e73]">
               Traditional hawker centres suffer from fragmented queues, cash bottlenecks, and zero centralized operational data. Hawker unifies the entire room.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8 items-stretch">
+          <div className="grid md:grid-cols-2 gap-6 sm:gap-8 items-stretch">
             {/* The Old Way */}
-            <div className="bg-[#f5f5f7] p-8 sm:p-10 rounded-[32px] border border-black/[0.04] flex flex-col justify-between">
+            <div className="bg-[#f5f5f7] p-5 sm:p-8 rounded-2xl sm:rounded-3xl border border-black/[0.04] flex flex-col justify-between">
               <div>
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-black/[0.06] text-[#6e6e73] mb-6">
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-black/[0.06] text-[#6e6e73] mb-4">
                   The Old Way
                 </span>
-                <h3 className="text-2xl font-semibold tracking-tight text-[#1d1d1f]">
-                  Chaos, paper slips, and blind spots.
+                <h3 className="text-xl sm:text-2xl font-bold tracking-tight text-[#1d1d1f]">
+                  Fragmented queues. Blind management.
                 </h3>
-                <ul className="mt-6 space-y-4 text-sm text-[#515154]">
+                <ul className="mt-5 space-y-3.5 text-xs sm:text-sm text-[#6e6e73]">
                   <li className="flex items-start gap-3">
                     <span className="w-5 h-5 rounded-full bg-red-100 text-red-600 flex items-center justify-center text-xs font-bold mt-0.5 shrink-0">
-                      &times;
+                      ✕
                     </span>
                     <span>
-                      <strong>Customers wait in 4 separate lines</strong> just to assemble a single meal for their family.
+                      <strong>Customers wait in 4 separate lines</strong> to buy drinks, noodles, and dessert, carrying noisy buzzers back to tables.
                     </span>
                   </li>
                   <li className="flex items-start gap-3">
                     <span className="w-5 h-5 rounded-full bg-red-100 text-red-600 flex items-center justify-center text-xs font-bold mt-0.5 shrink-0">
-                      &times;
+                      ✕
                     </span>
                     <span>
-                      <strong>Booth owners shout order numbers</strong> over noisy dining crowds, leading to cold dishes and walkouts.
+                      <strong>Stall woks struggle with change</strong> and lost paper chits while shouting numbers over dining noise.
                     </span>
                   </li>
                   <li className="flex items-start gap-3">
                     <span className="w-5 h-5 rounded-full bg-red-100 text-red-600 flex items-center justify-center text-xs font-bold mt-0.5 shrink-0">
-                      &times;
+                      ✕
                     </span>
                     <span>
-                      <strong>Venue managers have zero visibility</strong> into daily gross sales, stall turnover, or peak congestion.
+                      <strong>Operators have zero visibility</strong> into daily floor turnover, peak hours, or individual stall sales.
                     </span>
                   </li>
                 </ul>
               </div>
-              <div className="mt-8 pt-6 border-t border-black/[0.06] text-xs text-[#86868b]">
-                Result: Lost sales, customer frustration, and painful paper accounting.
+              <div className="mt-6 pt-4 border-t border-black/[0.06] text-xs text-[#86868b]">
+                Result: Lost sales, customer friction, and painful paper accounting.
               </div>
             </div>
 
             {/* The Hawker Way */}
-            <div className="bg-[#1d1d1f] text-white p-8 sm:p-10 rounded-[32px] shadow-2xl flex flex-col justify-between relative overflow-hidden">
+            <div className="bg-[#1d1d1f] text-white p-5 sm:p-8 rounded-2xl sm:rounded-3xl shadow-xl flex flex-col justify-between relative overflow-hidden">
               <div className="absolute top-0 right-0 w-64 h-64 bg-[#0071e3]/20 rounded-full blur-3xl pointer-events-none" />
               <div>
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-[#0071e3]/20 text-[#2997ff] mb-6">
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-[#0071e3]/20 text-[#2997ff] mb-4">
                   The Hawker Way
                 </span>
-                <h3 className="text-2xl font-semibold tracking-tight text-white">
+                <h3 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
                   One platform. Total clarity.
                 </h3>
-                <ul className="mt-6 space-y-4 text-sm text-[#d2d2d7]">
+                <ul className="mt-5 space-y-3.5 text-xs sm:text-sm text-[#d2d2d7]">
                   <li className="flex items-start gap-3">
                     <span className="w-5 h-5 rounded-full bg-[#30d158]/20 text-[#30d158] flex items-center justify-center text-xs font-bold mt-0.5 shrink-0">
                       ✓
@@ -641,8 +588,8 @@ export default function LandingPage() {
                   </li>
                 </ul>
               </div>
-              <div className="mt-8 pt-6 border-t border-white/10 text-xs text-white/50 flex items-center justify-between">
-                <span>Result: +28% average ticket size &bull; zero lost orders</span>
+              <div className="mt-6 pt-4 border-t border-white/10 text-xs text-white/50 flex items-center justify-between">
+                <span>Result: +28% average ticket size • zero lost orders</span>
                 <span className="text-[#2997ff] font-semibold">100% Automated</span>
               </div>
             </div>
@@ -650,22 +597,22 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── HOW IT WORKS: 4-STEP ONBOARDING & INVITATION ARCHITECTURE ── */}
-      <section id="how-it-works" className="py-20 sm:py-28 bg-[#f5f5f7]">
+      {/* ── HOW IT WORKS: 4-STEP SETUP ── */}
+      <section id="how-it-works" className="py-14 sm:py-24 bg-[#f5f5f7]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-2xl mx-auto text-center mb-16">
-            <p className="text-xs font-semibold tracking-wider uppercase text-[#0071e3] mb-3">
+          <div className="max-w-2xl mx-auto text-center mb-10 sm:mb-16">
+            <p className="text-xs font-bold tracking-wider uppercase text-[#0071e3] mb-2">
               Frictionless Setup
             </p>
-            <h2 className="text-3xl sm:text-5xl font-semibold tracking-[-0.03em] text-[#1d1d1f]">
+            <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-[#1d1d1f]">
               Up and running in four simple steps.
             </h2>
-            <p className="mt-4 text-base sm:text-lg text-[#6e6e73]">
+            <p className="mt-3 text-sm sm:text-base text-[#6e6e73]">
               From food hall creation to live table ordering in under 15 minutes.
             </p>
           </div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             {[
               {
                 step: '01',
@@ -694,64 +641,64 @@ export default function LandingPage() {
             ].map((item) => (
               <div
                 key={item.step}
-                className="bg-white p-7 rounded-[28px] border border-black/[0.06] shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] transition-all flex flex-col justify-between"
+                className="bg-white p-5 sm:p-6 rounded-2xl sm:rounded-3xl border border-black/[0.06] shadow-2xs hover:shadow-sm transition-all flex flex-col justify-between"
               >
                 <div>
-                  <div className="flex items-center justify-between mb-5">
+                  <div className="flex items-center justify-between mb-4">
                     <span className="text-xs font-mono font-bold text-[#0071e3] bg-[#0071e3]/10 px-2.5 py-1 rounded-full">
                       Step {item.step}
                     </span>
                     <item.icon className="w-5 h-5 text-[#86868b]" />
                   </div>
-                  <h3 className="text-lg font-semibold text-[#1d1d1f] tracking-tight">{item.title}</h3>
-                  <p className="mt-2 text-sm text-[#6e6e73] leading-relaxed">{item.desc}</p>
+                  <h3 className="text-base sm:text-lg font-bold text-[#1d1d1f] tracking-tight">{item.title}</h3>
+                  <p className="mt-1.5 text-xs sm:text-sm text-[#6e6e73] leading-relaxed">{item.desc}</p>
                 </div>
               </div>
             ))}
           </div>
 
-          {/* Visual Invitation Flow Deep Dive */}
-          <div className="mt-12 bg-white rounded-[32px] p-6 sm:p-10 border border-black/[0.06] shadow-sm">
-            <div className="grid lg:grid-cols-2 gap-8 items-center">
+          {/* Invitation Deep Dive Card */}
+          <div className="mt-8 sm:mt-12 bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-8 border border-black/[0.06] shadow-sm">
+            <div className="grid lg:grid-cols-2 gap-6 sm:gap-8 items-center">
               <div>
-                <span className="text-xs font-semibold text-[#0071e3] uppercase tracking-wider">
+                <span className="text-xs font-bold text-[#0071e3] uppercase tracking-wider">
                   The Booth Invitation Flow
                 </span>
-                <h3 className="text-2xl font-semibold tracking-tight text-[#1d1d1f] mt-2">
+                <h3 className="text-xl sm:text-2xl font-bold tracking-tight text-[#1d1d1f] mt-1.5">
                   No complex setup for your stall holders.
                 </h3>
-                <p className="mt-3 text-sm text-[#6e6e73] leading-relaxed">
+                <p className="mt-2.5 text-xs sm:text-sm text-[#6e6e73] leading-relaxed">
                   Food court operators shouldn&apos;t have to be IT administrators. When you generate a booth token in Hawker, stall owners receive a private invitation link, name their stall, and launch their kitchen display instantly.
                 </p>
 
-                <div className="mt-6 flex flex-wrap gap-4 items-center">
-                  <div className="flex items-center gap-2 text-xs font-medium text-[#1d1d1f]">
+                <div className="mt-5 flex flex-wrap gap-4 items-center">
+                  <div className="flex items-center gap-2 text-xs font-semibold text-[#1d1d1f]">
                     <ShieldCheck className="w-4 h-4 text-[#30d158]" /> Single-use security token
                   </div>
-                  <div className="flex items-center gap-2 text-xs font-medium text-[#1d1d1f]">
+                  <div className="flex items-center gap-2 text-xs font-semibold text-[#1d1d1f]">
                     <Clock className="w-4 h-4 text-[#0071e3]" /> 48-hour expiration safety
                   </div>
                 </div>
               </div>
 
               {/* Interactive Mock Invite Code Card */}
-              <div className="bg-[#f5f5f7] p-5 sm:p-6 rounded-2xl border border-black/[0.08]">
-                <div className="flex items-center justify-between text-xs text-[#86868b] mb-3">
+              <div className="bg-[#f5f5f7] p-4 sm:p-5 rounded-2xl border border-black/[0.06]">
+                <div className="flex items-center justify-between text-xs text-[#86868b] mb-2.5">
                   <span>Generated by Shop Owner</span>
-                  <span className="text-[#30d158] font-semibold">Active & Valid</span>
+                  <span className="text-[#30d158] font-bold">Active & Valid</span>
                 </div>
-                <div className="bg-white p-4 rounded-xl border border-black/[0.06] flex items-center justify-between">
-                  <div>
+                <div className="bg-white p-3.5 rounded-xl border border-black/[0.06] flex items-center justify-between gap-3">
+                  <div className="min-w-0">
                     <p className="text-[10px] text-[#86868b] uppercase tracking-wider font-semibold">
                       Booth #04 Invitation Key
                     </p>
-                    <p className="text-xl font-mono font-bold tracking-widest text-[#1d1d1f] mt-0.5">
+                    <p className="text-base sm:text-xl font-mono font-bold tracking-wider text-[#1d1d1f] mt-0.5 truncate">
                       HKR-8F92-KL
                     </p>
                   </div>
                   <button
                     onClick={handleCopyCode}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#1d1d1f] text-white hover:bg-black transition-colors"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#1d1d1f] text-white hover:bg-black transition-colors shrink-0"
                   >
                     {copiedInvite ? (
                       <>
@@ -764,9 +711,9 @@ export default function LandingPage() {
                     )}
                   </button>
                 </div>
-                <div className="mt-4 flex items-center justify-between text-[11px] text-[#6e6e73]">
+                <div className="mt-3 flex items-center justify-between text-[11px] text-[#6e6e73]">
                   <span>Stall: Jalan Alor Char Kway Teow</span>
-                  <span className="text-[#86868b] font-medium">Delivered via private invite link</span>
+                  <span className="text-[#86868b]">Private link</span>
                 </div>
               </div>
             </div>
@@ -774,121 +721,120 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── BENTO BOX FEATURE GRID (Apple Bento Style) ── */}
-      <section id="features" className="py-20 sm:py-28 bg-white border-t border-black/[0.06]">
+      {/* ── BENTO FEATURES GRID ── */}
+      <section id="features" className="py-14 sm:py-24 bg-white border-t border-black/[0.06]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-2xl mx-auto text-center mb-16">
-            <p className="text-xs font-semibold tracking-wider uppercase text-[#0071e3] mb-3">
+          <div className="max-w-2xl mx-auto text-center mb-10 sm:mb-16">
+            <p className="text-xs font-bold tracking-wider uppercase text-[#0071e3] mb-2">
               Comprehensive Capability
             </p>
-            <h2 className="text-3xl sm:text-5xl font-semibold tracking-[-0.03em] text-[#1d1d1f]">
+            <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-[#1d1d1f]">
               Engineered for speed. Built for scale.
             </h2>
-            <p className="mt-4 text-base sm:text-lg text-[#6e6e73]">
+            <p className="mt-3 text-sm sm:text-base text-[#6e6e73]">
               Every tool a modern food hall needs, seamlessly woven together into a unified experience.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Bento 1: Multi-Stall Unified Cart (Span 2) */}
-            <div className="md:col-span-2 bg-[#f5f5f7] p-8 sm:p-10 rounded-[32px] border border-black/[0.06] flex flex-col justify-between hover:border-black/[0.12] transition-colors">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+            {/* Bento 1: Multi-Stall Cart (Span 2) */}
+            <div className="md:col-span-2 bg-[#f5f5f7] p-5 sm:p-8 rounded-2xl sm:rounded-3xl border border-black/[0.06] flex flex-col justify-between">
               <div>
-                <div className="w-10 h-10 rounded-2xl bg-white flex items-center justify-center text-[#0071e3] shadow-sm mb-6">
+                <div className="w-10 h-10 rounded-2xl bg-white flex items-center justify-center text-[#0071e3] shadow-xs mb-4">
                   <Receipt className="w-5 h-5" />
                 </div>
-                <span className="text-xs font-semibold text-[#0071e3] uppercase tracking-wider">
+                <span className="text-xs font-bold text-[#0071e3] uppercase tracking-wider">
                   Unified Checkout
                 </span>
-                <h3 className="text-2xl font-semibold text-[#1d1d1f] tracking-tight mt-1">
+                <h3 className="text-xl sm:text-2xl font-bold text-[#1d1d1f] tracking-tight mt-1">
                   One order. One payment. Multiple stalls.
                 </h3>
-                <p className="mt-3 text-sm text-[#6e6e73] max-w-xl leading-relaxed">
+                <p className="mt-2.5 text-xs sm:text-sm text-[#6e6e73] leading-relaxed">
                   Diners can select satay from Stall 1, laksa from Stall 4, and iced teh tarik from the drink stall in one digital basket. Hawker handles the sub-order breakdown, kitchen dispatch, and payment splits automatically.
                 </p>
               </div>
-              <div className="mt-8 bg-white p-4 rounded-2xl border border-black/[0.05] flex flex-wrap items-center justify-between gap-3 text-xs">
-                <span className="font-medium text-[#1d1d1f]">Supported Payments:</span>
-                <div className="flex items-center gap-2">
-                  <span className="px-2.5 py-1 rounded-full bg-[#f5f5f7] font-semibold text-[#1d1d1f]">DuitNow QR</span>
-                  <span className="px-2.5 py-1 rounded-full bg-[#f5f5f7] font-semibold text-[#1d1d1f]">Touch &apos;n Go</span>
-                  <span className="px-2.5 py-1 rounded-full bg-[#f5f5f7] font-semibold text-[#1d1d1f]">Apple Pay</span>
-                  <span className="px-2.5 py-1 rounded-full bg-[#f5f5f7] font-semibold text-[#1d1d1f]">Credit Cards</span>
+              <div className="mt-6 bg-white p-3.5 rounded-xl border border-black/[0.05] flex flex-wrap items-center justify-between gap-2 text-xs">
+                <span className="font-semibold text-[#1d1d1f]">Supported Payments:</span>
+                <div className="flex flex-wrap items-center gap-1.5 font-medium">
+                  <span className="px-2 py-0.5 rounded-full bg-[#f5f5f7] text-[#1d1d1f]">DuitNow QR</span>
+                  <span className="px-2 py-0.5 rounded-full bg-[#f5f5f7] text-[#1d1d1f]">Touch &apos;n Go</span>
+                  <span className="px-2 py-0.5 rounded-full bg-[#f5f5f7] text-[#1d1d1f]">Apple Pay</span>
                 </div>
               </div>
             </div>
 
-            {/* Bento 2: Zero App Download QR Tables */}
-            <div className="bg-[#f5f5f7] p-8 sm:p-10 rounded-[32px] border border-black/[0.06] flex flex-col justify-between hover:border-black/[0.12] transition-colors">
+            {/* Bento 2: Zero App Download */}
+            <div className="bg-[#f5f5f7] p-5 sm:p-8 rounded-2xl sm:rounded-3xl border border-black/[0.06] flex flex-col justify-between">
               <div>
-                <div className="w-10 h-10 rounded-2xl bg-white flex items-center justify-center text-[#30d158] shadow-sm mb-6">
+                <div className="w-10 h-10 rounded-2xl bg-white flex items-center justify-center text-[#30d158] shadow-xs mb-4">
                   <QrCode className="w-5 h-5" />
                 </div>
-                <span className="text-xs font-semibold text-[#30d158] uppercase tracking-wider">
+                <span className="text-xs font-bold text-[#30d158] uppercase tracking-wider">
                   Zero Friction
                 </span>
-                <h3 className="text-xl font-semibold text-[#1d1d1f] tracking-tight mt-1">
+                <h3 className="text-xl font-bold text-[#1d1d1f] tracking-tight mt-1">
                   Instant Web App
                 </h3>
-                <p className="mt-2 text-sm text-[#6e6e73] leading-relaxed">
+                <p className="mt-2 text-xs sm:text-sm text-[#6e6e73] leading-relaxed">
                   No App Store downloads. No password signups. Diners scan the table QR code and the full menu opens in 0.8 seconds on Safari or Chrome.
                 </p>
               </div>
-              <div className="mt-6 pt-4 border-t border-black/[0.06] text-xs font-semibold text-[#1d1d1f] flex items-center justify-between">
-                <span>Fast Edge Delivery</span>
+              <div className="mt-6 pt-3 border-t border-black/[0.06] text-xs font-semibold text-[#1d1d1f] flex items-center justify-between">
+                <span>Edge Speed</span>
                 <span>&lt; 1s LCP</span>
               </div>
             </div>
 
-            {/* Bento 3: Live Merchant Autonomy */}
-            <div className="bg-[#f5f5f7] p-8 sm:p-10 rounded-[32px] border border-black/[0.06] flex flex-col justify-between hover:border-black/[0.12] transition-colors">
+            {/* Bento 3: Stall Autonomy */}
+            <div className="bg-[#f5f5f7] p-5 sm:p-8 rounded-2xl sm:rounded-3xl border border-black/[0.06] flex flex-col justify-between">
               <div>
-                <div className="w-10 h-10 rounded-2xl bg-white flex items-center justify-center text-[#ff9f0a] shadow-sm mb-6">
+                <div className="w-10 h-10 rounded-2xl bg-white flex items-center justify-center text-[#ff9f0a] shadow-xs mb-4">
                   <SlidersHorizontal className="w-5 h-5" />
                 </div>
-                <span className="text-xs font-semibold text-[#ff9f0a] uppercase tracking-wider">
+                <span className="text-xs font-bold text-[#ff9f0a] uppercase tracking-wider">
                   Stall Control
                 </span>
-                <h3 className="text-xl font-semibold text-[#1d1d1f] tracking-tight mt-1">
+                <h3 className="text-xl font-bold text-[#1d1d1f] tracking-tight mt-1">
                   Stall Autonomy
                 </h3>
-                <p className="mt-2 text-sm text-[#6e6e73] leading-relaxed">
-                  Stalls customize up to 10 modifiers per dish (extra cockles, noodle choice, chili level) and 1-tap 86/sold-out toggle during lunch rushes.
+                <p className="mt-2 text-xs sm:text-sm text-[#6e6e73] leading-relaxed">
+                  Stalls customize dish modifiers (extra egg, noodle choice, spicy level) and 1-tap 86/sold-out toggle during lunch rushes.
                 </p>
               </div>
-              <div className="mt-6 pt-4 border-t border-black/[0.06] text-xs font-semibold text-[#1d1d1f] flex items-center justify-between">
-                <span>Modifiers & Customisations</span>
-                <span>Up to 10 / dish</span>
+              <div className="mt-6 pt-3 border-t border-black/[0.06] text-xs font-semibold text-[#1d1d1f] flex items-center justify-between">
+                <span>Modifiers</span>
+                <span>Active</span>
               </div>
             </div>
 
-            {/* Bento 4: Live Telemetry & Revenue Split (Span 2) */}
-            <div className="md:col-span-2 bg-[#f5f5f7] p-8 sm:p-10 rounded-[32px] border border-black/[0.06] flex flex-col justify-between hover:border-black/[0.12] transition-colors">
+            {/* Bento 4: Operator Analytics (Span 2) */}
+            <div className="md:col-span-2 bg-[#f5f5f7] p-5 sm:p-8 rounded-2xl sm:rounded-3xl border border-black/[0.06] flex flex-col justify-between">
               <div>
-                <div className="w-10 h-10 rounded-2xl bg-white flex items-center justify-center text-[#bf5af2] shadow-sm mb-6">
+                <div className="w-10 h-10 rounded-2xl bg-white flex items-center justify-center text-[#bf5af2] shadow-xs mb-4">
                   <BarChart3 className="w-5 h-5" />
                 </div>
-                <span className="text-xs font-semibold text-[#bf5af2] uppercase tracking-wider">
+                <span className="text-xs font-bold text-[#bf5af2] uppercase tracking-wider">
                   Operator Analytics
                 </span>
-                <h3 className="text-2xl font-semibold text-[#1d1d1f] tracking-tight mt-1">
+                <h3 className="text-xl sm:text-2xl font-bold text-[#1d1d1f] tracking-tight mt-1">
                   Granular food hall telemetry.
                 </h3>
-                <p className="mt-3 text-sm text-[#6e6e73] max-w-xl leading-relaxed">
+                <p className="mt-2.5 text-xs sm:text-sm text-[#6e6e73] leading-relaxed">
                   Compare performance across woks, track hourly customer surges, and generate automatic end-of-day revenue reconciliation for booth lease percentages.
                 </p>
               </div>
-              <div className="mt-8 grid grid-cols-3 gap-3">
-                <div className="bg-white p-3 rounded-xl border border-black/[0.05]">
+              <div className="mt-6 grid grid-cols-3 gap-2.5">
+                <div className="bg-white p-2.5 sm:p-3 rounded-xl border border-black/[0.05]">
                   <p className="text-[10px] text-[#86868b] font-medium">Daily Report</p>
-                  <p className="text-sm font-semibold text-[#1d1d1f] mt-0.5">Automated PDF / CSV</p>
+                  <p className="text-xs sm:text-sm font-bold text-[#1d1d1f] mt-0.5 truncate">Automated CSV</p>
                 </div>
-                <div className="bg-white p-3 rounded-xl border border-black/[0.05]">
+                <div className="bg-white p-2.5 sm:p-3 rounded-xl border border-black/[0.05]">
                   <p className="text-[10px] text-[#86868b] font-medium">Lease Payouts</p>
-                  <p className="text-sm font-semibold text-[#1d1d1f] mt-0.5">Split Calculation</p>
+                  <p className="text-xs sm:text-sm font-bold text-[#1d1d1f] mt-0.5 truncate">Split Engine</p>
                 </div>
-                <div className="bg-white p-3 rounded-xl border border-black/[0.05]">
-                  <p className="text-[10px] text-[#86868b] font-medium">Dish Popularity</p>
-                  <p className="text-sm font-semibold text-[#1d1d1f] mt-0.5">Live Heatmap</p>
+                <div className="bg-white p-2.5 sm:p-3 rounded-xl border border-black/[0.05]">
+                  <p className="text-[10px] text-[#86868b] font-medium">Dish Rankings</p>
+                  <p className="text-xs sm:text-sm font-bold text-[#1d1d1f] mt-0.5 truncate">Live Top 10</p>
                 </div>
               </div>
             </div>
@@ -896,36 +842,32 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── AI DISCOVERY SECTION (Apple Intelligence Vibe) ── */}
-      <section id="intelligence" className="py-20 sm:py-28 bg-[#0b0c0e] text-white overflow-hidden relative">
-        {/* Apple Intelligence Aurora Gradient Glow */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] bg-gradient-to-tr from-[#0071e3]/20 via-[#bf5af2]/15 to-transparent rounded-full blur-[100px] pointer-events-none" />
-
+      {/* ── AI DISCOVERY SECTION ── */}
+      <section id="intelligence" className="py-14 sm:py-24 bg-[#0b0c0e] text-white overflow-hidden relative">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <div className="max-w-2xl mx-auto text-center mb-14">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/10 text-xs font-medium text-[#2997ff] mb-4">
+          <div className="max-w-2xl mx-auto text-center mb-8 sm:mb-14">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 border border-white/10 text-xs font-semibold text-[#2997ff] mb-3">
               <Sparkles className="w-3.5 h-3.5 text-[#2997ff]" />
               Hawker Food Intelligence
             </div>
-            <h2 className="text-3xl sm:text-5xl font-semibold tracking-[-0.03em] text-white">
+            <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white">
               Culinary discovery. Without hallucinations.
             </h2>
-            <p className="mt-4 text-base sm:text-lg text-white/70 leading-relaxed">
+            <p className="mt-3 text-sm sm:text-base text-white/70 leading-relaxed">
               Diners search how they speak: &ldquo;Spicy noodles with seafood under RM18.&rdquo; OpenRouter parses intent into strict Zod schemas, then executes deterministic Supabase queries. Zero AI fantasy. 100% verified dishes.
             </p>
           </div>
 
-          {/* Interactive AI Query Simulator */}
-          <div className="bg-[#16171a] rounded-[32px] border border-white/10 p-6 sm:p-10 shadow-2xl">
-            {/* Prompt Selector Pills */}
-            <div className="flex flex-wrap items-center justify-center gap-2 mb-8">
+          <div className="bg-[#16171a] rounded-2xl sm:rounded-3xl border border-white/10 p-4 sm:p-8 shadow-2xl">
+            {/* Prompt Selector */}
+            <div className="flex flex-wrap items-center justify-center gap-2 mb-6">
               {aiQueries.map((item, idx) => (
                 <button
                   key={idx}
                   onClick={() => setActiveAiIndex(idx)}
-                  className={`text-xs px-4 py-2 rounded-full font-medium transition-all ${
+                  className={`text-xs px-3.5 py-1.5 rounded-full font-semibold transition-all ${
                     activeAiIndex === idx
-                      ? 'bg-white text-[#1d1d1f] shadow-md font-semibold'
+                      ? 'bg-white text-[#1d1d1f] shadow-md'
                       : 'bg-white/5 text-white/70 hover:bg-white/10 border border-white/5'
                   }`}
                 >
@@ -934,56 +876,52 @@ export default function LandingPage() {
               ))}
             </div>
 
-            <div className="grid lg:grid-cols-2 gap-8 items-center">
-              {/* Left: Input Query & Extracted Structured Intent */}
-              <div className="space-y-4">
-                <div className="bg-white/5 p-4 rounded-2xl border border-white/10">
+            <div className="grid lg:grid-cols-2 gap-4 sm:gap-6 items-center">
+              <div className="space-y-3">
+                <div className="bg-white/5 p-3.5 rounded-xl border border-white/10">
                   <p className="text-[10px] text-white/50 uppercase tracking-wider font-semibold">
                     Natural Language Search Prompt
                   </p>
-                  <p className="text-sm sm:text-base font-medium text-white mt-1">
+                  <p className="text-sm sm:text-base font-semibold text-white mt-1">
                     &ldquo;{aiQueries[activeAiIndex].query}&rdquo;
                   </p>
                 </div>
 
-                <div className="bg-black/40 p-4 rounded-2xl border border-white/10 font-mono text-xs text-[#2997ff] space-y-1">
-                  <p className="text-[10px] text-white/40 uppercase tracking-wider font-sans font-semibold mb-2">
+                <div className="bg-black/40 p-3.5 rounded-xl border border-white/10 font-mono text-xs text-[#2997ff] space-y-1">
+                  <p className="text-[10px] text-white/40 uppercase tracking-wider font-sans font-semibold mb-1.5">
                     Validated SearchIntent (Zod Output)
                   </p>
-                  <p>&#123;</p>
-                  <p className="pl-4">category: &quot;{aiQueries[activeAiIndex].intent.category}&quot;,</p>
-                  <p className="pl-4">dietary: {JSON.stringify(aiQueries[activeAiIndex].intent.dietary)},</p>
-                  <p className="pl-4">maxPrice: &quot;{aiQueries[activeAiIndex].intent.maxPrice}&quot;</p>
-                  <p>&#125;</p>
+                  <p>category: &quot;{aiQueries[activeAiIndex].intent.category}&quot;</p>
+                  <p>dietary: {JSON.stringify(aiQueries[activeAiIndex].intent.dietary)}</p>
+                  <p>maxPrice: &quot;{aiQueries[activeAiIndex].intent.maxPrice}&quot;</p>
                 </div>
 
                 <div className="flex items-center gap-2 text-xs text-white/50">
-                  <ShieldCheck className="w-4 h-4 text-[#30d158]" />
-                  <span>Strict SQL isolation &bull; OpenRouter AI never touches database credentials</span>
+                  <ShieldCheck className="w-4 h-4 text-[#30d158] shrink-0" />
+                  <span>Strict SQL isolation • Deterministic local queries</span>
                 </div>
               </div>
 
-              {/* Right: Matched Live Dish Result */}
-              <div className="bg-gradient-to-br from-white/[0.08] to-white/[0.02] p-6 rounded-3xl border border-white/15">
-                <div className="flex items-center justify-between text-xs text-white/60 mb-4">
-                  <span className="font-mono text-[11px] text-[#30d158] flex items-center gap-1.5">
+              <div className="bg-gradient-to-br from-white/[0.08] to-white/[0.02] p-4 sm:p-5 rounded-2xl border border-white/15">
+                <div className="flex items-center justify-between text-xs text-white/60 mb-3">
+                  <span className="font-mono text-[11px] text-[#30d158] flex items-center gap-1.5 font-bold">
                     <span className="w-2 h-2 rounded-full bg-[#30d158]" />
-                    Deterministic Database Match
+                    Verified Dish Match
                   </span>
-                  <span>Supabase Verified</span>
+                  <span>Supabase</span>
                 </div>
 
-                <div className="bg-white/10 p-4 rounded-2xl border border-white/10 space-y-3">
-                  <div className="flex items-start justify-between gap-4">
+                <div className="bg-white/10 p-3.5 rounded-xl border border-white/10 space-y-2.5">
+                  <div className="flex items-start justify-between gap-3">
                     <div>
-                      <h4 className="text-base font-semibold text-white">
+                      <h4 className="text-base font-bold text-white">
                         {aiQueries[activeAiIndex].result.dish}
                       </h4>
-                      <p className="text-xs text-[#2997ff] font-medium mt-0.5">
+                      <p className="text-xs text-[#2997ff] font-semibold mt-0.5">
                         {aiQueries[activeAiIndex].result.stall}
                       </p>
                     </div>
-                    <span className="text-lg font-bold text-white">
+                    <span className="text-lg font-bold text-white shrink-0">
                       {aiQueries[activeAiIndex].result.price}
                     </span>
                   </div>
@@ -996,7 +934,7 @@ export default function LandingPage() {
                     <span className="flex items-center gap-1">
                       <Clock className="w-3 h-3" /> Prep: {aiQueries[activeAiIndex].result.prepTime}
                     </span>
-                    <span className="text-[#30d158] font-medium">In Stock &bull; Live Wok</span>
+                    <span className="text-[#30d158] font-bold">In Stock</span>
                   </div>
                 </div>
               </div>
@@ -1006,43 +944,42 @@ export default function LandingPage() {
       </section>
 
       {/* ── SOLUTIONS BY ROLE (Shop Owner vs Booth Owner) ── */}
-      <section id="roles" className="py-20 sm:py-28 bg-[#f5f5f7]">
+      <section id="roles" className="py-14 sm:py-24 bg-[#f5f5f7]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-2xl mx-auto text-center mb-16">
-            <p className="text-xs font-semibold tracking-wider uppercase text-[#0071e3] mb-3">
+          <div className="max-w-2xl mx-auto text-center mb-10 sm:mb-16">
+            <p className="text-xs font-bold tracking-wider uppercase text-[#0071e3] mb-2">
               Tailored Experiences
             </p>
-            <h2 className="text-3xl sm:text-5xl font-semibold tracking-[-0.03em] text-[#1d1d1f]">
+            <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-[#1d1d1f]">
               Designed for operators. Built for cooks.
             </h2>
-            <p className="mt-4 text-base sm:text-lg text-[#6e6e73]">
+            <p className="mt-3 text-sm sm:text-base text-[#6e6e73]">
               Two dedicated interfaces reflecting the dual reality of a bustling food court.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8">
+          <div className="grid md:grid-cols-2 gap-6 sm:gap-8">
             {/* Role 1: Food Court Operator */}
-            <div className="bg-white p-8 sm:p-10 rounded-[32px] border border-black/[0.06] shadow-sm flex flex-col justify-between">
+            <div className="bg-white p-5 sm:p-8 rounded-2xl sm:rounded-3xl border border-black/[0.06] shadow-2xs flex flex-col justify-between">
               <div>
-                <div className="w-12 h-12 rounded-2xl bg-[#0071e3]/10 text-[#0071e3] flex items-center justify-center font-bold mb-6">
+                <div className="w-12 h-12 rounded-2xl bg-[#0071e3]/10 text-[#0071e3] flex items-center justify-center font-bold mb-4">
                   <Building2 className="w-6 h-6" />
                 </div>
-                <h3 className="text-2xl font-semibold text-[#1d1d1f] tracking-tight">
+                <h3 className="text-xl sm:text-2xl font-bold text-[#1d1d1f] tracking-tight">
                   Food Court & Centre Operators
                 </h3>
-                <p className="mt-3 text-sm text-[#6e6e73] leading-relaxed">
+                <p className="mt-2 text-xs sm:text-sm text-[#6e6e73] leading-relaxed">
                   Oversee all booths, manage table layouts, dispatch invite tokens, and track venue-wide revenue with full financial isolation.
                 </p>
 
-                <ul className="mt-6 space-y-3 text-sm text-[#1d1d1f]">
+                <ul className="mt-5 space-y-2.5 text-xs sm:text-sm text-[#1d1d1f]">
                   {[
                     'Multi-booth roster & occupancy overview',
                     'Single-click cryptographic booth invite codes',
                     'Consolidated real-time gross venue revenue',
-                    'Automated stall lease & tenancy settlement reporting',
-                    'Full export of order chits and financial reports',
+                    'Automated stall lease & settlement reporting',
                   ].map((feat) => (
-                    <li key={feat} className="flex items-center gap-3">
+                    <li key={feat} className="flex items-center gap-2.5">
                       <Check className="w-4 h-4 text-[#0071e3] shrink-0" />
                       <span>{feat}</span>
                     </li>
@@ -1050,11 +987,11 @@ export default function LandingPage() {
                 </ul>
               </div>
 
-              <div className="mt-8 pt-6 border-t border-black/[0.06]">
+              <div className="mt-6 pt-5 border-t border-black/[0.06]">
                 {roles.hasShopOwner ? (
                   <Link
                     href="/shop-owner/booths"
-                    className="w-full inline-flex items-center justify-center py-3 rounded-full text-sm font-semibold bg-[#1d1d1f] text-white hover:bg-black transition-colors"
+                    className="w-full h-12 inline-flex items-center justify-center rounded-full text-sm font-semibold bg-[#1d1d1f] text-white hover:bg-black transition-colors"
                   >
                     Open Shop Dashboard
                     <ArrowRight className="w-4 h-4 ml-2" />
@@ -1062,7 +999,7 @@ export default function LandingPage() {
                 ) : (
                   <Link
                     href={'/apply' as any}
-                    className="w-full inline-flex items-center justify-center py-3 rounded-full text-sm font-semibold bg-[#1d1d1f] text-white hover:bg-black transition-colors"
+                    className="w-full h-12 inline-flex items-center justify-center rounded-full text-sm font-semibold bg-[#1d1d1f] text-white hover:bg-black transition-colors"
                   >
                     Start Free as Shop Owner
                     <ArrowRight className="w-4 h-4 ml-2" />
@@ -1072,27 +1009,26 @@ export default function LandingPage() {
             </div>
 
             {/* Role 2: Booth Owner */}
-            <div className="bg-white p-8 sm:p-10 rounded-[32px] border border-black/[0.06] shadow-sm flex flex-col justify-between">
+            <div className="bg-white p-5 sm:p-8 rounded-2xl sm:rounded-3xl border border-black/[0.06] shadow-2xs flex flex-col justify-between">
               <div>
-                <div className="w-12 h-12 rounded-2xl bg-[#30d158]/10 text-[#30d158] flex items-center justify-center font-bold mb-6">
+                <div className="w-12 h-12 rounded-2xl bg-[#30d158]/10 text-[#30d158] flex items-center justify-center font-bold mb-4">
                   <ChefHat className="w-6 h-6" />
                 </div>
-                <h3 className="text-2xl font-semibold text-[#1d1d1f] tracking-tight">
+                <h3 className="text-xl sm:text-2xl font-bold text-[#1d1d1f] tracking-tight">
                   Independent Stall & Booth Masters
                 </h3>
-                <p className="mt-3 text-sm text-[#6e6e73] leading-relaxed">
+                <p className="mt-2 text-xs sm:text-sm text-[#6e6e73] leading-relaxed">
                   Your kitchen. Your recipes. Your orders. Manage your menu, set custom spice levels, and fulfill incoming orders without noisy buzzers.
                 </p>
 
-                <ul className="mt-6 space-y-3 text-sm text-[#1d1d1f]">
+                <ul className="mt-5 space-y-2.5 text-xs sm:text-sm text-[#1d1d1f]">
                   {[
-                    'Instant KDS (Kitchen Display System) on any phone or iPad',
+                    'Instant KDS on any phone, tablet, or iPad',
                     '1-tap dish availability & sold-out controls',
-                    'Custom ingredient options & extra egg / noodle add-ons',
-                    'Audio alerts for new incoming woks & table orders',
-                    'Complete isolation from neighboring stalls',
+                    'Custom ingredient options & add-ons',
+                    'Audio alerts for incoming table tickets',
                   ].map((feat) => (
-                    <li key={feat} className="flex items-center gap-3">
+                    <li key={feat} className="flex items-center gap-2.5">
                       <Check className="w-4 h-4 text-[#30d158] shrink-0" />
                       <span>{feat}</span>
                     </li>
@@ -1100,9 +1036,9 @@ export default function LandingPage() {
                 </ul>
               </div>
 
-              <div className="mt-8 pt-6 border-t border-black/[0.06]">
-                <div className="w-full text-center py-3 px-4 rounded-full text-xs font-medium bg-[#f5f5f7] text-[#6e6e73] border border-black/[0.04]">
-                  Joined via private email invitation from your food hall operator
+              <div className="mt-6 pt-5 border-t border-black/[0.06]">
+                <div className="w-full h-12 inline-flex items-center justify-center rounded-full text-xs font-semibold bg-[#f5f5f7] text-[#6e6e73] border border-black/[0.04]">
+                  Joined via private email invitation from venue operator
                 </div>
               </div>
             </div>
@@ -1110,260 +1046,216 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── THE ZERO SUBSCRIPTION PHILOSOPHY & PRICING SECTION ── */}
-      <section id="pricing" className="py-24 sm:py-32 bg-white border-t border-black/[0.06] overflow-hidden">
+      {/* ── PRICING & MODEL (Mobile-First) ── */}
+      <section id="pricing" className="py-14 sm:py-24 bg-white border-t border-black/[0.06]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Main Headline */}
-          <div className="max-w-3xl mx-auto text-center mb-16 sm:mb-20">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0071e3]/10 text-[#0071e3] text-xs font-semibold mb-4">
+          <div className="max-w-3xl mx-auto text-center mb-10 sm:mb-16">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0071e3]/10 text-[#0071e3] text-xs font-semibold mb-3">
               <Zap className="w-3.5 h-3.5" />
-              A Radically Fair Business Model
+              Fair Business Model
             </div>
-            <h2 className="text-3xl sm:text-5xl lg:text-6xl font-semibold tracking-[-0.035em] text-[#1d1d1f] leading-[1.08]">
+            <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-[#1d1d1f]">
               Zero monthly subscriptions.
               <span className="block text-[#0071e3] mt-1">We only win when you sell.</span>
             </h2>
-            <p className="mt-5 text-base sm:text-lg text-[#6e6e73] leading-relaxed max-w-2xl mx-auto">
-              Traditional restaurant POS vendors lock food halls into RM 300–800 monthly software rent, RM 5,000 proprietary hardware, and 3-year lock-ins. Hawker throws out the subscription model entirely.
+            <p className="mt-3 text-sm sm:text-base text-[#6e6e73] leading-relaxed">
+              Traditional restaurant POS vendors lock food halls into monthly software rent and proprietary terminals. Hawker throws out the subscription model entirely.
             </p>
           </div>
 
-          {/* The High-Contrast Comparison Matrix */}
-          <div className="grid lg:grid-cols-2 gap-8 items-stretch mb-16">
+          <div className="grid lg:grid-cols-2 gap-6 sm:gap-8 items-stretch mb-10 sm:mb-16">
             {/* The Legacy Extortion Model */}
-            <div className="rounded-[36px] bg-[#f5f5f7] p-8 sm:p-10 border border-black/[0.06] flex flex-col justify-between">
+            <div className="rounded-2xl sm:rounded-3xl bg-[#f5f5f7] p-5 sm:p-8 border border-black/[0.06] flex flex-col justify-between">
               <div>
-                <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center justify-between mb-4">
                   <span className="px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-black/5 text-[#86868b]">
                     Legacy POS & SaaS
                   </span>
-                  <span className="text-xs font-semibold text-red-600 flex items-center gap-1">
+                  <span className="text-xs font-bold text-red-600 flex items-center gap-1">
                     <X className="w-3.5 h-3.5" /> Extraction Model
                   </span>
                 </div>
 
-                <h3 className="text-2xl font-semibold text-[#1d1d1f] tracking-tight">
+                <h3 className="text-xl sm:text-2xl font-bold text-[#1d1d1f] tracking-tight">
                   You pay whether you make money or not.
                 </h3>
                 <p className="mt-2 text-xs sm:text-sm text-[#6e6e73] leading-relaxed">
                   Traditional software vendors treat food court operators as captive rent-payers, extracting high recurring fees regardless of weather or diner footfall.
                 </p>
 
-                <div className="mt-8 space-y-4">
-                  <div className="p-4 rounded-2xl bg-white border border-black/[0.04] flex items-start gap-3">
-                    <div className="w-7 h-7 rounded-xl bg-red-100 text-red-600 flex items-center justify-center shrink-0 mt-0.5 text-xs font-bold">
+                <div className="mt-6 space-y-3">
+                  <div className="p-3.5 rounded-xl bg-white border border-black/[0.04] flex items-start gap-3">
+                    <div className="w-6 h-6 rounded-lg bg-red-100 text-red-600 flex items-center justify-center shrink-0 mt-0.5 text-xs font-bold">
                       RM
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-[#1d1d1f]">RM 300 – RM 800 / month per stall</p>
-                      <p className="text-xs text-[#6e6e73] mt-0.5">Heavy recurring invoices billed every 30 days like digital rent.</p>
+                      <p className="text-xs sm:text-sm font-bold text-[#1d1d1f]">RM 300 – RM 800 / month per stall</p>
+                      <p className="text-[11px] text-[#6e6e73] mt-0.5">Heavy recurring invoices billed every 30 days like digital rent.</p>
                     </div>
                   </div>
 
-                  <div className="p-4 rounded-2xl bg-white border border-black/[0.04] flex items-start gap-3">
-                    <div className="w-7 h-7 rounded-xl bg-red-100 text-red-600 flex items-center justify-center shrink-0 mt-0.5 text-xs font-bold">
+                  <div className="p-3.5 rounded-xl bg-white border border-black/[0.04] flex items-start gap-3">
+                    <div className="w-6 h-6 rounded-lg bg-red-100 text-red-600 flex items-center justify-center shrink-0 mt-0.5 text-xs font-bold">
                       POS
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-[#1d1d1f]">RM 3,500 – RM 8,000 upfront terminals</p>
-                      <p className="text-xs text-[#6e6e73] mt-0.5">Bulky, proprietary hardware terminals with expensive warranty leases.</p>
-                    </div>
-                  </div>
-
-                  <div className="p-4 rounded-2xl bg-white border border-black/[0.04] flex items-start gap-3">
-                    <div className="w-7 h-7 rounded-xl bg-red-100 text-red-600 flex items-center justify-center shrink-0 mt-0.5 text-xs font-bold">
-                      0
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-[#1d1d1f]">Quiet or rainy day with zero sales?</p>
-                      <p className="text-xs text-[#6e6e73] mt-0.5">You still pay full software rent. All downside risk is pushed onto the operator.</p>
+                      <p className="text-xs sm:text-sm font-bold text-[#1d1d1f]">RM 3,500 – RM 8,000 upfront terminals</p>
+                      <p className="text-[11px] text-[#6e6e73] mt-0.5">Bulky hardware terminals with expensive warranty leases.</p>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div className="mt-8 pt-6 border-t border-black/[0.06] text-xs text-[#86868b]">
-                Locked 24–36 month contracts with punitive early termination penalties.
+              <div className="mt-6 pt-4 border-t border-black/[0.06] text-xs text-[#86868b]">
+                Locked 24–36 month contracts with early termination penalties.
               </div>
             </div>
 
-            {/* The Hawker Standard (Hero Card) */}
-            <div className="rounded-[36px] bg-[#1d1d1f] text-white p-8 sm:p-10 shadow-2xl flex flex-col justify-between relative overflow-hidden">
+            {/* The Hawker Standard */}
+            <div className="rounded-2xl sm:rounded-3xl bg-[#1d1d1f] text-white p-5 sm:p-8 shadow-xl flex flex-col justify-between relative overflow-hidden">
               <div className="absolute -top-24 -right-24 w-80 h-80 rounded-full bg-[#0071e3]/20 blur-3xl pointer-events-none" />
 
               <div>
-                <div className="flex items-center justify-between mb-6">
-                  <span className="px-3.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-[#30d158]/20 text-[#30d158] border border-[#30d158]/30">
+                <div className="flex items-center justify-between mb-4">
+                  <span className="px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-[#30d158]/20 text-[#30d158] border border-[#30d158]/30">
                     The Hawker Standard
                   </span>
-                  <span className="text-xs font-semibold text-[#30d158] flex items-center gap-1">
+                  <span className="text-xs font-bold text-[#30d158] flex items-center gap-1">
                     <CheckCircle2 className="w-3.5 h-3.5" /> 100% Aligned
                   </span>
                 </div>
 
-                <h3 className="text-2xl sm:text-3xl font-semibold text-white tracking-tight">
+                <h3 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
                   RM 0.00 until an order is served.
                 </h3>
                 <p className="mt-2 text-xs sm:text-sm text-[#a1a1a6] leading-relaxed">
-                  We believe software should be free infrastructure. We only take a transparent cut directly from transactions when you actually make sales.
+                  Software should be free infrastructure. We only take a transparent cut directly from transactions when you actually make sales.
                 </p>
 
-                <div className="mt-8 space-y-4">
-                  <div className="p-4 rounded-2xl bg-white/[0.06] border border-white/10 flex items-start gap-3">
-                    <div className="w-7 h-7 rounded-xl bg-[#30d158]/20 text-[#30d158] flex items-center justify-center shrink-0 mt-0.5 text-xs font-bold">
+                <div className="mt-6 space-y-3">
+                  <div className="p-3.5 rounded-xl bg-white/[0.06] border border-white/10 flex items-start gap-3">
+                    <div className="w-6 h-6 rounded-lg bg-[#30d158]/20 text-[#30d158] flex items-center justify-center shrink-0 mt-0.5 text-xs font-bold">
                       RM
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-white">RM 0.00 / month forever</p>
-                      <p className="text-xs text-[#a1a1a6] mt-0.5">Unlimited food stalls, unlimited menus, unlimited tables. Zero software bills.</p>
+                      <p className="text-xs sm:text-sm font-bold text-white">RM 0.00 / month forever</p>
+                      <p className="text-[11px] text-[#a1a1a6] mt-0.5">Unlimited food stalls, menus, and tables. Zero software bills.</p>
                     </div>
                   </div>
 
-                  <div className="p-4 rounded-2xl bg-white/[0.06] border border-white/10 flex items-start gap-3">
-                    <div className="w-7 h-7 rounded-xl bg-[#0071e3]/20 text-[#2997ff] flex items-center justify-center shrink-0 mt-0.5 text-xs font-bold">
+                  <div className="p-3.5 rounded-xl bg-white/[0.06] border border-white/10 flex items-start gap-3">
+                    <div className="w-6 h-6 rounded-lg bg-[#0071e3]/20 text-[#2997ff] flex items-center justify-center shrink-0 mt-0.5 text-xs font-bold">
                       BYO
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-white">RM 0.00 hardware lock-in</p>
-                      <p className="text-xs text-[#a1a1a6] mt-0.5">Kitchen display screens and ordering run on any iPad, Android tablet, or smartphone.</p>
-                    </div>
-                  </div>
-
-                  <div className="p-4 rounded-2xl bg-white/[0.06] border border-white/10 flex items-start gap-3">
-                    <div className="w-7 h-7 rounded-xl bg-[#30d158]/20 text-[#30d158] flex items-center justify-center shrink-0 mt-0.5 text-xs font-bold">
-                      0
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-white">Quiet or rainy day with zero sales?</p>
-                      <p className="text-xs text-[#a1a1a6] mt-0.5">Your platform fee is RM 0.00. We share your business reality—we only win when you win.</p>
+                      <p className="text-xs sm:text-sm font-bold text-white">RM 0.00 hardware lock-in</p>
+                      <p className="text-[11px] text-[#a1a1a6] mt-0.5">Screens and ordering run on any existing tablet, iPad, or smartphone.</p>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div className="mt-8 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="mt-6 pt-4 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3">
                 <span className="text-xs text-[#a1a1a6]">
-                  Zero lock-in contracts &bull; 100% free to start today
+                  Zero lock-in • 100% free to start
                 </span>
                 {roles.hasShopOwner ? (
                   <Link
                     href="/shop-owner/booths"
-                    className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3 rounded-full text-xs font-semibold bg-white text-[#1d1d1f] hover:bg-white/90 transition-all shadow-lg"
+                    className="w-full sm:w-auto h-11 px-6 rounded-full text-xs font-bold bg-white text-[#1d1d1f] hover:bg-white/90 transition-all shadow-md flex items-center justify-center gap-1.5"
                   >
-                    Open Shop Dashboard
-                    <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
+                    Open Shop Dashboard <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
                 ) : (
                   <Link
                     href={'/apply' as any}
-                    className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3 rounded-full text-xs font-semibold bg-[#0071e3] text-white hover:bg-[#0077ed] transition-all shadow-lg hover:shadow-[#0071e3]/25"
+                    className="w-full sm:w-auto h-11 px-6 rounded-full text-xs font-bold bg-[#0071e3] text-white hover:bg-[#0077ed] transition-all shadow-md flex items-center justify-center gap-1.5"
                   >
-                    Start Free for RM 0
-                    <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
+                    Start Free for RM 0 <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
                 )}
               </div>
             </div>
           </div>
 
-          {/* Interactive 'How The Transaction Cut Works' Breakdown Banner */}
-          <div className="rounded-[36px] bg-[#fbfbfd] p-8 sm:p-10 border border-black/[0.08] shadow-sm">
-            <div className="max-w-2xl mb-8">
+          {/* 4-Step Transaction Cut Breakdown */}
+          <div className="rounded-2xl sm:rounded-3xl bg-[#fbfbfd] p-5 sm:p-8 border border-black/[0.06] shadow-2xs">
+            <div className="max-w-2xl mb-6">
               <span className="text-[11px] font-bold uppercase tracking-wider text-[#0071e3]">
                 Transparent Fee Breakdown
               </span>
-              <h3 className="text-xl sm:text-2xl font-semibold text-[#1d1d1f] tracking-tight mt-1">
+              <h3 className="text-lg sm:text-xl font-bold text-[#1d1d1f] tracking-tight mt-1">
                 How a real RM 15.00 order works at your food hall.
               </h3>
-              <p className="text-xs sm:text-sm text-[#6e6e73] mt-1.5 leading-relaxed">
-                By default, diners pay a flat RM 0.50 platform service fee at checkout. Stall owners keep 100% of their dish revenue, and payouts are automatically deposited into your bank account.
+              <p className="text-xs sm:text-sm text-[#6e6e73] mt-1 leading-relaxed">
+                By default, diners pay a flat RM 0.50 platform service fee at checkout. Stall owners keep 100% of their dish revenue.
               </p>
             </div>
 
-            <div className="grid md:grid-cols-4 gap-4">
-              <div className="p-5 rounded-2xl bg-white border border-black/[0.06]">
-                <p className="text-[11px] font-semibold text-[#86868b] uppercase tracking-wider">1. Customer Basket</p>
-                <p className="text-xl font-bold text-[#1d1d1f] mt-1">RM 15.00</p>
-                <p className="text-xs text-[#6e6e73] mt-1">Chicken Rice (RM 10) + Iced Kopi (RM 5) across 2 stalls.</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+              <div className="p-4 rounded-xl bg-white border border-black/[0.06]">
+                <p className="text-[10px] font-bold text-[#86868b] uppercase tracking-wider">1. Customer Basket</p>
+                <p className="text-lg font-bold text-[#1d1d1f] mt-0.5">RM 15.00</p>
+                <p className="text-xs text-[#6e6e73] mt-0.5">Chicken Rice + Iced Kopi across 2 stalls.</p>
               </div>
 
-              <div className="p-5 rounded-2xl bg-white border border-black/[0.06]">
-                <p className="text-[11px] font-semibold text-[#0071e3] uppercase tracking-wider">2. Diner Platform Fee</p>
-                <p className="text-xl font-bold text-[#0071e3] mt-1">+ RM 0.50</p>
-                <p className="text-xs text-[#6e6e73] mt-1">Paid by diner at checkout. Powers real-time KDS & AI search.</p>
+              <div className="p-4 rounded-xl bg-white border border-black/[0.06]">
+                <p className="text-[10px] font-bold text-[#0071e3] uppercase tracking-wider">2. Diner Platform Fee</p>
+                <p className="text-lg font-bold text-[#0071e3] mt-0.5">+ RM 0.50</p>
+                <p className="text-xs text-[#6e6e73] mt-0.5">Paid by diner at checkout.</p>
               </div>
 
-              <div className="p-5 rounded-2xl bg-white border border-[#30d158]/30 bg-[#30d158]/[0.02]">
-                <p className="text-[11px] font-semibold text-[#30d158] uppercase tracking-wider">3. Hawkers Keep</p>
-                <p className="text-xl font-bold text-[#30d158] mt-1">RM 15.00 (100%)</p>
-                <p className="text-xs text-[#6e6e73] mt-1">Zero stall commission. Hawkers retain every sen of dish sales.</p>
+              <div className="p-4 rounded-xl bg-white border border-[#30d158]/30 bg-[#30d158]/[0.02]">
+                <p className="text-[10px] font-bold text-[#30d158] uppercase tracking-wider">3. Hawkers Keep</p>
+                <p className="text-lg font-bold text-[#30d158] mt-0.5">RM 15.00 (100%)</p>
+                <p className="text-xs text-[#6e6e73] mt-0.5">Zero stall cut. Hawkers retain full price.</p>
               </div>
 
-              <div className="p-5 rounded-2xl bg-white border border-black/[0.06]">
-                <p className="text-[11px] font-semibold text-[#86868b] uppercase tracking-wider">4. Automated Payout</p>
-                <p className="text-xl font-bold text-[#1d1d1f] mt-1">Daily / Instant</p>
-                <p className="text-xs text-[#6e6e73] mt-1">Settled directly via DuitNow / FAST bank transfer.</p>
+              <div className="p-4 rounded-xl bg-white border border-black/[0.06]">
+                <p className="text-[10px] font-bold text-[#86868b] uppercase tracking-wider">4. Automated Payout</p>
+                <p className="text-lg font-bold text-[#1d1d1f] mt-0.5">Daily / Direct</p>
+                <p className="text-xs text-[#6e6e73] mt-0.5">Settled via DuitNow bank transfer.</p>
               </div>
-            </div>
-
-            <div className="mt-8 pt-6 border-t border-black/[0.06] flex flex-wrap items-center justify-between gap-4 text-xs text-[#6e6e73]">
-              <div className="flex flex-wrap items-center gap-4 sm:gap-6">
-                <span className="flex items-center gap-1.5 font-medium text-[#1d1d1f]">
-                  <Check className="w-4 h-4 text-[#30d158]" /> 1-Tap Out-of-Stock Refunds
-                </span>
-                <span className="flex items-center gap-1.5 font-medium text-[#1d1d1f]">
-                  <Check className="w-4 h-4 text-[#30d158]" /> Multi-Stall Unified Checkout
-                </span>
-                <span className="flex items-center gap-1.5 font-medium text-[#1d1d1f]">
-                  <Check className="w-4 h-4 text-[#30d158]" /> OpenRouter AI Culinary Search
-                </span>
-              </div>
-              <Link
-                href="/pricing"
-                className="font-semibold text-[#0071e3] hover:underline inline-flex items-center gap-1"
-              >
-                Learn more about our payment mechanics <ChevronRight className="w-3.5 h-3.5" />
-              </Link>
             </div>
           </div>
         </div>
       </section>
 
       {/* ── FREQUENTLY ASKED QUESTIONS (FAQ) ── */}
-      <section id="faq" className="py-24 sm:py-32 bg-[#f5f5f7] border-t border-black/[0.06]">
+      <section id="faq" className="py-14 sm:py-24 bg-[#f5f5f7] border-t border-black/[0.06]">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-16">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0071e3]/10 text-[#0071e3] text-xs font-semibold mb-4">
+          <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-16">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0071e3]/10 text-[#0071e3] text-xs font-semibold mb-3">
               <HelpCircle className="w-3.5 h-3.5" />
               Frequently Asked Questions
             </div>
-            <h2 className="text-3xl sm:text-5xl font-semibold tracking-[-0.035em] text-[#1d1d1f]">
+            <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-[#1d1d1f]">
               Everything you need to know.
             </h2>
-            <p className="mt-4 text-base text-[#6e6e73]">
+            <p className="mt-3 text-sm sm:text-base text-[#6e6e73]">
               Clear answers on venue setup, stall email invitations, and our zero-subscription model.
             </p>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-3">
             {faqs.map((faq, index) => {
               const isOpen = openFaq === index;
               return (
                 <div
                   key={faq.question}
-                  className="bg-white rounded-2xl border border-black/[0.06] shadow-sm transition-all overflow-hidden"
+                  className="bg-white rounded-2xl border border-black/[0.06] shadow-2xs transition-all overflow-hidden"
                 >
                   <button
                     type="button"
                     onClick={() => setOpenFaq(isOpen ? null : index)}
-                    className="w-full py-5 px-6 sm:px-8 flex items-center justify-between text-left gap-4 hover:bg-black/[0.01] transition-colors"
+                    className="w-full py-4 px-4 sm:px-6 flex items-center justify-between text-left gap-3 hover:bg-black/[0.01] transition-colors"
                     aria-expanded={isOpen}
                   >
-                    <span className="font-semibold text-base sm:text-lg text-[#1d1d1f] leading-snug">
+                    <span className="font-bold text-sm sm:text-base text-[#1d1d1f] leading-snug">
                       {faq.question}
                     </span>
                     <span
-                      className={`w-7 h-7 rounded-full bg-black/5 flex items-center justify-center shrink-0 text-[#1d1d1f] transition-transform duration-200 ${
+                      className={`w-6 h-6 rounded-full bg-black/5 flex items-center justify-center shrink-0 text-[#1d1d1f] transition-transform duration-200 ${
                         isOpen ? 'rotate-180 bg-black/10' : ''
                       }`}
                     >
@@ -1371,7 +1263,7 @@ export default function LandingPage() {
                     </span>
                   </button>
                   {isOpen && (
-                    <div className="px-6 sm:px-8 pb-6 text-sm sm:text-base text-[#6e6e73] leading-relaxed border-t border-black/[0.04] pt-4">
+                    <div className="px-4 sm:px-6 pb-5 text-xs sm:text-sm text-[#6e6e73] leading-relaxed border-t border-black/[0.04] pt-3">
                       {faq.answer}
                     </div>
                   )}
@@ -1380,13 +1272,13 @@ export default function LandingPage() {
             })}
           </div>
 
-          {/* Callout box specifically emphasizing Stall Email Invitations */}
-          <div className="mt-12 bg-white rounded-3xl border border-black/[0.08] p-6 sm:p-8 flex flex-col sm:flex-row items-center gap-6 shadow-sm">
-            <div className="w-12 h-12 rounded-2xl bg-[#0071e3]/10 text-[#0071e3] flex items-center justify-center shrink-0">
-              <Mail className="w-6 h-6" />
+          {/* Callout box for Stall Vendors */}
+          <div className="mt-8 sm:mt-12 bg-white rounded-2xl sm:rounded-3xl border border-black/[0.08] p-5 sm:p-7 flex flex-col sm:flex-row items-center gap-4 sm:gap-6 shadow-2xs">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-[#0071e3]/10 text-[#0071e3] flex items-center justify-center shrink-0">
+              <Mail className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
             <div className="flex-1 text-center sm:text-left">
-              <h3 className="text-base font-semibold text-[#1d1d1f]">
+              <h3 className="text-sm sm:text-base font-bold text-[#1d1d1f]">
                 Are you a stall vendor or hawker master?
               </h3>
               <p className="text-xs sm:text-sm text-[#6e6e73] mt-1 leading-relaxed">
@@ -1395,7 +1287,7 @@ export default function LandingPage() {
             </div>
             <a
               href="#how-it-works"
-              className="shrink-0 px-5 py-2.5 rounded-full text-xs font-semibold bg-[#1d1d1f] text-white hover:bg-black transition-colors"
+              className="w-full sm:w-auto h-11 px-5 rounded-full text-xs font-bold bg-[#1d1d1f] text-white hover:bg-black transition-colors flex items-center justify-center shrink-0"
             >
               See Invite Flow
             </a>
@@ -1403,129 +1295,108 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── CINEMATIC FINAL CTA (Apple Keynote Style) ── */}
-      <section className="py-24 sm:py-32 bg-[#1d1d1f] text-white text-center relative overflow-hidden">
+      {/* ── FINAL CTA ── */}
+      <section className="py-16 sm:py-28 bg-[#1d1d1f] text-white text-center relative overflow-hidden">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <p className="text-xs font-semibold tracking-wider uppercase text-[#2997ff] mb-4">
+          <p className="text-xs font-bold tracking-wider uppercase text-[#2997ff] mb-3">
             The Modern Standard
           </p>
-          <h2 className="text-4xl sm:text-6xl font-semibold tracking-[-0.035em] text-white leading-[1.08]">
+          <h2 className="text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-tight">
             Transform your food hall today.
           </h2>
-          <p className="mt-5 text-base sm:text-xl text-[#a1a1a6] max-w-2xl mx-auto leading-relaxed">
+          <p className="mt-3.5 sm:mt-4 text-sm sm:text-lg text-[#a1a1a6] max-w-xl mx-auto leading-relaxed">
             Eliminate long queues, empower independent stall owners, and run your venue with effortless software. Zero subscription fees.
           </p>
 
-          <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-3.5">
+          <div className="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 w-full max-w-xs sm:max-w-none mx-auto">
             {roles.hasShopOwner ? (
               <Link
                 href="/shop-owner/booths"
-                className="w-full sm:w-auto px-8 py-3.5 rounded-full text-sm font-semibold bg-white text-[#1d1d1f] hover:bg-white/90 transition-all shadow-sm"
+                className="w-full sm:w-auto h-12 px-7 rounded-full text-sm font-bold bg-white text-[#1d1d1f] hover:bg-white/90 transition-all shadow-sm flex items-center justify-center"
               >
                 Go to Shop Dashboard
               </Link>
             ) : (
               <Link
                 href={'/apply' as any}
-                className="w-full sm:w-auto px-8 py-3.5 rounded-full text-sm font-semibold bg-[#0071e3] text-white hover:bg-[#0077ed] transition-all shadow-[0_4px_20px_rgba(0,113,227,0.35)]"
+                className="w-full sm:w-auto h-12 px-7 rounded-full text-sm font-bold bg-[#0071e3] text-white hover:bg-[#0077ed] transition-all shadow-md flex items-center justify-center"
               >
                 Start Free
               </Link>
             )}
             <Link
               href="/pricing"
-              className="w-full sm:w-auto px-7 py-3.5 rounded-full text-sm font-semibold bg-white/10 hover:bg-white/15 text-white border border-white/10 transition-all"
+              className="w-full sm:w-auto h-12 px-6 rounded-full text-sm font-bold bg-white/10 hover:bg-white/15 text-white border border-white/10 transition-all flex items-center justify-center"
             >
-              See how the payment cut works
+              Payment Cut Details
             </Link>
           </div>
-
-          <p className="mt-6 text-xs text-[#86868b]">
-            Need a walkthrough? Our team is on the ground in Kuala Lumpur, Penang, and Johor Bahru.
-          </p>
         </div>
       </section>
 
-      {/* ── APPLE GLOBAL FOOTER ── */}
-      <footer className="bg-[#f5f5f7] border-t border-black/[0.08] text-[11px] text-[#6e6e73] py-14">
+      {/* ── FOOTER ── */}
+      <footer className="bg-[#f5f5f7] border-t border-black/[0.08] text-xs text-[#6e6e73] py-10 sm:py-14">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Top Footnote / Disclaimer */}
-          <div className="pb-8 border-b border-black/[0.08] text-[11px] leading-relaxed text-[#86868b] space-y-2">
-            <p>
-              1. 15-minute quick setup is based on average onboarding time across tested Malaysian food halls with up to 10 digital menus.
-            </p>
-            <p>
-              2. OpenRouter AI Food Discovery utilizes structured Zod JSON validation to query local Supabase database records deterministically, guaranteeing complete allergen safety and zero menu item hallucinations.
-            </p>
-          </div>
-
-          {/* Directory Columns */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 py-10">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 pb-8">
             <div>
-              <p className="font-semibold text-[#1d1d1f] mb-3">Product</p>
-              <ul className="space-y-2.5">
-                <li><a href="#product" className="hover:text-[#1d1d1f] transition-colors">Operator Dashboard</a></li>
-                <li><a href="#features" className="hover:text-[#1d1d1f] transition-colors">Kitchen Display (KDS)</a></li>
-                <li><a href="#features" className="hover:text-[#1d1d1f] transition-colors">Multi-Stall QR Cart</a></li>
-                <li><a href="#intelligence" className="hover:text-[#1d1d1f] transition-colors">AI Discovery Engine</a></li>
-                <li><a href="#faq" className="hover:text-[#1d1d1f] transition-colors">FAQ (Stall Invites & Pricing)</a></li>
-                <li><Link href="/pricing" className="hover:text-[#1d1d1f] transition-colors">Pricing & Model</Link></li>
+              <p className="font-bold text-[#1d1d1f] mb-2.5">Product</p>
+              <ul className="space-y-2 text-[11px] sm:text-xs">
+                <li><a href="#product" className="hover:text-[#1d1d1f]">Operator Dashboard</a></li>
+                <li><a href="#features" className="hover:text-[#1d1d1f]">Kitchen Display (KDS)</a></li>
+                <li><a href="#features" className="hover:text-[#1d1d1f]">Multi-Stall QR Cart</a></li>
+                <li><a href="#intelligence" className="hover:text-[#1d1d1f]">AI Discovery Engine</a></li>
+                <li><Link href="/pricing" className="hover:text-[#1d1d1f]">Pricing & Model</Link></li>
               </ul>
             </div>
 
             <div>
-              <p className="font-semibold text-[#1d1d1f] mb-3">Operators</p>
-              <ul className="space-y-2.5">
+              <p className="font-bold text-[#1d1d1f] mb-2.5">Operators</p>
+              <ul className="space-y-2 text-[11px] sm:text-xs">
                 <li>
                   {roles.hasShopOwner ? (
-                    <Link href="/shop-owner/booths" className="hover:text-[#1d1d1f] transition-colors">
+                    <Link href="/shop-owner/booths" className="hover:text-[#1d1d1f]">
                       Shop Dashboard
                     </Link>
                   ) : (
-                    <Link href={'/apply' as any} className="hover:text-[#1d1d1f] transition-colors">
+                    <Link href={'/apply' as any} className="hover:text-[#1d1d1f]">
                       Start Free (Shop Owner)
                     </Link>
                   )}
                 </li>
-                <li><a href="#how-it-works" className="hover:text-[#1d1d1f] transition-colors">Booth Invitation Keys</a></li>
-                <li><a href="#roles" className="hover:text-[#1d1d1f] transition-colors">Revenue Reconciliation</a></li>
-                <li><a href="#product" className="hover:text-[#1d1d1f] transition-colors">Table Session Manager</a></li>
+                <li><a href="#how-it-works" className="hover:text-[#1d1d1f]">Booth Invitation Keys</a></li>
+                <li><a href="#roles" className="hover:text-[#1d1d1f]">Revenue Reconciliation</a></li>
               </ul>
             </div>
 
             <div>
-              <p className="font-semibold text-[#1d1d1f] mb-3">Merchants</p>
-              <ul className="space-y-2.5">
-                <li><Link href="/auth?redirect=/owner" className="hover:text-[#1d1d1f] transition-colors">Merchant Sign In</Link></li>
-                <li><a href="#how-it-works" className="hover:text-[#1d1d1f] transition-colors">How Stalls Join (Email Invite Only)</a></li>
-                <li><a href="#features" className="hover:text-[#1d1d1f] transition-colors">Menu Customisations</a></li>
-                <li><a href="#features" className="hover:text-[#1d1d1f] transition-colors">Sold-out 86 Controls</a></li>
+              <p className="font-bold text-[#1d1d1f] mb-2.5">Merchants</p>
+              <ul className="space-y-2 text-[11px] sm:text-xs">
+                <li><Link href="/auth?redirect=/owner" className="hover:text-[#1d1d1f]">Merchant Sign In</Link></li>
+                <li><a href="#how-it-works" className="hover:text-[#1d1d1f]">Stall Join (Email Only)</a></li>
+                <li><a href="#features" className="hover:text-[#1d1d1f]">Menu Modifiers</a></li>
               </ul>
             </div>
 
             <div>
-              <p className="font-semibold text-[#1d1d1f] mb-3">Customer Dining</p>
-              <ul className="space-y-2.5">
-                <li><Link href="/home" className="hover:text-[#1d1d1f] transition-colors">Customer Web App</Link></li>
-                <li><Link href="/menu" className="hover:text-[#1d1d1f] transition-colors">Browse Food Halls</Link></li>
-                <li><Link href="/scan" className="hover:text-[#1d1d1f] transition-colors">Scan Table QR</Link></li>
+              <p className="font-bold text-[#1d1d1f] mb-2.5">Diners</p>
+              <ul className="space-y-2 text-[11px] sm:text-xs">
+                <li><Link href="/home" className="hover:text-[#1d1d1f]">Diner Web App</Link></li>
+                <li><Link href="/scan" className="hover:text-[#1d1d1f]">Scan Table QR</Link></li>
+                <li><Link href="/menu" className="hover:text-[#1d1d1f]">Browse Menus</Link></li>
               </ul>
             </div>
           </div>
 
-          {/* Bottom Copyright & Legal */}
-          <div className="pt-8 border-t border-black/[0.08] flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="pt-6 border-t border-black/[0.08] flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-[#86868b]">
             <p>&copy; {new Date().getFullYear()} Hawker Technologies Inc. All rights reserved.</p>
-            <div className="flex flex-wrap items-center gap-4 text-[#86868b]">
+            <div className="flex flex-wrap items-center gap-3">
               <a href="#" className="hover:underline">Privacy Policy</a>
-              <span>&bull;</span>
+              <span>•</span>
               <a href="#" className="hover:underline">Terms of Service</a>
-              <span>&bull;</span>
-              <a href="#" className="hover:underline">Sales Policy</a>
-              <span>&bull;</span>
+              <span>•</span>
               <a href="#" className="hover:underline">Legal</a>
             </div>
-            <p className="text-[#86868b]">Malaysia &bull; English</p>
+            <p>Malaysia • English</p>
           </div>
         </div>
       </footer>

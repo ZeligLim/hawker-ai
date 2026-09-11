@@ -1,10 +1,39 @@
 # Current Project Context
 
 ## Current Phase
-Phase 13: Shop Inactive Toggle, Booth Closed Toggle, Button Standardization & Single-Line Descriptions
+Phase 14: Mobile-First Landing Page, Table Session QR Gate, Dynamic Dish Customizations & Domain Isolation
 
 ## Current Feature
-1. **Shop Inactive Toggle & Booth Closed Toggle**:
+1. **Dynamic Menu Customizations on Customer Side**:
+   - Updated `lib/order/customizations.ts` with polymorphic `CustomizationSource` type supporting both string dish names and full dish objects.
+   - Parses dynamic `customizations` array `{ label, price }` from Supabase `dishes` table JSONB column, dynamic `spiceLevel` tiers (Level 0–3), with fallback to dish name string.
+   - Updated `app/shop/[slug]/page.tsx`, `components/shop-detail-client.tsx`, `components/menu-page.tsx`, and `components/home-page.tsx` to query and pass `customizations` array directly into `getDishCustomization(dish)`.
+   - Customers can now select dynamic options configured by merchants and add them to their multi-stall cart.
+
+2. **Resolved Duplicate React Child Key Console Error**:
+   - Fixed `components/home-page.tsx` where stalls were mapped using `key={stall.name}`.
+   - Changed to `key={stall.id}` so that unassigned or placeholder booth slots (e.g. multiple "Booth Slot #06") maintain unique component identity without React console errors.
+
+3. **Diner App Hidden Until Scan QR Code**:
+   - `lib/table-session.ts`: Removed hardcoded default "Table 12". Added session management helpers `getStoredTableSession()`, `isTableSessionActive()`, `clearTableSession()`, with venue metadata (`centreSlug`, `centreName`, `centreId`).
+   - `components/home-page.tsx`: Gated diner app when no table session is active (`!tableSession?.tableNumber`). Displays a mobile-first QR scan gate with 1-click camera scan shortcut (`/scan`), demo table shortcuts (Table 04, Table 12), and manual table input. Once linked, the diner app unlocks immediately with an active table badge and a "Change Table" option.
+   - `app/scan/page.tsx`: Upgraded with `useSearchParams()` for `?table=` and `?centre=`, auto-links table sessions from QR URLs, and redirects to `/home`.
+
+4. **Hawker Centre Domain & Subdomain Isolation**:
+   - `app/api/outlets/route.ts`: Detects subdomain from `x-forwarded-host` / `host` headers or `?centre=` / `?slug=` query parameters. Scopes queries strictly to a single hawker centre so stalls from different food halls are never mixed in the same domain.
+   - `components/home-page.tsx`: Passes `?centre=${tableSession?.centreSlug}` when requesting outlets and dishes.
+
+5. **Mobile-First Landing Page Redesign (`app/page.tsx`)**:
+   - Complete mobile-first architecture: Unprefixed Tailwind classes define the 360px–420px mobile layout, progressively enhancing with `sm:`, `md:`, and `lg:`.
+   - Fluid mobile typography: Non-breaking responsive headers (`text-[32px] xs:text-4xl sm:text-5xl lg:text-7xl font-bold tracking-tight`).
+   - High-touch CTAs: Full-width `h-12` rounded-full buttons on mobile (`Start Free as Operator`, `Scan Table QR`).
+   - Mobile-first interactive showcase (`#product`): Compact segmented tabs (`🏢 Operator`, `🍳 Kitchen`, `📱 Diner QR`), legible hardware preview cards, KDS ticket, and table receipt chits with zero horizontal clipping.
+   - Touch-friendly Bento grid, AI query simulator, Role breakdown, zero-subscription comparison, and FAQ accordion.
+
+6. **React 19 & Turbopack Lint Verification**:
+   - Fixed `react-hooks/set-state-in-effect` warnings in `app/scan/page.tsx` and `components/home-page.tsx` using deferred state initialization.
+   - Verified clean `npx tsc --noEmit` and `npm run lint`.
+   - Verified `npm run build` succeeds generating all 46 static and dynamic routes.
    - **Database Migration (`supabase/migrations/015_shop_active_and_booth_open.sql`)**:
      - Added `is_active BOOLEAN NOT NULL DEFAULT true` to `restaurants` with index `idx_restaurants_is_active`.
      - Added `is_open BOOLEAN NOT NULL DEFAULT true` to `food_outlets` with index `idx_food_outlets_is_open`.
