@@ -1,9 +1,27 @@
 # Current Project Context
 
 ## Current Phase
-Phase 17: Full-Screen Map UI, Auto-Location 5-Min Polling with Visibility Guard, Swipe-Up Bottom Sheet, and UI Cleanup
+Phase 18: Deployment Auth Redirect Isolation & Dynamic Origin Resolution
 
 ## Current Feature
+1. **Dynamic Origin Resolution for Authentication (`components/auth-provider.tsx`)**:
+   - Fixed `getAppUrl()` to prioritize `window.location.origin` in the browser before checking environment variables (`NEXT_PUBLIC_APP_URL` / `VERCEL_URL`).
+   - Previously, if `NEXT_PUBLIC_APP_URL` was defined in the build or environment (e.g., `http://localhost:3000`), client-side OAuth calls explicitly passed `http://localhost:3000/auth/callback` to Supabase, resulting in redirects to localhost after Google sign-in.
+   - Added `emailRedirectTo: `${getAppUrl()}/auth/callback`` to `client.auth.signUp()` and automatic signup fallbacks to ensure confirmation links also resolve to the deployed origin.
+
+2. **Server-Side Reverse Proxy Origin Support (`app/api/owner/booths/[id]/invite/route.ts`)**:
+   - Added `x-forwarded-host` and `x-forwarded-proto` header support to ensure booth invite links generated on Vercel reflect the deployed domain instead of fallback localhost.
+
+3. **Supabase Dashboard & Vercel Configuration Guidance**:
+   - Updated `README.md` to document that if a requested redirect URL is not whitelisted in Supabase Dashboard (under Authentication > URL Configuration > Redirect URLs), Supabase silently falls back to the **Site URL**. Documented wildcard patterns (`https://hawker-ai-one.vercel.app/**`, `https://*.vercel.app/**`, `http://localhost:3000/**`).
+
+4. **Verification**:
+   - `npx tsc --noEmit`: 0 errors
+   - `npm run lint`: 0 errors
+   - `npm test`: 21 passing tests
+   - `npm run build`: successful production build across all 46 static and dynamic routes.
+
+## Previous Phases
 1. **Full-Screen Map UI ($100vw \times 100vh$)**:
    - Refactored `components/home-page.tsx` into a full viewport map (`fixed inset-0 w-screen h-screen z-0`).
    - Removed all static headers, titles, extra padding, and banner clutter from the home view.

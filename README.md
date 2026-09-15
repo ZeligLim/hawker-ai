@@ -30,17 +30,19 @@ This app uses Supabase Auth for email/password authentication and Google OAuth.
 
 1. Create a Supabase project.
 2. Open Authentication > URL Configuration.
-3. Set the site URL to your local app URL, for example:
-   - `http://localhost:3000`
-4. Add redirect URLs for both local and production environments, for example:
-   - `http://localhost:3000/auth/callback`
-   - `http://localhost:3000/auth/reset-password`
-   - `https://your-production-domain.com/auth/callback`
-   - `https://your-production-domain.com/auth/reset-password`
+3. Set the **Site URL** in Supabase:
+   - For production, set to your production URL: `https://hawker-ai-one.vercel.app` (or your custom domain).
+   - If developing locally, you can use `http://localhost:3000`.
+4. Add **Redirect URLs** in Supabase (under Authentication > URL Configuration):
+   - `http://localhost:3000/**`
+   - `https://hawker-ai-one.vercel.app/**`
+   - `https://*.vercel.app/**` (for preview deployments)
+   - `https://<your-custom-domain>/**`
+   > **Note:** If a redirect URL is requested that is NOT in the Supabase Redirect URLs whitelist, Supabase automatically falls back to the **Site URL**. Ensure both your production domain and localhost are listed.
 5. Open Authentication > Providers > Google.
 6. Enable Google sign-in.
 7. Add your Google OAuth client ID and client secret from the Google Cloud Console.
-8. Set the redirect URI in Google to the Supabase callback URL, typically:
+8. Set the redirect URI in Google Cloud Console to your Supabase callback URL:
    - `https://<project-ref>.supabase.co/auth/v1/callback`
 9. Open Authentication > Settings and ensure email sign-in is enabled for email/password sign-up and login.
 10. Enable the password recovery flow for email reset links.

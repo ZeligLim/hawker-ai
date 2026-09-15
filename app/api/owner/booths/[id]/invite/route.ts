@@ -92,7 +92,9 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     return NextResponse.json({ error: insertError.message }, { status: 500 });
   }
 
-  const origin = request.nextUrl.origin || 'http://localhost:3000';
+  const host = request.headers.get('x-forwarded-host') || request.headers.get('host');
+  const proto = request.headers.get('x-forwarded-proto') || 'https';
+  const origin = host ? `${proto}://${host}` : (request.nextUrl.origin || 'http://localhost:3000');
   const setupLink = `${origin}/booths/join?token=${token}`;
 
   if (!email) {

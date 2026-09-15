@@ -71,8 +71,17 @@ const publicRoutes = [
   '/auth/reset-password',
 ];
 
-function getAppUrl() {
-  return process.env.NEXT_PUBLIC_APP_URL ?? (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000');
+function getAppUrl(): string {
+  if (typeof window !== 'undefined' && window.location.origin) {
+    return window.location.origin;
+  }
+  if (process.env.NEXT_PUBLIC_APP_URL) {
+    return process.env.NEXT_PUBLIC_APP_URL;
+  }
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`;
+  }
+  return 'http://localhost:3000';
 }
 
 function getFriendlyAuthError(error: unknown): string {
@@ -340,7 +349,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (!error) return 'signed-in';
 
     if (error.message.toLowerCase().includes('invalid login credentials')) {
-      const { data, error: signUpError } = await client.auth.signUp({ email, password });
+      const { data, error: signUpError } = await client.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: `${getAppUrl()}/auth/callback`,
+        },
+      });
 
       if (!signUpError && data.user && (data.user.identities?.length ?? 0) > 0) {
         return 'activation-sent';
@@ -361,6 +376,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const { error } = await client.auth.signUp({
       email,
       password,
+      options: {
+        emailRedirectTo: `${getAppUrl()}/auth/callback`,
+      },
     });
 
     if (error) {
