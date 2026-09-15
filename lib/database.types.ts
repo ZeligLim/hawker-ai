@@ -263,6 +263,22 @@ export type Database = {
         Update: Partial<Database['public']['Tables']['order_items']['Insert']>;
         Relationships: [];
       };
+      platform_roles: {
+        Row: {
+          user_id: string;
+          role: 'superadmin' | 'saas_owner' | 'support';
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          user_id: string;
+          role: 'superadmin' | 'saas_owner' | 'support';
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database['public']['Tables']['platform_roles']['Insert']>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {

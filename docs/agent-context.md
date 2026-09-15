@@ -1,27 +1,40 @@
 # Current Project Context
 
 ## Current Phase
-Phase 18: Deployment Auth Redirect Isolation & Dynamic Origin Resolution
+Phase 19: SaaS Superadmin RBAC & Sensitive Monetization Configuration Isolation
 
 ## Current Feature
-1. **Dynamic Origin Resolution for Authentication (`components/auth-provider.tsx`)**:
-   - Fixed `getAppUrl()` to prioritize `window.location.origin` in the browser before checking environment variables (`NEXT_PUBLIC_APP_URL` / `VERCEL_URL`).
-   - Previously, if `NEXT_PUBLIC_APP_URL` was defined in the build or environment (e.g., `http://localhost:3000`), client-side OAuth calls explicitly passed `http://localhost:3000/auth/callback` to Supabase, resulting in redirects to localhost after Google sign-in.
-   - Added `emailRedirectTo: `${getAppUrl()}/auth/callback`` to `client.auth.signUp()` and automatic signup fallbacks to ensure confirmation links also resolve to the deployed origin.
+1. **Frontend Role Guard (`components/monetization-settings-card.tsx` & `app/shop-owner/profile/page.tsx`)**:
+   - Removed monolithic "Monetization & Charge Settings" card from standard shop owner profile view.
+   - Isolated platform configuration into `<MonetizationSettingsCard />` featuring an in-app defense-in-depth role guard (`if (!roles.isSuperAdmin && !roles.isSaasOwner) return null;`).
+   - Standard shop owners now only view and manage their food hall name, address, and URL slug with clean "Save shop details" action.
+   - Platform superadmins and SaaS owners see the restricted monetization card with superadmin badge, fee model selector (percentage, fixed, mixed), fee payer selector (diner vs stall commission), quick percentage presets, live RM 20.00 order calculation preview, and dedicated save mechanism.
 
-2. **Server-Side Reverse Proxy Origin Support (`app/api/owner/booths/[id]/invite/route.ts`)**:
-   - Added `x-forwarded-host` and `x-forwarded-proto` header support to ensure booth invite links generated on Vercel reflect the deployed domain instead of fallback localhost.
+2. **Backend & Database Security Boundary (`supabase/migrations/018_platform_admin_rbac.sql`)**:
+   - Created `platform_roles` table with check constraint (`role IN ('superadmin', 'saas_owner', 'support')`).
+   - Added Row Level Security (RLS) on `platform_roles` allowing users to view their own role and restricting insert/update/delete strictly to platform admins.
+   - Created `is_platform_admin(UUID)` security definer helper function.
+   - Attached PostgreSQL engine trigger `trg_enforce_restaurant_monetization` on `restaurants` and `food_outlets`: any unauthorized direct PostgREST or Supabase client query modifying `fee_payer`, `platform_fee_fixed`, or `platform_fee_percent` is aborted at the database engine level with error code `42501` (`insufficient_privilege`).
+   - Created secure RPC function `get_restaurant_monetization_settings` restricted strictly to platform admins.
 
-3. **Supabase Dashboard & Vercel Configuration Guidance**:
-   - Updated `README.md` to document that if a requested redirect URL is not whitelisted in Supabase Dashboard (under Authentication > URL Configuration > Redirect URLs), Supabase silently falls back to the **Site URL**. Documented wildcard patterns (`https://hawker-ai-one.vercel.app/**`, `https://*.vercel.app/**`, `http://localhost:3000/**`).
+3. **API Route Guards & Fee Field Redaction (`app/api/owner/shops/[id]/route.ts` & `app/api/owner/shops/route.ts`)**:
+   - `PATCH /api/owner/shops/[id]`: Detects if payload contains `fee_payer`, `platform_fee_fixed`, or `platform_fee_percent`. If caller lacks superadmin/saas_owner privilege, returns `403 Forbidden` (`error: 'Forbidden: Only SaaS superadmins and platform owners are authorized to modify monetization and fee settings.'`).
+   - `GET /api/owner/shops/[id]` and `GET /api/owner/shops`: Sensitive monetization parameters are redacted from JSON payloads for non-admin callers, preventing information leakage.
 
-4. **Verification**:
+4. **Unified RBAC Helpers & Auth Context (`lib/auth-rbac.ts`, `app/api/user/roles/route.ts`, `components/auth-provider.tsx`)**:
+   - Implemented `getPlatformRole(client, userId, userEmail)`: checks PostgreSQL `platform_roles` with fallback to `SUPERADMIN_EMAILS` bootstrap environment list.
+   - Updated `/api/user/roles` to return `isSuperAdmin`, `isSaasOwner`, and `platformRole`.
+   - Updated `useAuth()` to provide `roles.isSuperAdmin`, `roles.isSaasOwner`, and `roles.platformRole` to any component in the single-repo application.
+
+5. **Verification**:
    - `npx tsc --noEmit`: 0 errors
-   - `npm run lint`: 0 errors
-   - `npm test`: 21 passing tests
+   - `npm run lint`: 0 errors (6 existing image warnings)
+   - `npm test`: 25 passing tests (including new `lib/auth-rbac.test.ts` testing role checks, bootstrap env evaluation, and route mutation guards)
    - `npm run build`: successful production build across all 46 static and dynamic routes.
 
 ## Previous Phases
+Phase 18: Deployment Auth Redirect Isolation & Dynamic Origin Resolution
+
 1. **Full-Screen Map UI ($100vw \times 100vh$)**:
    - Refactored `components/home-page.tsx` into a full viewport map (`fixed inset-0 w-screen h-screen z-0`).
    - Removed all static headers, titles, extra padding, and banner clutter from the home view.

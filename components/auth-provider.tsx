@@ -25,6 +25,9 @@ export type UserRoles = {
   isCustomer: boolean;
   hasShopOwner: boolean;
   hasBooth: boolean;
+  isSuperAdmin: boolean;
+  isSaasOwner: boolean;
+  platformRole: 'superadmin' | 'saas_owner' | 'support' | null;
   isLoading: boolean;
   shops: Array<{ id: string; name: string; role: string; isActive?: boolean }>;
   booths: Array<{ id: string; name: string; role: string; isOpen?: boolean }>;
@@ -179,6 +182,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     isCustomer: true,
     hasShopOwner: false,
     hasBooth: false,
+    isSuperAdmin: false,
+    isSaasOwner: false,
+    platformRole: null,
     isLoading: true,
     shops: [],
     booths: [],
@@ -190,6 +196,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         isCustomer: true,
         hasShopOwner: false,
         hasBooth: false,
+        isSuperAdmin: false,
+        isSaasOwner: false,
+        platformRole: null,
         isLoading: false,
         shops: [],
         booths: [],
@@ -205,6 +214,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           isCustomer: data.isCustomer ?? true,
           hasShopOwner: data.hasShopOwner ?? false,
           hasBooth: data.hasBooth ?? false,
+          isSuperAdmin: data.isSuperAdmin ?? false,
+          isSaasOwner: data.isSaasOwner ?? false,
+          platformRole: data.platformRole ?? null,
           isLoading: false,
           shops: data.shops ?? [],
           booths: data.booths ?? [],
@@ -418,6 +430,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         isCustomer: true,
         hasShopOwner: false,
         hasBooth: false,
+        isSuperAdmin: false,
+        isSaasOwner: false,
+        platformRole: null,
         isLoading: false,
         shops: [],
         booths: [],

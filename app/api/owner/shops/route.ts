@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireRequestUser, createAdminClient } from '@/lib/supabase/server';
+import { getPlatformRole } from '@/lib/auth-rbac';
 
 export async function GET(request: NextRequest) {
   const auth = await requireRequestUser(request);
@@ -96,6 +97,8 @@ export async function GET(request: NextRequest) {
     boothsByRestaurant.set(booth.restaurant_id, existing);
   });
 
+  const { isPlatformAdmin } = await getPlatformRole(auth.client, auth.user.id, auth.user.email);
+
   const shops = (memberships ?? []).map((membership) => {
     const restaurant = Array.isArray(membership.restaurants) ? membership.restaurants[0] : membership.restaurants;
 
@@ -111,14 +114,18 @@ export async function GET(request: NextRequest) {
       role: membership.role,
       isActive,
       status,
-      feePayer: (restaurant?.fee_payer ?? 'CUSTOMER') as 'CUSTOMER' | 'MERCHANT',
-      platformFeeFixed: Number(restaurant?.platform_fee_fixed ?? 0.50),
-      platformFeePercent: Number(restaurant?.platform_fee_percent ?? 0.0000),
+      ...(isPlatformAdmin
+        ? {
+            feePayer: (restaurant?.fee_payer ?? 'CUSTOMER') as 'CUSTOMER' | 'MERCHANT',
+            platformFeeFixed: Number(restaurant?.platform_fee_fixed ?? 0.50),
+            platformFeePercent: Number(restaurant?.platform_fee_percent ?? 0.0000),
+          }
+        : {}),
       booths: boothsByRestaurant.get(membership.restaurant_id) ?? [],
     };
   });
 
-  return NextResponse.json({ shops });
+  return NextResponse.json({ shops, isPlatformAdmin });
 }
 
 export async function POST(request: NextRequest) {

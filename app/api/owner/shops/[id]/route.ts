@@ -1,8 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireRequestUser } from '@/lib/supabase/server';
+import { getPlatformRole } from '@/lib/auth-rbac';
 
 async function getShopAccess(auth: Awaited<ReturnType<typeof requireRequestUser>>, restaurantId: string) {
-  if (!auth.client || !auth.user) return { membership: null, error: auth.error ?? 'Authentication required.' };
+  if (!auth.client || !auth.user) return { membership: null, isPlatformAdmin: false, error: auth.error ?? 'Authentication required.' };
+
+  const { isPlatformAdmin } = await getPlatformRole(auth.client, auth.user.id, auth.user.email);
+  if (isPlatformAdmin) {
+    return { membership: { role: 'superadmin', restaurant_id: restaurantId }, isPlatformAdmin: true, error: null };
+  }
 
   const { data: membership, error } = await auth.client
     .from('restaurant_memberships')
@@ -12,14 +18,14 @@ async function getShopAccess(auth: Awaited<ReturnType<typeof requireRequestUser>
     .maybeSingle();
 
   if (error) {
-    return { membership: null, error: error.message };
+    return { membership: null, isPlatformAdmin: false, error: error.message };
   }
 
   if (!membership || !['owner', 'manager'].includes(membership.role)) {
-    return { membership: null, error: 'You do not have permission to manage this shop.' };
+    return { membership: null, isPlatformAdmin: false, error: 'You do not have permission to manage this shop.' };
   }
 
-  return { membership, error: null };
+  return { membership, isPlatformAdmin: false, error: null };
 }
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -30,7 +36,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     return NextResponse.json({ error: auth.error }, { status: 401 });
   }
 
-  const { membership, error } = await getShopAccess(auth, id);
+  const { membership, isPlatformAdmin, error } = await getShopAccess(auth, id);
   if (error || !membership) {
     return NextResponse.json({ error }, { status: error ? 403 : 404 });
   }
@@ -45,16 +51,28 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     return NextResponse.json({ error: restaurantError?.message ?? 'Shop not found.' }, { status: 404 });
   }
 
+  // Strictly restrict sensitive platform monetization settings to platform admins
+  const shopData: Record<string, any> = {
+    ...restaurant,
+    is_active: restaurant.is_active ?? true,
+    status: restaurant.status ?? (restaurant.is_active === false ? 'suspended' : 'approved'),
+  };
+
+  if (isPlatformAdmin) {
+    shopData.fee_payer = (restaurant.fee_payer ?? 'CUSTOMER') as 'CUSTOMER' | 'MERCHANT';
+    shopData.platform_fee_fixed = Number(restaurant.platform_fee_fixed ?? 0.50);
+    shopData.platform_fee_percent = Number(restaurant.platform_fee_percent ?? 0.0000);
+  } else {
+    // Redact sensitive monetization configuration for non-admins
+    delete shopData.fee_payer;
+    delete shopData.platform_fee_fixed;
+    delete shopData.platform_fee_percent;
+  }
+
   return NextResponse.json({
-    shop: {
-      ...restaurant,
-      is_active: restaurant.is_active ?? true,
-      status: restaurant.status ?? (restaurant.is_active === false ? 'suspended' : 'approved'),
-      fee_payer: (restaurant.fee_payer ?? 'CUSTOMER') as 'CUSTOMER' | 'MERCHANT',
-      platform_fee_fixed: Number(restaurant.platform_fee_fixed ?? 0.50),
-      platform_fee_percent: Number(restaurant.platform_fee_percent ?? 0.0000),
-    },
+    shop: shopData,
     role: membership.role,
+    isPlatformAdmin,
   });
 }
 
@@ -71,9 +89,22 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     return NextResponse.json({ error: 'Invalid request body.' }, { status: 400 });
   }
 
-  const { membership, error } = await getShopAccess(auth, id);
+  const { membership, isPlatformAdmin, error } = await getShopAccess(auth, id);
   if (error || !membership) {
     return NextResponse.json({ error }, { status: error ? 403 : 404 });
+  }
+
+  // Strictly block non-admins from attempting to modify sensitive pricing/charge models
+  const hasMonetizationFields =
+    body.fee_payer !== undefined ||
+    body.platform_fee_fixed !== undefined ||
+    body.platform_fee_percent !== undefined;
+
+  if (hasMonetizationFields && !isPlatformAdmin) {
+    return NextResponse.json(
+      { error: 'Forbidden: Only SaaS superadmins and platform owners are authorized to modify monetization and fee settings.' },
+      { status: 403 }
+    );
   }
 
   const update: {
@@ -117,16 +148,19 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
   if (typeof body.lat === 'number') update.lat = body.lat;
   if (typeof body.lng === 'number') update.lng = body.lng;
 
-  if (typeof body.fee_payer === 'string' && ['CUSTOMER', 'MERCHANT'].includes(body.fee_payer)) {
-    update.fee_payer = body.fee_payer as 'CUSTOMER' | 'MERCHANT';
-  }
+  // Only permit updating sensitive monetization parameters if caller is a platform admin
+  if (isPlatformAdmin) {
+    if (typeof body.fee_payer === 'string' && ['CUSTOMER', 'MERCHANT'].includes(body.fee_payer)) {
+      update.fee_payer = body.fee_payer as 'CUSTOMER' | 'MERCHANT';
+    }
 
-  if (typeof body.platform_fee_fixed === 'number' && !isNaN(body.platform_fee_fixed) && body.platform_fee_fixed >= 0) {
-    update.platform_fee_fixed = Number(body.platform_fee_fixed.toFixed(2));
-  }
+    if (typeof body.platform_fee_fixed === 'number' && !isNaN(body.platform_fee_fixed) && body.platform_fee_fixed >= 0) {
+      update.platform_fee_fixed = Number(body.platform_fee_fixed.toFixed(2));
+    }
 
-  if (typeof body.platform_fee_percent === 'number' && !isNaN(body.platform_fee_percent) && body.platform_fee_percent >= 0 && body.platform_fee_percent <= 1) {
-    update.platform_fee_percent = Number(body.platform_fee_percent.toFixed(4));
+    if (typeof body.platform_fee_percent === 'number' && !isNaN(body.platform_fee_percent) && body.platform_fee_percent >= 0 && body.platform_fee_percent <= 1) {
+      update.platform_fee_percent = Number(body.platform_fee_percent.toFixed(4));
+    }
   }
 
   if (Object.keys(update).length === 0) {
@@ -144,16 +178,26 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     return NextResponse.json({ error: updateError?.message ?? 'Could not update shop.' }, { status: 500 });
   }
 
+  const shopData: Record<string, any> = {
+    ...restaurant,
+    is_active: restaurant.is_active ?? true,
+    status: restaurant.status ?? (restaurant.is_active === false ? 'suspended' : 'approved'),
+  };
+
+  if (isPlatformAdmin) {
+    shopData.fee_payer = (restaurant.fee_payer ?? 'CUSTOMER') as 'CUSTOMER' | 'MERCHANT';
+    shopData.platform_fee_fixed = Number(restaurant.platform_fee_fixed ?? 0.50);
+    shopData.platform_fee_percent = Number(restaurant.platform_fee_percent ?? 0.0000);
+  } else {
+    delete shopData.fee_payer;
+    delete shopData.platform_fee_fixed;
+    delete shopData.platform_fee_percent;
+  }
+
   return NextResponse.json({
-    shop: {
-      ...restaurant,
-      is_active: restaurant.is_active ?? true,
-      status: restaurant.status ?? (restaurant.is_active === false ? 'suspended' : 'approved'),
-      fee_payer: (restaurant.fee_payer ?? 'CUSTOMER') as 'CUSTOMER' | 'MERCHANT',
-      platform_fee_fixed: Number(restaurant.platform_fee_fixed ?? 0.50),
-      platform_fee_percent: Number(restaurant.platform_fee_percent ?? 0.0000),
-    },
+    shop: shopData,
     role: membership.role,
+    isPlatformAdmin,
     status: 'updated',
   });
 }

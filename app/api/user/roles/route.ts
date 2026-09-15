@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireRequestUser } from '@/lib/supabase/server';
+import { getPlatformRole } from '@/lib/auth-rbac';
 
 export async function GET(request: NextRequest) {
   const auth = await requireRequestUser(request);
@@ -8,6 +9,9 @@ export async function GET(request: NextRequest) {
       isCustomer: true,
       hasShopOwner: false,
       hasBooth: false,
+      isSuperAdmin: false,
+      isSaasOwner: false,
+      platformRole: null,
       shops: [],
       booths: [],
     });
@@ -53,10 +57,19 @@ export async function GET(request: NextRequest) {
     // ignore
   }
 
+  const { isSuperAdmin, isSaasOwner, role: platformRole } = await getPlatformRole(
+    auth.client,
+    auth.user.id,
+    auth.user.email
+  );
+
   return NextResponse.json({
     isCustomer: true,
     hasShopOwner: shops.length > 0,
     hasBooth: booths.length > 0,
+    isSuperAdmin,
+    isSaasOwner,
+    platformRole,
     shops,
     booths,
   });
