@@ -5,7 +5,6 @@ import { useCallback, useEffect, useState } from 'react';
 import { RoleModeSwitcher } from '@/components/role-mode-switcher';
 import { useAuth } from '@/components/auth-provider';
 import { authenticatedFetch } from '@/lib/supabase/client';
-import { MonetizationSettingsCard } from '@/components/monetization-settings-card';
 
 type Shop = {
   id: string;
@@ -13,18 +12,11 @@ type Shop = {
   slug: string | null;
   address: string | null;
   role: string;
-  fee_payer?: 'CUSTOMER' | 'MERCHANT';
-  platform_fee_fixed?: number;
-  platform_fee_percent?: number;
-  feePayer?: 'CUSTOMER' | 'MERCHANT';
-  platformFeeFixed?: number;
-  platformFeePercent?: number;
   booths: Array<{ id: string; name: string }>;
 };
 
 export default function ShopOwnerProfilePage() {
-  const { signOut, roles } = useAuth();
-  const isAuthorizedAdmin = roles.isSuperAdmin || roles.isSaasOwner;
+  const { signOut } = useAuth();
   const [isSignOutDialogOpen, setIsSignOutDialogOpen] = useState(false);
   const [shop, setShop] = useState<Shop | null>(null);
   const [loading, setLoading] = useState(true);
@@ -35,10 +27,6 @@ export default function ShopOwnerProfilePage() {
     name: '',
     address: '',
     slug: '',
-    feeMode: 'percentage' as 'percentage' | 'fixed' | 'mixed',
-    feePayer: 'CUSTOMER' as 'CUSTOMER' | 'MERCHANT',
-    platformFeePercent: 5.0, // in percent e.g. 5.0%
-    platformFeeFixed: 0.00, // in RM e.g. 0.50
   });
   const [createForm, setCreateForm] = useState({ name: '', address: '' });
 
@@ -49,23 +37,10 @@ export default function ShopOwnerProfilePage() {
       const nextShop = payload.shops?.[0] ?? null;
       setShop(nextShop);
       if (nextShop) {
-        const feePercentRaw = Number(nextShop.platform_fee_percent ?? (nextShop as any).platformFeePercent ?? 0.0000);
-        const feeFixedRaw = Number(nextShop.platform_fee_fixed ?? (nextShop as any).platformFeeFixed ?? 0.50);
-        const feePayerRaw = ((nextShop.fee_payer ?? (nextShop as any).feePayer ?? 'CUSTOMER') as 'CUSTOMER' | 'MERCHANT');
-
-        let mode: 'percentage' | 'fixed' | 'mixed' = 'percentage';
-        if (feePercentRaw > 0 && feeFixedRaw > 0) mode = 'mixed';
-        else if (feePercentRaw > 0) mode = 'percentage';
-        else mode = 'fixed';
-
         setDraft({
           name: nextShop.name,
           address: nextShop.address ?? '',
           slug: nextShop.slug ?? '',
-          feeMode: mode,
-          feePayer: feePayerRaw,
-          platformFeePercent: feePercentRaw > 0 ? Number((feePercentRaw * 100).toFixed(2)) : 5.0,
-          platformFeeFixed: feeFixedRaw,
         });
       }
     } catch {
@@ -224,18 +199,6 @@ export default function ShopOwnerProfilePage() {
             ) : null}
           </div>
         </section>
-
-        {/* Sensitive Platform Monetization Configuration: strictly visible only to SaaS superadmins / platform owners */}
-        {isAuthorizedAdmin && (
-          <MonetizationSettingsCard
-            shopId={shop.id}
-            initialFeeMode={draft.feeMode}
-            initialFeePayer={draft.feePayer}
-            initialPlatformFeePercent={draft.platformFeePercent}
-            initialPlatformFeeFixed={draft.platformFeeFixed}
-            onUpdated={loadShop}
-          />
-        )}
 
         <div className="mt-6">
           <RoleModeSwitcher currentMode="shop_owner" />

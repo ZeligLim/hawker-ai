@@ -10,7 +10,7 @@
  * Decoupled from React DOM / Next.js web APIs for 100% portability.
  */
 
-export type ClientAppType = 'website' | 'customer' | 'stall' | 'owner';
+export type ClientAppType = 'website' | 'customer' | 'stall' | 'owner' | 'admin';
 
 export type UserRole =
   | 'customer'

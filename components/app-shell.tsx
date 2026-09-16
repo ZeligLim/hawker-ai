@@ -20,8 +20,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const client = PermissionEngine.getClientForPath(pathname);
 
-  // 1. Marketing & Auth routes (Public marketing pages render their own navigation)
-  if (client === 'website') {
+  // 1. Marketing, Auth & SaaS Superadmin routes (Render their own self-contained layout)
+  if (client === 'website' || client === 'admin') {
     return <>{children}</>;
   }
 

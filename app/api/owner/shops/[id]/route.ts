@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requireRequestUser } from '@/lib/supabase/server';
+import { requireRequestUser, createAdminClient } from '@/lib/supabase/server';
 import { getPlatformRole } from '@/lib/auth-rbac';
 
 async function getShopAccess(auth: Awaited<ReturnType<typeof requireRequestUser>>, restaurantId: string) {
@@ -41,7 +41,8 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     return NextResponse.json({ error }, { status: error ? 403 : 404 });
   }
 
-  const { data: restaurant, error: restaurantError } = await auth.client
+  const db = isPlatformAdmin ? (createAdminClient() ?? auth.client) : auth.client;
+  const { data: restaurant, error: restaurantError } = await db
     .from('restaurants')
     .select('id, name, slug, address, lat, lng, is_active, status, fee_payer, platform_fee_fixed, platform_fee_percent, created_at')
     .eq('id', id)
@@ -167,7 +168,8 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     return NextResponse.json({ error: 'No fields provided for update.' }, { status: 400 });
   }
 
-  const { data: restaurant, error: updateError } = await auth.client
+  const db = isPlatformAdmin ? (createAdminClient() ?? auth.client) : auth.client;
+  const { data: restaurant, error: updateError } = await db
     .from('restaurants')
     .update(update)
     .eq('id', id)

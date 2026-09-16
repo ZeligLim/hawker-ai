@@ -1,39 +1,55 @@
 # Current Project Context
 
 ## Current Phase
-Phase 19: SaaS Superadmin RBAC & Sensitive Monetization Configuration Isolation
+Phase 20: Dedicated SaaS Superadmin Dashboard Route Group & Standalone Monetization Controls
 
 ## Current Feature
-1. **Frontend Role Guard (`components/monetization-settings-card.tsx` & `app/shop-owner/profile/page.tsx`)**:
-   - Removed monolithic "Monetization & Charge Settings" card from standard shop owner profile view.
-   - Isolated platform configuration into `<MonetizationSettingsCard />` featuring an in-app defense-in-depth role guard (`if (!roles.isSuperAdmin && !roles.isSaasOwner) return null;`).
-   - Standard shop owners now only view and manage their food hall name, address, and URL slug with clean "Save shop details" action.
-   - Platform superadmins and SaaS owners see the restricted monetization card with superadmin badge, fee model selector (percentage, fixed, mixed), fee payer selector (diner vs stall commission), quick percentage presets, live RM 20.00 order calculation preview, and dedicated save mechanism.
+1. **Dedicated SaaS Admin Route Group (`app/(admin)/admin/`)**:
+   - Created an isolated Next.js App Router route group `app/(admin)/` with its own layout (`app/(admin)/layout.tsx`) completely decoupled from standard vendor and diner chrome.
+   - Built layout-level security boundary `<AdminGuard />` (`components/admin/admin-guard.tsx`): verifies user credentials against `useAuth()`. Unauthenticated users are redirected to `/auth?redirect=/admin`. Authenticated users lacking `superadmin` or `saas_owner` role are immediately blocked with an explicit 403 Forbidden screen.
+   - Built a sleek SaaS Admin navigation shell `<AdminShell />` (`components/admin/admin-shell.tsx`): dark theme (`#090d16` / `#111827`), brand header with "SUPERADMIN" badge, active route navigation (`/admin`, `/admin/monetization`, `/admin/shops`), quick external links (Diner App, Operator Portal), user email and role badge footer, mobile drawer menu, and sign-out confirmation dialog.
 
-2. **Backend & Database Security Boundary (`supabase/migrations/018_platform_admin_rbac.sql`)**:
-   - Created `platform_roles` table with check constraint (`role IN ('superadmin', 'saas_owner', 'support')`).
-   - Added Row Level Security (RLS) on `platform_roles` allowing users to view their own role and restricting insert/update/delete strictly to platform admins.
-   - Created `is_platform_admin(UUID)` security definer helper function.
-   - Attached PostgreSQL engine trigger `trg_enforce_restaurant_monetization` on `restaurants` and `food_outlets`: any unauthorized direct PostgREST or Supabase client query modifying `fee_payer`, `platform_fee_fixed`, or `platform_fee_percent` is aborted at the database engine level with error code `42501` (`insufficient_privilege`).
-   - Created secure RPC function `get_restaurant_monetization_settings` restricted strictly to platform admins.
+2. **Cleaned Up Vendor Profile View (`app/shop-owner/profile/page.tsx`)**:
+   - Completely removed `MonetizationSettingsCard` import and JSX block from standard shop owner views.
+   - Removed fee state fields (`feeMode`, `feePayer`, `platformFeePercent`, `platformFeeFixed`) from draft state, `Shop` type, and initial data loader.
+   - Standard food hall operators now strictly view and edit vendor-relevant fields: Venue Name, URL Slug, Address, and their Booth Allocations.
 
-3. **API Route Guards & Fee Field Redaction (`app/api/owner/shops/[id]/route.ts` & `app/api/owner/shops/route.ts`)**:
-   - `PATCH /api/owner/shops/[id]`: Detects if payload contains `fee_payer`, `platform_fee_fixed`, or `platform_fee_percent`. If caller lacks superadmin/saas_owner privilege, returns `403 Forbidden` (`error: 'Forbidden: Only SaaS superadmins and platform owners are authorized to modify monetization and fee settings.'`).
-   - `GET /api/owner/shops/[id]` and `GET /api/owner/shops`: Sensitive monetization parameters are redacted from JSON payloads for non-admin callers, preventing information leakage.
+3. **Dedicated Admin Pages**:
+   - **Platform Overview (`app/(admin)/admin/page.tsx`)**:
+     - System-wide KPIs: Total Registered Venues, Total Active Stalls, Monetization Distribution (Diner Surcharges vs Stall Commissions), and Database Trigger RLS status.
+     - Live platform food halls directory displaying venue metadata, stall count, fee model, and quick links to configure monetization.
+   - **Standalone Monetization Engine (`app/(admin)/admin/monetization/page.tsx`)**:
+     - Venue picker dropdown populated via `GET /api/owner/shops?all=true` (supports preselection via query parameter `?shopId=...`).
+     - Commission model selector: Percentage (%), Flat Fixed (RM), and Mixed (% + RM).
+     - Fee-payer routing toggle: Diner Pays Surcharge (service charge added at checkout) vs Stall Pays Commission (deducted from merchant payout).
+     - Platform fee inputs with percentage presets (`2.5%`, `3.5%`, `5.0%`, `7.5%`, `10.0%`) and flat presets (`RM 0.30`, `RM 0.50`, `RM 0.80`, `RM 1.00`).
+     - Interactive live order calculation simulation (RM 20.00 sample order) showing real-time Customer Bill, Platform Surcharge/Commission, and Stall Net Payout.
+     - Saves via protected `PATCH /api/owner/shops/[id]`.
+     - Active Venue Pricing Directory table for instant 1-click rate inspections.
+     - Wrapped in React `<Suspense>` for optimal client-side search param hydration.
+   - **Venues Platform Directory (`app/(admin)/admin/shops/page.tsx` & `app/(admin)/admin/shops/[id]/page.tsx`)**:
+     - Directory of all multi-tenant food halls and direct venue detail / fee override configurator.
 
-4. **Unified RBAC Helpers & Auth Context (`lib/auth-rbac.ts`, `app/api/user/roles/route.ts`, `components/auth-provider.tsx`)**:
-   - Implemented `getPlatformRole(client, userId, userEmail)`: checks PostgreSQL `platform_roles` with fallback to `SUPERADMIN_EMAILS` bootstrap environment list.
-   - Updated `/api/user/roles` to return `isSuperAdmin`, `isSaasOwner`, and `platformRole`.
-   - Updated `useAuth()` to provide `roles.isSuperAdmin`, `roles.isSaasOwner`, and `roles.platformRole` to any component in the single-repo application.
+4. **Multi-Client Architecture & Role Switcher Integration**:
+   - Added `'admin'` to `ClientAppType` in `lib/shared/types.ts`.
+   - Updated `PermissionEngine.getClientForPath(pathname)` in `lib/shared/permissions.ts` to identify `/admin*` as `'admin'` client.
+   - Configured `AppShell` in `components/app-shell.tsx` to render bare `<>{children}</>` for `'admin'` client, bypassing consumer and merchant bottom tabs.
+   - Added unit test coverage in `lib/multi-client-architecture.test.ts` verifying `/admin` and `/admin/monetization` resolve to `'admin'`.
+   - Updated `RoleModeSwitcher` in `components/role-mode-switcher.tsx` to display a "SaaS Admin" button leading directly to `/admin` when the user has superadmin or saas_owner privileges.
 
-5. **Verification**:
+5. **Backend Data & Security Integrity**:
+   - `app/api/owner/shops/route.ts`: Added support for `?all=true` for platform admins using `createAdminClient()`.
+   - `app/api/owner/shops/[id]/route.ts`: Uses `createAdminClient()` for platform admins while preserving the 403 Forbidden check blocking non-admins from mutating fee parameters.
+   - Database trigger `018_platform_admin_rbac.sql` aborts any unauthorized direct PostgREST mutation at the database engine level with error code `42501`.
+
+6. **Verification**:
    - `npx tsc --noEmit`: 0 errors
    - `npm run lint`: 0 errors (6 existing image warnings)
-   - `npm test`: 25 passing tests (including new `lib/auth-rbac.test.ts` testing role checks, bootstrap env evaluation, and route mutation guards)
-   - `npm run build`: successful production build across all 46 static and dynamic routes.
+   - `npm test`: 25 passing tests
+   - `npm run build`: Successful production build across all 49 routes including static generation of `/admin`, `/admin/monetization`, `/admin/shops`, and dynamic SSR of `/admin/shops/[id]`.
 
 ## Previous Phases
-Phase 18: Deployment Auth Redirect Isolation & Dynamic Origin Resolution
+Phase 19: SaaS Superadmin RBAC & Sensitive Monetization Configuration Isolation
 
 1. **Full-Screen Map UI ($100vw \times 100vh$)**:
    - Refactored `components/home-page.tsx` into a full viewport map (`fixed inset-0 w-screen h-screen z-0`).

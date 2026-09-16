@@ -107,6 +107,10 @@ export class PermissionEngine {
       return 'website';
     }
 
+    if (pathname.startsWith('/admin')) {
+      return 'admin';
+    }
+
     if (pathname.startsWith('/owner')) {
       return 'stall';
     }

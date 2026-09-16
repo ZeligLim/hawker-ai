@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useAuth } from '@/components/auth-provider';
-import { Building2, UserRound, UtensilsCrossed } from 'lucide-react';
+import { Building2, UserRound, UtensilsCrossed, ShieldCheck } from 'lucide-react';
 
 interface RoleModeSwitcherProps {
   currentMode: 'customer' | 'booth' | 'shop_owner';
@@ -15,8 +15,8 @@ export function RoleModeSwitcher({ currentMode }: RoleModeSwitcherProps) {
     return null;
   }
 
-  // If user only has Customer mode (neither shop owner nor booth owner)
-  if (!roles.hasShopOwner && !roles.hasBooth) {
+  // If user only has Customer mode (neither shop owner nor booth owner nor platform admin)
+  if (!roles.hasShopOwner && !roles.hasBooth && !roles.isSuperAdmin && !roles.isSaasOwner) {
     return (
       <div className="rounded-[24px] bg-[#f5f5f7] p-4 sm:p-5 text-xs text-[#6e6e73] border border-black/[0.04]">
         <div className="flex items-center gap-2 font-semibold text-[#1d1d1f]">
@@ -52,11 +52,13 @@ export function RoleModeSwitcher({ currentMode }: RoleModeSwitcherProps) {
           </p>
         </div>
         <span className="text-[10px] sm:text-[11px] font-semibold px-2 sm:px-2.5 py-1 rounded-full bg-[#0071e3]/10 text-[#0071e3] shrink-0 whitespace-nowrap">
-          {roles.hasShopOwner && roles.hasBooth
-            ? 'Multi-Role'
-            : roles.hasShopOwner
-              ? 'Owner'
-              : 'Stall'}
+          {roles.isSuperAdmin || roles.isSaasOwner
+            ? 'Superadmin'
+            : roles.hasShopOwner && roles.hasBooth
+              ? 'Multi-Role'
+              : roles.hasShopOwner
+                ? 'Owner'
+                : 'Stall'}
         </span>
       </div>
 
@@ -142,6 +144,24 @@ export function RoleModeSwitcher({ currentMode }: RoleModeSwitcherProps) {
               </p>
             </div>
           </button>
+        )}
+
+        {/* 4. SaaS Superadmin Mode (Strictly for superadmin / saas_owner) */}
+        {(roles.isSuperAdmin || roles.isSaasOwner) && (
+          <Link
+            href={'/admin' as any}
+            className="flex min-w-0 items-center gap-3 p-3 sm:p-3.5 rounded-[18px] text-left transition-all bg-amber-500/10 text-amber-950 border border-amber-500/30 hover:bg-amber-500/20"
+          >
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-amber-500 text-slate-950 shadow-xs">
+              <ShieldCheck className="w-4 h-4" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-xs font-bold text-slate-900 truncate">SaaS Admin</p>
+              <p className="text-[10px] text-amber-800/80 truncate">
+                Platform Control Plane
+              </p>
+            </div>
+          </Link>
         )}
       </div>
     </div>

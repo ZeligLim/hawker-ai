@@ -89,6 +89,10 @@ test('1. Client Path Resolution: identifies the correct client experience', () =
   assert.equal(PermissionEngine.getClientForPath('/shop-owner'), 'owner');
   assert.equal(PermissionEngine.getClientForPath('/shop-owner/booths'), 'owner');
   assert.equal(PermissionEngine.getClientForPath('/shop-owner/analytics'), 'owner');
+
+  // SaaS Superadmin App
+  assert.equal(PermissionEngine.getClientForPath('/admin'), 'admin');
+  assert.equal(PermissionEngine.getClientForPath('/admin/monetization'), 'admin');
 });
 
 test('2. Customer Client Boundaries: unauthenticated or diner access', () => {

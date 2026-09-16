@@ -6,6 +6,59 @@ export async function GET(request: NextRequest) {
   const auth = await requireRequestUser(request);
   if (!auth.client || !auth.user) return NextResponse.json({ error: auth.error }, { status: 401 });
 
+  const { isPlatformAdmin } = await getPlatformRole(auth.client, auth.user.id, auth.user.email);
+
+  // Platform admins can query ?all=true to view and manage all food halls/venues across the platform
+  if (isPlatformAdmin && request.nextUrl.searchParams.get('all') === 'true') {
+    const adminClient = createAdminClient() ?? auth.client;
+    const { data: allRestaurants, error: allRestError } = await adminClient
+      .from('restaurants')
+      .select('id, name, slug, address, is_active, status, fee_payer, platform_fee_fixed, platform_fee_percent, created_at')
+      .order('name');
+
+    if (allRestError) {
+      return NextResponse.json({ error: allRestError.message }, { status: 500 });
+    }
+
+    const { data: allBooths } = await adminClient
+      .from('food_outlets')
+      .select('id, restaurant_id, name, is_open, status, created_at');
+
+    const boothsByRestaurant = new Map<string, Array<{ id: string; name: string; isOpen?: boolean; status?: string }>>();
+    allBooths?.forEach((booth) => {
+      const existing = boothsByRestaurant.get(booth.restaurant_id) ?? [];
+      existing.push({
+        id: booth.id,
+        name: booth.name,
+        isOpen: booth.is_open ?? true,
+        status: booth.status ?? (booth.is_open === false ? 'closed' : 'approved'),
+      });
+      boothsByRestaurant.set(booth.restaurant_id, existing);
+    });
+
+    const shops = (allRestaurants ?? []).map((restaurant) => {
+      const isActive = restaurant.is_active ?? true;
+      const status = restaurant.status ?? (isActive ? 'approved' : 'suspended');
+
+      return {
+        id: restaurant.id,
+        name: restaurant.name,
+        slug: restaurant.slug,
+        address: restaurant.address,
+        createdAt: restaurant.created_at,
+        role: 'superadmin',
+        isActive,
+        status,
+        feePayer: (restaurant.fee_payer ?? 'CUSTOMER') as 'CUSTOMER' | 'MERCHANT',
+        platformFeeFixed: Number(restaurant.platform_fee_fixed ?? 0.50),
+        platformFeePercent: Number(restaurant.platform_fee_percent ?? 0.0000),
+        booths: boothsByRestaurant.get(restaurant.id) ?? [],
+      };
+    });
+
+    return NextResponse.json({ shops, isPlatformAdmin: true });
+  }
+
   const { data: memberships, error: membershipsError } = await auth.client
     .from('restaurant_memberships')
     .select('restaurant_id, role, restaurants(id, name, slug, address, is_active, status, fee_payer, platform_fee_fixed, platform_fee_percent, created_at)')
@@ -96,8 +149,6 @@ export async function GET(request: NextRequest) {
     });
     boothsByRestaurant.set(booth.restaurant_id, existing);
   });
-
-  const { isPlatformAdmin } = await getPlatformRole(auth.client, auth.user.id, auth.user.email);
 
   const shops = (memberships ?? []).map((membership) => {
     const restaurant = Array.isArray(membership.restaurants) ? membership.restaurants[0] : membership.restaurants;
