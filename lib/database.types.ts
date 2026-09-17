@@ -15,6 +15,7 @@ export type Database = {
           platform_fee_fixed: number;
           platform_fee_percent: number;
           is_active?: boolean;
+          schedule?: Json;
           status?: string;
           created_at: string;
         };
@@ -25,6 +26,7 @@ export type Database = {
           platform_fee_fixed?: number;
           platform_fee_percent?: number;
           is_active?: boolean;
+          schedule?: Json;
           status?: string;
         };
         Update: Partial<Database['public']['Tables']['restaurants']['Insert']>;
@@ -39,6 +41,8 @@ export type Database = {
           platform_fee_fixed: number | null;
           platform_fee_percent: number | null;
           is_open?: boolean;
+          is_active?: boolean;
+          schedule?: Json;
           status?: string;
           created_at: string;
         };
@@ -49,6 +53,8 @@ export type Database = {
           platform_fee_fixed?: number | null;
           platform_fee_percent?: number | null;
           is_open?: boolean;
+          is_active?: boolean;
+          schedule?: Json;
           status?: string;
         };
         Update: Partial<Database['public']['Tables']['food_outlets']['Insert']>;

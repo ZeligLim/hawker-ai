@@ -44,7 +44,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
   const db = isPlatformAdmin ? (createAdminClient() ?? auth.client) : auth.client;
   const { data: restaurant, error: restaurantError } = await db
     .from('restaurants')
-    .select('id, name, slug, address, lat, lng, is_active, status, fee_payer, platform_fee_fixed, platform_fee_percent, created_at')
+    .select('id, name, slug, address, lat, lng, is_active, schedule, status, fee_payer, platform_fee_fixed, platform_fee_percent, created_at')
     .eq('id', id)
     .maybeSingle();
 
@@ -116,6 +116,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     address?: string;
     lat?: number;
     lng?: number;
+    schedule?: any;
     fee_payer?: 'CUSTOMER' | 'MERCHANT';
     platform_fee_fixed?: number;
     platform_fee_percent?: number;
@@ -131,6 +132,10 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     } else if (body.status === 'approved') {
       update.is_active = true;
     }
+  }
+
+  if (body.schedule !== undefined) {
+    update.schedule = body.schedule;
   }
 
   if (typeof body.name === 'string' && body.name.trim()) {
@@ -173,7 +178,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     .from('restaurants')
     .update(update)
     .eq('id', id)
-    .select('id, name, slug, address, lat, lng, is_active, status, fee_payer, platform_fee_fixed, platform_fee_percent, created_at')
+    .select('id, name, slug, address, lat, lng, is_active, schedule, status, fee_payer, platform_fee_fixed, platform_fee_percent, created_at')
     .maybeSingle();
 
   if (updateError || !restaurant) {

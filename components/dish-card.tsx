@@ -65,8 +65,8 @@ export function DishCard({
             </div>
           ) : null}
 
-          {/* Spicy Badge (shown when spicy level higher than 1) */}
-          {spiceLevel !== undefined && spiceLevel > 1 ? (
+          {/* Spicy Badge (shown when spicy level is 1 or higher) */}
+          {spiceLevel !== undefined && spiceLevel >= 1 ? (
             <div
               className="flex h-7 w-7 items-center justify-center rounded-full bg-red-50 text-red-600 shadow-sm border border-red-200"
               title={`Spicy Level ${spiceLevel}`}

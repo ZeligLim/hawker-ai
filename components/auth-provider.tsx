@@ -29,8 +29,19 @@ export type UserRoles = {
   isSaasOwner: boolean;
   platformRole: 'superadmin' | 'saas_owner' | 'support' | null;
   isLoading: boolean;
-  shops: Array<{ id: string; name: string; role: string; isActive?: boolean }>;
-  booths: Array<{ id: string; name: string; role: string; isOpen?: boolean }>;
+  shops: Array<{ id: string; name: string; role: string; isActive?: boolean; schedule?: any }>;
+  booths: Array<{
+    id: string;
+    name: string;
+    role: string;
+    isOpen?: boolean;
+    isActive?: boolean;
+    schedule?: any;
+    venueId?: string;
+    venueName?: string;
+    venueIsActive?: boolean;
+    venueSchedule?: any;
+  }>;
 };
 
 type AuthContextValue = {

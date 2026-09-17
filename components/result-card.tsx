@@ -37,7 +37,7 @@ export function ResultCard({
                 <Leaf className="h-3.5 w-3.5" strokeWidth={2} />
               </div>
             ) : null}
-            {dish.spiceLevel > 1 ? (
+            {dish.spiceLevel >= 1 ? (
               <div
                 className="flex h-7 w-7 items-center justify-center rounded-full bg-red-50 text-red-600 shadow-sm border border-red-200"
                 title={`Spicy Level ${dish.spiceLevel}`}
@@ -68,7 +68,7 @@ export function ResultCard({
           <span className="rounded-full bg-[#f3f4f6] px-2.5 py-1 text-[#4b5563]">Non-veg</span>
         )}
         <span className="rounded-full bg-[#ecfeff] px-2.5 py-1 text-[#0f766e]">{dish.isHalal ? 'Halal' : 'Non-halal'}</span>
-        {dish.spiceLevel > 1 ? (
+        {dish.spiceLevel >= 1 ? (
           <span className="inline-flex items-center gap-1 rounded-full bg-red-50 px-2.5 py-1 text-red-700 border border-red-100">
             <Flame className="h-3 w-3 fill-red-500/20" strokeWidth={2} />
             {spiceLabels[dish.spiceLevel as keyof typeof spiceLabels] ?? `Spicy ${dish.spiceLevel}`}

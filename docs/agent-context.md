@@ -1,55 +1,56 @@
 # Current Project Context
 
 ## Current Phase
-Phase 20: Dedicated SaaS Superadmin Dashboard Route Group & Standalone Monetization Controls
+Phase 21: Customer Venue Isolation, Time-Based Operating Schedules & Dual-Layer Status Controls
 
 ## Current Feature
-1. **Dedicated SaaS Admin Route Group (`app/(admin)/admin/`)**:
-   - Created an isolated Next.js App Router route group `app/(admin)/` with its own layout (`app/(admin)/layout.tsx`) completely decoupled from standard vendor and diner chrome.
-   - Built layout-level security boundary `<AdminGuard />` (`components/admin/admin-guard.tsx`): verifies user credentials against `useAuth()`. Unauthenticated users are redirected to `/auth?redirect=/admin`. Authenticated users lacking `superadmin` or `saas_owner` role are immediately blocked with an explicit 403 Forbidden screen.
-   - Built a sleek SaaS Admin navigation shell `<AdminShell />` (`components/admin/admin-shell.tsx`): dark theme (`#090d16` / `#111827`), brand header with "SUPERADMIN" badge, active route navigation (`/admin`, `/admin/monetization`, `/admin/shops`), quick external links (Diner App, Operator Portal), user email and role badge footer, mobile drawer menu, and sign-out confirmation dialog.
+1. **Customer Navigation & Strict Venue Isolation**:
+   - **Cross-Venue Header Pills Removed**: In `components/customer-stall-page.tsx`, completely removed the header pills allowing diners to switch between venues ("888 Restoran" vs "Lim's Foodcourt"). The customer experience is strictly isolated to stalls belonging to their active venue.
+   - **Dedicated Stalls Route**: Created `app/stalls/page.tsx` rendering `CustomerStallPage` within active venue scope.
+   - **Deprecated Full-Screen Map Landing View**: In `components/home-page.tsx`, removed OpenStreetMap/Leaflet map rendering and geolocation polling from diner entry. Customers landing on `/home` directly enter their active hawker centre context (`CentreDinerPage`) with table session info and categories.
+   - **Customer Navigation Confined**: Bottom navigation links (`Home`, `Stall`, `Menu`, `Orders`, `Profile`) keep diners strictly scoped to their current venue.
 
-2. **Cleaned Up Vendor Profile View (`app/shop-owner/profile/page.tsx`)**:
-   - Completely removed `MonetizationSettingsCard` import and JSX block from standard shop owner views.
-   - Removed fee state fields (`feeMode`, `feePayer`, `platformFeePercent`, `platformFeeFixed`) from draft state, `Shop` type, and initial data loader.
-   - Standard food hall operators now strictly view and edit vendor-relevant fields: Venue Name, URL Slug, Address, and their Booth Allocations.
+2. **Fixed Spice Level Badge Indicator**:
+   - In `components/dish-card.tsx` and `components/result-card.tsx`, corrected the conditional rendering check from `spiceLevel > 1` to `spiceLevel >= 1`.
+   - Dishes with spice level 1 (mild) now properly render the chili/flame badge alongside dietary tags (such as vegetarian logo) rather than being hidden.
 
-3. **Dedicated Admin Pages**:
-   - **Platform Overview (`app/(admin)/admin/page.tsx`)**:
-     - System-wide KPIs: Total Registered Venues, Total Active Stalls, Monetization Distribution (Diner Surcharges vs Stall Commissions), and Database Trigger RLS status.
-     - Live platform food halls directory displaying venue metadata, stall count, fee model, and quick links to configure monetization.
-   - **Standalone Monetization Engine (`app/(admin)/admin/monetization/page.tsx`)**:
-     - Venue picker dropdown populated via `GET /api/owner/shops?all=true` (supports preselection via query parameter `?shopId=...`).
-     - Commission model selector: Percentage (%), Flat Fixed (RM), and Mixed (% + RM).
-     - Fee-payer routing toggle: Diner Pays Surcharge (service charge added at checkout) vs Stall Pays Commission (deducted from merchant payout).
-     - Platform fee inputs with percentage presets (`2.5%`, `3.5%`, `5.0%`, `7.5%`, `10.0%`) and flat presets (`RM 0.30`, `RM 0.50`, `RM 0.80`, `RM 1.00`).
-     - Interactive live order calculation simulation (RM 20.00 sample order) showing real-time Customer Bill, Platform Surcharge/Commission, and Stall Net Payout.
-     - Saves via protected `PATCH /api/owner/shops/[id]`.
-     - Active Venue Pricing Directory table for instant 1-click rate inspections.
-     - Wrapped in React `<Suspense>` for optimal client-side search param hydration.
-   - **Venues Platform Directory (`app/(admin)/admin/shops/page.tsx` & `app/(admin)/admin/shops/[id]/page.tsx`)**:
-     - Directory of all multi-tenant food halls and direct venue detail / fee override configurator.
+3. **Stall Overview Dashboard Cleanup (`app/owner/page.tsx`)**:
+   - Removed the entire "Kitchen Station" card block along with its description text ("Fulfill incoming table tickets and adjust real-time dish availability.") and child action cards ("Kitchen Display (KDS)" and "Stall Menu").
+   - Re-aligned and stretched the "Recent Orders" ticket list to span full width below metrics for a clean, focused dashboard.
 
-4. **Multi-Client Architecture & Role Switcher Integration**:
-   - Added `'admin'` to `ClientAppType` in `lib/shared/types.ts`.
-   - Updated `PermissionEngine.getClientForPath(pathname)` in `lib/shared/permissions.ts` to identify `/admin*` as `'admin'` client.
-   - Configured `AppShell` in `components/app-shell.tsx` to render bare `<>{children}</>` for `'admin'` client, bypassing consumer and merchant bottom tabs.
-   - Added unit test coverage in `lib/multi-client-architecture.test.ts` verifying `/admin` and `/admin/monetization` resolve to `'admin'`.
-   - Updated `RoleModeSwitcher` in `components/role-mode-switcher.tsx` to display a "SaaS Admin" button leading directly to `/admin` when the user has superadmin or saas_owner privileges.
+4. **Time-Based Operating Schedule Engine & Dual-Layer Control Architecture**:
+   - **Database Migration (`supabase/migrations/019_operating_schedules_and_booth_active.sql`)**:
+     - Added `schedule JSONB` to `restaurants` and `food_outlets`.
+     - Added `is_active BOOLEAN NOT NULL DEFAULT true` to `food_outlets` with index `idx_food_outlets_is_active`.
+   - **Operating Hours Engine (`lib/schedule/operating-hours.ts`)**:
+     - Built `isTimeInSlot` supporting daytime and overnight time slots spanning past midnight (e.g., 18:00–02:00).
+     - Built `isOperatingOpen` to evaluate weekly Monday–Sunday schedules against system time, falling back to manual operational toggle if automated schedule is disabled.
+     - Built `resolveEffectiveStallStatus` implementing strict dual-layer master override rules:
+       - **Venue Operator Layer**: `restaurant.is_active` (Venue active) & `booth.is_active` (Master booth active). If either is `false`, the stall is strictly offline to customers regardless of stall owner toggle.
+       - **Stall Owner Layer**: Daily operational open/close or automated schedule (`isOperatingOpen`).
+       - **Visibility & Orderability**: Both conditions must be met for customer orders.
+   - **Reusable Schedule Modal (`components/operating-schedule-modal.tsx`)**:
+     - Daily Monday–Sunday open/close time pickers, overnight slot detection indicator, "Apply Monday to All Days" shortcut button, and automated status toggle switch.
+     - Pure declarative inner state initialization eliminating cascading renders and satisfying React 19 / ESLint rules.
+   - **Backend API Updates**:
+     - `app/api/outlets/route.ts`: Resolves `resolveEffectiveStallStatus` for each booth. Automatically excludes inactive venues and inactive booth slots from diner queries, and evaluates real-time operating hours for `is_open` and `is_orderable`.
+     - `app/api/owner/shops/[id]/route.ts`: Added `schedule` to GET and PATCH.
+     - `app/api/owner/booths/[id]/route.ts`: Added `schedule` and `is_active` to GET and PATCH, enforcing that only venue owners can mutate `is_active` (returns 403 Forbidden to stall merchants).
+     - `app/api/owner/shops/route.ts`: Returns `schedule` and `is_active` for both shops and booths.
+     - `app/api/user/roles/route.ts`: Returns `schedule`, `isActive`, `venueIsActive`, and `venueSchedule` for quick client access.
+     - `lib/hawker-centres/service.ts`: Includes `schedule` and `is_active` in summary queries.
+   - **UI Integration**:
+     - `app/shop-owner/booths/page.tsx`: Added "Venue Hours" button in header, master "Active/Inactive" toggle button on each booth card, "Hours" schedule button on each booth card, and an Inactive warning alert banner when a booth is disabled by the venue owner.
+     - `app/owner/page.tsx`: Added "Operating Hours" schedule button in header, and master override warning banner if the stall or venue was set to Inactive by food court management.
 
-5. **Backend Data & Security Integrity**:
-   - `app/api/owner/shops/route.ts`: Added support for `?all=true` for platform admins using `createAdminClient()`.
-   - `app/api/owner/shops/[id]/route.ts`: Uses `createAdminClient()` for platform admins while preserving the 403 Forbidden check blocking non-admins from mutating fee parameters.
-   - Database trigger `018_platform_admin_rbac.sql` aborts any unauthorized direct PostgREST mutation at the database engine level with error code `42501`.
-
-6. **Verification**:
-   - `npx tsc --noEmit`: 0 errors
-   - `npm run lint`: 0 errors (6 existing image warnings)
-   - `npm test`: 25 passing tests
-   - `npm run build`: Successful production build across all 49 routes including static generation of `/admin`, `/admin/monetization`, `/admin/shops`, and dynamic SSR of `/admin/shops/[id]`.
+5. **Verification**:
+   - `npm test`: All 31 unit tests pass (including 6 new schedule and master override tests).
+   - `npx tsc --noEmit`: 0 TypeScript errors.
+   - `npm run lint`: 0 errors.
+   - `npm run build`: Successful production build across all 50 routes.
 
 ## Previous Phases
-Phase 19: SaaS Superadmin RBAC & Sensitive Monetization Configuration Isolation
+Phase 20: Dedicated SaaS Superadmin Dashboard Route Group & Standalone Monetization Controls
 
 1. **Full-Screen Map UI ($100vw \times 100vh$)**:
    - Refactored `components/home-page.tsx` into a full viewport map (`fixed inset-0 w-screen h-screen z-0`).

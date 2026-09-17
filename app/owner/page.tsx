@@ -3,20 +3,21 @@
 import Link from 'next/link';
 import {
   ClipboardList,
-  UtensilsCrossed,
   Store,
   RefreshCw,
+  Clock,
   Clock3,
   CheckCircle2,
   AlertCircle,
-  ChefHat,
-  ArrowRight,
   TrendingUp,
   Power,
+  ShieldAlert,
 } from 'lucide-react';
 import { useAuth } from '@/components/auth-provider';
 import { useEffect, useState, useMemo, useCallback } from 'react';
 import { supabase } from '@/lib/supabase/client';
+import { OperatingScheduleModal } from '@/components/operating-schedule-modal';
+import type { OperatingSchedule } from '@/lib/schedule/operating-hours';
 
 type OrderStatus = 'New' | 'Preparing' | 'Ready' | 'Completed';
 
@@ -60,21 +61,24 @@ type LiveDish = {
 };
 
 export default function StallOverviewPage() {
-  const { profile, roles } = useAuth();
+  const { profile, roles, refreshRoles } = useAuth();
   const [orders, setOrders] = useState<LiveOrder[]>([]);
   const [dishes, setDishes] = useState<LiveDish[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isOpenOverride, setIsOpenOverride] = useState<boolean | null>(null);
   const [isTogglingOpen, setIsTogglingOpen] = useState(false);
+  const [isScheduleOpen, setIsScheduleOpen] = useState(false);
   const [error, setError] = useState('');
 
-  const stallName = roles.booths?.[0]?.name || 'Stall';
-  const venueName = roles.shops?.[0]?.name;
-  const isOpen = isOpenOverride ?? (roles.booths?.[0]?.isOpen !== false);
+  const currentBooth = roles.booths?.[0];
+  const stallName = currentBooth?.name || 'Stall';
+  const venueName = currentBooth?.venueName || roles.shops?.[0]?.name;
+  const isOpen = isOpenOverride ?? (currentBooth?.isOpen !== false);
+  const isMasterInactive = currentBooth?.isActive === false || currentBooth?.venueIsActive === false;
 
   const handleToggleStallOpen = async () => {
-    const boothId = roles.booths?.[0]?.id;
+    const boothId = currentBooth?.id;
     if (!boothId) return;
 
     const nextOpen = !isOpen;
@@ -97,12 +101,35 @@ export default function StallOverviewPage() {
         const data = await res.json();
         throw new Error(data.error ?? 'Failed to update stall status');
       }
+      await refreshRoles();
     } catch (err) {
       setIsOpenOverride(!nextOpen);
       setError(err instanceof Error ? err.message : 'Failed to update stall status');
     } finally {
       setIsTogglingOpen(false);
     }
+  };
+
+  const handleSaveStallSchedule = async (schedule: OperatingSchedule) => {
+    const boothId = currentBooth?.id;
+    if (!boothId) return;
+
+    if (!supabase) return;
+    const session = (await supabase.auth.getSession())?.data?.session;
+    const token = session?.access_token;
+    const res = await fetch(`/api/owner/booths/${boothId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify({ schedule }),
+    });
+    if (!res.ok) {
+      const data = await res.json();
+      throw new Error(data.error ?? 'Failed to update operating hours schedule');
+    }
+    await refreshRoles();
   };
 
   const handleManualRefresh = async () => {
@@ -315,21 +342,34 @@ export default function StallOverviewPage() {
               </select>
             )}
             {roles.booths?.[0]?.id && (
-              <button
-                type="button"
-                onClick={() => void handleToggleStallOpen()}
-                disabled={isTogglingOpen}
-                title={isOpen ? 'Set stall as closed' : 'Set stall as open'}
-                aria-label={isOpen ? 'Set stall as closed' : 'Set stall as open'}
-                className={`inline-flex h-9 items-center justify-center gap-1.5 rounded-full border px-3 text-xs font-semibold transition-all shadow-xs disabled:opacity-50 shrink-0 ${
-                  isOpen
-                    ? 'border-emerald-200 bg-emerald-50/80 text-emerald-700 hover:bg-emerald-100'
-                    : 'border-zinc-200 bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
-                }`}
-              >
-                <Power className={`h-3.5 w-3.5 ${isOpen ? 'text-emerald-600' : 'text-zinc-500'}`} />
-                <span>{isOpen ? 'Stall Open' : 'Stall Closed'}</span>
-              </button>
+              <>
+                <button
+                  type="button"
+                  onClick={() => setIsScheduleOpen(true)}
+                  title="Operating Hours & Weekly Schedule"
+                  aria-label="Operating Hours & Weekly Schedule"
+                  className="inline-flex h-9 items-center justify-center gap-1.5 rounded-full border border-black/10 bg-white px-3 text-xs font-semibold text-[#1d1d1f] shadow-xs hover:bg-black/[0.03] transition-all shrink-0"
+                >
+                  <Clock className="h-3.5 w-3.5 text-blue-600" />
+                  <span className="hidden sm:inline">Operating Hours</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => void handleToggleStallOpen()}
+                  disabled={isTogglingOpen}
+                  title={isOpen ? 'Set stall as closed' : 'Set stall as open'}
+                  aria-label={isOpen ? 'Set stall as closed' : 'Set stall as open'}
+                  className={`inline-flex h-9 items-center justify-center gap-1.5 rounded-full border px-3 text-xs font-semibold transition-all shadow-xs disabled:opacity-50 shrink-0 ${
+                    isOpen
+                      ? 'border-emerald-200 bg-emerald-50/80 text-emerald-700 hover:bg-emerald-100'
+                      : 'border-zinc-200 bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
+                  }`}
+                >
+                  <Power className={`h-3.5 w-3.5 ${isOpen ? 'text-emerald-600' : 'text-zinc-500'}`} />
+                  <span>{isOpen ? 'Stall Open' : 'Stall Closed'}</span>
+                </button>
+              </>
             )}
 
             <button
@@ -346,6 +386,25 @@ export default function StallOverviewPage() {
             </button>
           </div>
         </header>
+
+        {/* Master Inactive Alert (Venue Override) */}
+        {isMasterInactive && (
+          <div className="mt-4 flex items-start gap-3 rounded-2xl bg-red-50 p-4 text-red-800 border border-red-200 animate-in fade-in duration-200">
+            <ShieldAlert className="h-5 w-5 shrink-0 text-red-600 mt-0.5" />
+            <div>
+              <h3 className="text-sm font-bold text-red-900">
+                {currentBooth?.isActive === false
+                  ? 'Stall Set to Inactive by Food Court Management'
+                  : 'Hawker Centre is Currently Inactive'}
+              </h3>
+              <p className="mt-0.5 text-xs text-red-700 leading-relaxed">
+                {currentBooth?.isActive === false
+                  ? 'Your booth is marked Inactive by venue management (maintenance, lease review, or suspension). As a master override, your stall remains offline to customers even if you toggle it Open.'
+                  : 'The hawker centre venue is currently set to Inactive. All stalls within this venue are offline to diners.'}
+              </p>
+            </div>
+          </div>
+        )}
 
         {error && (
           <div className="mt-4 flex items-center gap-2 rounded-2xl bg-amber-50 p-3 text-xs text-amber-800 border border-amber-200">
@@ -376,72 +435,8 @@ export default function StallOverviewPage() {
           ))}
         </section>
 
-        {/* Action Center & Order Activity */}
-        <section className="mt-5 grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
-          {/* Quick Management Hub */}
-          <div className="rounded-[26px] bg-white p-5 sm:p-6 shadow-[0_12px_26px_rgba(15,23,42,0.04)] border border-black/[0.04] flex flex-col justify-between">
-            <div>
-              <div className="flex items-center justify-between gap-3">
-                <div className="min-w-0">
-                  <h2 className="text-lg sm:text-xl font-semibold tracking-[-0.03em] text-[#1d1d1f] truncate">
-                    Kitchen Station
-                  </h2>
-                  <p className="mt-0.5 text-xs sm:text-sm text-[#6e6e73] truncate">
-                    Fulfill incoming table tickets and adjust real-time dish availability.
-                  </p>
-                </div>
-                <div className="h-9 w-9 rounded-2xl bg-amber-500/10 text-amber-600 flex items-center justify-center shrink-0">
-                  <ChefHat className="h-5 w-5" />
-                </div>
-              </div>
-
-              <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                <Link
-                  href="/owner/orders"
-                  className="group rounded-[20px] bg-[#111827] p-4 text-white hover:bg-black transition-all flex flex-col justify-between"
-                >
-                  <div className="min-w-0">
-                    <div className="flex items-center justify-between">
-                      <ClipboardList className="h-5 w-5 text-amber-400" />
-                      <ArrowRight className="h-4 w-4 text-white/50 group-hover:translate-x-0.5 transition-transform" />
-                    </div>
-                    <p className="mt-3 text-sm font-semibold truncate">Kitchen Display (KDS)</p>
-                    <p className="mt-0.5 text-xs text-white/70 truncate">
-                      {activeOrdersCount > 0
-                        ? `${activeOrdersCount} order${activeOrdersCount === 1 ? '' : 's'} need attention`
-                        : 'No orders waiting'}
-                    </p>
-                  </div>
-                  {activeOrdersCount > 0 && (
-                    <span className="mt-3 inline-flex self-start items-center gap-1.5 rounded-full bg-amber-500/20 px-2.5 py-0.5 text-[11px] font-medium text-amber-300">
-                      <span className="h-1.5 w-1.5 rounded-full bg-amber-400 animate-pulse" />
-                      Live Queue
-                    </span>
-                  )}
-                </Link>
-
-                <Link
-                  href="/owner/menu"
-                  className="group rounded-[20px] bg-[#f5f5f7] p-4 text-[#1d1d1f] hover:bg-[#ebebeb] transition-all flex flex-col justify-between border border-black/5"
-                >
-                  <div className="min-w-0">
-                    <div className="flex items-center justify-between">
-                      <UtensilsCrossed className="h-5 w-5 text-[#1d1d1f]" />
-                      <ArrowRight className="h-4 w-4 text-black/40 group-hover:translate-x-0.5 transition-transform" />
-                    </div>
-                    <p className="mt-3 text-sm font-semibold truncate">Stall Menu</p>
-                    <p className="mt-0.5 text-xs text-[#6e6e73] truncate">
-                      {dishes.length > 0 ? `${dishes.length} dishes in menu` : 'Add first dish'}
-                    </p>
-                  </div>
-                  <span className="mt-3 inline-flex self-start items-center gap-1 rounded-full bg-white px-2.5 py-0.5 text-[11px] font-medium text-[#1d1d1f] shadow-xs">
-                    Edit & toggle dishes
-                  </span>
-                </Link>
-              </div>
-            </div>
-          </div>
-
+        {/* Order Activity */}
+        <section className="mt-5">
           {/* Live Database Order Activity */}
           <div className="rounded-[26px] bg-white p-5 sm:p-6 shadow-[0_12px_26px_rgba(15,23,42,0.04)] border border-black/[0.04]">
             <div className="flex items-center justify-between gap-2">
@@ -536,6 +531,15 @@ export default function StallOverviewPage() {
           </div>
         </section>
       </div>
+
+      <OperatingScheduleModal
+        isOpen={isScheduleOpen}
+        onClose={() => setIsScheduleOpen(false)}
+        title={`${stallName} Operating Hours`}
+        description="Configure automated operating hours and weekly schedule for this stall."
+        initialSchedule={currentBooth?.schedule}
+        onSave={handleSaveStallSchedule}
+      />
     </main>
   );
 }

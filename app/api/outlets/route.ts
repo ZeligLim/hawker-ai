@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase/client';
+import { resolveEffectiveStallStatus } from '@/lib/schedule/operating-hours';
 
 export async function GET(request: NextRequest) {
   if (!supabase) {
@@ -10,6 +11,7 @@ export async function GET(request: NextRequest) {
   const slug = searchParams.get('slug') || searchParams.get('centre');
   const restaurantId = searchParams.get('restaurantId');
   const outletId = searchParams.get('id');
+  const includeInactive = searchParams.get('includeInactive') === 'true';
 
   // Domain / subdomain resolution for per-hawker-centre customer apps
   const host = request.headers.get('x-forwarded-host') || request.headers.get('host') || '';
@@ -25,12 +27,16 @@ export async function GET(request: NextRequest) {
       name,
       restaurant_id,
       is_open,
+      is_active,
+      schedule,
+      status,
       restaurants (
         id,
         name,
         slug,
         address,
-        is_active
+        is_active,
+        schedule
       ),
       dishes (
         id,
@@ -96,5 +102,31 @@ export async function GET(request: NextRequest) {
     results = results.filter((o: any) => o.restaurant_id === activeCentreId);
   }
 
-  return NextResponse.json({ outlets: results });
+  // Dual-Layer Active/Inactive vs Open/Closed resolution and schedule automation
+  const processedOutlets = results
+    .map((outlet: any) => {
+      const statusResult = resolveEffectiveStallStatus({
+        venueIsActive: outlet.restaurants?.is_active ?? true,
+        venueSchedule: outlet.restaurants?.schedule,
+        stallIsActive: outlet.is_active ?? true,
+        stallIsOpen: outlet.is_open ?? true,
+        stallSchedule: outlet.schedule,
+      });
+
+      return {
+        ...outlet,
+        is_active: statusResult.isStallActive,
+        is_open: statusResult.isStallOpen,
+        is_orderable: statusResult.isOrderable,
+        is_visible: statusResult.isVisible,
+        status_reason: statusResult.reason,
+      };
+    })
+    .filter((outlet: any) => {
+      if (includeInactive) return true;
+      // Stalls must be visible (Venue Active == true AND Stall Active == true)
+      return outlet.is_visible;
+    });
+
+  return NextResponse.json({ outlets: processedOutlets });
 }

@@ -6,6 +6,8 @@ export interface HawkerCentreStall {
   name: string;
   dishCount: number;
   isOpen?: boolean;
+  isActive?: boolean;
+  schedule?: any;
 }
 
 export interface HawkerCentreSummary {
@@ -16,6 +18,7 @@ export interface HawkerCentreSummary {
   lat: number | null;
   lng: number | null;
   isActive?: boolean;
+  schedule?: any;
   stallsCount: number;
   activeStallsCount: number;
   dishesCount: number;
@@ -47,7 +50,7 @@ export async function fetchHawkerCentres(options?: {
 
   let query = supabase
     .from('restaurants')
-    .select('id, name, slug, address, lat, lng, is_active, created_at')
+    .select('id, name, slug, address, lat, lng, is_active, schedule, created_at')
     .order('name');
 
   if (options?.slug) {
@@ -64,7 +67,7 @@ export async function fetchHawkerCentres(options?: {
   // Fetch stalls / food outlets
   const { data: outlets } = await supabase
     .from('food_outlets')
-    .select('id, name, restaurant_id, is_open, created_at')
+    .select('id, name, restaurant_id, is_open, is_active, schedule, created_at')
     .in('restaurant_id', restaurantIds);
 
   const outletIds = (outlets ?? []).map((o) => o.id);
@@ -103,11 +106,15 @@ export async function fetchHawkerCentres(options?: {
     venueOutlets.forEach((o) => {
       const stallDishes = dishesByOutlet.get(o.id) ?? [];
       venueDishes.push(...stallDishes);
+      const isStallActive = (o as any).is_active ?? true;
+      const isStallOpen = (o as any).is_open ?? true;
       stallSummaries.push({
         id: o.id,
         name: o.name,
         dishCount: stallDishes.length,
-        isOpen: (o as any).is_open ?? true,
+        isOpen: isStallOpen && isStallActive && (r.is_active ?? true),
+        isActive: isStallActive,
+        schedule: (o as any).schedule,
       });
     });
 

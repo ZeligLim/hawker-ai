@@ -10,7 +10,7 @@ async function checkBoothAccess(auth: Awaited<ReturnType<typeof requireRequestUs
 
   const { data: booth, error: boothError } = await dbClient
     .from('food_outlets')
-    .select('id, restaurant_id, name, is_open, status, created_at')
+    .select('id, restaurant_id, name, is_open, is_active, schedule, status, created_at')
     .eq('id', boothId)
     .maybeSingle();
 
@@ -62,6 +62,8 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     booth: {
       ...access.booth,
       isOpen: access.booth.is_open ?? true,
+      isActive: access.booth.is_active ?? true,
+      schedule: access.booth.schedule,
       status: access.booth.status ?? (access.booth.is_open === false ? 'closed' : 'approved'),
     },
     role: access.role,
@@ -86,12 +88,34 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     return NextResponse.json({ error: 'Invalid request body.' }, { status: 400 });
   }
 
+  const isVenueOwner = access.role?.startsWith('shop_') || false;
+
   const update: {
     is_open?: boolean;
+    is_active?: boolean;
+    schedule?: any;
     status?: string;
     name?: string;
   } = {};
 
+  // Master Override Layer: Venue Owner can toggle booth Active / Inactive
+  const isActiveInput = body.is_active !== undefined ? body.is_active : body.isActive;
+  if (isActiveInput !== undefined) {
+    if (!isVenueOwner) {
+      return NextResponse.json(
+        { error: 'Forbidden: Only the hawker centre venue operator can set a booth Active or Inactive.' },
+        { status: 403 }
+      );
+    }
+    update.is_active = Boolean(isActiveInput);
+  }
+
+  // Operating Hours Schedule
+  if (body.schedule !== undefined) {
+    update.schedule = body.schedule;
+  }
+
+  // Operational Open/Closed toggle
   const isOpenInput = body.is_open !== undefined ? body.is_open : body.isOpen;
   if (typeof isOpenInput === 'boolean') {
     update.is_open = isOpenInput;
@@ -119,7 +143,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     .from('food_outlets')
     .update(update)
     .eq('id', id)
-    .select('id, restaurant_id, name, is_open, status, created_at')
+    .select('id, restaurant_id, name, is_open, is_active, schedule, status, created_at')
     .single();
 
   if (updateError || !updatedBooth) {
@@ -130,6 +154,8 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     booth: {
       ...updatedBooth,
       isOpen: updatedBooth.is_open ?? true,
+      isActive: updatedBooth.is_active ?? true,
+      schedule: updatedBooth.schedule,
       status: updatedBooth.status ?? (updatedBooth.is_open === false ? 'closed' : 'approved'),
     },
     status: 'updated',

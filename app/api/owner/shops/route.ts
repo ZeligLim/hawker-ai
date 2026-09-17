@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
     const adminClient = createAdminClient() ?? auth.client;
     const { data: allRestaurants, error: allRestError } = await adminClient
       .from('restaurants')
-      .select('id, name, slug, address, is_active, status, fee_payer, platform_fee_fixed, platform_fee_percent, created_at')
+      .select('id, name, slug, address, is_active, schedule, status, fee_payer, platform_fee_fixed, platform_fee_percent, created_at')
       .order('name');
 
     if (allRestError) {
@@ -22,15 +22,17 @@ export async function GET(request: NextRequest) {
 
     const { data: allBooths } = await adminClient
       .from('food_outlets')
-      .select('id, restaurant_id, name, is_open, status, created_at');
+      .select('id, restaurant_id, name, is_open, is_active, schedule, status, created_at');
 
-    const boothsByRestaurant = new Map<string, Array<{ id: string; name: string; isOpen?: boolean; status?: string }>>();
+    const boothsByRestaurant = new Map<string, Array<{ id: string; name: string; isOpen?: boolean; isActive?: boolean; schedule?: any; status?: string }>>();
     allBooths?.forEach((booth) => {
       const existing = boothsByRestaurant.get(booth.restaurant_id) ?? [];
       existing.push({
         id: booth.id,
         name: booth.name,
         isOpen: booth.is_open ?? true,
+        isActive: booth.is_active ?? true,
+        schedule: booth.schedule,
         status: booth.status ?? (booth.is_open === false ? 'closed' : 'approved'),
       });
       boothsByRestaurant.set(booth.restaurant_id, existing);
@@ -48,6 +50,7 @@ export async function GET(request: NextRequest) {
         createdAt: restaurant.created_at,
         role: 'superadmin',
         isActive,
+        schedule: restaurant.schedule,
         status,
         feePayer: (restaurant.fee_payer ?? 'CUSTOMER') as 'CUSTOMER' | 'MERCHANT',
         platformFeeFixed: Number(restaurant.platform_fee_fixed ?? 0.50),
@@ -61,7 +64,7 @@ export async function GET(request: NextRequest) {
 
   const { data: memberships, error: membershipsError } = await auth.client
     .from('restaurant_memberships')
-    .select('restaurant_id, role, restaurants(id, name, slug, address, is_active, status, fee_payer, platform_fee_fixed, platform_fee_percent, created_at)')
+    .select('restaurant_id, role, restaurants(id, name, slug, address, is_active, schedule, status, fee_payer, platform_fee_fixed, platform_fee_percent, created_at)')
     .eq('user_id', auth.user.id)
     .order('created_at', { ascending: false });
 
@@ -71,11 +74,11 @@ export async function GET(request: NextRequest) {
 
   const restaurantIds = memberships?.map((membership) => membership.restaurant_id) ?? [];
 
-  let booths: { id: string; restaurant_id: string; name: string; is_open?: boolean; status?: string; created_at: string }[] = [];
+  let booths: { id: string; restaurant_id: string; name: string; is_open?: boolean; is_active?: boolean; schedule?: any; status?: string; created_at: string }[] = [];
   if (restaurantIds.length > 0) {
     const { data, error } = await auth.client
       .from('food_outlets')
-      .select('id, restaurant_id, name, is_open, status, created_at')
+      .select('id, restaurant_id, name, is_open, is_active, schedule, status, created_at')
       .in('restaurant_id', restaurantIds);
 
     if (error) {
@@ -132,6 +135,8 @@ export async function GET(request: NextRequest) {
       id: string;
       name: string;
       isOpen: boolean;
+      isActive: boolean;
+      schedule?: any;
       status: string;
       members: Array<{ userId: string; email: string; role: string; createdAt: string }>;
       invitations: Array<{ id: string; email: string; expiresAt: string; createdAt: string }>;
@@ -143,6 +148,8 @@ export async function GET(request: NextRequest) {
       id: booth.id,
       name: booth.name,
       isOpen: booth.is_open ?? true,
+      isActive: booth.is_active ?? true,
+      schedule: booth.schedule,
       status: booth.status ?? (booth.is_open === false ? 'closed' : 'approved'),
       members: membersByBooth.get(booth.id) ?? [],
       invitations: invitationsByBooth.get(booth.id) ?? [],
@@ -164,6 +171,7 @@ export async function GET(request: NextRequest) {
       createdAt: restaurant?.created_at ?? null,
       role: membership.role,
       isActive,
+      schedule: restaurant?.schedule,
       status,
       ...(isPlatformAdmin
         ? {

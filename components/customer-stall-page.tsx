@@ -265,35 +265,14 @@ function CustomerStallContent() {
         )}
 
         {/* Header & Centre Title */}
-        <div className="mb-5 flex flex-wrap items-center justify-between gap-2">
-          <div>
-            <div className="flex items-center gap-1.5 text-xs text-[#6e6e73] mb-0.5">
-              <MapPin className="h-3.5 w-3.5 text-red-500 shrink-0" />
-              <span className="font-medium truncate">{activeCentre?.name || 'Hawker Centre'}</span>
-            </div>
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#1d1d1f]">
-              Hawker Stalls
-            </h1>
+        <div className="mb-5">
+          <div className="flex items-center gap-1.5 text-xs text-[#6e6e73] mb-0.5">
+            <MapPin className="h-3.5 w-3.5 text-red-500 shrink-0" />
+            <span className="font-medium truncate">{activeCentre?.name || 'Hawker Centre'}</span>
           </div>
-
-          {centres.length > 1 && (
-            <div className="flex items-center gap-1 overflow-x-auto pb-1 max-w-full">
-              {centres.slice(0, 3).map((c) => (
-                <button
-                  key={c.id}
-                  type="button"
-                  onClick={() => setActiveCentre(c)}
-                  className={`rounded-full px-2.5 py-1 text-[11px] font-semibold transition-all shrink-0 border ${
-                    activeCentre?.id === c.id
-                      ? 'bg-[#111827] text-white border-[#111827]'
-                      : 'bg-white text-[#6e6e73] border-black/5 hover:bg-black/5'
-                  }`}
-                >
-                  {c.name.split(' ')[0]}
-                </button>
-              ))}
-            </div>
-          )}
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#1d1d1f]">
+            Hawker Stalls
+          </h1>
         </div>
 
         {/* Search Bar */}
