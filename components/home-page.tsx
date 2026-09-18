@@ -198,11 +198,12 @@ export function HomePage() {
         <HawkerSearchBar
           value={searchQuery}
           onChange={setSearchQuery}
-          placeholder="Search hawker centres, food, stalls..."
+          placeholder="Search hawker centres..."
           onSubmit={(e) => {
             e.preventDefault();
-            if (searchQuery.trim()) {
-              router.push(`/results?q=${encodeURIComponent(searchQuery.trim())}`);
+            // Just dismiss keyboard on submit, filtering is already real-time
+            if (document.activeElement instanceof HTMLElement) {
+              document.activeElement.blur();
             }
           }}
           className="rounded-full shadow-md"

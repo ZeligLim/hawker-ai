@@ -4,6 +4,7 @@ import React from 'react';
 import { usePathname } from 'next/navigation';
 import { House, Store, UtensilsCrossed, ClipboardList, UserRound } from 'lucide-react';
 import { ClientBottomNav } from '@/components/shared/client-bottom-nav';
+import { FloatingAiWidget } from '@/components/floating-ai-widget';
 
 const customerNavItems = [
   { href: '/home', label: 'Home', icon: House },
@@ -26,6 +27,7 @@ export function CustomerShell({ children }: { children: React.ReactNode }) {
         theme="customer"
         ariaLabel="Customer Navigation"
       />
+      <FloatingAiWidget />
     </div>
   );
 }
