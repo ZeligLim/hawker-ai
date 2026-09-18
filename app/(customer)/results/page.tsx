@@ -39,14 +39,14 @@ function ResultsContent() {
   const { cartItems, setCartItems } = useCartItems();
   const [checkoutMessage, setCheckoutMessage] = useState<string | null>(null);
 
-  const query = searchParams.get('query') ?? 'I want a vegetarian meal under RM15 with medium spice.';
-  const maxPrice = searchParams.get('maxPrice') ?? '15';
-  const vegetarian = searchParams.get('vegetarian') ?? 'true';
-  const halal = searchParams.get('halal') ?? 'true';
-  const spiceLevel = searchParams.get('spiceLevel') ?? '3';
-  const limit = searchParams.get('limit') ?? '5';
+  const query = searchParams.get('query') ?? searchParams.get('q') ?? '';
+  const maxPrice = searchParams.get('maxPrice');
+  const vegetarian = searchParams.get('vegetarian');
+  const halal = searchParams.get('halal');
+  const spiceLevel = searchParams.get('spiceLevel');
+  const limit = searchParams.get('limit') ?? '20';
 
-  const resolvedQuery = useMemo(() => query || 'I want a vegetarian meal under RM15 with medium spice.', [query]);
+  const resolvedQuery = useMemo(() => query, [query]);
   const cartSummary = useMemo(() => buildCartSummary(cartItems), [cartItems]);
 
   const handleAddToCart = (dish: SearchResult) => {
@@ -86,17 +86,19 @@ function ResultsContent() {
       setLoading(true);
       setError(null);
       try {
+        const requestBody: any = {
+          query: resolvedQuery,
+          limit: limit ? Number(limit) : 20,
+        };
+        if (maxPrice) requestBody.maxPrice = Number(maxPrice);
+        if (vegetarian) requestBody.vegetarian = vegetarian === 'true' ? true : vegetarian === 'false' ? false : undefined;
+        if (halal) requestBody.halal = halal === 'true' ? true : halal === 'false' ? false : undefined;
+        if (spiceLevel) requestBody.spiceLevel = Number(spiceLevel);
+
         const response = await fetch('/api/search', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            query: resolvedQuery,
-            maxPrice: maxPrice ? Number(maxPrice) : undefined,
-            vegetarian: vegetarian === 'true' ? true : vegetarian === 'false' ? false : undefined,
-            halal: halal === 'true' ? true : halal === 'false' ? false : undefined,
-            spiceLevel: spiceLevel ? Number(spiceLevel) : undefined,
-            limit: limit ? Number(limit) : 5,
-          }),
+          body: JSON.stringify(requestBody),
         });
 
         const payload = await response.json();

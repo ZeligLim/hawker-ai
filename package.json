@@ -22,6 +22,7 @@
   "description": "AI-assisted Malaysian hawker food discovery platform.",
   "dependencies": {
     "@ai-sdk/openai": "^4.0.59",
+    "@modelcontextprotocol/sdk": "^1.30.0",
     "@supabase/supabase-js": "^2.115.0",
     "@types/nodemailer": "^8.0.1",
     "ai": "^7.0.93",

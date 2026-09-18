@@ -33,7 +33,7 @@ export function DishCard({
       className="group relative flex flex-col justify-between overflow-hidden rounded-[22px] sm:rounded-[26px] bg-white shadow-[0_8px_20px_rgba(15,23,42,0.03)]"
     >
       {/* Visual Picture-Only Card Area */}
-      <div className="relative aspect-[4/3] sm:aspect-square w-full overflow-hidden bg-neutral-100">
+      <div className="relative aspect-square w-full overflow-hidden bg-neutral-100">
         {imageUrl ? (
           <img
             src={imageUrl}

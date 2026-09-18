@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Edit3, Plus, UtensilsCrossed } from 'lucide-react';
+import { Edit3, Plus, UtensilsCrossed, Camera } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase/client';
 
@@ -115,15 +115,26 @@ export default function OwnerMenuPage() {
           <div className="min-w-0">
             <h1 className="mt-1 text-2xl sm:text-3xl font-bold tracking-tight text-[#1d1d1f] truncate">Menu</h1>
           </div>
-          <Link
-            href={'/owner/menu/new' as any}
-            className="inline-flex h-9 items-center justify-center gap-1.5 rounded-full bg-[#111827] px-4 text-xs font-semibold text-white shadow-xs hover:bg-black transition-colors shrink-0"
-            aria-label="Add dish"
-            title="Add dish"
-          >
-            <Plus className="h-4 w-4" />
-            <span className="hidden xs:inline">Add dish</span>
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link
+              href={'/owner/menu/scan' as any}
+              className="inline-flex h-9 items-center justify-center gap-1.5 rounded-full border border-black/15 bg-white px-4 text-xs font-semibold text-[#1d1d1f] shadow-xs hover:bg-black/[0.04] transition-colors shrink-0"
+              aria-label="Scan menu"
+              title="Scan physical menu using AI"
+            >
+              <Camera className="h-4 w-4" />
+              <span className="hidden xs:inline">Scan</span>
+            </Link>
+            <Link
+              href={'/owner/menu/new' as any}
+              className="inline-flex h-9 items-center justify-center gap-1.5 rounded-full bg-[#111827] px-4 text-xs font-semibold text-white shadow-xs hover:bg-black transition-colors shrink-0"
+              aria-label="Add dish"
+              title="Add dish"
+            >
+              <Plus className="h-4 w-4" />
+              <span className="hidden xs:inline">Add dish</span>
+            </Link>
+          </div>
         </header>
 
         {error ? (
