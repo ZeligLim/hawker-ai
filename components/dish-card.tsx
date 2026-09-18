@@ -30,15 +30,15 @@ export function DishCard({
     <article
       data-dish-id={id}
       aria-label={name}
-      className="group relative flex flex-col justify-between overflow-hidden rounded-[22px] sm:rounded-[26px] bg-white border border-black/[0.04] shadow-[0_8px_20px_rgba(15,23,42,0.03)] hover:shadow-[0_12px_28px_rgba(15,23,42,0.06)] transition-all"
+      className="group relative flex flex-col justify-between overflow-hidden rounded-[22px] sm:rounded-[26px] bg-white shadow-[0_8px_20px_rgba(15,23,42,0.03)]"
     >
       {/* Visual Picture-Only Card Area */}
-      <div className="relative aspect-[4/3] sm:aspect-square w-full overflow-hidden bg-gradient-to-br from-[#f8f6f0] to-[#eee8db]">
+      <div className="relative aspect-[4/3] sm:aspect-square w-full overflow-hidden bg-neutral-100">
         {imageUrl ? (
           <img
             src={imageUrl}
             alt={name}
-            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+            className="h-full w-full object-cover"
             loading="lazy"
           />
         ) : (
@@ -48,7 +48,7 @@ export function DishCard({
         )}
 
         {/* Price Badge */}
-        <div className="absolute left-2.5 top-2.5 rounded-full bg-black/75 px-2.5 py-1 text-[11px] font-semibold text-white backdrop-blur-md shadow-xs">
+        <div className="absolute left-2.5 top-2.5 rounded-full bg-black/80 px-2.5 py-1 text-[11px] font-semibold text-white backdrop-blur-md shadow-xs">
           RM {price.toFixed(2)}
         </div>
 
@@ -88,7 +88,7 @@ export function DishCard({
                   e.stopPropagation();
                   onUpdateQuantity(-1);
                 }}
-                className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full bg-[#f2f2f7] text-base sm:text-lg font-bold text-[#1d1d1f] hover:bg-[#e5e5ea] active:scale-95 transition-all"
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-[#f2f2f7] text-base font-bold text-[#1d1d1f] hover:bg-[#e5e5ea] transition-colors"
               >
                 −
               </button>
@@ -102,7 +102,7 @@ export function DishCard({
                   e.stopPropagation();
                   onUpdateQuantity(1);
                 }}
-                className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full bg-[#1d1d1f] text-base sm:text-lg font-bold text-white hover:bg-black active:scale-95 transition-all"
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-black text-base font-bold text-white hover:bg-neutral-800 transition-colors"
               >
                 +
               </button>
@@ -115,7 +115,7 @@ export function DishCard({
                   e.stopPropagation();
                   onAdd();
                 }}
-                className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-full bg-[#007aff] text-white shadow-xs hover:bg-[#0071e3] hover:scale-105 active:scale-95 transition-all"
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-black text-white shadow-xs hover:bg-neutral-800 transition-colors"
                 aria-label={`Add ${name} to cart`}
               >
                 <Plus className="h-4 w-4" strokeWidth={2.2} />

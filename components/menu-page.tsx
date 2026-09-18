@@ -209,7 +209,7 @@ function MenuContent() {
                     type="button"
                     aria-label={`Browse ${label} category`}
                     onClick={() => scrollToCategory(id)}
-                    className="flex h-9 items-center gap-1.5 sm:gap-2 rounded-full bg-[#f2f2f7] hover:bg-[#e5e5ea] px-3.5 text-xs font-semibold text-[#1d1d1f] transition-all shrink-0 active:scale-95"
+                    className="flex h-11 items-center gap-2 rounded-full bg-white text-black hover:bg-neutral-100 shadow-xs px-4 text-xs font-semibold transition-colors shrink-0"
                   >
                     <Icon />
                     <span>{label}</span>
@@ -232,7 +232,7 @@ function MenuContent() {
                 return (
                   <section key={id} id={`category-${id}`} className="scroll-mt-24">
                     <div className="mb-4 flex items-center gap-2.5">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#111827] text-white shadow-xs">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-black text-white shadow-xs">
                         <Icon />
                       </div>
                       <h2 className="text-base sm:text-lg font-bold text-[#1d1d1f]">
@@ -284,10 +284,10 @@ function MenuContent() {
       </div>
 
       {totalCartCount > 0 && (
-        <div className="fixed bottom-20 left-4 right-4 z-40 mx-auto max-w-md animate-slide-up">
+        <div className="fixed bottom-20 left-4 right-4 z-40 mx-auto max-w-md">
           <Link
             href="/orders"
-            className="flex h-11 items-center justify-between rounded-full bg-[#1d1d1f] px-5 text-white shadow-lg hover:bg-black transition-all active:scale-[0.98]"
+            className="flex h-11 items-center justify-between rounded-full bg-black px-5 text-white shadow-lg hover:bg-neutral-800 transition-colors"
           >
             <div className="flex items-center gap-2">
               <span className="flex h-6 w-6 items-center justify-center rounded-full bg-white/20 text-xs font-bold">

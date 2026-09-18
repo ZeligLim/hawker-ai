@@ -1,14 +1,48 @@
 # Current Project Context
 
 ## Current Phase
-Phase 27: Global 0-Border Enforcement, Account-Isolated Orders, Mobile-First Map Bottom Sheet, and 5-Domain Architecture
+Phase 28: Global Styling Reset, Map/List Switcher, Spice Customization Engine, and UI De-clutter
 
 ## Current Feature
-1. **Global 0-Border & Clean Design System**:
-   - Universal rule enforced across all styles: 0 borders (`border-0`, no `border-*`, no `ring-*`, no `divide-*`, no `hover:border-*`).
-   - Pure Black & Pure White color palette: `bg-white`, `bg-black`, `bg-neutral-50`, `bg-neutral-100`, `text-black`, `text-white`.
-   - Hover borders completely eliminated across the entire application.
-   - Bouncy and unnecessary animations (`animate-ping`, `animate-bounce`, `scale-in`, `hover:scale-*`) removed in favor of instant, crisp `transition-colors`.
+1. **Global Styling & 0-Border Reset (`app/globals.css`)**:
+   - Universal 0-border rule enforced (`*, *::before, *::after { border-width: 0 !important; border-style: none !important; }`).
+   - Clean pure white (`#ffffff`) and pure black (`#000000`) color palette.
+   - Elimination of hover border animations, bouncy scale transitions (`active:scale-95`, `hover:scale-105`), and spinny transitions.
+
+2. **Home Tab: Prominent Search Bar & Map/List Switcher (`components/home-page.tsx`)**:
+   - `HawkerSearchBar` placed prominently at the top of the Home tab.
+   - Standard `h-11` segmented control allowing diners to toggle between interactive monochrome **Map View** and a clean vertical **List View** of hawker centres.
+   - Quick Aircon filter toggle and Quick Scan QR button positioned below the search bar.
+   - Completely removed any "Resume Table" button.
+   - Centre cards in both views use smooth, solid `transition-colors` with zero hover animations or scale shifts.
+
+3. **Bottom Navigation Tab De-clutter (`components/shared/client-bottom-nav.tsx`)**:
+   - Removed all word labels across customer, stall, and owner shells.
+   - Clean, centered icon pills adhering to Apple standard 44px (`h-11`) touch target.
+
+4. **Stall & Centre View Polish**:
+   - In `components/centre-diner-page.tsx`:
+     - Removed the `"50 Jalan Sultan, City Centre, Kuala Lumpur"` address line.
+     - Removed the `"Change"` underline text from the scan table button.
+     - Modernized table selection modal and floating bottom cart to 0 border and no bouncy animations.
+   - In `components/customer-stall-page.tsx`:
+     - Filtered out any street address text from the centre header.
+     - Standardized filter chips to `h-11`, pure white inactive, pure black active, 0 border.
+     - Removed all card borders, badge borders, and hover translate animations.
+
+5. **Dish Spice Level Customization Engine**:
+   - In `lib/order/customizations.ts`:
+     - Upgraded `getDishCustomization` so all dishes with `spiceLevel >= 1` or culinary keywords (`curry`, `laksa`, `sambal`, `chili`, `spicy`, `pedas`, `tomyum`, `mala`, `nasi lemak`, `mee goreng`, `pan mee`, `kway teow`, `rendang`) reliably offer spice level customization (`Level 0 Mild`, `Level 1 Less spicy`, `Level 2 Medium`, `Level 3 Extra spicy`).
+   - In `components/customization-card.tsx`:
+     - Removed `ring-1 ring-black/5` border.
+     - Added tap-friendly button options below the spice level slider for fast one-tap selection on mobile.
+     - Standardized button to `h-11`, pure black, 0 border, no animation.
+   - In `components/dish-card.tsx` & `components/menu-page.tsx`:
+     - Removed hover zoom and active scale animations; standardized to Apple `h-11` controls.
+
+6. **Documentation Cleanup**:
+   - Deleted `docs/endpoints.md`, `docs/project-spec.md`, and `docs/saas-architecture.md`.
+   - Preserved only `docs/agent-context.md`.
 
 2. **Mobile-First Map Bottom Sheet & Shop Pins**:
    - In `components/hawker-map.tsx`:

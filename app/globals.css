@@ -2,10 +2,8 @@
 
 :root {
   color-scheme: light;
-}
-
-:root.dark {
-  color-scheme: dark;
+  --bg-primary: #ffffff;
+  --text-primary: #000000;
 }
 
 html {
@@ -17,23 +15,36 @@ body {
   min-height: 100vh;
   background: #ffffff;
   color: #000000;
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
 }
 
-:root.dark body {
-  background: #0f1115;
-  color: #f5f5f7;
-}
-
-* {
+/* Global 0-Border Enforcement: Strictly ZERO borders application-wide */
+*,
+*::before,
+*::after {
   box-sizing: border-box;
+  border-width: 0 !important;
+  border-style: none !important;
 }
 
+/* Apple-style Instant Clean Touch & Elimination of Bouncy Animations */
 button,
+a,
 input,
+select,
 textarea,
-select {
+article {
   font: inherit;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Disable hover bounce / zoom animations */
+@media (prefers-reduced-motion: no-preference) {
+  .no-animation {
+    transition: none !important;
+    transform: none !important;
+  }
 }

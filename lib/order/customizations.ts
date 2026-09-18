@@ -22,11 +22,32 @@ export type CustomizationSource =
 export function getDishCustomization(source: CustomizationSource | null | undefined): DishCustomization | null {
   if (!source) return null;
 
-  // Case 1: Object passed with real database customizations
+  // Case 1: Object passed with real database customizations or spice level
   if (typeof source === 'object') {
     const rawCustoms = source.customizations;
-    const spice = source.spiceLevel ?? source.spice_level ?? 0;
+    const spice = Number(source.spiceLevel ?? source.spice_level ?? 0);
     const dishName = (source.name ?? '').trim();
+
+    // Check if the dish is spicy by spice level or by culinary keywords
+    const isSpicy =
+      spice > 0 ||
+      /curry|laksa|sambal|chili|chilli|spicy|pedas|tomyum|tom yum|mala|nasi lemak|mee goreng|pan mee|kway teow|char kway|rendang|hot/i.test(
+        dishName
+      );
+
+    if (isSpicy) {
+      const spiceOptions: CustomizationOption[] = [
+        { id: 'spice-0', label: 'Level 0 · Mild / No chili', price: 0 },
+        { id: 'spice-1', label: 'Level 1 · Light spice', price: 0 },
+        { id: 'spice-2', label: 'Level 2 · Medium spice', price: 0 },
+        { id: 'spice-3', label: 'Level 3 · Extra hot', price: 0.5 },
+      ];
+      return {
+        title: 'Choose your spice level',
+        options: spiceOptions,
+        multiSelect: false,
+      };
+    }
 
     if (Array.isArray(rawCustoms) && rawCustoms.length > 0) {
       const parsedOptions: CustomizationOption[] = rawCustoms
@@ -60,25 +81,6 @@ export function getDishCustomization(source: CustomizationSource | null | undefi
       }
     }
 
-    // If no custom add-on list, but spice level > 0 was configured
-    if (spice > 0) {
-      const spiceOptions: CustomizationOption[] = [
-        { id: 'spice-0', label: 'Level 0 · Mild / No chili', price: 0 },
-        { id: 'spice-1', label: 'Level 1 · Light spice', price: 0 },
-      ];
-      if (spice >= 2) {
-        spiceOptions.push({ id: 'spice-2', label: 'Level 2 · Medium spice', price: 0 });
-      }
-      if (spice >= 3) {
-        spiceOptions.push({ id: 'spice-3', label: 'Level 3 · Extra hot', price: 0.5 });
-      }
-      return {
-        title: 'Choose your spice level',
-        options: spiceOptions,
-        multiSelect: false,
-      };
-    }
-
     // Fall back to dish name checks for legacy/demo dishes
     if (dishName) {
       return getDishCustomization(dishName);
@@ -88,21 +90,27 @@ export function getDishCustomization(source: CustomizationSource | null | undefi
   }
 
   // Case 2: String dish name passed (legacy fallback)
-  const name = source.toLowerCase();
+  const name = source.toLowerCase().trim();
 
-  if (name.includes('curry mee') || name.includes('laksa')) {
+  const isSpicy =
+    /curry|laksa|sambal|chili|chilli|spicy|pedas|tomyum|tom yum|mala|nasi lemak|mee goreng|pan mee|kway teow|char kway|rendang|hot/i.test(
+      name
+    );
+
+  if (isSpicy) {
     return {
       title: 'Choose your spice level',
       options: [
-        { id: 'mild', label: 'Mild', price: 0 },
-        { id: 'medium', label: 'Medium', price: 0 },
-        { id: 'spicy', label: 'Spicy', price: 0 },
-        { id: 'extra-spicy', label: 'Extra spicy', price: 0.5 },
+        { id: 'spice-0', label: 'Level 0 · Mild / No chili', price: 0 },
+        { id: 'spice-1', label: 'Level 1 · Light spice', price: 0 },
+        { id: 'spice-2', label: 'Level 2 · Medium spice', price: 0 },
+        { id: 'spice-3', label: 'Level 3 · Extra hot', price: 0.5 },
       ],
+      multiSelect: false,
     };
   }
 
-  if (name.includes('chicken rice') || name.includes('nasi lemak') || name.includes('mee goreng')) {
+  if (name.includes('chicken rice') || name.includes('rice') || name.includes('noodle')) {
     return {
       title: 'Add extras',
       options: [
@@ -115,4 +123,3 @@ export function getDishCustomization(source: CustomizationSource | null | undefi
 
   return null;
 }
-

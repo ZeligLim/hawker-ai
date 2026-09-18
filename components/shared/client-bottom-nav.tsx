@@ -26,11 +26,11 @@ export function ClientBottomNav({
 
   // Unified pure black and white scheme without borders
   const containerTheme =
-    'bg-white/95 backdrop-blur-2xl shadow-[0_4px_24px_rgba(0,0,0,0.08)] text-neutral-400';
+    'bg-white/95 backdrop-blur-2xl shadow-[0_4px_24px_rgba(0,0,0,0.08)]';
 
-  const activeTheme = 'bg-black text-white shadow-xs font-semibold';
+  const activeTheme = 'bg-black text-white shadow-xs';
 
-  const inactiveTheme = 'text-neutral-500 hover:text-black';
+  const inactiveTheme = 'text-neutral-400 hover:text-black hover:bg-neutral-100';
 
   const gridColsClass =
     items.length === 3
@@ -42,7 +42,7 @@ export function ClientBottomNav({
   return (
     <nav
       aria-label={ariaLabel}
-      className="fixed inset-x-0 bottom-0 z-40 mx-auto w-full max-w-[430px] px-2 sm:px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:max-w-[480px] md:max-w-[560px] lg:max-w-[680px]"
+      className="fixed inset-x-0 bottom-0 z-40 mx-auto w-full max-w-[360px] px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:max-w-[400px] md:max-w-[440px]"
     >
       <div
         className={`grid ${gridColsClass} gap-1 rounded-full p-1.5 backdrop-blur-xl ${containerTheme}`}
@@ -57,16 +57,14 @@ export function ClientBottomNav({
             <Link
               key={label}
               href={href as any}
-              className={`flex min-h-[44px] flex-col items-center justify-center rounded-full py-1.5 px-0.5 sm:px-1 transition-all ${
+              className={`flex h-11 items-center justify-center rounded-full transition-colors ${
                 active ? activeTheme : inactiveTheme
               }`}
               aria-label={label}
+              title={label}
               aria-current={active ? 'page' : undefined}
             >
-              <Icon className="h-[18px] w-[18px] shrink-0" strokeWidth={active ? 2.2 : 1.8} />
-              <span className="mt-0.5 text-[10px] sm:text-[11px] font-medium tracking-tight truncate max-w-full text-center">
-                {label}
-              </span>
+              <Icon className="h-5 w-5 shrink-0" strokeWidth={active ? 2.2 : 1.8} />
             </Link>
           );
         })}

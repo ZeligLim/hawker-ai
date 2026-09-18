@@ -213,7 +213,7 @@ function CustomerStallContent() {
       <div className="mx-auto w-full max-w-md sm:max-w-xl md:max-w-3xl lg:max-w-4xl px-4 pt-5 sm:px-6">
         {/* Table Session / QR Scanner Top Bar */}
         {tableSession?.tableNumber ? (
-          <div className="mb-4 flex items-center justify-between rounded-2xl bg-white p-3 shadow-xs border border-black/5">
+          <div className="mb-4 flex items-center justify-between rounded-2xl bg-white p-3 shadow-xs">
             <div className="flex items-center gap-2.5 min-w-0">
               <span className="flex h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
               <div className="min-w-0">
@@ -228,26 +228,26 @@ function CustomerStallContent() {
             <div className="flex items-center gap-2 shrink-0">
               <Link
                 href={`/scan${centreSlugForScan ? `?centre=${encodeURIComponent(centreSlugForScan)}` : ''}` as any}
-                className="flex h-8 w-8 items-center justify-center rounded-full bg-[#f5f5f7] text-[#1d1d1f] hover:bg-black/5 transition-colors"
+                className="flex h-11 w-11 items-center justify-center rounded-full bg-[#f5f5f7] text-[#1d1d1f] hover:bg-neutral-200 transition-colors"
                 title="Scan different table QR"
                 aria-label="Scan different table QR"
               >
-                <Camera className="h-4 w-4" />
+                <Camera className="h-5 w-5" />
               </Link>
               <button
                 type="button"
                 onClick={handleClearTable}
-                className="text-[11px] font-semibold text-[#86868b] hover:text-[#e03e3e] transition-colors"
+                className="text-xs font-semibold text-[#86868b] hover:text-[#e03e3e] transition-colors px-2"
               >
                 Clear
               </button>
             </div>
           </div>
         ) : (
-          <div className="mb-4 flex items-center justify-between rounded-2xl bg-white p-3 shadow-xs border border-black/5">
+          <div className="mb-4 flex items-center justify-between rounded-2xl bg-white p-3 shadow-xs">
             <div className="flex items-center gap-2.5 min-w-0">
-              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#111827] text-white shrink-0">
-                <Camera className="h-4 w-4" />
+              <div className="flex h-11 w-11 items-center justify-center rounded-full bg-black text-white shrink-0">
+                <Camera className="h-5 w-5" />
               </div>
               <div className="min-w-0">
                 <p className="text-xs font-bold text-[#1d1d1f]">At a table?</p>
@@ -257,9 +257,9 @@ function CustomerStallContent() {
 
             <Link
               href={`/scan${centreSlugForScan ? `?centre=${encodeURIComponent(centreSlugForScan)}` : ''}` as any}
-              className="inline-flex h-9 items-center gap-1.5 rounded-full bg-[#007aff] hover:bg-[#0071e3] px-4 text-xs font-semibold text-white shadow-xs transition-all shrink-0 active:scale-95"
+              className="inline-flex h-11 items-center gap-2 rounded-full bg-black hover:bg-neutral-800 px-5 text-xs font-semibold text-white shadow-xs transition-colors shrink-0"
             >
-              <Camera className="h-3.5 w-3.5" />
+              <Camera className="h-4 w-4" />
               <span>Scan QR</span>
             </Link>
           </div>
@@ -269,7 +269,9 @@ function CustomerStallContent() {
         <div className="mb-5">
           <div className="flex items-center gap-1.5 text-xs text-[#6e6e73] mb-0.5">
             <MapPin className="h-3.5 w-3.5 text-red-500 shrink-0" />
-            <span className="font-medium truncate">{activeCentre?.name || 'Hawker Centre'}</span>
+            <span className="font-medium truncate">
+              {activeCentre?.name && !activeCentre.name.includes('50 Jalan Sultan') ? activeCentre.name : 'Hawker Centre'}
+            </span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#1d1d1f]">
             Hawker Stalls
@@ -285,15 +287,15 @@ function CustomerStallContent() {
           />
         </div>
 
-        {/* Filter Chips */}
+        {/* Filter Chips (Standard h-11 Apple touch target, pure white inactive, pure black active, 0 border) */}
         <div className="mb-5 flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
           <button
             type="button"
             onClick={() => setFilterMode('all')}
-            className={`h-9 px-4 rounded-full text-xs font-semibold transition-all shrink-0 ${
+            className={`h-11 px-5 rounded-full text-xs font-semibold transition-colors shrink-0 ${
               filterMode === 'all'
-                ? 'bg-[#1d1d1f] text-white shadow-xs'
-                : 'bg-[#f2f2f7] text-[#8e8e93] hover:text-[#1d1d1f] hover:bg-[#e5e5ea]'
+                ? 'bg-black text-white shadow-xs'
+                : 'bg-white text-black hover:bg-neutral-100'
             }`}
           >
             All Stalls ({stalls.length})
@@ -301,10 +303,10 @@ function CustomerStallContent() {
           <button
             type="button"
             onClick={() => setFilterMode('open')}
-            className={`h-9 px-4 rounded-full text-xs font-semibold transition-all shrink-0 ${
+            className={`h-11 px-5 rounded-full text-xs font-semibold transition-colors shrink-0 ${
               filterMode === 'open'
-                ? 'bg-[#1d1d1f] text-white shadow-xs'
-                : 'bg-[#f2f2f7] text-[#8e8e93] hover:text-[#1d1d1f] hover:bg-[#e5e5ea]'
+                ? 'bg-black text-white shadow-xs'
+                : 'bg-white text-black hover:bg-neutral-100'
             }`}
           >
             Open Now
@@ -312,10 +314,10 @@ function CustomerStallContent() {
           <button
             type="button"
             onClick={() => setFilterMode('fast')}
-            className={`h-9 px-4 rounded-full text-xs font-semibold transition-all shrink-0 ${
+            className={`h-11 px-5 rounded-full text-xs font-semibold transition-colors shrink-0 ${
               filterMode === 'fast'
-                ? 'bg-[#1d1d1f] text-white shadow-xs'
-                : 'bg-[#f2f2f7] text-[#8e8e93] hover:text-[#1d1d1f] hover:bg-[#e5e5ea]'
+                ? 'bg-black text-white shadow-xs'
+                : 'bg-white text-black hover:bg-neutral-100'
             }`}
           >
             Fast ETA (&le; 10 min)
@@ -362,14 +364,14 @@ function CustomerStallContent() {
 
                       <div className="flex min-w-[84px] shrink-0 flex-col items-end gap-1 text-right">
                         <span
-                          className={`whitespace-nowrap rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                          className={`whitespace-nowrap rounded-full px-2.5 py-0.5 text-[10px] font-semibold ${
                             stall.busy === 'Busy'
-                              ? 'bg-amber-50 text-amber-800 border border-amber-200'
+                              ? 'bg-amber-100 text-amber-900'
                               : stall.busy === 'Moderate'
-                                ? 'bg-blue-50 text-blue-800 border border-blue-200'
+                                ? 'bg-blue-100 text-blue-900'
                                 : stall.busy === 'Closed'
-                                  ? 'bg-slate-100 text-slate-600 border border-slate-200'
-                                  : 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                                  ? 'bg-neutral-200 text-neutral-700'
+                                  : 'bg-emerald-100 text-emerald-900'
                           }`}
                         >
                           {stall.busy}
@@ -383,13 +385,13 @@ function CustomerStallContent() {
                       </div>
                     </div>
 
-                    <div className="mt-3 flex items-center justify-between pt-2.5 border-t border-black/5 text-xs text-[#6e6e73]">
+                    <div className="mt-3 flex items-center justify-between pt-2 text-xs text-[#6e6e73]">
                       <span className="flex items-center gap-1 font-medium">
                         <Utensils className="h-3 w-3 text-[#86868b]" />
                         {stall.dishCount} Menu Dishes
                       </span>
 
-                      <span className="inline-flex items-center gap-1 font-bold text-[#1d1d1f] group-hover:translate-x-0.5 transition-transform">
+                      <span className="inline-flex items-center gap-1 font-bold text-black">
                         <span>View Menu</span>
                         <ChevronRight className="h-3.5 w-3.5" />
                       </span>
@@ -404,10 +406,10 @@ function CustomerStallContent() {
 
       {/* Floating Cart Bar */}
       {totalCartCount > 0 && (
-        <div className="fixed bottom-20 left-4 right-4 z-40 mx-auto max-w-md animate-slide-up">
+        <div className="fixed bottom-20 left-4 right-4 z-40 mx-auto max-w-md">
           <Link
             href="/orders"
-            className="flex h-11 items-center justify-between rounded-full bg-[#1d1d1f] px-5 text-white shadow-lg hover:bg-black transition-all active:scale-[0.98]"
+            className="flex h-11 items-center justify-between rounded-full bg-black px-5 text-white shadow-lg hover:bg-neutral-800 transition-colors"
           >
             <div className="flex items-center gap-2">
               <span className="flex h-6 w-6 items-center justify-center rounded-full bg-white/20 text-xs font-bold">
