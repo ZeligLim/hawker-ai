@@ -292,7 +292,7 @@ export function CentreDinerPage({ centre }: { centre: HawkerCentreSummary }) {
         >
           <div className="flex h-32 w-32 sm:h-36 sm:w-36 items-center justify-center rounded-full bg-white border border-black/10 shadow-[0_12px_36px_rgba(0,0,0,0.08)] group-hover:scale-105 active:scale-95 transition-all">
             <div className="flex h-24 w-24 sm:h-28 sm:w-28 items-center justify-center rounded-full bg-[#111827] text-white shadow-md group-hover:bg-black transition-colors">
-              <Camera className="h-12 w-12 sm:h-14 sm:w-14" strokeWidth={1.8} />
+              <QrCode className="h-12 w-12 sm:h-14 sm:w-14" strokeWidth={1.8} />
             </div>
           </div>
         </Link>

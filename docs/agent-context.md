@@ -9,11 +9,12 @@ Phase 29: Standard OpenStreetMap (Zero Watermark), Map Selected Shop Card, and D
    - Applied a custom CSS filter (`grayscale(100%) contrast(120%) brightness(105%)`) to perfectly strip all colors and enforce the requested pure white and black high-contrast look without watermarks.
    - **Bugfix**: Moved the map zoom controls down to `top-24` when in `fullScreen={true}` to prevent them from crashing into the top search bar.
 
-3. **Dedicated List View Mode (`components/home-page.tsx`)**:
-   - The list of hawker centres now displays strictly when the user toggles to **List** view (`viewMode === 'list'`).
-   - Clean vertical feed showing venue count, standard `h-11` Distance / Rating sorting controls, and search filtering.
+2. **Dish Customizations - Spice & Add-ons (`lib/order/customizations.ts`)**:
+   - Refactored `DishCustomization` typing and logic so a single dish can simultaneously offer both **Add-ons/Upsize** AND **Spice Level**.
+   - Removed the extra "tap-friendly" spice buttons that were recently added to the card so that only the clean draggable spice slider remains (as requested).
+   - If a dish has both customizations (e.g. "Add egg" and "Level 2 Spicy"), they both appear clearly in the customization card.Clean vertical feed showing venue count, standard `h-11` Distance / Rating sorting controls, and search filtering.
 
-2. **Home Tab: Prominent Search Bar & Map/List Switcher (`components/home-page.tsx`)**:
+3. **Home Tab: Prominent Search Bar & Map/List Switcher (`components/home-page.tsx`)**:
    - `HawkerSearchBar` placed prominently at the top of the Home tab.
    - Standard `h-11` segmented control allowing diners to toggle between interactive monochrome **Map View** and a clean vertical **List View** of hawker centres.
    - Quick Aircon filter toggle and Quick Scan QR button positioned below the search bar.

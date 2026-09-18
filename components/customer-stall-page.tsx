@@ -4,7 +4,6 @@ import React, { Suspense, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import {
-  Camera,
   ArrowRight,
   Store,
   Clock,
@@ -14,6 +13,7 @@ import {
   ChevronRight,
   Utensils,
   MapPin,
+  QrCode,
 } from 'lucide-react';
 import { useCartItems } from '@/lib/order/cart';
 import type { HawkerCentreSummary } from '@/lib/hawker-centres/service';
@@ -232,7 +232,7 @@ function CustomerStallContent() {
                 title="Scan different table QR"
                 aria-label="Scan different table QR"
               >
-                <Camera className="h-5 w-5" />
+                <QrCode className="h-5 w-5" />
               </Link>
               <button
                 type="button"
@@ -247,7 +247,7 @@ function CustomerStallContent() {
           <div className="mb-4 flex items-center justify-between rounded-2xl bg-white p-3 shadow-xs">
             <div className="flex items-center gap-2.5 min-w-0">
               <div className="flex h-11 w-11 items-center justify-center rounded-full bg-black text-white shrink-0">
-                <Camera className="h-5 w-5" />
+                <QrCode className="h-5 w-5" />
               </div>
               <div className="min-w-0">
                 <p className="text-xs font-bold text-[#1d1d1f]">At a table?</p>
@@ -259,7 +259,7 @@ function CustomerStallContent() {
               href={`/scan${centreSlugForScan ? `?centre=${encodeURIComponent(centreSlugForScan)}` : ''}` as any}
               className="inline-flex h-11 items-center gap-2 rounded-full bg-black hover:bg-neutral-800 px-5 text-xs font-semibold text-white shadow-xs transition-colors shrink-0"
             >
-              <Camera className="h-4 w-4" />
+              <QrCode className="h-4 w-4" />
               <span>Scan QR</span>
             </Link>
           </div>

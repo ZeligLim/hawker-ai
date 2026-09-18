@@ -274,8 +274,8 @@ export function HawkerMap({
       })}
 
       {/* Map Controls - Pure White & Black, h-11, Borderless, No Bouncy Transitions */}
-      {/* Set top-24 to avoid crashing with the floating top search bar when in fullScreen */}
-      <div className={`absolute right-3.5 ${fullScreen ? 'top-24' : 'top-3'} z-20 flex flex-col gap-2`}>
+      {/* Set top-32 (128px) to safely clear the 110px height of the top search bar + QR button area */}
+      <div className={`absolute right-3.5 ${fullScreen ? 'top-32' : 'top-3'} z-20 flex flex-col gap-2`}>
         <button
           type="button"
           onClick={(e) => {
