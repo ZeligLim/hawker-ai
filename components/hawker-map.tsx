@@ -76,7 +76,7 @@ export function HawkerMap({
 
   const centerProj = useMemo(() => project(center.lat, center.lng, zoom), [center, zoom]);
 
-  // Calculate visible tiles using standard OpenStreetMap without watermarks
+  // Calculate visible tiles using Esri World Light Gray Base
   const visibleTiles = useMemo(() => {
     const tileCount = Math.pow(2, zoom);
     const startTileX = Math.floor((centerProj.x - dimensions.width / 2) / 256);
@@ -84,7 +84,6 @@ export function HawkerMap({
     const startTileY = Math.floor((centerProj.y - dimensions.height / 2) / 256);
     const endTileY = Math.floor((centerProj.y + dimensions.height / 2) / 256);
 
-    const subdomains = ['a', 'b', 'c'];
     const tiles = [];
 
     for (let x = startTileX; x <= endTileX; x++) {
@@ -93,13 +92,13 @@ export function HawkerMap({
         if (y >= 0 && y < tileCount) {
           const screenX = x * 256 - (centerProj.x - dimensions.width / 2);
           const screenY = y * 256 - (centerProj.y - dimensions.height / 2);
-          const sub = subdomains[Math.abs(x + y) % subdomains.length];
 
-          // Standard OpenStreetMap: free, open, completely watermark-free
-          const tileUrl = `https://${sub}.tile.openstreetmap.org/${zoom}/${wrappedX}/${y}.png`;
+          // Esri World Light Gray Base (clean, minimalist, zero watermarks)
+          // Note: Esri MapServer uses {z}/{y}/{x} coordinate order
+          const tileUrl = `https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/${zoom}/${y}/${wrappedX}`;
 
           tiles.push({
-            key: `osm-${zoom}-${x}-${y}`,
+            key: `esri-light-${zoom}-${x}-${y}`,
             url: tileUrl,
             screenX,
             screenY,
@@ -164,7 +163,7 @@ export function HawkerMap({
   return (
     <div
       ref={containerRef}
-      className={`relative w-full ${fullScreen ? 'h-full' : 'h-[360px] sm:h-[420px] rounded-[28px] overflow-hidden shadow-[0_12px_32px_rgba(0,0,0,0.06)]'} select-none bg-white cursor-grab active:cursor-grabbing ${className}`}
+      className={`relative w-full ${fullScreen ? 'h-full overflow-hidden' : 'h-[360px] sm:h-[420px] rounded-[28px] overflow-hidden shadow-[0_12px_32px_rgba(0,0,0,0.06)]'} select-none bg-white cursor-grab active:cursor-grabbing ${className}`}
       onMouseDown={(e) => {
         if (e.button === 0) handlePointerDown(e.clientX, e.clientY);
       }}
@@ -179,13 +178,8 @@ export function HawkerMap({
       }}
       onTouchEnd={handlePointerUp}
     >
-      {/* Map Tile Layer - Pure Black & White Filter (removes yellowish/tan tones, 0 watermarks) */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          filter: 'grayscale(100%) contrast(108%) brightness(102%)',
-        }}
-      >
+      {/* Map Tile Layer - Esri Light Gray Base is naturally clean and monochrome */}
+      <div className="absolute inset-0 pointer-events-none bg-[#f3f3f3]">
         {visibleTiles.map((tile) => (
           /* eslint-disable-next-line @next/next/no-img-element */
           <img
