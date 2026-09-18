@@ -187,69 +187,69 @@ function AdminMonetizationContent() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-white/10 pb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-black/[0.06] pb-5">
         <div>
           <div className="flex items-center gap-2">
             <Link
               href={'/admin' as any}
-              className="text-xs font-semibold text-slate-400 hover:text-white transition inline-flex items-center gap-1"
+              className="text-xs font-semibold text-[#6e6e73] hover:text-[#1d1d1f] transition inline-flex items-center gap-1"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               Admin Overview
             </Link>
-            <span className="text-slate-600">&bull;</span>
-            <span className="text-xs uppercase font-bold tracking-wider text-amber-400">
+            <span className="text-[#86868b]">&bull;</span>
+            <span className="text-[11px] uppercase font-semibold tracking-wider text-[#6e6e73] bg-black/[0.04] border border-black/[0.06] px-2.5 py-0.5 rounded-full">
               Monetization Engine
             </span>
           </div>
-          <h1 className="mt-2 text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-            Monetization & Platform Fee Controls
+          <h1 className="mt-2 text-2xl sm:text-3xl font-semibold text-[#1d1d1f] tracking-[-0.03em]">
+            Monetization & Platform Fees
           </h1>
-          <p className="mt-1 text-sm text-slate-400">
+          <p className="mt-1 text-xs sm:text-sm text-[#6e6e73]">
             Configure transaction commissions, fee-payer routing, and test calculation simulations.
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5">
           <button
             type="button"
             onClick={() => void handleRefresh()}
             disabled={loading}
-            className="inline-flex items-center gap-2 rounded-xl bg-white/5 px-4 py-2.5 text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/10 transition border border-white/10"
+            className="inline-flex items-center gap-1.5 rounded-full bg-white px-3.5 py-2 text-xs font-semibold text-[#1d1d1f] hover:bg-black/[0.03] transition border border-black/10 shadow-xs"
           >
-            <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`w-3.5 h-3.5 text-[#6e6e73] ${loading ? 'animate-spin' : ''}`} />
             Refresh
           </button>
         </div>
       </div>
 
       {loading && shops.length === 0 ? (
-        <div className="rounded-3xl bg-[#111827] p-16 text-center text-slate-400 border border-white/10 flex flex-col items-center justify-center gap-3">
-          <div className="h-7 w-7 animate-spin rounded-full border-2 border-amber-400 border-t-transparent" />
-          <p className="text-sm font-medium">Loading venues and platform fee models…</p>
+        <div className="rounded-3xl bg-white p-16 text-center text-[#86868b] border border-black/[0.08] shadow-xs flex flex-col items-center justify-center gap-3">
+          <div className="h-5 w-5 animate-spin rounded-full border-2 border-[#1d1d1f] border-t-transparent" />
+          <p className="text-xs sm:text-sm font-medium">Loading venues and platform fee models…</p>
         </div>
       ) : shops.length === 0 ? (
-        <div className="rounded-3xl bg-[#111827] p-12 text-center text-slate-400 border border-white/10">
-          <Building2 className="w-8 h-8 text-slate-600 mx-auto mb-3" />
-          <p className="text-base font-semibold text-white">No Food Halls Found</p>
-          <p className="text-xs text-slate-400 mt-1">Register a food hall to configure platform fees.</p>
+        <div className="rounded-3xl bg-white p-12 text-center text-[#86868b] border border-black/[0.08] shadow-xs">
+          <Building2 className="w-8 h-8 text-[#86868b] mx-auto mb-3" />
+          <p className="text-base font-semibold text-[#1d1d1f]">No Food Halls Found</p>
+          <p className="text-xs text-[#86868b] mt-1">Register a food hall to configure platform fees.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8">
           {/* Main Configurator Form (Left / 7 cols) */}
           <div className="lg:col-span-7 space-y-6">
-            <div className="rounded-3xl bg-[#111827] p-6 sm:p-7 border border-white/10 shadow-xl space-y-6">
+            <div className="rounded-3xl bg-white p-6 sm:p-7 border border-black/[0.08] shadow-xs space-y-6">
               {/* Venue Selector */}
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
+                <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#86868b] mb-2">
                   Target Venue / Food Hall
                 </label>
                 <div className="relative">
                   <select
                     value={selectedShopId}
                     onChange={(e) => handleSelectShop(e.target.value)}
-                    className="w-full rounded-2xl bg-[#0e1424] px-4 py-3.5 text-sm font-semibold text-white border border-white/10 focus:border-amber-500 focus:outline-hidden transition"
+                    className="w-full rounded-xl bg-white px-3.5 py-2.5 text-xs sm:text-sm font-semibold text-[#1d1d1f] border border-black/15 focus:border-[#0071e3] focus:ring-2 focus:ring-[#0071e3]/20 shadow-xs outline-none transition cursor-pointer"
                   >
                     {shops.map((s) => (
                       <option key={s.id} value={s.id}>
@@ -259,7 +259,7 @@ function AdminMonetizationContent() {
                   </select>
                 </div>
                 {selectedShop && (
-                  <p className="mt-1.5 text-xs text-slate-400">
+                  <p className="mt-1.5 text-xs text-[#86868b]">
                     Address: {selectedShop.address ?? 'Unassigned'} &bull; Status: {selectedShop.status}
                   </p>
                 )}
@@ -267,56 +267,56 @@ function AdminMonetizationContent() {
 
               {/* Fee Model Selector */}
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
+                <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#86868b] mb-2">
                   Commission Model
                 </label>
-                <div className="grid grid-cols-3 gap-2.5">
+                <div className="p-1 bg-black/[0.04] rounded-2xl grid grid-cols-3 gap-1 border border-black/5">
                   <button
                     type="button"
                     onClick={() => setFeeMode('percentage')}
-                    className={`rounded-2xl p-3.5 text-left border transition-all ${
+                    className={`rounded-xl p-3 text-left transition-all ${
                       feeMode === 'percentage'
-                        ? 'border-amber-500/50 bg-amber-500/10 text-white shadow-sm'
-                        : 'border-white/5 bg-[#0e1424] text-slate-300 hover:bg-white/5'
+                        ? 'bg-white text-[#1d1d1f] shadow-xs font-semibold'
+                        : 'text-[#6e6e73] hover:text-[#1d1d1f] hover:bg-white/40'
                     }`}
                   >
-                    <div className="flex items-center gap-1.5 text-xs font-bold">
-                      <Percent className="h-3.5 w-3.5 text-amber-400" />
+                    <div className="flex items-center gap-1.5 text-xs font-semibold">
+                      <Percent className="h-3.5 w-3.5 text-[#0071e3]" />
                       Percentage
                     </div>
-                    <p className="mt-1 text-[11px] text-slate-400">e.g. 5% of order</p>
+                    <p className="mt-0.5 text-[11px] text-[#86868b]">e.g. 5% of order</p>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => setFeeMode('fixed')}
-                    className={`rounded-2xl p-3.5 text-left border transition-all ${
+                    className={`rounded-xl p-3 text-left transition-all ${
                       feeMode === 'fixed'
-                        ? 'border-amber-500/50 bg-amber-500/10 text-white shadow-sm'
-                        : 'border-white/5 bg-[#0e1424] text-slate-300 hover:bg-white/5'
+                        ? 'bg-white text-[#1d1d1f] shadow-xs font-semibold'
+                        : 'text-[#6e6e73] hover:text-[#1d1d1f] hover:bg-white/40'
                     }`}
                   >
-                    <div className="flex items-center gap-1.5 text-xs font-bold">
-                      <DollarSign className="h-3.5 w-3.5 text-amber-400" />
+                    <div className="flex items-center gap-1.5 text-xs font-semibold">
+                      <DollarSign className="h-3.5 w-3.5 text-emerald-600" />
                       Flat Fee
                     </div>
-                    <p className="mt-1 text-[11px] text-slate-400">e.g. RM 0.50 per order</p>
+                    <p className="mt-0.5 text-[11px] text-[#86868b]">e.g. RM 0.50</p>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => setFeeMode('mixed')}
-                    className={`rounded-2xl p-3.5 text-left border transition-all ${
+                    className={`rounded-xl p-3 text-left transition-all ${
                       feeMode === 'mixed'
-                        ? 'border-amber-500/50 bg-amber-500/10 text-white shadow-sm'
-                        : 'border-white/5 bg-[#0e1424] text-slate-300 hover:bg-white/5'
+                        ? 'bg-white text-[#1d1d1f] shadow-xs font-semibold'
+                        : 'text-[#6e6e73] hover:text-[#1d1d1f] hover:bg-white/40'
                     }`}
                   >
-                    <div className="flex items-center gap-1.5 text-xs font-bold">
-                      <Sliders className="h-3.5 w-3.5 text-amber-400" />
+                    <div className="flex items-center gap-1.5 text-xs font-semibold">
+                      <Sliders className="h-3.5 w-3.5 text-amber-700" />
                       Mixed
                     </div>
-                    <p className="mt-1 text-[11px] text-slate-400">% + Flat rate</p>
+                    <p className="mt-0.5 text-[11px] text-[#86868b]">% + Flat rate</p>
                   </button>
                 </div>
               </div>
@@ -325,7 +325,7 @@ function AdminMonetizationContent() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {feeMode === 'percentage' || feeMode === 'mixed' ? (
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
+                    <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#86868b] mb-2">
                       Platform Fee (%)
                     </label>
                     <div className="relative">
@@ -336,9 +336,9 @@ function AdminMonetizationContent() {
                         max="100"
                         value={platformFeePercent}
                         onChange={(e) => setPlatformFeePercent(Math.max(0, Number(e.target.value)))}
-                        className="w-full rounded-2xl bg-[#0e1424] px-4 py-3 text-sm font-semibold text-white border border-white/10 focus:border-amber-500 focus:outline-hidden"
+                        className="w-full rounded-xl bg-white px-3.5 py-2.5 text-sm font-semibold text-[#1d1d1f] border border-black/15 focus:border-[#0071e3] focus:ring-2 focus:ring-[#0071e3]/20 shadow-xs outline-none transition"
                       />
-                      <span className="absolute right-4 top-3 text-xs font-bold text-slate-400">%</span>
+                      <span className="absolute right-3.5 top-2.5 text-xs font-semibold text-[#86868b]">%</span>
                     </div>
 
                     {/* Quick percentage presets */}
@@ -348,10 +348,10 @@ function AdminMonetizationContent() {
                           key={preset}
                           type="button"
                           onClick={() => setPlatformFeePercent(preset)}
-                          className={`rounded-lg px-2.5 py-1 text-[11px] font-semibold transition ${
+                          className={`rounded-full px-2.5 py-0.5 text-xs font-semibold transition border ${
                             platformFeePercent === preset
-                              ? 'bg-amber-500 text-slate-950 font-bold'
-                              : 'bg-white/5 text-slate-300 hover:bg-white/10'
+                              ? 'bg-[#1d1d1f] text-white border-transparent shadow-xs'
+                              : 'bg-white border-black/10 text-[#6e6e73] hover:text-[#1d1d1f] hover:bg-black/[0.02]'
                           }`}
                         >
                           {preset}%
@@ -363,18 +363,18 @@ function AdminMonetizationContent() {
 
                 {feeMode === 'fixed' || feeMode === 'mixed' ? (
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
+                    <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#86868b] mb-2">
                       Flat Platform Fee (RM)
                     </label>
                     <div className="relative">
-                      <span className="absolute left-4 top-3 text-xs font-bold text-slate-400">RM</span>
+                      <span className="absolute left-3.5 top-2.5 text-xs font-semibold text-[#86868b]">RM</span>
                       <input
                         type="number"
                         step="0.05"
                         min="0"
                         value={platformFeeFixed}
                         onChange={(e) => setPlatformFeeFixed(Math.max(0, Number(e.target.value)))}
-                        className="w-full rounded-2xl bg-[#0e1424] pl-11 pr-4 py-3 text-sm font-semibold text-white border border-white/10 focus:border-amber-500 focus:outline-hidden"
+                        className="w-full rounded-xl bg-white pl-10 pr-3.5 py-2.5 text-sm font-semibold text-[#1d1d1f] border border-black/15 focus:border-[#0071e3] focus:ring-2 focus:ring-[#0071e3]/20 shadow-xs outline-none transition"
                       />
                     </div>
                     <div className="mt-2.5 flex flex-wrap gap-1.5">
@@ -383,10 +383,10 @@ function AdminMonetizationContent() {
                           key={preset}
                           type="button"
                           onClick={() => setPlatformFeeFixed(preset)}
-                          className={`rounded-lg px-2.5 py-1 text-[11px] font-semibold transition ${
+                          className={`rounded-full px-2.5 py-0.5 text-xs font-semibold transition border ${
                             platformFeeFixed === preset
-                              ? 'bg-amber-500 text-slate-950 font-bold'
-                              : 'bg-white/5 text-slate-300 hover:bg-white/10'
+                              ? 'bg-[#1d1d1f] text-white border-transparent shadow-xs'
+                              : 'bg-white border-black/10 text-[#6e6e73] hover:text-[#1d1d1f] hover:bg-black/[0.02]'
                           }`}
                         >
                           RM {preset.toFixed(2)}
@@ -399,7 +399,7 @@ function AdminMonetizationContent() {
 
               {/* Fee Payer Toggle */}
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
+                <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#86868b] mb-2">
                   Fee Payer Routing
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -408,12 +408,14 @@ function AdminMonetizationContent() {
                     onClick={() => setFeePayer('CUSTOMER')}
                     className={`rounded-2xl p-4 text-left border transition-all ${
                       feePayer === 'CUSTOMER'
-                        ? 'border-blue-500/50 bg-blue-500/10 text-white shadow-sm'
-                        : 'border-white/5 bg-[#0e1424] text-slate-300 hover:bg-white/5'
+                        ? 'border-[#0071e3] bg-blue-50/50 shadow-xs'
+                        : 'border-black/[0.08] bg-black/[0.01] hover:bg-black/[0.03] text-[#6e6e73]'
                     }`}
                   >
-                    <p className="text-xs font-bold text-blue-400">Diner Pays Surcharge</p>
-                    <p className="mt-1 text-[11px] text-slate-400 leading-relaxed">
+                    <p className={`text-xs font-semibold ${feePayer === 'CUSTOMER' ? 'text-[#0071e3]' : 'text-[#1d1d1f]'}`}>
+                      Diner Pays Surcharge
+                    </p>
+                    <p className="mt-1 text-xs text-[#6e6e73] leading-relaxed">
                       Added directly to the diner’s bill at checkout as a service charge.
                     </p>
                   </button>
@@ -423,12 +425,14 @@ function AdminMonetizationContent() {
                     onClick={() => setFeePayer('MERCHANT')}
                     className={`rounded-2xl p-4 text-left border transition-all ${
                       feePayer === 'MERCHANT'
-                        ? 'border-emerald-500/50 bg-emerald-500/10 text-white shadow-sm'
-                        : 'border-white/5 bg-[#0e1424] text-slate-300 hover:bg-white/5'
+                        ? 'border-emerald-600 bg-emerald-50/50 shadow-xs'
+                        : 'border-black/[0.08] bg-black/[0.01] hover:bg-black/[0.03] text-[#6e6e73]'
                     }`}
                   >
-                    <p className="text-xs font-bold text-emerald-400">Stall Pays Commission</p>
-                    <p className="mt-1 text-[11px] text-slate-400 leading-relaxed">
+                    <p className={`text-xs font-semibold ${feePayer === 'MERCHANT' ? 'text-emerald-700' : 'text-[#1d1d1f]'}`}>
+                      Stall Pays Commission
+                    </p>
+                    <p className="mt-1 text-xs text-[#6e6e73] leading-relaxed">
                       Deducted automatically from vendor payouts on order completion.
                     </p>
                   </button>
@@ -437,8 +441,8 @@ function AdminMonetizationContent() {
 
               {/* Error Alert */}
               {errorMessage && (
-                <div className="flex items-center gap-2 rounded-2xl bg-red-500/10 p-4 text-xs font-semibold text-red-400 border border-red-500/20">
-                  <AlertCircle className="h-4 w-4 shrink-0" />
+                <div className="flex items-center gap-2 rounded-2xl bg-red-50 p-3.5 text-xs font-medium text-red-700 border border-red-200/60">
+                  <AlertCircle className="h-4 w-4 shrink-0 text-red-600" />
                   <span>{errorMessage}</span>
                 </div>
               )}
@@ -449,15 +453,15 @@ function AdminMonetizationContent() {
                   type="button"
                   onClick={() => void handleSaveMonetization()}
                   disabled={saving || !selectedShopId}
-                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-amber-500 px-6 py-3.5 text-sm font-bold text-slate-950 shadow-lg shadow-amber-500/20 hover:bg-amber-400 disabled:opacity-50 transition"
+                  className="inline-flex items-center justify-center gap-2 rounded-full bg-[#1d1d1f] px-5 py-2.5 text-xs sm:text-sm font-semibold text-white shadow-xs hover:bg-black disabled:opacity-50 transition"
                 >
-                  <Save className="h-4 w-4" />
+                  <Save className="h-3.5 w-3.5" />
                   <span>{saving ? 'Applying rate changes…' : 'Save Platform Policy'}</span>
                 </button>
 
                 {saveSuccess && (
-                  <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-400">
-                    <Check className="h-4 w-4" />
+                  <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200/60 px-3 py-1 rounded-full">
+                    <Check className="h-3.5 w-3.5" />
                     <span>Monetization settings updated</span>
                   </span>
                 )}
@@ -468,47 +472,47 @@ function AdminMonetizationContent() {
           {/* Live Simulation & Details (Right / 5 cols) */}
           <div className="lg:col-span-5 space-y-6">
             {/* Live Calculation Preview Card */}
-            <div className="rounded-3xl bg-[#111827] p-6 border border-white/10 shadow-xl space-y-4">
-              <div className="flex items-center justify-between border-b border-white/10 pb-3">
+            <div className="rounded-3xl bg-white p-6 border border-black/[0.08] shadow-xs space-y-4">
+              <div className="flex items-center justify-between border-b border-black/[0.06] pb-3">
                 <div className="flex items-center gap-2">
-                  <Info className="h-4 w-4 text-amber-400" />
-                  <h3 className="text-sm font-bold text-white">Live Order Simulation</h3>
+                  <Info className="h-4 w-4 text-[#0071e3]" />
+                  <h3 className="text-sm font-semibold text-[#1d1d1f]">Live Order Simulation</h3>
                 </div>
-                <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                <span className="text-[10px] uppercase font-semibold tracking-wider px-2 py-0.5 rounded-full bg-black/[0.04] text-[#6e6e73] border border-black/[0.06]">
                   RM 20.00 Order
                 </span>
               </div>
 
-              <p className="text-xs text-slate-400 leading-relaxed">
+              <p className="text-xs text-[#6e6e73] leading-relaxed">
                 Real-time breakdown showing how this policy impacts customer checkout and stall merchant net payouts:
               </p>
 
-              <div className="space-y-2.5 rounded-2xl bg-[#0e1424] p-4 border border-white/5 text-xs">
-                <div className="flex justify-between text-slate-300">
+              <div className="space-y-2.5 rounded-2xl bg-[#fafafc] p-4 border border-black/[0.06] text-xs">
+                <div className="flex justify-between text-[#6e6e73]">
                   <span>Food Cart Subtotal:</span>
-                  <span className="font-semibold text-white">RM 20.00</span>
+                  <span className="font-semibold text-[#1d1d1f]">RM 20.00</span>
                 </div>
 
-                <div className="flex justify-between text-amber-400">
+                <div className="flex justify-between text-[#0071e3]">
                   <span>
                     Platform Charge ({feeMode === 'percentage' ? `${platformFeePercent}%` : feeMode === 'fixed' ? 'Fixed' : `${platformFeePercent}% + RM${platformFeeFixed}`}):
                   </span>
-                  <span className="font-bold">RM {sampleFee.toFixed(2)}</span>
+                  <span className="font-semibold">RM {sampleFee.toFixed(2)}</span>
                 </div>
 
-                <div className="pt-2 border-t border-white/10 flex justify-between font-bold text-white">
+                <div className="pt-2 border-t border-black/[0.06] flex justify-between font-semibold text-[#1d1d1f]">
                   <span>Diner Total Bill:</span>
-                  <span className="text-sm">RM {sampleCustomerTotal.toFixed(2)}</span>
+                  <span className="text-sm font-bold">RM {sampleCustomerTotal.toFixed(2)}</span>
                 </div>
 
-                <div className="flex justify-between text-emerald-400 font-semibold">
+                <div className="flex justify-between text-emerald-700 font-semibold">
                   <span>Stall Net Payout:</span>
                   <span className="text-sm font-bold">RM {sampleStallPayout.toFixed(2)}</span>
                 </div>
               </div>
 
-              <div className="rounded-2xl bg-amber-500/5 p-4 border border-amber-500/15">
-                <p className="text-xs text-amber-300/90 leading-relaxed">
+              <div className="rounded-2xl bg-blue-50/50 p-4 border border-blue-200/50">
+                <p className="text-xs text-[#1d1d1f] leading-relaxed">
                   <strong>Policy Summary:</strong> Platform collects{' '}
                   <span className="font-bold underline">RM {sampleFee.toFixed(2)}</span> per RM 20.00 order. Charged to{' '}
                   <span className="font-bold">{feePayer === 'CUSTOMER' ? 'Diner (Surcharge)' : 'Stall (Commission)'}</span>.
@@ -517,13 +521,13 @@ function AdminMonetizationContent() {
             </div>
 
             {/* Platform Security Badge */}
-            <div className="rounded-3xl bg-[#111827] p-6 border border-white/10 shadow-xl space-y-3">
-              <div className="flex items-center gap-2 text-indigo-400">
-                <ShieldCheck className="w-5 h-5" />
-                <h3 className="text-sm font-bold text-white">Engine-Level Security Protection</h3>
+            <div className="rounded-3xl bg-white p-6 border border-black/[0.08] shadow-xs space-y-3">
+              <div className="flex items-center gap-2 text-purple-700">
+                <ShieldCheck className="w-4 h-4" />
+                <h3 className="text-sm font-semibold text-[#1d1d1f]">Engine-Level Security Protection</h3>
               </div>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                PostgreSQL mutation trigger <code className="text-slate-300">trg_enforce_restaurant_monetization</code> validates every update against <code className="text-slate-300">is_platform_admin()</code>. Tenant food hall owners and stall staff cannot bypass or modify these fee structures.
+              <p className="text-xs text-[#6e6e73] leading-relaxed">
+                PostgreSQL mutation trigger <code className="text-[#1d1d1f] font-mono">trg_enforce_restaurant_monetization</code> validates every update against <code className="text-[#1d1d1f] font-mono">is_platform_admin()</code>. Tenant food hall owners and stall staff cannot bypass or modify these fee structures.
               </p>
             </div>
           </div>
@@ -531,13 +535,13 @@ function AdminMonetizationContent() {
       )}
 
       {/* Venues Overview Grid */}
-      <div className="rounded-3xl bg-[#111827] p-6 border border-white/10 shadow-xl space-y-4">
-        <div className="flex items-center justify-between border-b border-white/10 pb-4">
+      <div className="rounded-3xl bg-white p-6 border border-black/[0.08] shadow-xs space-y-4">
+        <div className="flex items-center justify-between border-b border-black/[0.06] pb-4">
           <div>
-            <h2 className="text-base font-bold text-white">Active Venue Pricing Directory</h2>
-            <p className="text-xs text-slate-400">Click any venue to load its fee configuration.</p>
+            <h2 className="text-base font-semibold text-[#1d1d1f]">Active Venue Pricing Directory</h2>
+            <p className="text-xs text-[#86868b]">Click any venue to load its fee configuration.</p>
           </div>
-          <span className="text-xs text-slate-400 font-mono">{shops.length} Venues</span>
+          <span className="text-xs text-[#86868b] font-mono">{shops.length} Venues</span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -559,28 +563,28 @@ function AdminMonetizationContent() {
                 onClick={() => handleSelectShop(s.id)}
                 className={`p-4 rounded-2xl text-left border transition-all ${
                   isSelected
-                    ? 'border-amber-500 bg-amber-500/10 shadow-md shadow-amber-500/10'
-                    : 'border-white/5 bg-[#0e1424] hover:bg-white/5'
+                    ? 'border-[#1d1d1f] bg-black/[0.02] shadow-xs'
+                    : 'border-black/[0.06] bg-white hover:bg-black/[0.01]'
                 }`}
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
-                    <p className="font-bold text-sm text-white truncate">{s.name}</p>
-                    <p className="text-xs text-slate-400 font-mono mt-0.5">/{s.slug ?? 'unknown'}</p>
+                    <p className="font-semibold text-sm text-[#1d1d1f] truncate">{s.name}</p>
+                    <p className="text-xs text-[#86868b] font-mono mt-0.5">/{s.slug ?? 'unknown'}</p>
                   </div>
                   <span
-                    className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ${
+                    className={`text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0 ${
                       isDiner
-                        ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
-                        : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                        ? 'bg-blue-50 text-blue-700 border border-blue-200/60'
+                        : 'bg-emerald-50 text-emerald-700 border border-emerald-200/60'
                     }`}
                   >
                     {isDiner ? 'Diner' : 'Stall'}
                   </span>
                 </div>
-                <div className="mt-3 flex items-center justify-between text-xs pt-2 border-t border-white/5">
-                  <span className="text-slate-400">Current Rate:</span>
-                  <span className="font-bold text-amber-400">{rate}</span>
+                <div className="mt-3 flex items-center justify-between text-xs pt-2 border-t border-black/[0.06]">
+                  <span className="text-[#86868b]">Current Rate:</span>
+                  <span className="font-semibold text-[#1d1d1f]">{rate}</span>
                 </div>
               </button>
             );
@@ -595,9 +599,9 @@ export default function AdminMonetizationPage() {
   return (
     <Suspense
       fallback={
-        <div className="rounded-3xl bg-[#111827] p-16 text-center text-slate-400 border border-white/10 flex flex-col items-center justify-center gap-3">
-          <div className="h-7 w-7 animate-spin rounded-full border-2 border-amber-400 border-t-transparent" />
-          <p className="text-sm font-medium">Loading monetization controls…</p>
+        <div className="rounded-3xl bg-white p-16 text-center text-[#86868b] border border-black/[0.08] shadow-xs flex flex-col items-center justify-center gap-3">
+          <div className="h-5 w-5 animate-spin rounded-full border-2 border-[#1d1d1f] border-t-transparent" />
+          <p className="text-xs sm:text-sm font-medium">Loading monetization controls…</p>
         </div>
       }
     >

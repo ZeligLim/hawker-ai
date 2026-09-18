@@ -69,46 +69,46 @@ export default function AdminShopsListPage() {
   }, []);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-white/10 pb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-black/[0.06] pb-5">
         <div>
-          <span className="text-xs uppercase font-bold tracking-wider text-amber-400">
+          <span className="text-[11px] uppercase font-semibold tracking-wider text-[#6e6e73] bg-black/[0.04] border border-black/[0.06] px-2.5 py-0.5 rounded-full">
             Platform Directory
           </span>
-          <h1 className="mt-1 text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+          <h1 className="mt-2 text-2xl sm:text-3xl font-semibold text-[#1d1d1f] tracking-[-0.03em]">
             Venues & Food Halls
           </h1>
-          <p className="mt-1 text-sm text-slate-400">
+          <p className="mt-1 text-xs sm:text-sm text-[#6e6e73]">
             View all multi-tenant food centres and configure per-venue fee policies.
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5">
           <button
             type="button"
             onClick={() => void handleRefresh()}
             disabled={loading}
-            className="inline-flex items-center gap-2 rounded-xl bg-white/5 px-4 py-2.5 text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/10 transition border border-white/10"
+            className="inline-flex items-center gap-1.5 rounded-full bg-white px-3.5 py-2 text-xs font-semibold text-[#1d1d1f] hover:bg-black/[0.03] transition border border-black/10 shadow-xs"
           >
-            <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`w-3.5 h-3.5 text-[#6e6e73] ${loading ? 'animate-spin' : ''}`} />
             Refresh
           </button>
         </div>
       </div>
 
       {loading ? (
-        <div className="rounded-3xl bg-[#111827] p-16 text-center text-slate-400 border border-white/10 flex flex-col items-center justify-center gap-3">
-          <div className="h-7 w-7 animate-spin rounded-full border-2 border-amber-400 border-t-transparent" />
-          <p className="text-sm font-medium">Loading venues…</p>
+        <div className="rounded-3xl bg-white p-16 text-center text-[#86868b] border border-black/[0.08] shadow-xs flex flex-col items-center justify-center gap-3">
+          <div className="h-5 w-5 animate-spin rounded-full border-2 border-[#1d1d1f] border-t-transparent" />
+          <p className="text-xs sm:text-sm font-medium">Loading venues…</p>
         </div>
       ) : error ? (
-        <div className="rounded-2xl bg-red-500/10 p-5 text-sm text-red-400 border border-red-500/20">
+        <div className="rounded-2xl bg-red-50 p-4 text-xs font-medium text-red-700 border border-red-200/60">
           {error}
         </div>
       ) : shops.length === 0 ? (
-        <div className="rounded-3xl bg-[#111827] p-12 text-center text-slate-400 border border-white/10">
-          <Building2 className="w-8 h-8 text-slate-600 mx-auto mb-3" />
-          <p className="text-base font-semibold text-white">No Venues Found</p>
+        <div className="rounded-3xl bg-white p-12 text-center text-[#86868b] border border-black/[0.08] shadow-xs">
+          <Building2 className="w-8 h-8 text-[#86868b] mx-auto mb-3" />
+          <p className="text-base font-semibold text-[#1d1d1f]">No Venues Found</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -125,53 +125,53 @@ export default function AdminShopsListPage() {
             return (
               <div
                 key={shop.id}
-                className="rounded-3xl bg-[#111827] p-6 border border-white/10 shadow-xl flex flex-col justify-between gap-5"
+                className="rounded-3xl bg-white p-6 border border-black/[0.08] shadow-xs flex flex-col justify-between gap-5 hover:border-black/15 transition"
               >
                 <div>
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
-                      <h2 className="text-lg font-bold text-white truncate">{shop.name}</h2>
-                      <p className="text-xs text-slate-400 font-mono mt-0.5">/{shop.slug ?? 'unknown'}</p>
+                      <h2 className="text-base sm:text-lg font-semibold text-[#1d1d1f] truncate">{shop.name}</h2>
+                      <p className="text-xs text-[#86868b] font-mono mt-0.5">/{shop.slug ?? 'unknown'}</p>
                     </div>
                     <span
-                      className={`text-xs font-semibold px-2.5 py-1 rounded-full shrink-0 ${
+                      className={`text-[11px] font-semibold px-2.5 py-0.5 rounded-full shrink-0 ${
                         isDiner
-                          ? 'bg-blue-500/15 text-blue-400 border border-blue-500/20'
-                          : 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/20'
+                          ? 'bg-blue-50 text-blue-700 border border-blue-200/60'
+                          : 'bg-emerald-50 text-emerald-700 border border-emerald-200/60'
                       }`}
                     >
                       {isDiner ? 'Diner Surcharge' : 'Stall Commission'}
                     </span>
                   </div>
 
-                  <p className="mt-2 text-xs text-slate-400 line-clamp-2">
+                  <p className="mt-2 text-xs text-[#86868b] line-clamp-2">
                     {shop.address ?? 'Address not specified'}
                   </p>
 
                   <div className="mt-4 flex items-center gap-4 text-xs">
-                    <div className="flex items-center gap-1.5 text-slate-300">
-                      <Store className="w-4 h-4 text-slate-400" />
+                    <div className="flex items-center gap-1.5 text-[#6e6e73]">
+                      <Store className="w-3.5 h-3.5 text-[#86868b]" />
                       <span>{shop.booths?.length ?? 0} stalls</span>
                     </div>
-                    <div className="flex items-center gap-1 text-amber-400 font-semibold">
-                      <span>Fee:</span>
+                    <div className="flex items-center gap-1 text-[#1d1d1f] font-semibold">
+                      <span className="text-[#86868b] font-normal">Fee:</span>
                       <span>{rate}</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-white/5 flex items-center justify-between gap-2">
+                <div className="pt-4 border-t border-black/[0.06] flex items-center justify-between gap-2">
                   <Link
                     href={`/admin/shops/${shop.id}` as any}
-                    className="inline-flex items-center gap-1.5 rounded-xl bg-white/5 px-3.5 py-2 text-xs font-semibold text-slate-200 hover:text-white hover:bg-white/10 transition border border-white/10"
+                    className="inline-flex items-center gap-1 rounded-full bg-white px-3.5 py-1.5 text-xs font-semibold text-[#1d1d1f] hover:bg-black/[0.03] transition border border-black/10 shadow-xs"
                   >
                     <span>Venue Details</span>
-                    <ChevronRight className="w-3.5 h-3.5" />
+                    <ChevronRight className="w-3.5 h-3.5 text-[#6e6e73]" />
                   </Link>
 
                   <Link
                     href={`/admin/monetization?shopId=${shop.id}` as any}
-                    className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500 px-3.5 py-2 text-xs font-bold text-slate-950 hover:bg-amber-400 transition shadow-md shadow-amber-500/20"
+                    className="inline-flex items-center gap-1 rounded-full bg-[#1d1d1f] px-3.5 py-1.5 text-xs font-semibold text-white hover:bg-black transition shadow-xs"
                   >
                     <Sliders className="w-3 h-3" />
                     <span>Configure Monetization</span>

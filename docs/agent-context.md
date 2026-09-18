@@ -1,9 +1,49 @@
 # Current Project Context
 
 ## Current Phase
-Phase 21: Customer Venue Isolation, Time-Based Operating Schedules & Dual-Layer Status Controls
+Phase 22: Apple-Inspired Visual Streamline for SaaS Platform Admin (`/admin`)
 
 ## Current Feature
+1. **Apple Design Language System for Platform Admin**:
+   - **Signature Palette & Background**: Replaced dark `#090d16` and harsh amber glows with Apple signature canvas `#f5f5f7`, pure white cards `bg-white`, delicate borders `border-black/[0.08]` and `border-black/[0.06]`, and subtle Apple drop shadows `shadow-xs`.
+   - **Typography & Contrasts**: High-contrast text `#1d1d1f` for titles/labels with tight tracking `tracking-[-0.03em]`, neutral secondary text `#6e6e73` and `#86868b`, and monospace identifiers in subtle rounded pill badges.
+   - **Action Controls & Segmented Pickers**: Dark pill buttons `bg-[#1d1d1f] hover:bg-black text-white rounded-full` and Apple system blue `bg-[#0071e3] hover:bg-[#0077ed]`, paired with macOS-style segmented controls (`p-1 bg-black/[0.04] rounded-2xl`).
+
+2. **Refactored Admin Shell (`components/admin/admin-shell.tsx`)**:
+   - Translucent sidebar `bg-[#fbfbfd]/90 backdrop-blur-xl border-r border-black/[0.08]` matching macOS System Settings.
+   - Active navigation items rendered in `#1d1d1f` with crisp white text and subtle shadow; inactive items use `#6e6e73` with smooth hover.
+   - Refined mobile top header and brand badges.
+   - Apple modal dialog for sign-out confirmation with cancel and dark destructive action pills.
+
+3. **Admin Guard Boundary (`components/admin/admin-guard.tsx`)**:
+   - Converted loading, unauthenticated login gate, and 403 Forbidden views to clean Apple cards with delicate borders on `#f5f5f7`.
+
+4. **SaaS Superadmin Overview (`app/(admin)/admin/page.tsx`)**:
+   - Refined header with pill badge and white refresh button with subtle border.
+   - Crisp KPI metric cards with soft pastel icon backgrounds (`bg-blue-50`, `bg-emerald-50`, `bg-amber-50`, `bg-purple-50`).
+   - Apple Pro action card highlighting platform fee management with Apple Blue CTA.
+   - Clean food halls table with delicate border separators, subtle hover states, and refined status pills.
+
+5. **Monetization & Fee Controls (`app/(admin)/admin/monetization/page.tsx`)**:
+   - macOS-style segmented control for fee mode (Percentage, Flat Fee, Mixed).
+   - Quick rate preset buttons as Apple pill badges.
+   - Dual-card fee payer selector (Diner Surcharge vs. Stall Commission).
+   - Apple receipt simulation card with clear breakdown of cart total, platform fee, diner bill, and stall net payout.
+   - Interactive Active Venue Pricing Directory with card selection.
+
+6. **Venues Directory & Venue Detail Pages (`app/(admin)/admin/shops/page.tsx`, `app/(admin)/admin/shops/[id]/page.tsx`)**:
+   - Clean white squircle cards with subtle borders and refined status tags.
+   - Apple-style inputs, segmented controls, and simulation card.
+
+7. **Verification**:
+   - `npx tsc --noEmit`: 0 TypeScript errors.
+   - `npm test`: 31/31 unit tests passed.
+   - `npm run lint`: 0 errors.
+   - `npm run build`: Successful production build across all 50 routes.
+
+## Previous Phases
+Phase 21: Customer Venue Isolation, Time-Based Operating Schedules & Dual-Layer Status Controls
+
 1. **Customer Navigation & Strict Venue Isolation**:
    - **Cross-Venue Header Pills Removed**: In `components/customer-stall-page.tsx`, completely removed the header pills allowing diners to switch between venues ("888 Restoran" vs "Lim's Foodcourt"). The customer experience is strictly isolated to stalls belonging to their active venue.
    - **Dedicated Stalls Route**: Created `app/stalls/page.tsx` rendering `CustomerStallPage` within active venue scope.
@@ -19,35 +59,10 @@ Phase 21: Customer Venue Isolation, Time-Based Operating Schedules & Dual-Layer 
    - Re-aligned and stretched the "Recent Orders" ticket list to span full width below metrics for a clean, focused dashboard.
 
 4. **Time-Based Operating Schedule Engine & Dual-Layer Control Architecture**:
-   - **Database Migration (`supabase/migrations/019_operating_schedules_and_booth_active.sql`)**:
-     - Added `schedule JSONB` to `restaurants` and `food_outlets`.
-     - Added `is_active BOOLEAN NOT NULL DEFAULT true` to `food_outlets` with index `idx_food_outlets_is_active`.
-   - **Operating Hours Engine (`lib/schedule/operating-hours.ts`)**:
-     - Built `isTimeInSlot` supporting daytime and overnight time slots spanning past midnight (e.g., 18:00–02:00).
-     - Built `isOperatingOpen` to evaluate weekly Monday–Sunday schedules against system time, falling back to manual operational toggle if automated schedule is disabled.
-     - Built `resolveEffectiveStallStatus` implementing strict dual-layer master override rules:
-       - **Venue Operator Layer**: `restaurant.is_active` (Venue active) & `booth.is_active` (Master booth active). If either is `false`, the stall is strictly offline to customers regardless of stall owner toggle.
-       - **Stall Owner Layer**: Daily operational open/close or automated schedule (`isOperatingOpen`).
-       - **Visibility & Orderability**: Both conditions must be met for customer orders.
-   - **Reusable Schedule Modal (`components/operating-schedule-modal.tsx`)**:
-     - Daily Monday–Sunday open/close time pickers, overnight slot detection indicator, "Apply Monday to All Days" shortcut button, and automated status toggle switch.
-     - Pure declarative inner state initialization eliminating cascading renders and satisfying React 19 / ESLint rules.
-   - **Backend API Updates**:
-     - `app/api/outlets/route.ts`: Resolves `resolveEffectiveStallStatus` for each booth. Automatically excludes inactive venues and inactive booth slots from diner queries, and evaluates real-time operating hours for `is_open` and `is_orderable`.
-     - `app/api/owner/shops/[id]/route.ts`: Added `schedule` to GET and PATCH.
-     - `app/api/owner/booths/[id]/route.ts`: Added `schedule` and `is_active` to GET and PATCH, enforcing that only venue owners can mutate `is_active` (returns 403 Forbidden to stall merchants).
-     - `app/api/owner/shops/route.ts`: Returns `schedule` and `is_active` for both shops and booths.
-     - `app/api/user/roles/route.ts`: Returns `schedule`, `isActive`, `venueIsActive`, and `venueSchedule` for quick client access.
-     - `lib/hawker-centres/service.ts`: Includes `schedule` and `is_active` in summary queries.
-   - **UI Integration**:
-     - `app/shop-owner/booths/page.tsx`: Added "Venue Hours" button in header, master "Active/Inactive" toggle button on each booth card, "Hours" schedule button on each booth card, and an Inactive warning alert banner when a booth is disabled by the venue owner.
-     - `app/owner/page.tsx`: Added "Operating Hours" schedule button in header, and master override warning banner if the stall or venue was set to Inactive by food court management.
-
-5. **Verification**:
-   - `npm test`: All 31 unit tests pass (including 6 new schedule and master override tests).
-   - `npx tsc --noEmit`: 0 TypeScript errors.
-   - `npm run lint`: 0 errors.
-   - `npm run build`: Successful production build across all 50 routes.
+   - Database migration `supabase/migrations/019_operating_schedules_and_booth_active.sql`.
+   - Core schedule engine in `lib/schedule/operating-hours.ts`.
+   - Declarative schedule modal in `components/operating-schedule-modal.tsx`.
+   - Full integration in `app/shop-owner/booths/page.tsx` and `app/owner/page.tsx`.
 
 ## Previous Phases
 Phase 20: Dedicated SaaS Superadmin Dashboard Route Group & Standalone Monetization Controls

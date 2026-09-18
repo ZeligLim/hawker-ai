@@ -15,7 +15,6 @@ import {
   ExternalLink,
   Store,
   ChevronRight,
-  Sparkles,
 } from 'lucide-react';
 
 interface AdminShellProps {
@@ -52,26 +51,24 @@ export function AdminShell({ children }: AdminShellProps) {
   const roleLabel = roles.isSaasOwner ? 'SaaS Owner' : 'Superadmin';
 
   return (
-    <div className="min-h-screen bg-[#090d16] text-slate-100 flex flex-col md:flex-row antialiased">
+    <div className="min-h-screen bg-[#f5f5f7] text-[#1d1d1f] flex flex-col md:flex-row antialiased">
       {/* Mobile Top Header */}
-      <header className="md:hidden flex items-center justify-between px-4 py-3.5 bg-[#111827] border-b border-white/10 sticky top-0 z-30">
+      <header className="md:hidden flex items-center justify-between px-4 py-3 bg-white/90 backdrop-blur-md border-b border-black/[0.08] sticky top-0 z-30 shadow-xs">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
+          <div className="w-8 h-8 rounded-xl bg-[#1d1d1f] flex items-center justify-center text-white shadow-xs">
             <ShieldCheck className="w-4 h-4" />
           </div>
-          <div>
-            <div className="flex items-center gap-1.5">
-              <span className="font-bold text-sm tracking-tight text-white">Hawker SaaS</span>
-              <span className="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400 border border-amber-500/30">
-                Admin
-              </span>
-            </div>
+          <div className="flex items-center gap-1.5">
+            <span className="font-semibold text-sm tracking-tight text-[#1d1d1f]">Hawker Admin</span>
+            <span className="text-[10px] uppercase font-semibold tracking-wider px-1.5 py-0.5 rounded-full bg-black/5 text-[#6e6e73] border border-black/[0.06]">
+              {roleLabel}
+            </span>
           </div>
         </div>
         <button
           type="button"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="p-2 rounded-xl bg-white/5 text-slate-300 hover:text-white hover:bg-white/10 transition"
+          className="p-2 rounded-xl bg-black/[0.04] text-[#1d1d1f] hover:bg-black/[0.08] transition"
           aria-label="Toggle navigation"
         >
           {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -81,31 +78,31 @@ export function AdminShell({ children }: AdminShellProps) {
       {/* Backdrop for mobile drawer */}
       {mobileMenuOpen && (
         <div
-          className="fixed inset-0 bg-black/60 backdrop-blur-xs z-40 md:hidden"
+          className="fixed inset-0 bg-black/30 backdrop-blur-xs z-40 md:hidden"
           onClick={() => setMobileMenuOpen(false)}
         />
       )}
 
       {/* Desktop & Mobile Sidebar Navigation Shell */}
       <aside
-        className={`fixed md:sticky top-0 bottom-0 left-0 z-50 w-72 bg-[#0e1424] border-r border-white/10 flex flex-col transition-transform duration-200 ease-in-out md:translate-x-0 ${
+        className={`fixed md:sticky top-0 bottom-0 left-0 z-50 w-64 lg:w-72 bg-white md:bg-[#fbfbfd]/90 md:backdrop-blur-xl border-r border-black/[0.08] flex flex-col transition-transform duration-200 ease-in-out md:translate-x-0 ${
           mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
         style={{ height: '100vh' }}
       >
         {/* Brand Header */}
-        <div className="p-5 border-b border-white/10">
+        <div className="p-5 border-b border-black/[0.06]">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-slate-950 shadow-lg shadow-amber-500/20 shrink-0">
+            <div className="w-10 h-10 rounded-2xl bg-[#1d1d1f] flex items-center justify-center text-white shadow-sm shrink-0">
               <ShieldCheck className="w-5 h-5" />
             </div>
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-1.5">
-                <span className="font-bold text-base text-white tracking-tight">Hawker Platform</span>
+                <span className="font-semibold text-base text-[#1d1d1f] tracking-tight">Hawker Platform</span>
               </div>
               <div className="flex items-center gap-1.5 mt-0.5">
-                <span className="text-[11px] font-semibold text-amber-400 bg-amber-500/15 border border-amber-500/30 px-2 py-0.5 rounded-full inline-flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                <span className="text-[11px] font-medium text-[#6e6e73] bg-black/[0.04] border border-black/[0.06] px-2 py-0.5 rounded-full inline-flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                   {roleLabel}
                 </span>
               </div>
@@ -116,8 +113,8 @@ export function AdminShell({ children }: AdminShellProps) {
         {/* Navigation Links */}
         <div className="flex-1 overflow-y-auto px-3 py-4 space-y-6">
           <div>
-            <p className="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">
-              Platform Control Plane
+            <p className="px-3 text-[11px] font-semibold uppercase tracking-wider text-[#86868b] mb-1.5">
+              Control Plane
             </p>
             <nav className="space-y-1">
               {navItems.map((item) => {
@@ -131,17 +128,17 @@ export function AdminShell({ children }: AdminShellProps) {
                     key={item.href}
                     href={item.href as any}
                     onClick={() => setMobileMenuOpen(false)}
-                    className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                    className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-all ${
                       isActive
-                        ? 'bg-amber-500 text-slate-950 font-semibold shadow-md shadow-amber-500/20'
-                        : 'text-slate-300 hover:text-white hover:bg-white/5'
+                        ? 'bg-[#1d1d1f] text-white shadow-xs font-semibold'
+                        : 'text-[#6e6e73] hover:text-[#1d1d1f] hover:bg-black/[0.04]'
                     }`}
                   >
-                    <div className="flex items-center gap-3">
-                      <Icon className={`w-4 h-4 ${isActive ? 'text-slate-950' : 'text-slate-400'}`} />
+                    <div className="flex items-center gap-2.5">
+                      <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-[#6e6e73]'}`} />
                       <span>{item.label}</span>
                     </div>
-                    {isActive && <ChevronRight className="w-3.5 h-3.5 text-slate-950/70" />}
+                    {isActive && <ChevronRight className="w-3.5 h-3.5 text-white/70" />}
                   </Link>
                 );
               })}
@@ -149,49 +146,49 @@ export function AdminShell({ children }: AdminShellProps) {
           </div>
 
           <div>
-            <p className="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">
+            <p className="px-3 text-[11px] font-semibold uppercase tracking-wider text-[#86868b] mb-1.5">
               Cross-App Portals
             </p>
             <div className="space-y-1">
               <Link
                 href={'/home' as any}
-                className="flex items-center justify-between px-3.5 py-2 rounded-xl text-xs font-medium text-slate-400 hover:text-white hover:bg-white/5 transition"
+                className="flex items-center justify-between px-3.5 py-2 rounded-xl text-xs font-medium text-[#6e6e73] hover:text-[#1d1d1f] hover:bg-black/[0.04] transition"
               >
                 <div className="flex items-center gap-2.5">
-                  <Store className="w-3.5 h-3.5 text-slate-400" />
+                  <Store className="w-3.5 h-3.5 text-[#86868b]" />
                   <span>Diner App (Customer)</span>
                 </div>
-                <ExternalLink className="w-3 h-3 text-slate-500" />
+                <ExternalLink className="w-3 h-3 text-[#86868b]" />
               </Link>
               <Link
                 href={'/shop-owner/booths' as any}
-                className="flex items-center justify-between px-3.5 py-2 rounded-xl text-xs font-medium text-slate-400 hover:text-white hover:bg-white/5 transition"
+                className="flex items-center justify-between px-3.5 py-2 rounded-xl text-xs font-medium text-[#6e6e73] hover:text-[#1d1d1f] hover:bg-black/[0.04] transition"
               >
                 <div className="flex items-center gap-2.5">
-                  <Building2 className="w-3.5 h-3.5 text-slate-400" />
+                  <Building2 className="w-3.5 h-3.5 text-[#86868b]" />
                   <span>Food Hall Operator Portal</span>
                 </div>
-                <ExternalLink className="w-3 h-3 text-slate-500" />
+                <ExternalLink className="w-3 h-3 text-[#86868b]" />
               </Link>
             </div>
           </div>
         </div>
 
         {/* User Identity & Sign Out Footer */}
-        <div className="p-3 border-t border-white/10 bg-[#0a0f1d]">
-          <div className="flex items-center justify-between p-2.5 rounded-xl bg-white/5 border border-white/5">
+        <div className="p-3 border-t border-black/[0.06] bg-white md:bg-transparent">
+          <div className="flex items-center justify-between p-2.5 rounded-2xl bg-black/[0.03] border border-black/[0.06]">
             <div className="min-w-0 flex-1 mr-2">
-              <p className="text-xs font-medium text-white truncate">
+              <p className="text-xs font-semibold text-[#1d1d1f] truncate">
                 {user?.email ?? 'Superadmin'}
               </p>
-              <p className="text-[10px] text-slate-400 truncate">
+              <p className="text-[11px] text-[#86868b] truncate">
                 {roleLabel} &bull; Cross-Tenant
               </p>
             </div>
             <button
               type="button"
               onClick={() => setIsSignOutDialogOpen(true)}
-              className="p-2 rounded-lg text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition shrink-0"
+              className="p-2 rounded-xl text-[#86868b] hover:text-red-600 hover:bg-red-50 transition shrink-0"
               title="Sign Out"
             >
               <LogOut className="w-4 h-4" />
@@ -201,7 +198,7 @@ export function AdminShell({ children }: AdminShellProps) {
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 min-w-0 bg-[#090d16] flex flex-col">
+      <main className="flex-1 min-w-0 bg-[#f5f5f7] flex flex-col">
         <div className="flex-1 p-4 sm:p-6 md:p-8 max-w-7xl w-full mx-auto">
           {children}
         </div>
@@ -209,17 +206,17 @@ export function AdminShell({ children }: AdminShellProps) {
 
       {/* Sign Out Confirmation Modal */}
       {isSignOutDialogOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 px-4 backdrop-blur-xs">
-          <div className="w-full max-w-sm rounded-3xl bg-[#111827] p-6 text-white shadow-2xl border border-white/10">
-            <h3 className="text-lg font-bold tracking-tight">Sign out of Superadmin?</h3>
-            <p className="mt-2 text-xs text-slate-400 leading-relaxed">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 backdrop-blur-xs">
+          <div className="w-full max-w-sm rounded-3xl bg-white p-6 text-[#1d1d1f] shadow-2xl border border-black/[0.08] animate-in fade-in zoom-in-95 duration-150">
+            <h3 className="text-lg font-semibold tracking-tight text-[#1d1d1f]">Sign out of Superadmin?</h3>
+            <p className="mt-2 text-xs text-[#6e6e73] leading-relaxed">
               You will be signed out from your active platform session. You will need to re-authenticate with superadmin credentials to regain access.
             </p>
-            <div className="mt-6 flex items-center justify-end gap-3">
+            <div className="mt-6 flex items-center justify-end gap-2.5">
               <button
                 type="button"
                 onClick={() => setIsSignOutDialogOpen(false)}
-                className="rounded-full px-4 py-2 text-xs font-semibold text-slate-300 hover:bg-white/10 transition"
+                className="rounded-full px-4 py-2 text-xs font-semibold text-[#6e6e73] hover:text-[#1d1d1f] hover:bg-black/[0.04] transition"
               >
                 Cancel
               </button>
@@ -229,7 +226,7 @@ export function AdminShell({ children }: AdminShellProps) {
                   setIsSignOutDialogOpen(false);
                   void signOut();
                 }}
-                className="rounded-full bg-red-600 px-5 py-2 text-xs font-semibold text-white shadow-sm hover:bg-red-500 transition"
+                className="rounded-full bg-red-600 px-4 py-2 text-xs font-semibold text-white shadow-xs hover:bg-red-700 transition"
               >
                 Sign out
               </button>
