@@ -54,8 +54,8 @@ export default function OrdersPage() {
 
   const checkout = async () => {
     setCheckoutError('');
-    if (status !== 'authenticated' || isGuest || !supabase) {
-      setCheckoutError('Please sign in before placing an order.');
+    if (!supabase) {
+      setCheckoutError('Supabase is not configured.');
       return;
     }
     if (cartItems.length === 0) {
@@ -64,21 +64,19 @@ export default function OrdersPage() {
     }
 
     setCheckoutState('submitting');
-    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
-    if (sessionError || !sessionData.session) {
-      setCheckoutState('idle');
-      setCheckoutError('Your session has expired. Please sign in again.');
-      return;
+    const { data: sessionData } = await supabase.auth.getSession();
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+    if (sessionData.session) {
+      headers['Authorization'] = `Bearer ${sessionData.session.access_token}`;
     }
 
     const paymentIntentId = `pi_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
 
     const response = await fetch('/api/orders', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${sessionData.session.access_token}`,
-      },
+      headers,
       body: JSON.stringify({
         tableSessionId: getCurrentTableSession().tableId ?? null,
         subtotal: summary.subtotal,

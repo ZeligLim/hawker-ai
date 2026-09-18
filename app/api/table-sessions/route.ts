@@ -4,7 +4,8 @@ import { requireRequestUser } from '@/lib/supabase/server';
 
 export async function POST(request: NextRequest) {
   const auth = await requireRequestUser(request);
-  if (!auth.client || !auth.user) return NextResponse.json({ error: auth.error }, { status: 401 });
+  if (!auth.client) return NextResponse.json({ error: 'Supabase not configured' }, { status: 500 });
+  // Allow guests to start table sessions
 
   const parsed = CreateTableSessionSchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
@@ -56,7 +57,7 @@ export async function POST(request: NextRequest) {
 
   const { data, error } = await auth.client
     .from('table_sessions')
-    .insert({ hawker_table_id: table.id, customer_id: auth.user.id, status: 'active' })
+    .insert({ hawker_table_id: table.id, customer_id: auth.user?.id ?? null, status: 'active' })
     .select('id, hawker_table_id, status, created_at')
     .single();
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });

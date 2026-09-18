@@ -145,8 +145,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const isSigningOutRef = useRef(false);
   const [user, setUser] = useState<User | null>(null);
   const [isGuest, setIsGuest] = useState<boolean>(() => {
-    if (typeof window === 'undefined') return false;
-    return window.localStorage.getItem('hawker-guest-mode') === 'true';
+    if (typeof window === 'undefined') return true;
+    const stored = window.localStorage.getItem('hawker-guest-mode');
+    return stored === null ? true : stored === 'true';
   });
   const [status, setStatus] = useState<AuthStatus>(() => (supabase ? 'loading' : 'unauthenticated'));
 
