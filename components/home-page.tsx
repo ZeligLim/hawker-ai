@@ -1,26 +1,21 @@
 'use client';
 
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
   ArrowRight,
-  ChevronDown,
-  ChevronUp,
   MapPin,
   QrCode,
   Snowflake,
   Star,
   Store,
+  X,
 } from 'lucide-react';
-import { HawkerMap } from '@/components/hawker-map';
 import { HawkerSearchBar } from '@/components/hawker-search-bar';
+import { HawkerMap } from '@/components/hawker-map';
 import type { HawkerCentreSummary } from '@/lib/hawker-centres/service';
 
-type RankingMode = 'distance' | 'rating';
-type ViewMode = 'map' | 'list';
-
-// Haversine formula to calculate geographic distance in kilometres
 function calculateDistanceKm(lat1: number, lon1: number, lat2: number, lon2: number): number {
   const R = 6371;
   const dLat = ((lat2 - lat1) * Math.PI) / 180;
@@ -32,28 +27,27 @@ function calculateDistanceKm(lat1: number, lon1: number, lat2: number, lon2: num
       Math.sin(dLon / 2) *
       Math.sin(dLon / 2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return Number((R * c).toFixed(2));
+  return Math.round(R * c * 10) / 10;
 }
 
 export function HomePage() {
   const router = useRouter();
-  const [centres, setCentres] = useState<HawkerCentreSummary[]>([]);
-  const [rankingMode, setRankingMode] = useState<RankingMode>('distance');
-  const [viewMode, setViewMode] = useState<ViewMode>('map');
-  const [airconOnly, setAirconOnly] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCentreId, setSelectedCentreId] = useState<string | null>(null);
-  const [isExpanded, setIsExpanded] = useState(false);
 
-  // Default coordinate: Kuala Lumpur City Centre
+  // Search, filter, ranking states
+  const [searchQuery, setSearchQuery] = useState('');
+  const [airconOnly, setAirconOnly] = useState(false);
+  const [rankingMode, setRankingMode] = useState<'distance' | 'rating'>('distance');
+  const [viewMode, setViewMode] = useState<'map' | 'list'>('map');
+
+  // Centres and selected centre
+  const [centres, setCentres] = useState<HawkerCentreSummary[]>([]);
+  const [selectedCentreId, setSelectedCentreId] = useState<string | null>(null);
+
+  // User location: defaults to Kuala Lumpur Chinatown
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number }>({
     lat: 3.1440,
     lng: 101.6990,
   });
-
-  // Touch gesture tracking for mobile swipe-up / swipe-down in map view
-  const touchStartY = useRef<number | null>(null);
-  const sheetContentRef = useRef<HTMLDivElement>(null);
 
   // Fetch real hawker centres from API
   useEffect(() => {
@@ -66,9 +60,6 @@ export function HomePage() {
         const data = await res.json();
         if (active && Array.isArray(data.hawkerCentres)) {
           setCentres(data.hawkerCentres);
-          if (data.hawkerCentres.length > 0) {
-            setSelectedCentreId(data.hawkerCentres[0].id);
-          }
         }
       } catch (err) {
         console.error('Failed to load hawker centres:', err);
@@ -190,38 +181,15 @@ export function HomePage() {
     return list;
   }, [rankedCentres, airconOnly, searchQuery]);
 
+  // Find the currently selected centre
+  const selectedCentre = useMemo(
+    () => filteredCentres.find((c) => c.id === selectedCentreId) ?? null,
+    [filteredCentres, selectedCentreId]
+  );
+
   const handleSelectCentre = useCallback((c: HawkerCentreSummary) => {
     setSelectedCentreId(c.id);
   }, []);
-
-  // Gesture handling for mobile swipe-up / swipe-down in map view
-  const handleTouchStart = (e: React.TouchEvent) => {
-    touchStartY.current = e.touches[0].clientY;
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (touchStartY.current === null) return;
-    const deltaY = e.touches[0].clientY - touchStartY.current;
-
-    // Swiping UP: expand bottom sheet
-    if (!isExpanded && deltaY < -20) {
-      setIsExpanded(true);
-      touchStartY.current = null;
-    }
-    // Swiping DOWN: collapse bottom sheet (only when scroll position is at the top)
-    else if (
-      isExpanded &&
-      deltaY > 25 &&
-      (!sheetContentRef.current || sheetContentRef.current.scrollTop <= 5)
-    ) {
-      setIsExpanded(false);
-      touchStartY.current = null;
-    }
-  };
-
-  const handleTouchEnd = () => {
-    touchStartY.current = null;
-  };
 
   return (
     <div className="fixed inset-0 w-screen h-screen overflow-hidden bg-white text-black">
@@ -301,7 +269,7 @@ export function HomePage() {
       {/* 2. Main Content: Map View or List View */}
       {viewMode === 'map' ? (
         <>
-          {/* Interactive Black & White Map (0 borders, 0 watermarks) */}
+          {/* Interactive Standard OpenStreetMap (0 borders, 0 watermarks) */}
           <HawkerMap
             fullScreen={true}
             userLocation={userLocation}
@@ -310,140 +278,68 @@ export function HomePage() {
             onSelectCentre={handleSelectCentre}
           />
 
-          {/* Mobile-First Bottom Sheet List (Answers Swipe Up, Fills Bottom Width, 0 Borders) */}
-          <div
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
-            className={`fixed inset-x-0 bottom-0 z-30 w-full rounded-t-[28px] bg-white text-black shadow-[0_-12px_40px_rgba(0,0,0,0.12)] transition-all duration-300 ease-out flex flex-col ${
-              isExpanded ? 'h-[80vh]' : 'h-36 pb-16'
-            }`}
-          >
-            {/* Pull Handle & Header Bar */}
-            <div
-              onClick={() => setIsExpanded((prev) => !prev)}
-              className="w-full shrink-0 px-4 pt-3 pb-2 cursor-pointer select-none"
-            >
-              {/* Pull Indicator Pill */}
-              <div className="mx-auto h-1 w-10 rounded-full bg-neutral-300 mb-3" />
+          {/* Floating Selected Shop Card (Only shown when a shop is selected) */}
+          {selectedCentre && (
+            <div className="fixed bottom-20 inset-x-3.5 sm:inset-x-4 max-w-md mx-auto z-40 pointer-events-auto">
+              <div className="rounded-3xl bg-white p-4 sm:p-5 shadow-2xl text-black">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-base font-bold text-black truncate">{selectedCentre.name}</h3>
+                      {selectedCentre.hasAircon && (
+                        <span className="inline-flex items-center gap-1 rounded-full bg-black/5 px-2 py-0.5 text-[10px] font-semibold text-black shrink-0">
+                          <Snowflake className="h-3 w-3" />
+                          <span>Aircon</span>
+                        </span>
+                      )}
+                    </div>
+                    <p className="mt-1 text-xs text-neutral-500 line-clamp-1">{selectedCentre.address}</p>
 
-              {/* Controls Row: Venue Count & Guideline-Compliant h-11 Distance/Rating Toggles */}
-              <div className="flex items-center justify-between gap-3">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-bold text-black">
-                    {filteredCentres.length} {filteredCentres.length === 1 ? 'centre' : 'centres'}
-                  </span>
+                    <div className="mt-2.5 flex items-center gap-2 text-xs text-neutral-600">
+                      <span className="flex items-center gap-0.5 font-bold text-black">
+                        <Star className="h-3.5 w-3.5 fill-black text-black" />
+                        <span>{selectedCentre.rating.toFixed(1)}</span>
+                      </span>
+                      <span>•</span>
+                      <span>{selectedCentre.stallsCount} stalls</span>
+                      {selectedCentre.distanceKm !== null && (
+                        <>
+                          <span>•</span>
+                          <span className="font-semibold text-black">{selectedCentre.distanceKm} km</span>
+                          {selectedCentre.walkMins !== null && (
+                            <span className="text-neutral-400">({selectedCentre.walkMins}m walk)</span>
+                          )}
+                        </>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Dismiss Selection */}
                   <button
                     type="button"
-                    className="text-neutral-400 hover:text-black transition-colors"
-                    aria-label={isExpanded ? 'Collapse list' : 'Expand list'}
+                    onClick={() => setSelectedCentreId(null)}
+                    className="flex h-8 w-8 items-center justify-center rounded-full text-neutral-400 hover:text-black hover:bg-neutral-100 transition-colors shrink-0"
+                    aria-label="Close card"
                   >
-                    {isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronUp className="h-4 w-4" />}
+                    <X className="h-4 w-4" />
                   </button>
                 </div>
 
-                {/* Distance & Rating Toggles: Strictly h-11 (44px) Apple Guideline, Rounded-Full, 0 Border */}
-                <div
-                  onClick={(e) => e.stopPropagation()}
-                  className="flex items-center bg-neutral-100 p-1 rounded-full shrink-0"
-                >
-                  <button
-                    type="button"
-                    onClick={() => setRankingMode('distance')}
-                    className={`flex h-11 items-center justify-center rounded-full px-4 text-xs font-semibold transition-colors ${
-                      rankingMode === 'distance'
-                        ? 'bg-black text-white shadow-xs'
-                        : 'bg-white text-black hover:bg-neutral-50'
-                    }`}
+                <div className="mt-4">
+                  <Link
+                    href={`/stall?centre=${encodeURIComponent(selectedCentre.slug)}` as any}
+                    className="flex h-11 w-full items-center justify-center gap-2 rounded-full bg-black hover:bg-neutral-800 text-white text-xs font-semibold shadow-xs transition-colors"
                   >
-                    Distance
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setRankingMode('rating')}
-                    className={`flex h-11 items-center justify-center rounded-full px-4 text-xs font-semibold transition-colors ${
-                      rankingMode === 'rating'
-                        ? 'bg-black text-white shadow-xs'
-                        : 'bg-white text-black hover:bg-neutral-50'
-                    }`}
-                  >
-                    Rating
-                  </button>
+                    <span>View Stalls</span>
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </Link>
                 </div>
               </div>
             </div>
-
-            {/* Scrollable Hawker Centres List (Full Bottom Width, 0 Borders, Pure Black/White, No Hover Animations) */}
-            <div
-              ref={sheetContentRef}
-              className="flex-1 overflow-y-auto px-4 pb-20 pt-2 space-y-3"
-            >
-              {filteredCentres.map((centre) => {
-                const isSelected = centre.id === selectedCentreId;
-
-                return (
-                  <div
-                    key={centre.id}
-                    onClick={() => {
-                      setSelectedCentreId(centre.id);
-                      if (centre.lat && centre.lng) {
-                        setUserLocation({ lat: centre.lat, lng: centre.lng });
-                      }
-                    }}
-                    className={`w-full rounded-2xl p-4 text-left transition-colors cursor-pointer ${
-                      isSelected ? 'bg-neutral-100' : 'bg-neutral-50 hover:bg-neutral-100'
-                    }`}
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2">
-                          <h4 className="text-sm font-bold text-black truncate">{centre.name}</h4>
-                          {centre.hasAircon && (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-black/5 px-2 py-0.5 text-[10px] font-semibold text-black shrink-0">
-                              <Snowflake className="h-3 w-3" />
-                              <span>Aircon</span>
-                            </span>
-                          )}
-                        </div>
-                        <p className="mt-0.5 text-xs text-neutral-500 truncate">{centre.address}</p>
-
-                        <div className="mt-2 flex items-center gap-2 text-xs text-neutral-600">
-                          <span className="flex items-center gap-0.5 font-semibold text-black">
-                            <Star className="h-3 w-3 fill-black text-black" />
-                            <span>{centre.rating.toFixed(1)}</span>
-                          </span>
-                          <span>•</span>
-                          <span>{centre.stallsCount} stalls</span>
-                          {centre.distanceKm !== null && (
-                            <>
-                              <span>•</span>
-                              <span className="font-medium text-black">{centre.distanceKm} km</span>
-                              {centre.walkMins !== null && (
-                                <span className="text-neutral-400">({centre.walkMins}m walk)</span>
-                              )}
-                            </>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Action Link: Strictly h-11, Pure Black, 0 Border, No Animation */}
-                      <Link
-                        href={`/stall?centre=${encodeURIComponent(centre.slug)}` as any}
-                        onClick={(e) => e.stopPropagation()}
-                        className="flex h-11 px-5 items-center justify-center gap-1.5 rounded-full bg-black hover:bg-neutral-800 text-white text-xs font-semibold shadow-xs shrink-0 transition-colors"
-                      >
-                        <span>View</span>
-                        <ArrowRight className="h-3.5 w-3.5" />
-                      </Link>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
+          )}
         </>
       ) : (
-        /* Full-Screen List View (Mobile-First, 0 Borders, Clean Feed) */
+        /* Full-Screen List View (Only shown when toggled to List view) */
         <div className="h-full w-full overflow-y-auto pt-32 pb-28 px-4 max-w-lg mx-auto">
           {/* List View Subheader: Count & Distance/Rating Sort Controls */}
           <div className="mb-4 flex items-center justify-between gap-3 px-1">

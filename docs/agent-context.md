@@ -1,13 +1,23 @@
 # Current Project Context
 
 ## Current Phase
-Phase 28: Global Styling Reset, Map/List Switcher, Spice Customization Engine, and UI De-clutter
+Phase 29: Standard OpenStreetMap (Zero Watermark), Map Selected Shop Card, and Dedicated List View Mode
 
 ## Current Feature
-1. **Global Styling & 0-Border Reset (`app/globals.css`)**:
-   - Universal 0-border rule enforced (`*, *::before, *::after { border-width: 0 !important; border-style: none !important; }`).
-   - Clean pure white (`#ffffff`) and pure black (`#000000`) color palette.
-   - Elimination of hover border animations, bouncy scale transitions (`active:scale-95`, `hover:scale-105`), and spinny transitions.
+1. **Watermark-Free Standard OpenStreetMap (`components/hawker-map.tsx`)**:
+   - Switched map tile endpoint from CARTO Positron to standard OpenStreetMap (`https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png`), completely eliminating the "API KEY REQUIRED" watermark.
+   - Kept the pure black & white CSS filter (`grayscale(100%) contrast(108%) brightness(102%)`) for a consistent monochrome aesthetic.
+   - Removed any remaining border artifacts and hover scale animations.
+
+2. **Map View: Floating Selected Shop Card (`components/home-page.tsx`)**:
+   - Completely removed the bottom sheet list and swipe-up gesture from the map view.
+   - When a shop or hawker centre is selected on the map, a floating card appears above the navigation bar with centre name, Aircon badge, address, distance, rating, stalls count, and `View Stalls` action.
+   - An accessible dismiss button (`✕`) clears the selection and closes the card.
+   - When no shop is selected, the map is unobstructed.
+
+3. **Dedicated List View Mode (`components/home-page.tsx`)**:
+   - The list of hawker centres now displays strictly when the user toggles to **List** view (`viewMode === 'list'`).
+   - Clean vertical feed showing venue count, standard `h-11` Distance / Rating sorting controls, and search filtering.
 
 2. **Home Tab: Prominent Search Bar & Map/List Switcher (`components/home-page.tsx`)**:
    - `HawkerSearchBar` placed prominently at the top of the Home tab.
