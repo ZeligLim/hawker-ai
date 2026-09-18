@@ -206,7 +206,7 @@ export function HawkerMap({
         <div className="absolute inset-0 pointer-events-none ring-1 ring-inset ring-black/10 rounded-[28px]" />
       )}
 
-      {/* User Location Radar Marker */}
+      {/* User Location Radar Pin */}
       {userScreen && (
         <div
           className="absolute z-20 -translate-x-1/2 -translate-y-1/2 pointer-events-none transition-transform duration-100"
@@ -215,9 +215,9 @@ export function HawkerMap({
           }}
         >
           <div className="relative flex items-center justify-center">
-            <span className="absolute h-10 w-10 rounded-full bg-blue-500/20 animate-ping" />
-            <span className="absolute h-6 w-6 rounded-full bg-blue-500/40" />
-            <span className="relative flex h-3.5 w-3.5 rounded-full bg-blue-600 border-2 border-white shadow-md" />
+            <span className="absolute h-10 w-10 rounded-full bg-[#007aff]/20 animate-ping" />
+            <span className="absolute h-6 w-6 rounded-full bg-[#007aff]/35" />
+            <span className="relative flex h-3.5 w-3.5 rounded-full bg-[#007aff] border-2 border-white shadow-md" />
           </div>
         </div>
       )}
@@ -259,14 +259,14 @@ export function HawkerMap({
                     : 'bg-white/95 backdrop-blur-md text-[#1d1d1f] border-black/10 shadow-xs hover:border-black/25'
                 }`}
               >
-                <Store className={`h-3.5 w-3.5 ${isSelected ? 'text-amber-400' : 'text-amber-600'}`} />
+                <Store className="h-3.5 w-3.5 text-[#ff9500]" />
                 <span className="max-w-[120px] truncate">{c.name}</span>
                 {c.hasAircon && (
                   <span title="Aircon" aria-label="Aircon" className="flex items-center">
-                    <Snowflake className="h-3 w-3 text-cyan-500 shrink-0" />
+                    <Snowflake className="h-3 w-3 text-[#32ade6] shrink-0" />
                   </span>
                 )}
-                <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-medium ${isSelected ? 'bg-white/20 text-white' : 'bg-black/5 text-[#86868b]'}`}>
+                <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-medium ${isSelected ? 'bg-white/20 text-white' : 'bg-black/5 text-[#8e8e93]'}`}>
                   ★ {c.rating.toFixed(1)}
                 </span>
               </div>
@@ -315,7 +315,7 @@ export function HawkerMap({
               setZoom(16);
             }
           }}
-          className="flex h-8 w-8 items-center justify-center rounded-full bg-white/90 backdrop-blur-md text-[#0071e3] shadow-xs hover:bg-white active:scale-95 transition-all border border-black/[0.08]"
+          className="flex h-8 w-8 items-center justify-center rounded-full bg-white/90 backdrop-blur-md text-[#007aff] shadow-xs hover:bg-white active:scale-95 transition-all border border-black/[0.08]"
           aria-label="Recenter to my location"
         >
           <Locate className="h-3.5 w-3.5" />
@@ -331,23 +331,26 @@ export function HawkerMap({
                 <div className="flex items-center gap-1.5">
                   <h4 className="text-sm font-semibold text-[#1d1d1f]">{selectedCentre.name}</h4>
                   {selectedCentre.hasAircon && (
-                    <span className="inline-flex items-center gap-0.5 rounded-full bg-cyan-50 border border-cyan-200/80 px-1.5 py-0.2 text-[9px] font-semibold text-cyan-800 shrink-0" title="Aircon">
-                      <Snowflake className="h-2.5 w-2.5 text-cyan-600" />
+                    <span className="inline-flex items-center gap-0.5 rounded-full bg-[#32ade6]/12 border border-[#32ade6]/25 px-1.5 py-0.2 text-[9px] font-semibold text-[#0071a4] shrink-0" title="Aircon">
+                      <Snowflake className="h-2.5 w-2.5 text-[#32ade6]" />
                       <span>Aircon</span>
                     </span>
                   )}
                 </div>
-                <p className="mt-0.5 text-xs text-[#86868b] line-clamp-1">{selectedCentre.address}</p>
+                <p className="mt-0.5 text-xs text-[#8e8e93] line-clamp-1">{selectedCentre.address}</p>
               </div>
-              <span className="rounded-full bg-emerald-50 border border-emerald-200 px-2 py-0.5 text-[10px] font-medium text-emerald-800 shrink-0">
+              <span className="rounded-full bg-[#34c759]/12 border border-[#34c759]/20 px-2 py-0.5 text-[10px] font-medium text-[#248a3d] shrink-0">
                 Open
               </span>
             </div>
 
-            <div className="mt-2 flex items-center gap-2 text-xs text-[#86868b]">
+            <div className="mt-2 flex items-center gap-2 text-xs text-[#8e8e93]">
               <span>{selectedCentre.stallsCount} stalls</span>
               <span>•</span>
-              <span>★ {selectedCentre.rating.toFixed(1)}</span>
+              <span className="flex items-center gap-0.5">
+                <span className="text-[#ff9500]">★</span>
+                <span>{selectedCentre.rating.toFixed(1)}</span>
+              </span>
             </div>
 
             <Link
@@ -362,7 +365,7 @@ export function HawkerMap({
       )}
 
       {/* Map Attribution */}
-      <div className={`absolute left-2.5 ${fullScreen ? 'bottom-20 sm:bottom-24' : 'bottom-1.5'} z-10 text-[9px] text-[#6e6e73]/80 bg-white/70 backdrop-blur-xs px-1.5 py-0.5 rounded-md pointer-events-none`}>
+      <div className={`absolute left-2.5 ${fullScreen ? 'bottom-20 sm:bottom-24' : 'bottom-1.5'} z-10 text-[9px] text-[#8e8e93] bg-white/70 backdrop-blur-xs px-1.5 py-0.5 rounded-md pointer-events-none`}>
         © CARTO Positron • © OpenStreetMap contributors
       </div>
     </div>

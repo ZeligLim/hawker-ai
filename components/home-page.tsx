@@ -216,7 +216,38 @@ export function HomePage() {
 
   const topRankedCentre = filteredCentres[0] ?? null;
 
-  // Touch gesture handlers for swipe up/down
+  // Pointer, touch, and wheel gesture handlers for smooth bottom sheet expansion
+  const dragStartY = useRef<number | null>(null);
+
+  const handlePointerDown = (e: React.PointerEvent) => {
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    dragStartY.current = e.clientY;
+  };
+
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (dragStartY.current === null) return;
+    const deltaY = e.clientY - dragStartY.current;
+
+    // Dragging UP
+    if (!isExpanded && deltaY < -15) {
+      setIsExpanded(true);
+      dragStartY.current = null;
+    }
+    // Dragging DOWN
+    else if (
+      isExpanded &&
+      deltaY > 25 &&
+      (!listContainerRef.current || listContainerRef.current.scrollTop <= 5)
+    ) {
+      setIsExpanded(false);
+      dragStartY.current = null;
+    }
+  };
+
+  const handlePointerUp = () => {
+    dragStartY.current = null;
+  };
+
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartY.current = e.touches[0].clientY;
   };
@@ -226,10 +257,14 @@ export function HomePage() {
     const currentY = e.touches[0].clientY;
     const deltaY = currentY - touchStartY.current;
 
-    if (!isExpanded && deltaY < -25) {
+    if (!isExpanded && deltaY < -15) {
       setIsExpanded(true);
       touchStartY.current = null;
-    } else if (isExpanded && deltaY > 35 && listContainerRef.current?.scrollTop === 0) {
+    } else if (
+      isExpanded &&
+      deltaY > 25 &&
+      (!listContainerRef.current || listContainerRef.current.scrollTop <= 5)
+    ) {
       setIsExpanded(false);
       touchStartY.current = null;
     }
@@ -239,12 +274,30 @@ export function HomePage() {
     touchStartY.current = null;
   };
 
+  const handleWheel = (e: React.WheelEvent) => {
+    if (!isExpanded && e.deltaY > 8) {
+      setIsExpanded(true);
+    } else if (
+      isExpanded &&
+      e.deltaY < -15 &&
+      (!listContainerRef.current || listContainerRef.current.scrollTop <= 0)
+    ) {
+      setIsExpanded(false);
+    }
+  };
+
+  const handleHeaderClick = (e: React.MouseEvent) => {
+    const target = e.target as HTMLElement;
+    if (target.closest('button')) return;
+    setIsExpanded((prev) => !prev);
+  };
+
   const handleSelectCentre = (centre: HawkerCentreSummary) => {
     setSelectedCentreId(centre.id);
   };
 
   return (
-    <div className="fixed inset-0 w-screen h-screen overflow-hidden bg-[#f5f5f7]">
+    <div className="fixed inset-0 w-screen h-screen overflow-hidden bg-[#f2f2f7]">
       {/* 1. Full-Screen Interactive Map */}
       <HawkerMap
         fullScreen={true}
@@ -267,13 +320,13 @@ export function HomePage() {
             className="flex items-center justify-between rounded-full bg-[#1d1d1f]/90 backdrop-blur-xl px-3.5 py-1.5 text-xs text-white shadow-xs border border-white/10 hover:bg-black transition-all"
           >
             <div className="flex items-center gap-2 truncate">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+              <span className="h-1.5 w-1.5 rounded-full bg-[#34c759] animate-pulse shrink-0" />
               <span className="font-medium truncate">
                 Table {tableSession.tableNumber}
                 {tableSession.centreName ? ` • ${tableSession.centreName}` : ''}
               </span>
             </div>
-            <span className="text-[11px] font-semibold text-emerald-300 shrink-0 ml-2">
+            <span className="text-[11px] font-semibold text-[#34c759] shrink-0 ml-2">
               Resume →
             </span>
           </Link>
@@ -281,13 +334,13 @@ export function HomePage() {
 
         {/* Minimal Search Pill */}
         <div className="relative flex items-center h-11 rounded-full bg-white/90 backdrop-blur-xl shadow-[0_4px_16px_rgba(0,0,0,0.06)] border border-black/[0.08] focus-within:border-black/20 transition-all">
-          <Search className="absolute left-3.5 h-4 w-4 text-[#86868b] pointer-events-none" />
+          <Search className="absolute left-3.5 h-4 w-4 text-[#8e8e93] pointer-events-none" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search hawker centres"
-            className="w-full h-full pl-10 pr-20 bg-transparent text-sm text-[#1d1d1f] placeholder-[#86868b] outline-none font-normal"
+            className="w-full h-full pl-10 pr-20 bg-transparent text-sm text-[#1d1d1f] placeholder-[#8e8e93] outline-none font-normal"
           />
 
           <div className="absolute right-2 flex items-center gap-0.5">
@@ -295,7 +348,7 @@ export function HomePage() {
               <button
                 type="button"
                 onClick={() => setSearchQuery('')}
-                className="p-1.5 rounded-full text-[#86868b] hover:text-[#1d1d1f] transition-colors"
+                className="p-1.5 rounded-full text-[#8e8e93] hover:text-[#1d1d1f] transition-colors"
                 aria-label="Clear search"
               >
                 <X className="h-3.5 w-3.5" />
@@ -307,9 +360,11 @@ export function HomePage() {
                 disabled={isLocating}
                 title="Recenter location"
                 aria-label="Recenter location"
-                className="p-1.5 rounded-full text-[#0071e3] hover:bg-blue-50/60 transition-colors"
+                className="p-1.5 rounded-full text-[#007aff] hover:bg-[#007aff]/10 transition-colors"
               >
-                <Locate className={`h-3.5 w-3.5 ${isLocating ? 'animate-spin text-amber-500' : ''}`} />
+                <Locate
+                  className={`h-3.5 w-3.5 ${isLocating ? 'animate-spin text-[#ff9500]' : ''}`}
+                />
               </button>
             )}
 
@@ -327,254 +382,294 @@ export function HomePage() {
 
       {/* 3. Swipe-Up Bottom Sheet Drawer */}
       <div
-        className={`fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-xl rounded-t-3xl bg-white/90 backdrop-blur-2xl border-t border-black/[0.08] shadow-[0_-8px_30px_rgba(0,0,0,0.08)] transition-all duration-300 ease-out flex flex-col ${
-          isExpanded ? 'h-[76vh] sm:h-[78vh]' : 'h-[124px]'
+        className={`fixed inset-x-0 mx-auto w-full max-w-xl transition-all duration-300 ease-out flex flex-col ${
+          isExpanded
+            ? 'bottom-0 h-[86vh] sm:h-[88vh] rounded-t-[32px] z-50'
+            : 'bottom-[72px] sm:bottom-[76px] px-3.5 sm:px-0 z-40 h-auto max-h-[170px]'
         }`}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
+        onWheel={handleWheel}
       >
-        {/* Pull Handle */}
         <div
-          onClick={() => setIsExpanded((prev) => !prev)}
-          className="w-full flex justify-center pt-2.5 pb-1.5 cursor-pointer group select-none"
-        >
-          <div className="h-1 w-9 rounded-full bg-black/20 group-hover:bg-black/35 transition-colors" />
-        </div>
-
-        {/* Minimal Unified Header Bar */}
-        <div className="px-4 pb-2 flex items-center justify-between gap-2 border-b border-black/[0.04] select-none">
-          <div className="flex items-center gap-1.5">
-            <h2 className="text-sm font-semibold text-[#1d1d1f]">
-              Hawker centres
-            </h2>
-            <span className="text-xs text-[#86868b] font-normal">
-              ({filteredCentres.length})
-            </span>
-          </div>
-
-          <div className="flex items-center gap-1.5">
-            {/* Segmented Ranking Toggle */}
-            <div className="flex items-center bg-black/[0.05] p-0.5 rounded-full text-xs font-medium">
-              <button
-                type="button"
-                onClick={() => setRankingMode('distance')}
-                className={`px-2.5 py-0.5 rounded-full text-[11px] transition-all ${
-                  rankingMode === 'distance'
-                    ? 'bg-white text-[#1d1d1f] shadow-xs font-semibold'
-                    : 'text-[#86868b] hover:text-[#1d1d1f]'
-                }`}
-              >
-                Distance
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setRankingMode('rating')}
-                className={`px-2.5 py-0.5 rounded-full text-[11px] transition-all ${
-                  rankingMode === 'rating'
-                    ? 'bg-white text-[#1d1d1f] shadow-xs font-semibold'
-                    : 'text-[#86868b] hover:text-[#1d1d1f]'
-                }`}
-              >
-                Rating
-              </button>
-            </div>
-
-            {/* Aircon Quick Filter Button */}
-            <button
-              type="button"
-              onClick={() => setAirconOnly((prev) => !prev)}
-              className={`flex items-center gap-1 px-2.5 py-0.5 text-[11px] rounded-full border transition-all ${
-                airconOnly
-                  ? 'bg-cyan-600 text-white border-cyan-600 font-semibold shadow-xs'
-                  : 'bg-transparent text-[#86868b] border-black/[0.08] hover:text-[#1d1d1f]'
-              }`}
-            >
-              <Snowflake className="h-3 w-3" />
-              <span>Aircon</span>
-            </button>
-
-            {/* Expand / Collapse Chevron */}
-            <button
-              type="button"
-              onClick={() => setIsExpanded((prev) => !prev)}
-              className="p-1 rounded-full text-[#86868b] hover:text-[#1d1d1f] hover:bg-black/5 transition-colors"
-              aria-label={isExpanded ? 'Collapse' : 'Expand'}
-            >
-              {isExpanded ? (
-                <ChevronDown className="h-4 w-4" />
-              ) : (
-                <ChevronUp className="h-4 w-4" />
-              )}
-            </button>
-          </div>
-        </div>
-
-        {/* Collapsed Peek Summary */}
-        {!isExpanded && (
-          <div
-            onClick={() => setIsExpanded(true)}
-            className="px-4 py-2.5 flex items-center justify-between text-xs text-[#86868b] cursor-pointer hover:bg-black/[0.01] transition-colors"
-          >
-            <span className="truncate max-w-[280px]">
-              {topRankedCentre
-                ? rankingMode === 'distance'
-                  ? `${topRankedCentre.name} • ${
-                      topRankedCentre.distanceKm !== null
-                        ? topRankedCentre.distanceKm < 1
-                          ? `${Math.round(topRankedCentre.distanceKm * 1000)} m`
-                          : `${topRankedCentre.distanceKm} km`
-                        : 'Nearest'
-                    }`
-                  : `${topRankedCentre.name} • ★ ${topRankedCentre.rating.toFixed(1)}`
-                : 'Swipe up to explore'}
-            </span>
-            <span className="text-[11px] font-semibold text-[#1d1d1f] flex items-center gap-0.5 shrink-0 ml-2">
-              <span>View all</span>
-              <ChevronRight className="h-3.5 w-3.5" />
-            </span>
-          </div>
-        )}
-
-        {/* Scrollable Hawker Centre Cards List */}
-        <div
-          ref={listContainerRef}
-          className={`flex-1 overflow-y-auto px-4 pt-3 pb-28 space-y-2.5 ${
-            isExpanded ? 'block' : 'hidden'
+          className={`w-full flex flex-col bg-white/95 backdrop-blur-2xl border border-black/[0.08] shadow-[0_8px_32px_rgba(0,0,0,0.12)] transition-all ${
+            isExpanded
+              ? 'h-full rounded-t-[32px] border-b-0 border-x-0'
+              : 'rounded-2xl sm:rounded-3xl hover:border-black/20'
           }`}
         >
-          {isLoading ? (
-            <div className="space-y-2.5 py-1">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="h-20 rounded-2xl bg-black/[0.04] animate-pulse" />
-              ))}
+          {/* Pull Handle */}
+          <div
+            onClick={() => setIsExpanded((prev) => !prev)}
+            className="w-full flex justify-center pt-2.5 pb-1 cursor-pointer group select-none"
+          >
+            <div className="h-1.5 w-10 rounded-full bg-[#8e8e93]/40 group-hover:bg-[#8e8e93]/70 transition-colors" />
+          </div>
+
+          {/* Minimal Unified Header Bar */}
+          <div
+            onClick={handleHeaderClick}
+            className="px-4 pb-2 flex items-center justify-between gap-2 border-b border-black/[0.04] cursor-pointer select-none"
+          >
+            <div className="flex items-center gap-1.5">
+              <h2 className="text-sm font-semibold text-[#1d1d1f]">
+                Hawker centres
+              </h2>
+              <span className="text-xs text-[#8e8e93] font-normal">
+                ({filteredCentres.length})
+              </span>
             </div>
-          ) : filteredCentres.length === 0 ? (
-            <div className="rounded-2xl bg-black/[0.02] p-8 text-center border border-black/[0.04]">
-              <Store className="mx-auto h-7 w-7 text-[#86868b]" />
-              <p className="mt-2 text-sm font-semibold text-[#1d1d1f]">No hawker centres found</p>
-              <p className="mt-1 text-xs text-[#86868b]">
-                Try adjusting your search or filters.
-              </p>
-              {(searchQuery || airconOnly) && (
+
+            <div className="flex items-center gap-1.5">
+              {/* Segmented Ranking Toggle */}
+              <div className="flex items-center bg-[#e5e5ea]/80 p-0.5 rounded-full text-xs font-medium">
                 <button
                   type="button"
-                  onClick={() => {
-                    setSearchQuery('');
-                    setAirconOnly(false);
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setRankingMode('distance');
                   }}
-                  className="mt-3 inline-flex items-center gap-1 rounded-full bg-[#1d1d1f] px-3 py-1 text-xs font-semibold text-white hover:bg-black transition-colors"
-                >
-                  Reset filters
-                </button>
-              )}
-            </div>
-          ) : (
-            filteredCentres.map((centre, index) => {
-              const isSelected = centre.id === selectedCentreId;
-              const rankNumber = index + 1;
-
-              return (
-                <Link
-                  key={centre.id}
-                  href={`/${centre.slug}/home` as any}
-                  onClick={() => setSelectedCentreId(centre.id)}
-                  className={`block rounded-2xl p-3.5 bg-white border transition-all active:scale-[0.99] ${
-                    isSelected
-                      ? 'border-[#1d1d1f] ring-1 ring-[#1d1d1f] shadow-xs'
-                      : 'border-black/[0.06] hover:border-black/20 shadow-xs'
+                  className={`px-2.5 py-0.5 rounded-full text-[11px] transition-all ${
+                    rankingMode === 'distance'
+                      ? 'bg-white text-[#1d1d1f] shadow-xs font-semibold'
+                      : 'text-[#8e8e93] hover:text-[#1d1d1f]'
                   }`}
                 >
-                  {/* Top Row: Rank, Name, Aircon Badge, Open Tag, Primary Metric */}
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-1.5 flex-wrap">
-                        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-black/[0.05] text-[10px] font-semibold text-[#1d1d1f] shrink-0">
-                          {rankNumber}
-                        </span>
+                  Distance
+                </button>
 
-                        <h3 className="text-sm font-semibold text-[#1d1d1f] truncate">
-                          {centre.name}
-                        </h3>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setRankingMode('rating');
+                  }}
+                  className={`px-2.5 py-0.5 rounded-full text-[11px] transition-all ${
+                    rankingMode === 'rating'
+                      ? 'bg-white text-[#1d1d1f] shadow-xs font-semibold'
+                      : 'text-[#8e8e93] hover:text-[#1d1d1f]'
+                  }`}
+                >
+                  Rating
+                </button>
+              </div>
 
-                        {centre.hasAircon && (
-                          <span
-                            className="inline-flex items-center gap-0.5 rounded-full bg-cyan-50 border border-cyan-200/80 px-1.5 py-0.2 text-[9px] font-semibold text-cyan-800 shrink-0"
-                            title="Aircon"
-                          >
-                            <Snowflake className="h-2.5 w-2.5 text-cyan-600" />
-                            <span>Aircon</span>
+              {/* Aircon Quick Filter Button */}
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setAirconOnly((prev) => !prev);
+                }}
+                className={`flex items-center gap-1 px-2.5 py-0.5 text-[11px] rounded-full border transition-all ${
+                  airconOnly
+                    ? 'bg-[#32ade6] text-white border-[#32ade6] font-semibold shadow-xs'
+                    : 'bg-white/60 text-[#8e8e93] border-black/[0.08] hover:text-[#1d1d1f]'
+                }`}
+              >
+                <Snowflake
+                  className={`h-3 w-3 ${airconOnly ? 'text-white' : 'text-[#32ade6]'}`}
+                />
+                <span>Aircon</span>
+              </button>
+
+              {/* Expand / Collapse Chevron */}
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsExpanded((prev) => !prev);
+                }}
+                className="p-1 rounded-full text-[#8e8e93] hover:text-[#1d1d1f] hover:bg-black/5 transition-colors"
+                aria-label={isExpanded ? 'Collapse' : 'Expand'}
+              >
+                {isExpanded ? (
+                  <ChevronDown className="h-4 w-4" />
+                ) : (
+                  <ChevronUp className="h-4 w-4" />
+                )}
+              </button>
+            </div>
+          </div>
+
+          {/* Collapsed Peek Summary */}
+          {!isExpanded && (
+            <div
+              onClick={() => setIsExpanded(true)}
+              className="px-4 py-2.5 flex items-center justify-between text-xs text-[#8e8e93] cursor-pointer hover:bg-black/[0.02] transition-colors select-none"
+            >
+              <div className="flex items-center gap-1.5 truncate">
+                <span className="h-1.5 w-1.5 rounded-full bg-[#007aff] shrink-0" />
+                <span className="truncate max-w-[260px] text-[#1d1d1f] font-medium">
+                  {topRankedCentre
+                    ? rankingMode === 'distance'
+                      ? `${topRankedCentre.name} • ${
+                          topRankedCentre.distanceKm !== null
+                            ? topRankedCentre.distanceKm < 1
+                              ? `${Math.round(topRankedCentre.distanceKm * 1000)} m`
+                              : `${topRankedCentre.distanceKm} km`
+                            : 'Nearest'
+                        }`
+                      : `${topRankedCentre.name} • ★ ${topRankedCentre.rating.toFixed(1)}`
+                    : 'Explore hawker centres'}
+                </span>
+              </div>
+              <span className="text-[11px] font-semibold text-[#007aff] flex items-center gap-0.5 shrink-0 ml-2">
+                <span>View list</span>
+                <ChevronUp className="h-3.5 w-3.5" />
+              </span>
+            </div>
+          )}
+
+          {/* Scrollable Hawker Centre Cards List */}
+          <div
+            ref={listContainerRef}
+            className={`flex-1 overflow-y-auto px-4 pt-3 pb-24 space-y-2.5 ${
+              isExpanded ? 'block' : 'hidden'
+            }`}
+          >
+            {isLoading ? (
+              <div className="space-y-2.5 py-1">
+                {[1, 2, 3].map((i) => (
+                  <div
+                    key={i}
+                    className="h-20 rounded-2xl bg-black/[0.04] animate-pulse"
+                  />
+                ))}
+              </div>
+            ) : filteredCentres.length === 0 ? (
+              <div className="rounded-2xl bg-black/[0.02] p-8 text-center border border-black/[0.04]">
+                <Store className="mx-auto h-7 w-7 text-[#8e8e93]" />
+                <p className="mt-2 text-sm font-semibold text-[#1d1d1f]">
+                  No hawker centres found
+                </p>
+                <p className="mt-1 text-xs text-[#8e8e93]">
+                  Try adjusting your search or filters.
+                </p>
+                {(searchQuery || airconOnly) && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSearchQuery('');
+                      setAirconOnly(false);
+                    }}
+                    className="mt-3 inline-flex items-center gap-1 rounded-full bg-[#007aff] px-3.5 py-1 text-xs font-semibold text-white hover:bg-[#0071e3] transition-colors shadow-xs"
+                  >
+                    Reset filters
+                  </button>
+                )}
+              </div>
+            ) : (
+              filteredCentres.map((centre, index) => {
+                const isSelected = centre.id === selectedCentreId;
+                const rankNumber = index + 1;
+
+                return (
+                  <Link
+                    key={centre.id}
+                    href={`/${centre.slug}/home` as any}
+                    onClick={() => setSelectedCentreId(centre.id)}
+                    className={`block rounded-2xl p-3.5 bg-white border transition-all active:scale-[0.99] ${
+                      isSelected
+                        ? 'border-[#007aff] ring-1 ring-[#007aff] shadow-xs'
+                        : 'border-black/[0.06] hover:border-black/20 shadow-xs'
+                    }`}
+                  >
+                    {/* Top Row: Rank, Name, Aircon Badge, Open Tag, Primary Metric */}
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#f2f2f7] border border-black/[0.06] text-[10px] font-semibold text-[#1d1d1f] shrink-0">
+                            {rankNumber}
                           </span>
-                        )}
 
-                        <span className="rounded-full bg-emerald-50 border border-emerald-200/60 px-1.5 py-0.2 text-[9px] font-medium text-emerald-800 shrink-0">
-                          Open
-                        </span>
-                      </div>
+                          <h3 className="text-sm font-semibold text-[#1d1d1f] truncate">
+                            {centre.name}
+                          </h3>
 
-                      <p className="mt-1 text-xs text-[#86868b] truncate">
-                        {centre.address}
-                      </p>
-                    </div>
-
-                    {/* Metric Column */}
-                    <div className="text-right shrink-0 flex flex-col items-end">
-                      {rankingMode === 'distance' && centre.distanceKm !== null ? (
-                        <>
-                          <span className="text-xs font-semibold text-[#0071e3]">
-                            {centre.distanceKm < 1
-                              ? `${Math.round(centre.distanceKm * 1000)} m`
-                              : `${centre.distanceKm} km`}
-                          </span>
-                          {centre.walkMins && (
-                            <span className="text-[10px] text-[#86868b]">
-                              ~{centre.walkMins} min walk
+                          {centre.hasAircon && (
+                            <span
+                              className="inline-flex items-center gap-0.5 rounded-full bg-[#32ade6]/12 border border-[#32ade6]/25 px-1.5 py-0.2 text-[9px] font-semibold text-[#0071a4] shrink-0"
+                              title="Aircon"
+                            >
+                              <Snowflake className="h-2.5 w-2.5 text-[#32ade6]" />
+                              <span>Aircon</span>
                             </span>
                           )}
-                        </>
-                      ) : (
-                        <>
-                          <span className="text-xs font-semibold text-amber-700 flex items-center gap-0.5">
-                            <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
-                            {centre.rating.toFixed(1)}
+
+                          <span className="rounded-full bg-[#34c759]/12 border border-[#34c759]/20 px-1.5 py-0.2 text-[9px] font-medium text-[#248a3d] shrink-0">
+                            Open
                           </span>
-                          {centre.distanceKm !== null && (
-                            <span className="text-[10px] text-[#86868b]">
+                        </div>
+
+                        <p className="mt-1 text-xs text-[#8e8e93] truncate">
+                          {centre.address}
+                        </p>
+                      </div>
+
+                      {/* Metric Column */}
+                      <div className="text-right shrink-0 flex flex-col items-end">
+                        {rankingMode === 'distance' &&
+                        centre.distanceKm !== null ? (
+                          <>
+                            <span className="text-xs font-semibold text-[#007aff]">
                               {centre.distanceKm < 1
                                 ? `${Math.round(centre.distanceKm * 1000)} m`
                                 : `${centre.distanceKm} km`}
                             </span>
-                          )}
-                        </>
-                      )}
+                            {centre.walkMins && (
+                              <span className="text-[10px] text-[#8e8e93]">
+                                ~{centre.walkMins} min walk
+                              </span>
+                            )}
+                          </>
+                        ) : (
+                          <>
+                            <span className="text-xs font-semibold text-[#1d1d1f] flex items-center gap-0.5">
+                              <Star className="h-3 w-3 fill-[#ff9500] text-[#ff9500]" />
+                              {centre.rating.toFixed(1)}
+                            </span>
+                            {centre.distanceKm !== null && (
+                              <span className="text-[10px] text-[#8e8e93]">
+                                {centre.distanceKm < 1
+                                  ? `${Math.round(centre.distanceKm * 1000)} m`
+                                  : `${centre.distanceKm} km`}
+                              </span>
+                            )}
+                          </>
+                        )}
+                      </div>
                     </div>
-                  </div>
 
-                  {/* Card Footer: Stalls count & Arrow */}
-                  <div className="mt-2.5 pt-2 border-t border-black/[0.04] flex items-center justify-between text-xs text-[#86868b]">
-                    <span className="flex items-center gap-1">
-                      <Store className="h-3.5 w-3.5 text-[#86868b]" />
-                      <span>{centre.stallsCount} stalls</span>
-                      {centre.specialties.length > 0 && (
-                        <>
-                          <span>•</span>
-                          <span className="truncate max-w-[180px] sm:max-w-xs">
-                            {centre.specialties.slice(0, 3).join(', ')}
-                          </span>
-                        </>
-                      )}
-                    </span>
+                    {/* Card Footer: Stalls count & Arrow */}
+                    <div className="mt-2.5 pt-2 border-t border-black/[0.04] flex items-center justify-between text-xs text-[#8e8e93]">
+                      <span className="flex items-center gap-1">
+                        <Store className="h-3.5 w-3.5 text-[#8e8e93]" />
+                        <span>{centre.stallsCount} stalls</span>
+                        {centre.specialties.length > 0 && (
+                          <>
+                            <span>•</span>
+                            <span className="truncate max-w-[180px] sm:max-w-xs">
+                              {centre.specialties.slice(0, 3).join(', ')}
+                            </span>
+                          </>
+                        )}
+                      </span>
 
-                    <div className="flex items-center gap-0.5 text-[#1d1d1f] font-medium text-[11px]">
-                      <span>View</span>
-                      <ChevronRight className="h-3.5 w-3.5 text-[#86868b]" />
+                      <div className="flex items-center gap-0.5 text-[#007aff] font-medium text-[11px]">
+                        <span>View</span>
+                        <ChevronRight className="h-3.5 w-3.5 text-[#007aff]" />
+                      </div>
                     </div>
-                  </div>
-                </Link>
-              );
-            })
-          )}
+                  </Link>
+                );
+              })
+            )}
+          </div>
         </div>
       </div>
     </div>

@@ -25,11 +25,12 @@ export function ClientBottomNav({
   const pathname = usePathname();
 
   // Unified modern Apple-inspired color scheme across all 3 apps
-  const containerTheme = 'bg-white/90 backdrop-blur-2xl border border-black/[0.08] shadow-[0_12px_32px_rgba(0,0,0,0.08)] text-[#6e6e73]';
+  const containerTheme =
+    'bg-white/90 backdrop-blur-2xl border border-black/[0.08] shadow-[0_8px_32px_rgba(0,0,0,0.1)] text-[#8e8e93]';
 
-  const activeTheme = 'bg-[#111827] text-white shadow-sm font-semibold';
+  const activeTheme = 'bg-[#1d1d1f] text-white shadow-xs font-semibold';
 
-  const inactiveTheme = 'text-[#86868b] hover:text-[#1d1d1f]';
+  const inactiveTheme = 'text-[#8e8e93] hover:text-[#1d1d1f]';
 
   const gridColsClass =
     items.length === 3

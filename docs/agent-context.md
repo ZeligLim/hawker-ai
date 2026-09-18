@@ -1,46 +1,39 @@
 # Current Project Context
 
 ## Current Phase
-Phase 24: Apple-Inspired Clean Minimal UI Overhaul, Component Sizing Standardization & Zero Uppercase / All-Caps Elimination
+Phase 25: Authentic Apple System Color Palette Integration & Multi-Modal Bottom Sheet Expansion Fix
 
 ## Current Feature
-1. **Zero Uppercase & All-Caps Elimination Across Entire Application**:
-   - Strictly eliminated every single instance of the `uppercase` CSS class across both `app/` and `components/` (0 occurrences remaining in the entire codebase).
-   - Replaced loud ALL-CAPS strings (e.g. `HAWKER CENTRES`, `ETA`, `STALL TOTAL:`, `[PAID]`, `KITCHEN DISPLAY (KDS)`, `1. CUSTOMER BASKET`, `VENUE & ESTABLISHMENT PROFILE`, etc.) with clean, readable sentence case or subtle title case.
-   - Enforced Apple-standard typography: `text-xs font-semibold`, `text-sm font-semibold`, tracking standard.
+1. **Multi-Modal Bottom Sheet Expansion Fix (`components/home-page.tsx`)**:
+   - **Root Cause**: The bottom navigation bar (`ClientBottomNav`, ~64px tall, `z-40`) was physically overlaying the bottom portion of the collapsed sheet (`bottom-0 z-30`), obscuring its peek summary and click targets. Furthermore, expansion was only listening to touch events, leaving desktop mouse and trackpad interactions unresponsive.
+   - **Positioning Architecture**:
+     - Collapsed State: Positioned at `bottom-[72px] sm:bottom-[76px] px-3.5 sm:px-0 z-40` as a sleek, floating Apple card sitting cleanly above `ClientBottomNav`. 100% of the drag handle, header bar, and peek banner is exposed and clickable.
+     - Expanded State: Expands seamlessly to `bottom-0 h-[86vh] sm:h-[88vh] rounded-t-[32px] z-50` with `pb-24` list padding.
+   - **Multi-Modal Trigger Support**:
+     - Click/Tap: Tapping anywhere on the pull handle, the header row, the peek banner ("View list →"), or the chevron button immediately expands or collapses the sheet.
+     - Pointer Events: Full mouse and touch drag support via `onPointerDown`, `onPointerMove`, and `onPointerUp` (`deltaY < -15` expands, `deltaY > 25` collapses).
+     - Touch Gestures: `onTouchStart`, `onTouchMove`, and `onTouchEnd` for mobile swiping.
+     - Wheel / Trackpad: `onWheel` listener dynamically expands on scroll up (`deltaY > 8`) and collapses on scroll down at the top of the list.
 
-2. **Apple-Inspired Minimalist Home Page & Bottom Sheet (`components/home-page.tsx`)**:
-   - Redesigned the bottom sheet drawer to be clean and minimal:
-     - Sleek drag handle: `h-1 w-9 rounded-full bg-black/20`.
-     - Streamlined iOS header row: title `Hawker centres` with count pill, minimalist segmented toggle (`Distance` / `Rating`), and subtle `Aircon` filter pill with `Snowflake` icon.
-     - Collapsed state (~124px): compact peek banner cleanly positioned above the floating bottom navigation bar with one-line summary ("Nearest: Lim's Foodcourt • 250 m" or "Top Rated...") and tap to expand.
-     - Expanded state (~76vh): smooth scrollable list with cards, `pb-28` to keep all items clear of the floating navigation bar.
-   - Streamlined Card Structure:
-     - Removed redundant double-buttons ("Locate" and "Enter & Order"). Entire card navigates cleanly to `/[centre.slug]/home`.
-     - Clean rank number `h-5 w-5 bg-black/[0.05] text-[11px] font-semibold text-[#1d1d1f]`, bold title, subtle cyan `Aircon` badge with `Snowflake` icon, and clean `Open` pill.
-     - Single metric display (distance with walk time or rating with star).
-     - Subtle footer: `{stallsCount} stalls`, preview of specialties, and minimal `View →`.
-   - Floating Apple Search Bar:
-     - Sleek `h-11`, placeholder "Search hawker centres", clear `X`, GPS recenter, and `QrCode` shortcut button.
-     - Minimal active table session banner: `Table 04 • Lim's Foodcourt`, `Resume →`.
+2. **Authentic Apple System Color Palette Adoption**:
+   - Strictly replaced arbitrary Tailwind hex codes and arbitrary palettes across `components/home-page.tsx`, `components/hawker-map.tsx`, and `components/shared/client-bottom-nav.tsx` with authentic Apple Human Interface Guidelines system colors:
+     - **Apple System Blue** (`#007AFF` / text `#007AFF`, hover `bg-[#007AFF]/10`): Active controls, map recenter, distance highlights, view links, filter reset buttons.
+     - **Apple System Cyan** (`#32ADE6` / text `#0071A4`, badge `bg-[#32ADE6]/12 border-[#32ADE6]/25`): **Aircon logo indicator** pill and snowflake icon.
+     - **Apple System Green** (`#34C759` / text `#248A3D`, badge `bg-[#34C759]/12 border-[#34c759]/20`): "Open" status pills, active table session pulse and link.
+     - **Apple System Orange & Yellow** (`#FF9500` / `#FFCC00`): Star rating icons and values, locating indicator spinner, map pin store icons.
+     - **Apple System Gray 6 / System Grouped Background** (`#F2F2F7`): App background, rank number pills, subtle cards.
+     - **Apple System Gray 5** (`#E5E5EA`): Segmented toggle tracks.
+     - **Apple System Gray** (`#8E8E93`): Secondary labels, address lines, stall counts, search icon, drag handles.
+     - **Apple System Label** (`#1D1D1F`): Primary typography and dark pill elements.
 
-3. **Interactive Map Component Cleanup (`components/hawker-map.tsx`)**:
-   - Refined marker pins: clean Apple pill `px-2.5 py-1`, subtle shadow, selected state `bg-[#1d1d1f] text-white ring-2 ring-black/10`, embedded `Snowflake` icon for aircon centres and `★ {rating}`.
-   - Standardized map controls: `h-8 w-8` frosted glass buttons (`+`, `-`, `Locate`) with standard `h-3.5 w-3.5` icons.
-   - Simplified floating card: removed verbose "Enter Centre & Order" in favor of `View stalls →`.
-
-4. **Component Sizing & Padding Standardization Across All Screens**:
-   - Standardized search bars, form inputs, buttons, badges, icons, and drawer heights across customer, merchant, and admin portals.
-   - Cleaned redundant text, duplicate metric displays, and unnecessary badges in `app/page.tsx`, `app/scan/page.tsx`, `app/results/page.tsx`, `app/orders/page.tsx`, `app/owner/orders/page.tsx`, `app/subscribe/page.tsx`, `app/apply/page.tsx`, `app/(admin)/admin/**`, and all client components.
-
-5. **Verification**:
+3. **Verification**:
    - `npx tsc --noEmit`: 0 TypeScript errors.
-   - `npm test`: 31/31 unit tests passed.
+   - `npm test`: 31/31 unit and integration tests passed.
    - `npm run lint`: 0 errors.
-   - `npm run build`: Successful production build across all 50 routes.
+   - `npm run build`: Production build succeeded across all 50 routes.
 
 ## Previous Phases
-Phase 23: Full-Screen Map User Mode Home Page with Hawker Centre Search, Scrollable Bottom Sheet, Rating/Distance Ranking & Aircon Logo Indicator
+Phase 24: Apple-Inspired Clean Minimal UI Overhaul, Component Sizing Standardization & Zero Uppercase / All-Caps Elimination
 
 ## Previous Phases
 Phase 22: Apple-Inspired Visual Streamline for SaaS Platform Admin (`/admin`)
