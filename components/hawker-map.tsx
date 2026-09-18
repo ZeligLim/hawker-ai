@@ -179,13 +179,8 @@ export function HawkerMap({
       }}
       onTouchEnd={handlePointerUp}
     >
-      {/* Map Tile Layer - High Contrast Pure Black & White Filter */}
-      <div
-        className="absolute inset-0 pointer-events-none bg-white"
-        style={{
-          filter: 'grayscale(100%) contrast(120%) brightness(105%)',
-        }}
-      >
+      {/* Map Tile Layer - High-Res Google Maps (Color) */}
+      <div className="absolute inset-0 pointer-events-none bg-[#f8f9fa]">
         {visibleTiles.map((tile) => (
           /* eslint-disable-next-line @next/next/no-img-element */
           <img

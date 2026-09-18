@@ -7,7 +7,10 @@ Phase 29: Standard OpenStreetMap (Zero Watermark), Map Selected Shop Card, and D
 1. **High-Res Pure Black & White Map (`components/hawker-map.tsx`)**:
    - Switched map tile endpoint to high-res Google Maps tiles (`mt0.google.com/vt/lyrs=m...&scale=2`) to resolve low-res pixelation issues on retina displays (which occurred with Esri Light Gray).
    - Applied a custom CSS filter (`grayscale(100%) contrast(120%) brightness(105%)`) to perfectly strip all colors and enforce the requested pure white and black high-contrast look without watermarks.
-   - **Bugfix**: Moved the map zoom controls down to `top-24` when in `fullScreen={true}` to prevent them from crashing into the top search bar.
+   - **Bugfix**: Pushed the map zoom controls further down to `top-32` (128px) when in `fullScreen={true}` to prevent them from crashing into the top search bar and Quick Scan QR button area.
+
+2. **Camera Icon Replaced with QrCode Icon (`components/centre-diner-page.tsx`, `components/customer-stall-page.tsx`)**:
+   - Replaced all instances of the generic `Camera` icon used for table scanning with the proper `QrCode` icon to match the unified UI language across the app.
 
 2. **Dish Customizations - Spice & Add-ons (`lib/order/customizations.ts`)**:
    - Refactored `DishCustomization` typing and logic so a single dish can simultaneously offer both **Add-ons/Upsize** AND **Spice Level**.
