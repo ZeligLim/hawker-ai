@@ -5,7 +5,8 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { CartSummary } from '@/components/cart-summary';
 import { ResultCard } from '@/components/result-card';
-import { addItemToCart, buildCartSummary, removeCartItem, updateCartItemQuantity, useCartItems } from '@/lib/order/cart';
+import { buildCartSummary, removeCartItem, updateCartItemQuantity } from '@/lib/order/cart';
+import { useCartAdd } from '@/components/use-cart-add';
 import type { SearchResult } from '@/lib/search/schema';
 
 export default function ResultsPage() {
@@ -36,7 +37,7 @@ function ResultsContent() {
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { cartItems, setCartItems } = useCartItems();
+  const { cartItems, setCartItems, addDish, CartWarningModal } = useCartAdd();
   const [checkoutMessage, setCheckoutMessage] = useState<string | null>(null);
 
   const query = searchParams.get('query') ?? searchParams.get('q') ?? '';
@@ -52,17 +53,15 @@ function ResultsContent() {
   const handleAddToCart = (dish: SearchResult) => {
     const stallId = `${dish.restaurantName}:${dish.stallName}`.replace(/[^a-z0-9]+/gi, '-').toLowerCase();
     setCheckoutMessage(null);
-    setCartItems((currentItems) =>
-      addItemToCart(currentItems, {
-        dishId: dish.id,
-        name: dish.name,
-        restaurantName: dish.restaurantName,
-        stallName: dish.stallName,
-        stallId,
-        price: dish.price,
-        quantity: 1,
-      }),
-    );
+    addDish({
+      dishId: dish.id,
+      name: dish.name,
+      restaurantName: dish.restaurantName,
+      stallName: dish.stallName,
+      stallId,
+      price: dish.price,
+      quantity: 1,
+    });
   };
 
   const handleUpdateQuantity = (itemId: string, quantity: number) => {
@@ -199,6 +198,7 @@ function ResultsContent() {
           )}
         </div>
       </div>
+      <CartWarningModal />
     </main>
   );
 }

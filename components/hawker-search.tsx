@@ -7,6 +7,7 @@ import { CartSummary } from '@/components/cart-summary';
 import { ResultCard } from '@/components/result-card';
 import type { SearchResult } from '@/lib/search/schema';
 import { addItemToCart, buildCartSummary, removeCartItem, updateCartItemQuantity, useCartItems } from '@/lib/order/cart';
+import { useCartAdd } from '@/components/use-cart-add';
 
 const quickIdeas = [
   'I want a halal meal under RM15',
@@ -52,7 +53,7 @@ export function HawkerSearch({ initialQuery = 'I want a vegetarian meal under RM
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { cartItems, setCartItems } = useCartItems();
+  const { cartItems, setCartItems, addDish, CartWarningModal } = useCartAdd();
   const [checkoutMessage, setCheckoutMessage] = useState<string | null>(null);
 
   const isDark = theme === 'dark';
@@ -79,19 +80,17 @@ export function HawkerSearch({ initialQuery = 'I want a vegetarian meal under RM
   };
 
   const handleAddToCart = (dish: SearchResult) => {
-    const stallId = dish.stallId || `${dish.restaurantName}:${dish.stallName}`.replace(/[^a-z0-9]+/gi, '-').toLowerCase();
+    const stallId = `${dish.restaurantName}:${dish.stallName}`.replace(/[^a-z0-9]+/gi, '-').toLowerCase();
     setCheckoutMessage(null);
-    setCartItems((currentItems) =>
-      addItemToCart(currentItems, {
-        dishId: dish.id,
-        name: dish.name,
-        restaurantName: dish.restaurantName,
-        stallName: dish.stallName,
-        stallId,
-        price: dish.price,
-        quantity: 1,
-      }),
-    );
+    addDish({
+      dishId: dish.id,
+      name: dish.name,
+      restaurantName: dish.restaurantName,
+      stallName: dish.stallName,
+      stallId,
+      price: dish.price,
+      quantity: 1,
+    });
   };
 
   const handleCheckout = () => {
@@ -317,6 +316,7 @@ export function HawkerSearch({ initialQuery = 'I want a vegetarian meal under RM
           )}
         </div>
       </div>
+      <CartWarningModal />
     </div>
   );
 }

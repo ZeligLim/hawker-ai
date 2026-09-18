@@ -7,7 +7,8 @@ import { ArrowLeft, ArrowRight, Camera, MapPin, QrCode, ScanLine, UtensilsCrosse
 import { HawkerSearchBar } from '@/components/hawker-search-bar';
 import { CustomizationCard } from '@/components/customization-card';
 import { DishCard } from '@/components/dish-card';
-import { addItemToCart, getDishQuantity, removeCartItem, updateCartItemQuantity, useCartItems } from '@/lib/order/cart';
+import { getDishQuantity, removeCartItem, updateCartItemQuantity } from '@/lib/order/cart';
+import { useCartAdd } from '@/components/use-cart-add';
 import { getDishCustomization } from '@/lib/order/customizations';
 import type { HawkerCentreSummary } from '@/lib/hawker-centres/service';
 import {
@@ -66,7 +67,7 @@ export function CentreDinerPage({ centre }: { centre: HawkerCentreSummary }) {
   const [manualTableInput, setManualTableInput] = useState('04');
   const [isTableModalOpen, setIsTableModalOpen] = useState(false);
 
-  const { cartItems, setCartItems } = useCartItems();
+  const { cartItems, setCartItems, addDish: addToCartWithWarning, CartWarningModal } = useCartAdd();
   const [customizingDish, setCustomizingDish] = useState<FeaturedDish | null>(null);
 
   // Check stored table session
@@ -232,24 +233,31 @@ export function CentreDinerPage({ centre }: { centre: HawkerCentreSummary }) {
       setCustomizingDish(dish);
       return;
     }
-    updateQuantity(dish, 1);
+    const stallId = dish.stallId || `${dish.restaurantName}:${dish.stallName}`.replace(/[^a-z0-9]+/gi, '-').toLowerCase();
+    addToCartWithWarning({
+      dishId: dish.id,
+      name: dish.name,
+      restaurantName: dish.restaurantName,
+      stallName: dish.stallName,
+      stallId,
+      price: dish.price,
+      quantity: 1,
+    });
   };
 
   const updateQuantity = (dish: FeaturedDish, delta: number) => {
     const stallId = dish.stallId || `${dish.restaurantName}:${dish.stallName}`.replace(/[^a-z0-9]+/gi, '-').toLowerCase();
     const existing = cartItems.find((i) => i.dishId === dish.id);
-    if (delta > 0) {
-      setCartItems((currentItems) =>
-        addItemToCart(currentItems, {
-          dishId: dish.id,
-          name: dish.name,
-          restaurantName: dish.restaurantName,
-          stallName: dish.stallName,
-          stallId,
-          price: dish.price,
-          quantity: 1,
-        })
-      );
+    if (delta > 0 && !existing) {
+      addToCartWithWarning({
+        dishId: dish.id,
+        name: dish.name,
+        restaurantName: dish.restaurantName,
+        stallName: dish.stallName,
+        stallId,
+        price: dish.price,
+        quantity: 1,
+      });
     } else if (existing) {
       const nextQty = existing.quantity + delta;
       if (nextQty <= 0) {
@@ -262,19 +270,17 @@ export function CentreDinerPage({ centre }: { centre: HawkerCentreSummary }) {
 
   const confirmCustomization = (dish: FeaturedDish, selection: { options: { id: string; label: string; price: number }[]; price: number }) => {
     const stallId = dish.stallId || `${dish.restaurantName}:${dish.stallName}`.replace(/[^a-z0-9]+/gi, '-').toLowerCase();
-    setCartItems((currentItems) =>
-      addItemToCart(currentItems, {
-        dishId: dish.id,
-        customizationKey: selection.options.map((option) => option.id).sort().join('|'),
-        customizations: selection.options.map((option) => option.label),
-        name: dish.name,
-        restaurantName: dish.restaurantName,
-        stallName: dish.stallName,
-        stallId,
-        price: selection.price,
-        quantity: 1,
-      })
-    );
+    addToCartWithWarning({
+      dishId: dish.id,
+      customizationKey: selection.options.map((option) => option.id).sort().join('|'),
+      customizations: selection.options.map((option) => option.label),
+      name: dish.name,
+      restaurantName: dish.restaurantName,
+      stallName: dish.stallName,
+      stallId,
+      price: selection.price,
+      quantity: 1,
+    });
     setCustomizingDish(null);
   };
 
@@ -587,6 +593,7 @@ export function CentreDinerPage({ centre }: { centre: HawkerCentreSummary }) {
           </div>
         </aside>
       )}
+      <CartWarningModal />
     </div>
   );
 }

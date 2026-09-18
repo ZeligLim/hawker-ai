@@ -7,7 +7,8 @@ import { Suspense, useEffect, useState } from 'react';
 import { HawkerSearchBar } from '@/components/hawker-search-bar';
 import { CustomizationCard } from '@/components/customization-card';
 import { DishCard } from '@/components/dish-card';
-import { addItemToCart, getDishQuantity, removeCartItem, updateCartItemQuantity, useCartItems } from '@/lib/order/cart';
+import { getDishQuantity, removeCartItem, updateCartItemQuantity } from '@/lib/order/cart';
+import { useCartAdd } from '@/components/use-cart-add';
 import { getDishCustomization } from '@/lib/order/customizations';
 import { getStoredTableSession } from '@/lib/table-session';
 
@@ -58,7 +59,7 @@ function MenuContent() {
   const [searchValue, setSearchValue] = useState('');
   const [items, setItems] = useState<MenuItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const { cartItems, setCartItems } = useCartItems();
+  const { cartItems, setCartItems, addDish, CartWarningModal } = useCartAdd();
   const [customizingItem, setCustomizingItem] = useState<MenuItem | null>(null);
 
   useEffect(() => {
@@ -123,29 +124,29 @@ function MenuContent() {
   };
 
   const updateQuantity = (item: MenuItem, delta: number) => {
+    const matchingItem = cartItems.find((ci) => ci.dishId === item.id);
+
+    if (!matchingItem) {
+      if (delta <= 0) return;
+
+      addDish({
+        dishId: item.id,
+        name: item.name,
+        restaurantName: item.restaurantName,
+        stallName: item.stallName,
+        stallId: item.foodOutletId,
+        price: item.price,
+        quantity: 1,
+      });
+      return;
+    }
+
     setCartItems((currentItems) => {
-      const matchingItem = currentItems.find((ci) => ci.dishId === item.id);
-
-      if (!matchingItem) {
-        if (delta <= 0) return currentItems;
-
-        return addItemToCart(currentItems, {
-          dishId: item.id,
-          name: item.name,
-          restaurantName: item.restaurantName,
-          stallName: item.stallName,
-          stallId: item.foodOutletId,
-          price: item.price,
-          quantity: 1,
-        });
-      }
-
-      const nextQuantity = matchingItem.quantity + delta;
-      if (nextQuantity <= 0) {
+      const newQuantity = matchingItem.quantity + delta;
+      if (newQuantity <= 0) {
         return removeCartItem(currentItems, matchingItem.id);
       }
-
-      return updateCartItemQuantity(currentItems, matchingItem.id, nextQuantity);
+      return updateCartItemQuantity(currentItems, matchingItem.id, newQuantity);
     });
   };
 
@@ -158,19 +159,17 @@ function MenuContent() {
   };
 
   const confirmCustomization = (item: MenuItem, selection: { options: { id: string; label: string; price: number }[]; price: number }) => {
-    setCartItems((currentItems) =>
-      addItemToCart(currentItems, {
-        dishId: item.id,
-        customizationKey: selection.options.map((option) => option.id).sort().join('|'),
-        customizations: selection.options.map((option) => option.label),
-        name: item.name,
-        restaurantName: item.restaurantName,
-        stallName: item.stallName,
-        stallId: item.foodOutletId,
-        price: selection.price,
-        quantity: 1,
-      }),
-    );
+    addDish({
+      dishId: item.id,
+      customizationKey: selection.options.map((option) => option.id).sort().join('|'),
+      customizations: selection.options.map((option) => option.label),
+      name: item.name,
+      restaurantName: item.restaurantName,
+      stallName: item.stallName,
+      stallId: item.foodOutletId,
+      price: selection.price,
+      quantity: 1,
+    });
     setCustomizingItem(null);
   };
 
@@ -302,6 +301,7 @@ function MenuContent() {
           </Link>
         </div>
       )}
+      <CartWarningModal />
     </main>
   );
 }

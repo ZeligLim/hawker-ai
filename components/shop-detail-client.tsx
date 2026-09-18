@@ -5,7 +5,8 @@ import { Ban, Store } from 'lucide-react';
 import { useState } from 'react';
 import { CustomizationCard } from '@/components/customization-card';
 import { DishCard } from '@/components/dish-card';
-import { addItemToCart, getDishQuantity, removeCartItem, updateCartItemQuantity, useCartItems } from '@/lib/order/cart';
+import { getDishQuantity, removeCartItem, updateCartItemQuantity } from '@/lib/order/cart';
+import { useCartAdd } from '@/components/use-cart-add';
 import { getDishCustomization } from '@/lib/order/customizations';
 
 export type ShopData = {
@@ -20,11 +21,12 @@ export type ShopData = {
 };
 
 export function ShopDetailClient({ shop, slug }: { shop: ShopData; slug: string }) {
-  const { cartItems, setCartItems } = useCartItems();
+  const { cartItems, setCartItems, addDish, CartWarningModal } = useCartAdd();
   const [customizingDish, setCustomizingDish] = useState<ShopData['dishes'][number] | null>(null);
 
   const updateDishQuantity = (dish: ShopData['dishes'][number], delta: number) => {
     const targetDishId = dish.id || `${slug}:${dish.name}`;
+    const stallId = shop.id || slug;
 
     setCartItems((currentItems) => {
       const matchingItem = currentItems.find((item) => item.dishId === targetDishId);
@@ -32,8 +34,7 @@ export function ShopDetailClient({ shop, slug }: { shop: ShopData; slug: string 
       if (!matchingItem) {
         if (delta <= 0) return currentItems;
 
-        const stallId = shop.id || `${shop.name}`.replace(/[^a-z0-9]+/gi, '-').toLowerCase();
-        return addItemToCart(currentItems, {
+        addDish({
           dishId: targetDishId,
           name: dish.name,
           restaurantName: shop.restaurantName ?? shop.name,
@@ -42,6 +43,7 @@ export function ShopDetailClient({ shop, slug }: { shop: ShopData; slug: string 
           price: dish.price,
           quantity: 1,
         });
+        return currentItems;
       }
 
       const nextQuantity = matchingItem.quantity + delta;
@@ -53,7 +55,7 @@ export function ShopDetailClient({ shop, slug }: { shop: ShopData; slug: string 
     });
   };
 
-  const addDish = (dish: ShopData['dishes'][number]) => {
+  const handleDishAction = (dish: ShopData['dishes'][number]) => {
     if (getDishCustomization(dish)) {
       setCustomizingDish(dish);
       return;
@@ -63,21 +65,19 @@ export function ShopDetailClient({ shop, slug }: { shop: ShopData; slug: string 
 
   const confirmCustomization = (dish: ShopData['dishes'][number], selection: { options: { id: string; label: string; price: number }[]; price: number }) => {
     const targetDishId = dish.id || `${slug}:${dish.name}`;
-    const stallId = shop.id || `${shop.name}`.replace(/[^a-z0-9]+/gi, '-').toLowerCase();
+    const stallId = shop.id || slug;
 
-    setCartItems((currentItems) =>
-      addItemToCart(currentItems, {
-        dishId: targetDishId,
-        customizationKey: selection.options.map((option) => option.id).sort().join('|'),
-        customizations: selection.options.map((option) => option.label),
-        name: dish.name,
-        restaurantName: shop.restaurantName ?? shop.name,
-        stallName: shop.name,
-        stallId,
-        price: selection.price,
-        quantity: 1,
-      }),
-    );
+    addDish({
+      dishId: targetDishId,
+      customizationKey: selection.options.map((option) => option.id).sort().join('|'),
+      customizations: selection.options.map((option) => option.label),
+      name: dish.name,
+      restaurantName: shop.restaurantName ?? shop.name,
+      stallName: shop.name,
+      stallId,
+      price: selection.price,
+      quantity: 1,
+    });
     setCustomizingDish(null);
   };
 
@@ -160,10 +160,10 @@ export function ShopDetailClient({ shop, slug }: { shop: ShopData; slug: string 
                   spiceLevel={dish.spiceLevel}
                   imageUrl={dish.imageUrl}
                   quantity={isClosed ? 0 : quantity}
-                  onAdd={() => !isClosed && addDish(dish)}
+                  onAdd={() => !isClosed && handleDishAction(dish)}
                   onUpdateQuantity={(delta) =>
                     !isClosed &&
-                    (delta > 0 ? addDish(dish) : updateDishQuantity(dish, -1))
+                    (delta > 0 ? handleDishAction(dish) : updateDishQuantity(dish, -1))
                   }
                 />
               );
@@ -179,6 +179,7 @@ export function ShopDetailClient({ shop, slug }: { shop: ShopData; slug: string 
             onConfirm={(selection) => confirmCustomization(customizingDish, selection)}
           />
         ) : null}
+        <CartWarningModal />
 
         <Link href="/stall" className="mt-6 inline-flex rounded-full bg-[#111827] px-4 py-2.5 text-sm font-medium text-white hover:bg-black transition-colors">
           Back to stalls
