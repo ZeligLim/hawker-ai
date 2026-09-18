@@ -51,15 +51,15 @@ export function CartSummary({
             <div className="mt-3 space-y-3">
               {group.items.map((item) => (
                 <div key={item.id} className="flex items-start justify-between gap-3">
-                  <div>
-                    <p className="font-medium text-[#1d1d1f]">{item.name}</p>
+                  <div className="min-w-0 flex-1">
+                    <p className="font-medium text-[#1d1d1f] truncate">{item.name}</p>
                     <p className="text-xs text-[#6e6e73]">RM {item.price.toFixed(2)} each</p>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 shrink-0">
                     <button
                       type="button"
                       onClick={() => onUpdateQuantity(item.id, Math.max(0, item.quantity - 1))}
-                      className="flex h-7 w-7 items-center justify-center rounded-full bg-[#f2f2f7] hover:bg-[#e5e5ea] text-base font-semibold text-[#1d1d1f] transition-all active:scale-95"
+                      className="flex h-7 w-7 items-center justify-center rounded-full bg-[#f2f2f7] hover:bg-[#e5e5ea] text-base font-semibold text-[#1d1d1f] transition-all active:scale-95 shrink-0"
                       aria-label={`Decrease quantity for ${item.name}`}
                     >
                       −
@@ -68,7 +68,7 @@ export function CartSummary({
                     <button
                       type="button"
                       onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
-                      className="flex h-7 w-7 items-center justify-center rounded-full bg-[#1d1d1f] hover:bg-black text-base font-semibold text-white shadow-xs transition-all active:scale-95"
+                      className="flex h-7 w-7 items-center justify-center rounded-full bg-[#1d1d1f] hover:bg-black text-base font-semibold text-white shadow-xs transition-all active:scale-95 shrink-0"
                       aria-label={`Increase quantity for ${item.name}`}
                     >
                       +

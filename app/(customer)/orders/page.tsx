@@ -193,16 +193,16 @@ export default function OrdersPage() {
                 {cartItems.map((item) => (
                   <div key={item.id} className="rounded-2xl bg-neutral-50 p-4 shadow-xs">
                     <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <p className="text-sm sm:text-base font-bold text-black">{item.name}</p>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm sm:text-base font-bold text-black truncate">{item.name}</p>
                         <p className="text-xs text-neutral-500 mt-0.5">RM {item.price.toFixed(2)} each</p>
                         {item.customizations?.length ? (
-                          <p className="mt-1 text-xs text-neutral-600 bg-white px-2 py-0.5 rounded-full inline-block font-medium shadow-xs">
+                          <p className="mt-1 text-xs text-neutral-600 bg-white px-2 py-0.5 rounded-full font-medium shadow-xs truncate max-w-full inline-block">
                             Customised: {item.customizations.join(' · ')}
                           </p>
                         ) : null}
                       </div>
-                      <p className="text-sm sm:text-base font-bold text-black">
+                      <p className="text-sm sm:text-base font-bold text-black shrink-0">
                         RM {(item.price * item.quantity).toFixed(2)}
                       </p>
                     </div>
