@@ -4,16 +4,10 @@
 Phase 29: Standard OpenStreetMap (Zero Watermark), Map Selected Shop Card, and Dedicated List View Mode
 
 ## Current Feature
-1. **Watermark-Free Standard OpenStreetMap (`components/hawker-map.tsx`)**:
-   - Switched map tile endpoint from CARTO Positron to standard OpenStreetMap (`https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png`), completely eliminating the "API KEY REQUIRED" watermark.
-   - Kept the pure black & white CSS filter (`grayscale(100%) contrast(108%) brightness(102%)`) for a consistent monochrome aesthetic.
-   - Removed any remaining border artifacts and hover scale animations.
-
-2. **Map View: Floating Selected Shop Card (`components/home-page.tsx`)**:
-   - Completely removed the bottom sheet list and swipe-up gesture from the map view.
-   - When a shop or hawker centre is selected on the map, a floating card appears above the navigation bar with centre name, Aircon badge, address, distance, rating, stalls count, and `View Stalls` action.
-   - An accessible dismiss button (`✕`) clears the selection and closes the card.
-   - When no shop is selected, the map is unobstructed.
+1. **Watermark-Free Esri Light Gray Base (`components/hawker-map.tsx`)**:
+   - Switched map tile endpoint from standard OSM to Esri World Light Gray Base (`server.arcgisonline.com/.../Canvas/World_Light_Gray_Base/...`). This provides a natively designed minimalist, high-quality map without any watermarks.
+   - Removed the CSS `grayscale(100%)` filter, which was causing standard OSM to look muddy, grainy, and low-res.
+   - **Bugfix**: Added missing `overflow-hidden` to the map container when `fullScreen={true}`. Previously, unbounded absolutely positioned map tiles were spilling over and breaking the entire page layout, making everything look arbitrarily placed.
 
 3. **Dedicated List View Mode (`components/home-page.tsx`)**:
    - The list of hawker centres now displays strictly when the user toggles to **List** view (`viewMode === 'list'`).

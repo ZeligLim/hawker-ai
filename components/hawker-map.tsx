@@ -76,7 +76,7 @@ export function HawkerMap({
 
   const centerProj = useMemo(() => project(center.lat, center.lng, zoom), [center, zoom]);
 
-  // Calculate visible tiles using Esri World Light Gray Base
+  // Calculate visible tiles using high-res Google Maps tiles
   const visibleTiles = useMemo(() => {
     const tileCount = Math.pow(2, zoom);
     const startTileX = Math.floor((centerProj.x - dimensions.width / 2) / 256);
@@ -85,6 +85,8 @@ export function HawkerMap({
     const endTileY = Math.floor((centerProj.y + dimensions.height / 2) / 256);
 
     const tiles = [];
+    const isRetina = typeof window !== 'undefined' && (window.devicePixelRatio || 1) > 1;
+    const scale = isRetina ? 2 : 1;
 
     for (let x = startTileX; x <= endTileX; x++) {
       for (let y = startTileY; y <= endTileY; y++) {
@@ -93,12 +95,11 @@ export function HawkerMap({
           const screenX = x * 256 - (centerProj.x - dimensions.width / 2);
           const screenY = y * 256 - (centerProj.y - dimensions.height / 2);
 
-          // Esri World Light Gray Base (clean, minimalist, zero watermarks)
-          // Note: Esri MapServer uses {z}/{y}/{x} coordinate order
-          const tileUrl = `https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/${zoom}/${y}/${wrappedX}`;
+          // Google Maps Standard Roadmap (clean, high-res, zero watermarks)
+          const tileUrl = `https://mt0.google.com/vt/lyrs=m&hl=en&x=${wrappedX}&y=${y}&z=${zoom}&scale=${scale}`;
 
           tiles.push({
-            key: `esri-light-${zoom}-${x}-${y}`,
+            key: `gmap-${zoom}-${x}-${y}`,
             url: tileUrl,
             screenX,
             screenY,
@@ -178,8 +179,13 @@ export function HawkerMap({
       }}
       onTouchEnd={handlePointerUp}
     >
-      {/* Map Tile Layer - Esri Light Gray Base is naturally clean and monochrome */}
-      <div className="absolute inset-0 pointer-events-none bg-[#f3f3f3]">
+      {/* Map Tile Layer - High Contrast Pure Black & White Filter */}
+      <div
+        className="absolute inset-0 pointer-events-none bg-white"
+        style={{
+          filter: 'grayscale(100%) contrast(120%) brightness(105%)',
+        }}
+      >
         {visibleTiles.map((tile) => (
           /* eslint-disable-next-line @next/next/no-img-element */
           <img
@@ -268,7 +274,8 @@ export function HawkerMap({
       })}
 
       {/* Map Controls - Pure White & Black, h-11, Borderless, No Bouncy Transitions */}
-      <div className={`absolute right-3.5 ${fullScreen ? 'top-5' : 'top-3'} z-20 flex flex-col gap-2`}>
+      {/* Set top-24 to avoid crashing with the floating top search bar when in fullScreen */}
+      <div className={`absolute right-3.5 ${fullScreen ? 'top-24' : 'top-3'} z-20 flex flex-col gap-2`}>
         <button
           type="button"
           onClick={(e) => {
