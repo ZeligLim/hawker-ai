@@ -347,15 +347,15 @@ export function HomePage() {
               {filteredCentres.length} {filteredCentres.length === 1 ? 'centre' : 'centres'} found
             </span>
 
-            {/* Distance & Rating Toggles: Standard 44px h-11, Rounded-Full, 0 Border */}
-            <div className="flex items-center bg-neutral-100 p-1 rounded-full shrink-0">
+            {/* Distance & Rating Toggles: Styled exactly like the Map/List switcher */}
+            <div className="flex items-center bg-white p-1 rounded-full shadow-md shrink-0">
               <button
                 type="button"
                 onClick={() => setRankingMode('distance')}
-                className={`flex h-11 items-center justify-center rounded-full px-4 text-xs font-semibold transition-colors ${
+                className={`flex h-9 items-center justify-center rounded-full px-4 text-xs font-semibold transition-colors ${
                   rankingMode === 'distance'
                     ? 'bg-black text-white shadow-xs'
-                    : 'bg-white text-black hover:bg-neutral-50'
+                    : 'bg-transparent text-black hover:bg-neutral-100'
                 }`}
               >
                 Distance
@@ -363,10 +363,10 @@ export function HomePage() {
               <button
                 type="button"
                 onClick={() => setRankingMode('rating')}
-                className={`flex h-11 items-center justify-center rounded-full px-4 text-xs font-semibold transition-colors ${
+                className={`flex h-9 items-center justify-center rounded-full px-4 text-xs font-semibold transition-colors ${
                   rankingMode === 'rating'
                     ? 'bg-black text-white shadow-xs'
-                    : 'bg-white text-black hover:bg-neutral-50'
+                    : 'bg-transparent text-black hover:bg-neutral-100'
                 }`}
               >
                 Rating
@@ -374,7 +374,7 @@ export function HomePage() {
             </div>
           </div>
 
-          {/* Clean Vertical Feed of Hawker Centres (0 Borders, No Hover Animation) */}
+          {/* Clean Vertical Feed of Hawker Centres */}
           <div className="space-y-3">
             {filteredCentres.length === 0 ? (
               <div className="py-16 text-center text-sm text-neutral-500">
@@ -382,9 +382,10 @@ export function HomePage() {
               </div>
             ) : (
               filteredCentres.map((centre) => (
-                <div
+                <Link
                   key={centre.id}
-                  className="w-full rounded-2xl p-4 text-left bg-neutral-50 hover:bg-neutral-100 transition-colors"
+                  href={`/stall?centre=${encodeURIComponent(centre.slug)}` as any}
+                  className="block w-full rounded-2xl bg-white p-4 text-left shadow-sm hover:bg-neutral-50 transition-colors"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0 flex-1">
@@ -393,40 +394,32 @@ export function HomePage() {
                         {centre.hasAircon && (
                           <span className="inline-flex items-center gap-1 rounded-full bg-black/5 px-2 py-0.5 text-[10px] font-semibold text-black shrink-0">
                             <Snowflake className="h-3 w-3" />
-                            <span>Aircon</span>
+                            <span className="sr-only">Aircon</span>
                           </span>
                         )}
                       </div>
-                      <p className="mt-1 text-xs text-neutral-500 line-clamp-1">{centre.address}</p>
-
-                      <div className="mt-3 flex items-center gap-2 text-xs text-neutral-600">
-                        <span className="flex items-center gap-0.5 font-semibold text-black">
-                          <Star className="h-3.5 w-3.5 fill-black text-black" />
+                      
+                      <div className="mt-2.5 flex flex-wrap items-center gap-x-2.5 gap-y-1.5 text-xs font-medium text-neutral-600">
+                        <span className="flex items-center gap-0.5 text-black">
+                          <Star className="h-3.5 w-3.5 fill-black" />
                           <span>{centre.rating.toFixed(1)}</span>
                         </span>
-                        <span>•</span>
+                        <span className="h-1 w-1 rounded-full bg-neutral-300" />
                         <span>{centre.stallsCount} stalls</span>
                         {centre.distanceKm !== null && (
                           <>
-                            <span>•</span>
-                            <span className="font-medium text-black">{centre.distanceKm} km</span>
-                            {centre.walkMins !== null && (
-                              <span className="text-neutral-400">({centre.walkMins}m walk)</span>
-                            )}
+                            <span className="h-1 w-1 rounded-full bg-neutral-300" />
+                            <span className="text-black">{centre.distanceKm} km</span>
                           </>
                         )}
                       </div>
                     </div>
 
-                    <Link
-                      href={`/stall?centre=${encodeURIComponent(centre.slug)}` as any}
-                      className="flex h-11 px-5 items-center justify-center gap-1.5 rounded-full bg-black hover:bg-neutral-800 text-white text-xs font-semibold shadow-xs shrink-0 transition-colors self-center"
-                    >
-                      <span>View</span>
-                      <ArrowRight className="h-3.5 w-3.5" />
-                    </Link>
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-neutral-100 text-black shrink-0 self-center">
+                      <ArrowRight className="h-4 w-4" />
+                    </div>
                   </div>
-                </div>
+                </Link>
               ))
             )}
           </div>

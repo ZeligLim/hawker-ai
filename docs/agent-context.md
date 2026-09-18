@@ -9,13 +9,10 @@ Phase 29: Standard OpenStreetMap (Zero Watermark), Map Selected Shop Card, and D
    - Applied a custom CSS filter (`grayscale(100%) contrast(120%) brightness(105%)`) to perfectly strip all colors and enforce the requested pure white and black high-contrast look without watermarks.
    - **Bugfix**: Pushed the map zoom controls further down to `top-32` (128px) when in `fullScreen={true}` to prevent them from crashing into the top search bar and Quick Scan QR button area.
 
-2. **Camera Icon Replaced with QrCode Icon (`components/centre-diner-page.tsx`, `components/customer-stall-page.tsx`)**:
-   - Replaced all instances of the generic `Camera` icon used for table scanning with the proper `QrCode` icon to match the unified UI language across the app.
-
-2. **Dish Customizations - Spice & Add-ons (`lib/order/customizations.ts`)**:
-   - Refactored `DishCustomization` typing and logic so a single dish can simultaneously offer both **Add-ons/Upsize** AND **Spice Level**.
-   - Removed the extra "tap-friendly" spice buttons that were recently added to the card so that only the clean draggable spice slider remains (as requested).
-   - If a dish has both customizations (e.g. "Add egg" and "Level 2 Spicy"), they both appear clearly in the customization card.Clean vertical feed showing venue count, standard `h-11` Distance / Rating sorting controls, and search filtering.
+2. **Clean & Straightforward Scan QR Prompt (`components/customer-stall-page.tsx`)**:
+   - Completely redesigned the "At a table?" scanning prompt on the stall page.
+   - Replaced the bulky multi-element card with a single, clean, full-width pure black button: `Scan table QR to order`.
+   - Replaced all instances of the generic `Camera` icon with the proper `QrCode` icon across `customer-stall-page.tsx` and `centre-diner-page.tsx` to match the unified UI language.Clean vertical feed showing venue count, standard `h-11` Distance / Rating sorting controls, and search filtering.
 
 3. **Home Tab: Prominent Search Bar & Map/List Switcher (`components/home-page.tsx`)**:
    - `HawkerSearchBar` placed prominently at the top of the Home tab.
