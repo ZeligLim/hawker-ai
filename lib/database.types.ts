@@ -14,6 +14,8 @@ export type Database = {
           fee_payer: 'CUSTOMER' | 'MERCHANT';
           platform_fee_fixed: number;
           platform_fee_percent: number;
+          has_aircon?: boolean;
+          rating?: number;
           is_active?: boolean;
           schedule?: Json;
           status?: string;
@@ -25,6 +27,8 @@ export type Database = {
           fee_payer?: 'CUSTOMER' | 'MERCHANT';
           platform_fee_fixed?: number;
           platform_fee_percent?: number;
+          has_aircon?: boolean;
+          rating?: number;
           is_active?: boolean;
           schedule?: Json;
           status?: string;

@@ -1,13 +1,48 @@
 # Current Project Context
 
 ## Current Phase
-Phase 22: Apple-Inspired Visual Streamline for SaaS Platform Admin (`/admin`)
+Phase 23: Full-Screen Map User Mode Home Page with Hawker Centre Search, Scrollable Bottom Sheet, Rating/Distance Ranking & Aircon Logo Indicator
 
 ## Current Feature
-1. **Apple Design Language System for Platform Admin**:
-   - **Signature Palette & Background**: Replaced dark `#090d16` and harsh amber glows with Apple signature canvas `#f5f5f7`, pure white cards `bg-white`, delicate borders `border-black/[0.08]` and `border-black/[0.06]`, and subtle Apple drop shadows `shadow-xs`.
-   - **Typography & Contrasts**: High-contrast text `#1d1d1f` for titles/labels with tight tracking `tracking-[-0.03em]`, neutral secondary text `#6e6e73` and `#86868b`, and monospace identifiers in subtle rounded pill badges.
-   - **Action Controls & Segmented Pickers**: Dark pill buttons `bg-[#1d1d1f] hover:bg-black text-white rounded-full` and Apple system blue `bg-[#0071e3] hover:bg-[#0077ed]`, paired with macOS-style segmented controls (`p-1 bg-black/[0.04] rounded-2xl`).
+1. **Full-Screen Interactive Map (`components/home-page.tsx`, `components/hawker-map.tsx`)**:
+   - The user mode home page (`/home`) renders a full-screen edge-to-edge interactive map (`100vw x 100vh`) with CARTO Positron vector tiles, Web Mercator projection, custom zoom/pan controls, and live user GPS location radar pin.
+   - Background GPS location polling every 5 minutes with `document.visibilityState` lifecycle handling and on-demand recenter button.
+   - Responsive marker pins displaying centre name, stall count, rating (`★ 4.9`), and aircon snowflake logo for air-conditioned centres.
+
+2. **Hawker Centre Search & Filtering**:
+   - Floating top search pill (`fixed top-4 inset-x-4 max-w-md mx-auto z-20`) with Apple frosted glass styling, instant query clearing (`X`), GPS recenter, and QR scanner shortcut.
+   - Real-time search across hawker centre name, address/location, and culinary specialties.
+   - One-tap "Aircon Only" filter toggle chip.
+   - Active table session shortcut banner if diner has an active table session.
+
+3. **Scrollable Swipe-Up Bottom Sheet Drawer**:
+   - Swipable and draggable bottom sheet drawer (`fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-2xl rounded-t-[28px] bg-white/95 backdrop-blur-2xl`).
+   - Collapsed state (~160px): shows drag handle, title with count badge, ranking mode segmented toggle, nearest/top-rated summary, and expand trigger. Positioned neatly above the floating bottom navigation bar.
+   - Expanded state (~80vh): slides up smoothly with touch swipe-up/down gestures or header tap, offering a full scrollable list of hawker centre cards with `pb-28` to keep all cards clear of the floating navigation bar.
+
+4. **Dynamic Ranking by Distance or Rating**:
+   - Segmented ranking toggle (`Distance` vs `Rating`).
+   - Distance ranking: calculates real-time Haversine distance from user GPS coordinates, displays distance in metres/kilometres and estimated walk time (`~3 min walk`), ranked nearest first.
+   - Rating ranking: sorts by centre rating descending (`★ 4.9`, `★ 4.7`), with tie-breaking by distance.
+   - Dynamic rank number badge (`#1`, `#2`, ...) on each card.
+
+5. **Aircon Logo Indicator**:
+   - Prominent aircon badge on each hawker centre card with Snowflake icon (`Snowflake` + `Aircon` in cyan badge for air-conditioned centres; `Wind` + `Open-Air` in neutral badge for naturally ventilated centres).
+   - Snowflake logo indicator also rendered on map marker pins and selected centre popup card.
+   - Dedicated "Aircon Only" quick filter chip.
+
+6. **Database & Service Layer**:
+   - Supabase migration `020_hawker_centre_aircon_and_rating.sql` executed against remote database: added `has_aircon BOOLEAN NOT NULL DEFAULT FALSE` and `rating NUMERIC(3, 2) NOT NULL DEFAULT 4.5` to `restaurants` table.
+   - Updated `Database` types (`lib/database.types.ts`) and `HawkerCentreSummary` (`lib/hawker-centres/service.ts`) with dynamic DB query and mapping.
+
+7. **Verification**:
+   - `npx tsc --noEmit`: 0 TypeScript errors.
+   - `npm test`: 31/31 unit tests passed.
+   - `npm run lint`: 0 errors.
+   - `npm run build`: Successful production build across all 50 routes.
+
+## Previous Phases
+Phase 22: Apple-Inspired Visual Streamline for SaaS Platform Admin (`/admin`)
 
 2. **Refactored Admin Shell (`components/admin/admin-shell.tsx`)**:
    - Translucent sidebar `bg-[#fbfbfd]/90 backdrop-blur-xl border-r border-black/[0.08]` matching macOS System Settings.

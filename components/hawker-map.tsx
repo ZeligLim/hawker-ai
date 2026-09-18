@@ -2,7 +2,7 @@
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
-import { ArrowRight, Locate, Minus, Plus, Store } from 'lucide-react';
+import { ArrowRight, Locate, Minus, Plus, Snowflake, Star, Store } from 'lucide-react';
 import type { HawkerCentreSummary } from '@/lib/hawker-centres/service';
 
 interface HawkerMapProps {
@@ -261,8 +261,13 @@ export function HawkerMap({
               >
                 <Store className={`h-3.5 w-3.5 ${isSelected ? 'text-amber-400' : 'text-amber-600'}`} />
                 <span className="max-w-[120px] truncate">{c.name}</span>
+                {c.hasAircon && (
+                  <span title="Air-conditioned" aria-label="Air-conditioned" className="flex items-center">
+                    <Snowflake className="h-3 w-3 text-cyan-400 shrink-0" />
+                  </span>
+                )}
                 <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-semibold ${isSelected ? 'bg-white/20 text-white' : 'bg-[#f5f5f7] text-[#6e6e73]'}`}>
-                  {c.stallsCount}
+                  ★ {c.rating}
                 </span>
               </div>
 
@@ -323,7 +328,15 @@ export function HawkerMap({
           <div className="rounded-[22px] bg-white/95 backdrop-blur-md p-3.5 shadow-[0_12px_28px_rgba(0,0,0,0.15)] border border-black/10">
             <div className="flex items-start justify-between gap-2">
               <div>
-                <h4 className="text-sm font-bold text-[#1d1d1f]">{selectedCentre.name}</h4>
+                <div className="flex items-center gap-1.5">
+                  <h4 className="text-sm font-bold text-[#1d1d1f]">{selectedCentre.name}</h4>
+                  {selectedCentre.hasAircon && (
+                    <span className="inline-flex items-center gap-0.5 rounded-full bg-cyan-50 border border-cyan-200/80 px-1.5 py-0.2 text-[9px] font-bold text-cyan-800 shrink-0" title="Air-conditioned">
+                      <Snowflake className="h-2.5 w-2.5 text-cyan-600" />
+                      <span>Aircon</span>
+                    </span>
+                  )}
+                </div>
                 <p className="mt-0.5 text-xs text-[#6e6e73] line-clamp-1">{selectedCentre.address}</p>
               </div>
               <span className="rounded-full bg-emerald-50 border border-emerald-200 px-2 py-0.5 text-[10px] font-bold text-emerald-800 shrink-0">

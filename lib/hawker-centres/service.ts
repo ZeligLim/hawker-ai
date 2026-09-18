@@ -18,6 +18,7 @@ export interface HawkerCentreSummary {
   lat: number | null;
   lng: number | null;
   isActive?: boolean;
+  hasAircon?: boolean;
   schedule?: any;
   stallsCount: number;
   activeStallsCount: number;
@@ -28,6 +29,8 @@ export interface HawkerCentreSummary {
   specialties: string[];
   minPrice: number | null;
   maxPrice: number | null;
+  distanceKm?: number | null;
+  walkMins?: number | null;
   createdAt: string;
 }
 
@@ -50,7 +53,7 @@ export async function fetchHawkerCentres(options?: {
 
   let query = supabase
     .from('restaurants')
-    .select('id, name, slug, address, lat, lng, is_active, schedule, created_at')
+    .select('id, name, slug, address, lat, lng, is_active, schedule, has_aircon, rating, created_at')
     .order('name');
 
   if (options?.slug) {
@@ -152,10 +155,11 @@ export async function fetchHawkerCentres(options?: {
       lat: r.lat ? Number(r.lat) : null,
       lng: r.lng ? Number(r.lng) : null,
       isActive: (r as any).is_active ?? true,
+      hasAircon: Boolean((r as any).has_aircon),
       stallsCount: venueOutlets.length,
       activeStallsCount: Math.max(activeStallsCount, 1),
       dishesCount: venueDishes.length,
-      rating: 4.9,
+      rating: (r as any).rating != null ? Number((r as any).rating) : 4.5,
       tag: 'Verified Hawker Centre',
       stalls: stallSummaries,
       specialties: Array.from(specialtySet).slice(0, 4),

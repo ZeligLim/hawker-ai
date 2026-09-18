@@ -41,7 +41,7 @@ export function ClientBottomNav({
   return (
     <nav
       aria-label={ariaLabel}
-      className="fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-[430px] px-2 sm:px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:max-w-[480px] md:max-w-[560px] lg:max-w-[680px]"
+      className="fixed inset-x-0 bottom-0 z-40 mx-auto w-full max-w-[430px] px-2 sm:px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:max-w-[480px] md:max-w-[560px] lg:max-w-[680px]"
     >
       <div
         className={`grid ${gridColsClass} gap-1 rounded-full p-1.5 backdrop-blur-xl ${containerTheme}`}

@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { usePathname } from 'next/navigation';
 import { House, Store, UtensilsCrossed, ClipboardList, UserRound } from 'lucide-react';
 import { ClientBottomNav } from '@/components/shared/client-bottom-nav';
 
@@ -13,9 +14,12 @@ const customerNavItems = [
 ];
 
 export function CustomerShell({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  const isHomePage = pathname === '/home';
+
   return (
-    <div className="relative min-h-screen bg-[#f5f5f7]">
-      <main className="pb-24">{children}</main>
+    <div className={`relative ${isHomePage ? 'h-screen w-screen overflow-hidden' : 'min-h-screen'} bg-[#f5f5f7]`}>
+      <main className={isHomePage ? 'h-full w-full overflow-hidden' : 'pb-24'}>{children}</main>
 
       <ClientBottomNav
         items={customerNavItems}
