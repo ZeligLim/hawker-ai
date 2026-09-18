@@ -189,9 +189,9 @@ export default function ProfilePage() {
 
   if (!isMounted) {
     return (
-      <main className="min-h-screen bg-white px-4 pb-32 pt-5 text-black sm:px-6">
+      <main className="min-h-screen bg-[#f5f5f7] px-4 pb-32 pt-5 text-black sm:px-6">
         <div className="mx-auto w-full max-w-md sm:max-w-xl md:max-w-2xl">
-          <section className="rounded-3xl bg-neutral-50 p-6 shadow-sm">
+          <section className="rounded-3xl bg-white p-6 shadow-sm">
             <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Sign in</h1>
             <p className="mt-2 text-sm text-neutral-500">
               Save your favourite hawker picks and revisit your recent orders in one place.
@@ -209,10 +209,10 @@ export default function ProfilePage() {
   }
 
   return (
-    <main className="min-h-screen bg-white px-4 pb-32 pt-5 text-black sm:px-6">
+    <main className="min-h-screen bg-[#f5f5f7] px-4 pb-32 pt-5 text-black sm:px-6">
       <div className="mx-auto w-full max-w-md sm:max-w-xl md:max-w-2xl">
         {!signedIn ? (
-          <section className="rounded-3xl bg-neutral-50 p-6 shadow-sm">
+          <section className="rounded-3xl bg-white p-6 shadow-sm">
             <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Diner Profile</h1>
             <p className="mt-2 text-sm text-neutral-500">
               Sign in with your email or social account to view your past orders, manage preferences, and reorder favourite dishes in one tap.
@@ -226,7 +226,7 @@ export default function ProfilePage() {
           </section>
         ) : (
           <>
-            <section className="rounded-3xl bg-neutral-50 p-5 sm:p-6 shadow-sm">
+            <section className="rounded-3xl bg-white p-5 sm:p-6 shadow-sm">
               <div className="flex items-center justify-between gap-4">
                 <div className="flex min-w-0 items-center gap-3.5">
                   <div className="flex h-12 w-12 sm:h-14 sm:w-14 shrink-0 items-center justify-center rounded-full bg-black text-base sm:text-lg font-bold text-white shadow-xs">
@@ -240,7 +240,7 @@ export default function ProfilePage() {
                 <div className="flex shrink-0 items-center justify-end gap-2">
                   <Link
                     href={'/profile/settings' as any}
-                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white text-black hover:bg-neutral-200 transition-colors shadow-xs"
+                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-neutral-100 text-black hover:bg-neutral-200 transition-colors shadow-xs"
                     aria-label="Edit settings"
                   >
                     <Settings className="h-4 w-4 sm:h-5 sm:w-5" />
@@ -248,7 +248,7 @@ export default function ProfilePage() {
                   <button
                     type="button"
                     onClick={() => setIsSignOutDialogOpen(true)}
-                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white text-black hover:bg-neutral-200 transition-colors shadow-xs"
+                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-neutral-100 text-black hover:bg-neutral-200 transition-colors shadow-xs"
                     aria-label="Sign out"
                   >
                     <LogOut className="h-4 w-4 sm:h-5 sm:w-5" />
@@ -289,14 +289,14 @@ export default function ProfilePage() {
         )}
 
         {/* Previous Orders Section: 0 Border, Account-Specific */}
-        <section className="mt-6 rounded-3xl bg-neutral-50 p-5 shadow-sm">
+        <section className="mt-6 rounded-3xl bg-white p-5 shadow-sm">
           <div className="mb-3 flex items-center justify-between">
             <h2 className="text-base sm:text-lg font-bold text-black">Previous orders</h2>
             <span className="text-xs sm:text-sm font-semibold text-neutral-500">{orders.length} orders</span>
           </div>
 
           {orders.length === 0 ? (
-            <div className="rounded-2xl bg-white p-6 text-center text-xs sm:text-sm text-neutral-500 shadow-xs">
+            <div className="rounded-2xl bg-neutral-50 p-6 text-center text-xs sm:text-sm text-neutral-500 shadow-xs">
               No previous orders found for this account.
             </div>
           ) : (
@@ -308,7 +308,7 @@ export default function ProfilePage() {
                   <Link
                     key={id}
                     href={orderHref}
-                    className="flex items-center justify-between gap-3 rounded-2xl bg-white p-4 text-left shadow-xs hover:bg-neutral-100 transition-colors"
+                    className="flex items-center justify-between gap-3 rounded-2xl bg-neutral-50 p-4 text-left shadow-xs hover:bg-neutral-100 transition-colors"
                   >
                     <div>
                       <p className="text-sm font-bold text-black">{order.dish}</p>
@@ -324,14 +324,14 @@ export default function ProfilePage() {
 
         {/* Eating Pattern */}
         {orders.length > 0 && favoriteDishes.length > 0 && (
-          <section className="mt-6 rounded-3xl bg-neutral-50 p-5 shadow-sm">
+          <section className="mt-6 rounded-3xl bg-white p-5 shadow-sm">
             <h2 className="text-base sm:text-lg font-bold text-black">Eating pattern</h2>
 
-            <div className="mt-3 rounded-2xl bg-white p-4 shadow-xs">
+            <div className="mt-3 rounded-2xl bg-neutral-50 p-4 shadow-xs">
               <p className="text-xs font-semibold text-neutral-500">Most ordered</p>
               <div className="mt-3 flex flex-wrap gap-2">
                 {favoriteDishes.map(([dish, count]) => (
-                  <span key={dish} className="rounded-full bg-neutral-100 px-3 py-1.5 text-xs font-semibold text-black">
+                  <span key={dish} className="rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-black">
                     {dish} · {count}x
                   </span>
                 ))}

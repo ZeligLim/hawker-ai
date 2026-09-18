@@ -20,6 +20,12 @@ Phase 29: Standard OpenStreetMap (Zero Watermark), Map Selected Shop Card, and D
      - The bulky black "View" button is gone. The entire card is now clickable.
      - Stripped away unnecessary information (removed the long address string and walking time string which cluttered mobile).
      - Condensed the stats (rating, stalls count, distance) into a single clean line with dot separators.
+
+## Phase 30: AI Search, Menu Scanner, and MCP Server
+1. **Food Card Aspect Ratio**: Made `DishCard` perfectly square on all devices by changing `aspect-[4/3] sm:aspect-square` to `aspect-square`.
+2. **AI Search Fix**: Fixed the natural language AI search which was broken because the frontend passed `q` instead of `query`, and the default filter values caused the AI parser to skip.
+3. **AI Menu Scanner**: Implemented `app/(stall)/owner/menu/scan/page.tsx` and an API route. Merchants can now upload a picture of their physical menu, and the backend uses the AI SDK (via OpenRouter/Gemini) to extract dishes, categorize them, and prepare them for one-click bulk saving.
+4. **Agentic Actions (MCP)**: Added `@modelcontextprotocol/sdk`. Built `scripts/mcp-server.ts` and configured it in `.agents/mcp_config.json`. The AI agent can now use these tools to directly interact with the Supabase database on the user's behalf.
    - Completely removed any "Resume Table" button.
    - Centre cards in both views use smooth, solid `transition-colors` with zero hover animations or scale shifts.
 

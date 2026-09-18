@@ -167,18 +167,18 @@ export default function OrdersPage() {
   }
 
   return (
-    <main className="min-h-screen bg-white px-4 pb-32 pt-5 text-black sm:px-6">
+    <main className="min-h-screen bg-[#f5f5f7] px-4 pb-32 pt-5 text-black sm:px-6">
       <div className="mx-auto w-full max-w-md sm:max-w-xl md:max-w-3xl lg:max-w-5xl">
         <div className="md:grid md:grid-cols-[1fr_360px] lg:grid-cols-[1fr_380px] md:gap-6 md:items-start">
           {/* Left Column: Order Items */}
-          <section className="rounded-3xl bg-neutral-50 p-5 sm:p-6 shadow-sm">
+          <section className="rounded-3xl bg-white p-5 sm:p-6 shadow-sm">
             <div className="mb-4 flex items-center justify-between">
               <h2 className="text-base sm:text-lg font-bold text-black">Cart Items</h2>
               <span className="text-xs sm:text-sm text-neutral-500 font-semibold">{cartItems.length} items</span>
             </div>
 
             {cartItems.length === 0 ? (
-              <div className="rounded-2xl bg-white p-8 text-center shadow-xs">
+              <div className="rounded-2xl bg-neutral-50 p-8 text-center shadow-xs">
                 <p className="text-sm font-bold text-black">Your cart is empty</p>
                 <p className="mt-1 text-xs text-neutral-500">Add dishes from the menu to start ordering.</p>
                 <Link
@@ -191,13 +191,13 @@ export default function OrdersPage() {
             ) : (
               <div className="space-y-3">
                 {cartItems.map((item) => (
-                  <div key={item.id} className="rounded-2xl bg-white p-4 shadow-xs">
+                  <div key={item.id} className="rounded-2xl bg-neutral-50 p-4 shadow-xs">
                     <div className="flex items-start justify-between gap-3">
                       <div>
                         <p className="text-sm sm:text-base font-bold text-black">{item.name}</p>
                         <p className="text-xs text-neutral-500 mt-0.5">RM {item.price.toFixed(2)} each</p>
                         {item.customizations?.length ? (
-                          <p className="mt-1 text-xs text-neutral-600 bg-neutral-100 px-2 py-0.5 rounded-full inline-block font-medium">
+                          <p className="mt-1 text-xs text-neutral-600 bg-white px-2 py-0.5 rounded-full inline-block font-medium shadow-xs">
                             Customised: {item.customizations.join(' · ')}
                           </p>
                         ) : null}
@@ -212,7 +212,7 @@ export default function OrdersPage() {
                         <button
                           type="button"
                           onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                          className="flex h-8 w-8 items-center justify-center rounded-full bg-neutral-100 text-base font-bold text-black hover:bg-neutral-200 transition-colors"
+                          className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-base font-bold text-black hover:bg-neutral-100 transition-colors shadow-xs"
                           aria-label={`Decrease quantity of ${item.name}`}
                         >
                           −
@@ -221,7 +221,7 @@ export default function OrdersPage() {
                         <button
                           type="button"
                           onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                          className="flex h-8 w-8 items-center justify-center rounded-full bg-black text-base font-bold text-white hover:bg-neutral-800 transition-colors"
+                          className="flex h-8 w-8 items-center justify-center rounded-full bg-black text-base font-bold text-white hover:bg-neutral-800 transition-colors shadow-xs"
                           aria-label={`Increase quantity of ${item.name}`}
                         >
                           +
@@ -232,7 +232,7 @@ export default function OrdersPage() {
                         <button
                           type="button"
                           onClick={() => openCustomization(item)}
-                          className="flex h-8 w-8 items-center justify-center rounded-full bg-neutral-100 text-black hover:bg-neutral-200 transition-colors"
+                          className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-black hover:bg-neutral-100 transition-colors shadow-xs"
                           aria-label={`Customize ${item.name}`}
                         >
                           <Settings2 className="h-4 w-4" />
@@ -247,7 +247,7 @@ export default function OrdersPage() {
                         onChange={(event) => updateComment(item.id, event.target.value)}
                         placeholder="Add special instructions or allergies..."
                         rows={2}
-                        className="w-full resize-none rounded-xl bg-neutral-100 px-3 py-2 text-xs text-black outline-none placeholder:text-neutral-400"
+                        className="w-full resize-none rounded-xl bg-white px-3 py-2 text-xs text-black outline-none placeholder:text-neutral-400 shadow-xs"
                       />
                     </label>
                   </div>
