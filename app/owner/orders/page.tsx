@@ -319,7 +319,7 @@ export default function OwnerOrdersPage() {
 
                     <div className="text-right">
                       <span
-                        className={`inline-block rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider ${
+                        className={`inline-block rounded-full px-3 py-1 text-xs font-semibold ${
                           order.status === 'New'
                             ? 'bg-amber-100 text-amber-800'
                             : order.status === 'Preparing'
@@ -336,8 +336,8 @@ export default function OwnerOrdersPage() {
 
                   {/* Line Items with 1-Tap Sold Out Refund */}
                   <div className="mt-4 space-y-3">
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-[#86868b]">
-                      Kitchen Line Items
+                    <p className="text-xs font-semibold text-[#86868b]">
+                      Kitchen line items
                     </p>
 
                     <div className="divide-y divide-black/[0.04]">
@@ -416,13 +416,13 @@ export default function OwnerOrdersPage() {
                   {/* Hawker Earnings Subtotal (Customer Platform Fee OMITTED) */}
                   <div className="mt-4 pt-3.5 border-t border-black/[0.06] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div className="min-w-0">
-                      <p className="text-[11px] font-bold uppercase tracking-wider text-[#86868b] truncate">
-                        Stall Payout (0% Commission)
+                      <p className="text-xs font-semibold text-[#86868b] truncate">
+                        Stall payout (0% commission)
                       </p>
-                      <p className="text-sm font-bold text-[#1d1d1f] truncate">
-                        STALL TOTAL: RM {order.merchantPayout.toFixed(2)}{' '}
-                        <span className="text-[10px] font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                          [PAID]
+                      <p className="text-sm font-semibold text-[#1d1d1f] truncate">
+                        Stall total: RM {order.merchantPayout.toFixed(2)}{' '}
+                        <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                          Paid
                         </span>
                       </p>
                       {hasRefund ? (

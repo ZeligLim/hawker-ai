@@ -130,7 +130,7 @@ function JoinBoothContent() {
           <div className="w-10 h-10 rounded-2xl bg-[#0071e3]/10 text-[#0071e3] flex items-center justify-center mb-4">
             <Store className="w-5 h-5" />
           </div>
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-[#0071e3]">Vendor Invitation</p>
+          <p className="text-xs font-semibold text-[#0071e3]">Vendor invitation</p>
           <h1 className="mt-1 text-2xl sm:text-3xl font-semibold tracking-[-0.035em] text-[#1d1d1f]">
             Activate your stall kitchen
           </h1>
@@ -141,7 +141,7 @@ function JoinBoothContent() {
             href={`/auth?redirect=${encodeURIComponent(redirectUrl)}` as any}
             className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#111827] px-5 py-3 text-xs font-semibold text-white hover:bg-black transition-all shadow-sm"
           >
-            Sign In to Claim Stall
+            Sign in to claim stall
             <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
@@ -159,7 +159,7 @@ function JoinBoothContent() {
         <div className="w-10 h-10 rounded-2xl bg-[#30d158]/10 text-[#30d158] flex items-center justify-center mb-4">
           <KeyRound className="w-5 h-5" />
         </div>
-        <p className="text-[11px] font-semibold uppercase tracking-wider text-[#30d158]">Invite-Only Access</p>
+        <p className="text-xs font-semibold text-[#248a3d]">Invite-only access</p>
         <h1 className="mt-1 text-2xl sm:text-3xl font-semibold tracking-[-0.035em] text-[#1d1d1f]">
           Join your food stall
         </h1>

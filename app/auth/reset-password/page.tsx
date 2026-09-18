@@ -102,7 +102,7 @@ export default function ResetPasswordPage() {
           </div>
 
           <div className="mt-5 text-center">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#6e6e73]">Reset password</p>
+            <p className="text-xs font-semibold text-[#86868b]">Reset password</p>
             <h1 className="mt-2 text-3xl font-semibold tracking-[-0.06em]">Create a new password</h1>
           </div>
 

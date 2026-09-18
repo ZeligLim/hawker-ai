@@ -150,7 +150,7 @@ export function HawkerSearch({ initialQuery = 'I want a vegetarian meal under RM
                 H
               </div>
               <div>
-                <p className={`text-[11px] font-semibold uppercase tracking-[0.24em] ${mutedText}`}>Hawker Menu Intelligence</p>
+                <p className={`text-xs font-semibold ${mutedText}`}>Hawker menu intelligence</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -170,7 +170,7 @@ export function HawkerSearch({ initialQuery = 'I want a vegetarian meal under RM
           <section className={`rounded-[30px] border ${border} px-4 py-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)] sm:px-6 sm:py-7 ${isDark ? 'bg-[radial-gradient(circle_at_top,_#111214_0%,_#0d0d10_55%,_#0b0b0d_100%)]' : 'bg-[radial-gradient(circle_at_top,_#ffffff_0%,_#f5f5f7_55%,_#f0f0f2_100%)]'}`}>
             <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
               <div>
-                <p className={`text-[11px] font-semibold uppercase tracking-[0.24em] ${mutedText}`}>Find your next craving</p>
+                <p className={`text-xs font-semibold ${mutedText}`}>Find your next craving</p>
                 <h1 className={`mt-2 text-3xl font-semibold tracking-[-0.06em] sm:text-5xl ${isDark ? 'text-[#f5f5f7]' : 'text-[#1d1d1f]'}`}>
                   Discover hawker food that fits your mood.
                 </h1>

@@ -67,7 +67,7 @@ export default async function ShopPage() {
                     </div>
 
                     <div className="flex min-w-[88px] shrink-0 flex-col items-end gap-1 text-right">
-                      <span className={`whitespace-nowrap rounded-full px-2 py-1 text-[9px] font-semibold uppercase tracking-[0.14em] ${
+                      <span className={`whitespace-nowrap rounded-full px-2.5 py-0.5 text-[10px] font-semibold ${
                         shop.busy === 'Busy'
                           ? 'bg-[#fef3c7] text-[#b45309]'
                           : shop.busy === 'Moderate'

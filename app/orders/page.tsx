@@ -290,8 +290,8 @@ export default function OrdersPage() {
           {/* Right Column: Checkout & Bill Summary (Sticky on Desktop/Tablet) */}
           <div className="mt-6 md:mt-0 space-y-4 md:sticky md:top-6">
             <section className="rounded-[28px] bg-[#111827] p-5 sm:p-6 text-white shadow-[0_16px_36px_rgba(17,24,39,0.18)]">
-              <div className="flex items-center justify-between text-xs uppercase tracking-[0.14em] text-white/70">
-                <span>Order Summary</span>
+              <div className="flex items-center justify-between text-xs font-semibold text-white/70">
+                <span>Order summary</span>
                 <button
                   type="button"
                   onClick={() => router.push('/scan' as any)}

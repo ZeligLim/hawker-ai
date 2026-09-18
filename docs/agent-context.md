@@ -1,45 +1,46 @@
 # Current Project Context
 
 ## Current Phase
-Phase 23: Full-Screen Map User Mode Home Page with Hawker Centre Search, Scrollable Bottom Sheet, Rating/Distance Ranking & Aircon Logo Indicator
+Phase 24: Apple-Inspired Clean Minimal UI Overhaul, Component Sizing Standardization & Zero Uppercase / All-Caps Elimination
 
 ## Current Feature
-1. **Full-Screen Interactive Map (`components/home-page.tsx`, `components/hawker-map.tsx`)**:
-   - The user mode home page (`/home`) renders a full-screen edge-to-edge interactive map (`100vw x 100vh`) with CARTO Positron vector tiles, Web Mercator projection, custom zoom/pan controls, and live user GPS location radar pin.
-   - Background GPS location polling every 5 minutes with `document.visibilityState` lifecycle handling and on-demand recenter button.
-   - Responsive marker pins displaying centre name, stall count, rating (`★ 4.9`), and aircon snowflake logo for air-conditioned centres.
+1. **Zero Uppercase & All-Caps Elimination Across Entire Application**:
+   - Strictly eliminated every single instance of the `uppercase` CSS class across both `app/` and `components/` (0 occurrences remaining in the entire codebase).
+   - Replaced loud ALL-CAPS strings (e.g. `HAWKER CENTRES`, `ETA`, `STALL TOTAL:`, `[PAID]`, `KITCHEN DISPLAY (KDS)`, `1. CUSTOMER BASKET`, `VENUE & ESTABLISHMENT PROFILE`, etc.) with clean, readable sentence case or subtle title case.
+   - Enforced Apple-standard typography: `text-xs font-semibold`, `text-sm font-semibold`, tracking standard.
 
-2. **Hawker Centre Search & Filtering**:
-   - Floating top search pill (`fixed top-4 inset-x-4 max-w-md mx-auto z-20`) with Apple frosted glass styling, instant query clearing (`X`), GPS recenter, and QR scanner shortcut.
-   - Real-time search across hawker centre name, address/location, and culinary specialties.
-   - One-tap "Aircon Only" filter toggle chip.
-   - Active table session shortcut banner if diner has an active table session.
+2. **Apple-Inspired Minimalist Home Page & Bottom Sheet (`components/home-page.tsx`)**:
+   - Redesigned the bottom sheet drawer to be clean and minimal:
+     - Sleek drag handle: `h-1 w-9 rounded-full bg-black/20`.
+     - Streamlined iOS header row: title `Hawker centres` with count pill, minimalist segmented toggle (`Distance` / `Rating`), and subtle `Aircon` filter pill with `Snowflake` icon.
+     - Collapsed state (~124px): compact peek banner cleanly positioned above the floating bottom navigation bar with one-line summary ("Nearest: Lim's Foodcourt • 250 m" or "Top Rated...") and tap to expand.
+     - Expanded state (~76vh): smooth scrollable list with cards, `pb-28` to keep all items clear of the floating navigation bar.
+   - Streamlined Card Structure:
+     - Removed redundant double-buttons ("Locate" and "Enter & Order"). Entire card navigates cleanly to `/[centre.slug]/home`.
+     - Clean rank number `h-5 w-5 bg-black/[0.05] text-[11px] font-semibold text-[#1d1d1f]`, bold title, subtle cyan `Aircon` badge with `Snowflake` icon, and clean `Open` pill.
+     - Single metric display (distance with walk time or rating with star).
+     - Subtle footer: `{stallsCount} stalls`, preview of specialties, and minimal `View →`.
+   - Floating Apple Search Bar:
+     - Sleek `h-11`, placeholder "Search hawker centres", clear `X`, GPS recenter, and `QrCode` shortcut button.
+     - Minimal active table session banner: `Table 04 • Lim's Foodcourt`, `Resume →`.
 
-3. **Scrollable Swipe-Up Bottom Sheet Drawer**:
-   - Swipable and draggable bottom sheet drawer (`fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-2xl rounded-t-[28px] bg-white/95 backdrop-blur-2xl`).
-   - Collapsed state (~160px): shows drag handle, title with count badge, ranking mode segmented toggle, nearest/top-rated summary, and expand trigger. Positioned neatly above the floating bottom navigation bar.
-   - Expanded state (~80vh): slides up smoothly with touch swipe-up/down gestures or header tap, offering a full scrollable list of hawker centre cards with `pb-28` to keep all cards clear of the floating navigation bar.
+3. **Interactive Map Component Cleanup (`components/hawker-map.tsx`)**:
+   - Refined marker pins: clean Apple pill `px-2.5 py-1`, subtle shadow, selected state `bg-[#1d1d1f] text-white ring-2 ring-black/10`, embedded `Snowflake` icon for aircon centres and `★ {rating}`.
+   - Standardized map controls: `h-8 w-8` frosted glass buttons (`+`, `-`, `Locate`) with standard `h-3.5 w-3.5` icons.
+   - Simplified floating card: removed verbose "Enter Centre & Order" in favor of `View stalls →`.
 
-4. **Dynamic Ranking by Distance or Rating**:
-   - Segmented ranking toggle (`Distance` vs `Rating`).
-   - Distance ranking: calculates real-time Haversine distance from user GPS coordinates, displays distance in metres/kilometres and estimated walk time (`~3 min walk`), ranked nearest first.
-   - Rating ranking: sorts by centre rating descending (`★ 4.9`, `★ 4.7`), with tie-breaking by distance.
-   - Dynamic rank number badge (`#1`, `#2`, ...) on each card.
+4. **Component Sizing & Padding Standardization Across All Screens**:
+   - Standardized search bars, form inputs, buttons, badges, icons, and drawer heights across customer, merchant, and admin portals.
+   - Cleaned redundant text, duplicate metric displays, and unnecessary badges in `app/page.tsx`, `app/scan/page.tsx`, `app/results/page.tsx`, `app/orders/page.tsx`, `app/owner/orders/page.tsx`, `app/subscribe/page.tsx`, `app/apply/page.tsx`, `app/(admin)/admin/**`, and all client components.
 
-5. **Aircon Logo Indicator**:
-   - Prominent aircon badge on each hawker centre card with Snowflake icon (`Snowflake` + `Aircon` in cyan badge for air-conditioned centres; `Wind` + `Open-Air` in neutral badge for naturally ventilated centres).
-   - Snowflake logo indicator also rendered on map marker pins and selected centre popup card.
-   - Dedicated "Aircon Only" quick filter chip.
-
-6. **Database & Service Layer**:
-   - Supabase migration `020_hawker_centre_aircon_and_rating.sql` executed against remote database: added `has_aircon BOOLEAN NOT NULL DEFAULT FALSE` and `rating NUMERIC(3, 2) NOT NULL DEFAULT 4.5` to `restaurants` table.
-   - Updated `Database` types (`lib/database.types.ts`) and `HawkerCentreSummary` (`lib/hawker-centres/service.ts`) with dynamic DB query and mapping.
-
-7. **Verification**:
+5. **Verification**:
    - `npx tsc --noEmit`: 0 TypeScript errors.
    - `npm test`: 31/31 unit tests passed.
    - `npm run lint`: 0 errors.
    - `npm run build`: Successful production build across all 50 routes.
+
+## Previous Phases
+Phase 23: Full-Screen Map User Mode Home Page with Hawker Centre Search, Scrollable Bottom Sheet, Rating/Distance Ranking & Aircon Logo Indicator
 
 ## Previous Phases
 Phase 22: Apple-Inspired Visual Streamline for SaaS Platform Admin (`/admin`)

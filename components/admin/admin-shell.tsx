@@ -60,7 +60,7 @@ export function AdminShell({ children }: AdminShellProps) {
           </div>
           <div className="flex items-center gap-1.5">
             <span className="font-semibold text-sm tracking-tight text-[#1d1d1f]">Hawker Admin</span>
-            <span className="text-[10px] uppercase font-semibold tracking-wider px-1.5 py-0.5 rounded-full bg-black/5 text-[#6e6e73] border border-black/[0.06]">
+            <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-black/5 text-[#6e6e73] border border-black/[0.06]">
               {roleLabel}
             </span>
           </div>
@@ -113,8 +113,8 @@ export function AdminShell({ children }: AdminShellProps) {
         {/* Navigation Links */}
         <div className="flex-1 overflow-y-auto px-3 py-4 space-y-6">
           <div>
-            <p className="px-3 text-[11px] font-semibold uppercase tracking-wider text-[#86868b] mb-1.5">
-              Control Plane
+            <p className="px-3 text-xs font-semibold text-[#86868b] mb-1.5">
+              Control plane
             </p>
             <nav className="space-y-1">
               {navItems.map((item) => {
@@ -146,8 +146,8 @@ export function AdminShell({ children }: AdminShellProps) {
           </div>
 
           <div>
-            <p className="px-3 text-[11px] font-semibold uppercase tracking-wider text-[#86868b] mb-1.5">
-              Cross-App Portals
+            <p className="px-3 text-xs font-semibold text-[#86868b] mb-1.5">
+              Cross-app portals
             </p>
             <div className="space-y-1">
               <Link

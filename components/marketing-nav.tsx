@@ -167,8 +167,8 @@ export function MarketingNav({ currentPath = '/' }: MarketingNavProps) {
 
                     {dashboardDropdownOpen && (
                       <div className="absolute right-0 mt-2 w-60 rounded-2xl bg-white border border-black/10 shadow-[0_12px_36px_rgba(0,0,0,0.12)] py-1.5 text-xs text-[#1d1d1f] z-50 animate-in fade-in zoom-in-95 duration-100">
-                        <div className="px-3.5 py-1.5 text-[10px] font-semibold text-[#86868b] uppercase tracking-wider border-b border-black/[0.04]">
-                          Choose Workspace
+                        <div className="px-3.5 py-1.5 text-[10px] font-semibold text-[#86868b] border-b border-black/[0.04]">
+                          Choose workspace
                         </div>
                         <Link
                           href="/shop-owner/booths"

@@ -51,7 +51,7 @@ export function ResultCard({
       ) : null}
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#8e8e93]">{dish.restaurantName}</p>
+          <p className="text-xs font-semibold text-[#8e8e93]">{dish.restaurantName}</p>
           <h3 className="mt-2 text-xl font-semibold tracking-[-0.04em] text-[#1d1d1f]">{dish.name}</h3>
         </div>
         <div className="rounded-full bg-[#f5f5f7] px-2.5 py-1 text-sm font-medium text-[#1d1d1f]">RM {dish.price.toFixed(2)}</div>
@@ -92,7 +92,7 @@ export function ResultCard({
       </div>
 
       <div className="mt-4">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#6e6e73]">Why it matches</p>
+        <p className="text-xs font-semibold text-[#86868b]">Why it matches</p>
         <ul className="mt-2 space-y-2 text-sm text-[#374151]">
           {dish.reasons.map((reason) => (
             <li key={reason} className="flex items-center gap-2">

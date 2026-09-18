@@ -3,19 +3,16 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import {
-  ArrowRight,
   ChevronDown,
+  ChevronRight,
   ChevronUp,
   Locate,
-  MapPin,
-  Navigation,
+  QrCode,
   Search,
   Snowflake,
   Star,
   Store,
-  Wind,
   X,
-  QrCode,
 } from 'lucide-react';
 import { HawkerMap } from '@/components/hawker-map';
 import type { HawkerCentreSummary } from '@/lib/hawker-centres/service';
@@ -25,7 +22,7 @@ type RankingMode = 'distance' | 'rating';
 
 // Haversine formula to calculate geographic distance in kilometres
 function calculateDistanceKm(lat1: number, lon1: number, lat2: number, lon2: number): number {
-  const R = 6371; // Earth radius in km
+  const R = 6371;
   const dLat = ((lat2 - lat1) * Math.PI) / 180;
   const dLon = ((lon2 - lon1) * Math.PI) / 180;
   const a =
@@ -115,7 +112,7 @@ export function HomePage() {
         setIsLocating(false);
       },
       (err) => {
-        console.warn('Geolocation unavailable / denied:', err.message);
+        console.warn('Geolocation unavailable:', err.message);
         setIsLocating(false);
       },
       { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
@@ -187,11 +184,9 @@ export function HomePage() {
       if (rankingMode === 'rating') {
         const ratingDiff = (b.rating ?? 0) - (a.rating ?? 0);
         if (Math.abs(ratingDiff) > 0.01) return ratingDiff;
-        // Tie-breaker: distance
         return (a.distanceKm ?? 999999) - (b.distanceKm ?? 999999);
       }
 
-      // Default: distance ranking
       const distA = a.distanceKm ?? 999999;
       const distB = b.distanceKm ?? 999999;
       return distA - distB;
@@ -231,13 +226,10 @@ export function HomePage() {
     const currentY = e.touches[0].clientY;
     const deltaY = currentY - touchStartY.current;
 
-    // If scrolling upwards from collapsed state, expand
     if (!isExpanded && deltaY < -25) {
       setIsExpanded(true);
       touchStartY.current = null;
-    }
-    // If pulling down when list is at top, collapse
-    else if (isExpanded && deltaY > 35 && listContainerRef.current?.scrollTop === 0) {
+    } else if (isExpanded && deltaY > 35 && listContainerRef.current?.scrollTop === 0) {
       setIsExpanded(false);
       touchStartY.current = null;
     }
@@ -252,7 +244,7 @@ export function HomePage() {
   };
 
   return (
-    <div className="fixed inset-0 w-screen h-screen overflow-hidden bg-[#f4f4f6]">
+    <div className="fixed inset-0 w-screen h-screen overflow-hidden bg-[#f5f5f7]">
       {/* 1. Full-Screen Interactive Map */}
       <HawkerMap
         fullScreen={true}
@@ -262,9 +254,9 @@ export function HomePage() {
         onSelectCentre={handleSelectCentre}
       />
 
-      {/* 2. Floating Top Search & Header Bar */}
-      <div className="fixed top-4 inset-x-4 max-w-md mx-auto z-20 flex flex-col gap-2">
-        {/* Active Table Session Banner Shortcut */}
+      {/* 2. Floating Top Search & Quick Actions Bar */}
+      <div className="fixed top-3.5 inset-x-3.5 sm:inset-x-4 max-w-lg mx-auto z-20 flex flex-col gap-2">
+        {/* Active Table Session Banner */}
         {tableSession?.tableNumber && (
           <Link
             href={
@@ -272,62 +264,62 @@ export function HomePage() {
                 ? (`/${tableSession.centreSlug}/home` as any)
                 : ('/home' as any)
             }
-            className="flex items-center justify-between rounded-full bg-[#111827]/95 backdrop-blur-md px-3.5 py-1.5 text-xs text-white shadow-lg border border-white/10 hover:bg-black transition-all animate-fade-in"
+            className="flex items-center justify-between rounded-full bg-[#1d1d1f]/90 backdrop-blur-xl px-3.5 py-1.5 text-xs text-white shadow-xs border border-white/10 hover:bg-black transition-all"
           >
             <div className="flex items-center gap-2 truncate">
-              <span className="flex h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="font-semibold truncate">
-                Active Table {tableSession.tableNumber}
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+              <span className="font-medium truncate">
+                Table {tableSession.tableNumber}
                 {tableSession.centreName ? ` • ${tableSession.centreName}` : ''}
               </span>
             </div>
-            <span className="text-[10px] font-bold text-amber-300 underline shrink-0 ml-2">
-              Resume Order →
+            <span className="text-[11px] font-semibold text-emerald-300 shrink-0 ml-2">
+              Resume →
             </span>
           </Link>
         )}
 
-        {/* Floating Search Pill */}
-        <div className="relative flex items-center rounded-full bg-white/95 backdrop-blur-xl shadow-[0_8px_24px_rgba(0,0,0,0.12)] border border-black/10 transition-all focus-within:ring-2 focus-within:ring-[#111827]">
+        {/* Minimal Search Pill */}
+        <div className="relative flex items-center h-11 rounded-full bg-white/90 backdrop-blur-xl shadow-[0_4px_16px_rgba(0,0,0,0.06)] border border-black/[0.08] focus-within:border-black/20 transition-all">
           <Search className="absolute left-3.5 h-4 w-4 text-[#86868b] pointer-events-none" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search hawker centre or food..."
-            className="w-full h-11 pl-10 pr-20 bg-transparent text-sm font-medium text-[#1d1d1f] placeholder-[#86868b] outline-none"
+            placeholder="Search hawker centres"
+            className="w-full h-full pl-10 pr-20 bg-transparent text-sm text-[#1d1d1f] placeholder-[#86868b] outline-none font-normal"
           />
 
-          <div className="absolute right-2.5 flex items-center gap-1">
+          <div className="absolute right-2 flex items-center gap-0.5">
             {searchQuery ? (
               <button
                 type="button"
                 onClick={() => setSearchQuery('')}
-                className="p-1 rounded-full text-[#86868b] hover:text-[#1d1d1f] hover:bg-black/5 transition-colors"
+                className="p-1.5 rounded-full text-[#86868b] hover:text-[#1d1d1f] transition-colors"
                 aria-label="Clear search"
               >
-                <X className="h-4 w-4" />
+                <X className="h-3.5 w-3.5" />
               </button>
             ) : (
               <button
                 type="button"
                 onClick={() => pollLocation()}
                 disabled={isLocating}
-                title="Recenter GPS location"
-                aria-label="Recenter GPS location"
-                className="p-1.5 rounded-full text-blue-600 hover:bg-blue-50 transition-colors"
+                title="Recenter location"
+                aria-label="Recenter location"
+                className="p-1.5 rounded-full text-[#0071e3] hover:bg-blue-50/60 transition-colors"
               >
-                <Locate className={`h-4 w-4 ${isLocating ? 'animate-spin text-amber-500' : ''}`} />
+                <Locate className={`h-3.5 w-3.5 ${isLocating ? 'animate-spin text-amber-500' : ''}`} />
               </button>
             )}
 
             <Link
               href="/scan"
-              title="Scan Table QR Code"
-              aria-label="Scan Table QR Code"
+              title="Scan QR"
+              aria-label="Scan QR"
               className="p-1.5 rounded-full text-[#1d1d1f] hover:bg-black/5 transition-colors"
             >
-              <QrCode className="h-4 w-4" />
+              <QrCode className="h-3.5 w-3.5" />
             </Link>
           </div>
         </div>
@@ -335,125 +327,135 @@ export function HomePage() {
 
       {/* 3. Swipe-Up Bottom Sheet Drawer */}
       <div
-        className={`fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-2xl rounded-t-[28px] bg-white/95 backdrop-blur-2xl border-t border-black/10 shadow-[0_-12px_36px_rgba(0,0,0,0.15)] transition-all duration-300 ease-out flex flex-col ${
-          isExpanded ? 'h-[80vh] sm:h-[82vh]' : 'h-[160px] sm:h-[168px]'
+        className={`fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-xl rounded-t-3xl bg-white/90 backdrop-blur-2xl border-t border-black/[0.08] shadow-[0_-8px_30px_rgba(0,0,0,0.08)] transition-all duration-300 ease-out flex flex-col ${
+          isExpanded ? 'h-[76vh] sm:h-[78vh]' : 'h-[124px]'
         }`}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        {/* Sheet Drag Handle & Controls Bar */}
-        <div className="pt-2.5 pb-2 px-4 sm:px-5 shrink-0 border-b border-black/5 select-none">
-          {/* Pull Handle Bar */}
-          <div
-            onClick={() => setIsExpanded((prev) => !prev)}
-            className="w-full flex justify-center py-1 cursor-pointer group"
-          >
-            <div className="h-1.5 w-12 rounded-full bg-black/25 group-hover:bg-black/40 transition-colors" />
+        {/* Pull Handle */}
+        <div
+          onClick={() => setIsExpanded((prev) => !prev)}
+          className="w-full flex justify-center pt-2.5 pb-1.5 cursor-pointer group select-none"
+        >
+          <div className="h-1 w-9 rounded-full bg-black/20 group-hover:bg-black/35 transition-colors" />
+        </div>
+
+        {/* Minimal Unified Header Bar */}
+        <div className="px-4 pb-2 flex items-center justify-between gap-2 border-b border-black/[0.04] select-none">
+          <div className="flex items-center gap-1.5">
+            <h2 className="text-sm font-semibold text-[#1d1d1f]">
+              Hawker centres
+            </h2>
+            <span className="text-xs text-[#86868b] font-normal">
+              ({filteredCentres.length})
+            </span>
           </div>
 
-          {/* Row 1: Title, Count, and Ranking Mode Segmented Toggle */}
-          <div className="mt-1 flex items-center justify-between gap-2">
-            <div className="flex items-center gap-2">
-              <h2 className="text-sm font-bold text-[#1d1d1f] uppercase tracking-wider">
-                Hawker Centres
-              </h2>
-              <span className="rounded-full bg-black/5 px-2 py-0.5 text-[10px] font-bold text-[#6e6e73]">
-                {filteredCentres.length}
-              </span>
-            </div>
-
-            {/* Ranking Mode Segmented Control: Rating vs Distance */}
-            <div className="flex items-center bg-black/[0.06] p-0.5 rounded-full text-xs font-medium">
+          <div className="flex items-center gap-1.5">
+            {/* Segmented Ranking Toggle */}
+            <div className="flex items-center bg-black/[0.05] p-0.5 rounded-full text-xs font-medium">
               <button
                 type="button"
                 onClick={() => setRankingMode('distance')}
-                className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold transition-all ${
+                className={`px-2.5 py-0.5 rounded-full text-[11px] transition-all ${
                   rankingMode === 'distance'
-                    ? 'bg-[#111827] text-white shadow-xs'
-                    : 'text-[#6e6e73] hover:text-[#1d1d1f]'
+                    ? 'bg-white text-[#1d1d1f] shadow-xs font-semibold'
+                    : 'text-[#86868b] hover:text-[#1d1d1f]'
                 }`}
-                title="Rank by shortest distance"
               >
-                <Navigation className="h-3 w-3" />
-                <span>Distance</span>
+                Distance
               </button>
 
               <button
                 type="button"
                 onClick={() => setRankingMode('rating')}
-                className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold transition-all ${
+                className={`px-2.5 py-0.5 rounded-full text-[11px] transition-all ${
                   rankingMode === 'rating'
-                    ? 'bg-[#111827] text-white shadow-xs'
-                    : 'text-[#6e6e73] hover:text-[#1d1d1f]'
+                    ? 'bg-white text-[#1d1d1f] shadow-xs font-semibold'
+                    : 'text-[#86868b] hover:text-[#1d1d1f]'
                 }`}
-                title="Rank by highest customer rating"
               >
-                <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
-                <span>Rating</span>
+                Rating
               </button>
             </div>
-          </div>
 
-          {/* Row 2: Aircon Filter Chip & Summary or Expand Toggle */}
-          <div className="mt-2 flex items-center justify-between gap-2">
-            {/* Aircon Quick Toggle Filter */}
+            {/* Aircon Quick Filter Button */}
             <button
               type="button"
               onClick={() => setAirconOnly((prev) => !prev)}
-              className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-semibold border transition-all ${
+              className={`flex items-center gap-1 px-2.5 py-0.5 text-[11px] rounded-full border transition-all ${
                 airconOnly
-                  ? 'bg-cyan-500 text-white border-cyan-600 shadow-xs'
-                  : 'bg-white text-[#6e6e73] border-black/10 hover:border-black/20'
+                  ? 'bg-cyan-600 text-white border-cyan-600 font-semibold shadow-xs'
+                  : 'bg-transparent text-[#86868b] border-black/[0.08] hover:text-[#1d1d1f]'
               }`}
             >
-              <Snowflake className={`h-3 w-3 ${airconOnly ? 'text-white' : 'text-cyan-600'}`} />
-              <span>Aircon Only</span>
+              <Snowflake className="h-3 w-3" />
+              <span>Aircon</span>
             </button>
 
-            {/* Closest/Top Rated Summary Pill or Expand/Collapse */}
+            {/* Expand / Collapse Chevron */}
             <button
               type="button"
               onClick={() => setIsExpanded((prev) => !prev)}
-              className="flex items-center gap-1 text-xs font-semibold text-[#1d1d1f] hover:text-black py-0.5 px-2 rounded-full hover:bg-black/5 transition-colors"
+              className="p-1 rounded-full text-[#86868b] hover:text-[#1d1d1f] hover:bg-black/5 transition-colors"
+              aria-label={isExpanded ? 'Collapse' : 'Expand'}
             >
-              <span className="truncate max-w-[170px] sm:max-w-xs text-[11px] text-[#6e6e73]">
-                {isExpanded
-                  ? 'Collapse List'
-                  : topRankedCentre
-                    ? rankingMode === 'distance'
-                      ? `Nearest: ${topRankedCentre.name}`
-                      : `Top Rated: ${topRankedCentre.name} (★${topRankedCentre.rating})`
-                    : 'Pull up to view'}
-              </span>
               {isExpanded ? (
-                <ChevronDown className="h-3.5 w-3.5 text-[#1d1d1f]" />
+                <ChevronDown className="h-4 w-4" />
               ) : (
-                <ChevronUp className="h-3.5 w-3.5 text-[#1d1d1f]" />
+                <ChevronUp className="h-4 w-4" />
               )}
             </button>
           </div>
         </div>
 
+        {/* Collapsed Peek Summary */}
+        {!isExpanded && (
+          <div
+            onClick={() => setIsExpanded(true)}
+            className="px-4 py-2.5 flex items-center justify-between text-xs text-[#86868b] cursor-pointer hover:bg-black/[0.01] transition-colors"
+          >
+            <span className="truncate max-w-[280px]">
+              {topRankedCentre
+                ? rankingMode === 'distance'
+                  ? `${topRankedCentre.name} • ${
+                      topRankedCentre.distanceKm !== null
+                        ? topRankedCentre.distanceKm < 1
+                          ? `${Math.round(topRankedCentre.distanceKm * 1000)} m`
+                          : `${topRankedCentre.distanceKm} km`
+                        : 'Nearest'
+                    }`
+                  : `${topRankedCentre.name} • ★ ${topRankedCentre.rating.toFixed(1)}`
+                : 'Swipe up to explore'}
+            </span>
+            <span className="text-[11px] font-semibold text-[#1d1d1f] flex items-center gap-0.5 shrink-0 ml-2">
+              <span>View all</span>
+              <ChevronRight className="h-3.5 w-3.5" />
+            </span>
+          </div>
+        )}
+
         {/* Scrollable Hawker Centre Cards List */}
         <div
           ref={listContainerRef}
-          className={`flex-1 overflow-y-auto px-4 pt-3 pb-28 space-y-3 ${
+          className={`flex-1 overflow-y-auto px-4 pt-3 pb-28 space-y-2.5 ${
             isExpanded ? 'block' : 'hidden'
           }`}
         >
           {isLoading ? (
-            <div className="space-y-3 py-2">
+            <div className="space-y-2.5 py-1">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="h-28 rounded-[22px] bg-black/5 animate-pulse" />
+                <div key={i} className="h-20 rounded-2xl bg-black/[0.04] animate-pulse" />
               ))}
             </div>
           ) : filteredCentres.length === 0 ? (
-            <div className="rounded-[22px] bg-black/[0.03] p-8 text-center border border-black/5">
-              <Store className="mx-auto h-8 w-8 text-[#9ca3af]" />
+            <div className="rounded-2xl bg-black/[0.02] p-8 text-center border border-black/[0.04]">
+              <Store className="mx-auto h-7 w-7 text-[#86868b]" />
               <p className="mt-2 text-sm font-semibold text-[#1d1d1f]">No hawker centres found</p>
-              <p className="mt-1 text-xs text-[#6e6e73]">
-                Try adjusting your search query or turning off the aircon filter.
+              <p className="mt-1 text-xs text-[#86868b]">
+                Try adjusting your search or filters.
               </p>
               {(searchQuery || airconOnly) && (
                 <button
@@ -462,9 +464,9 @@ export function HomePage() {
                     setSearchQuery('');
                     setAirconOnly(false);
                   }}
-                  className="mt-3 inline-flex items-center gap-1 rounded-full bg-[#111827] px-3.5 py-1.5 text-xs font-semibold text-white hover:bg-black transition-colors"
+                  className="mt-3 inline-flex items-center gap-1 rounded-full bg-[#1d1d1f] px-3 py-1 text-xs font-semibold text-white hover:bg-black transition-colors"
                 >
-                  Reset Filters
+                  Reset filters
                 </button>
               )}
             </div>
@@ -474,82 +476,71 @@ export function HomePage() {
               const rankNumber = index + 1;
 
               return (
-                <article
+                <Link
                   key={centre.id}
+                  href={`/${centre.slug}/home` as any}
                   onClick={() => setSelectedCentreId(centre.id)}
-                  className={`rounded-[22px] p-4 transition-all border cursor-pointer ${
+                  className={`block rounded-2xl p-3.5 bg-white border transition-all active:scale-[0.99] ${
                     isSelected
-                      ? 'bg-black/[0.02] border-[#111827] ring-1 ring-[#111827]'
-                      : 'bg-white border-black/10 hover:border-black/20 shadow-xs'
+                      ? 'border-[#1d1d1f] ring-1 ring-[#1d1d1f] shadow-xs'
+                      : 'border-black/[0.06] hover:border-black/20 shadow-xs'
                   }`}
                 >
-                  {/* Card Header: Rank, Name, Aircon Badge, Open Tag, Rating/Distance */}
+                  {/* Top Row: Rank, Name, Aircon Badge, Open Tag, Primary Metric */}
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0 flex-1">
-                      <div className="flex items-center flex-wrap gap-1.5">
-                        {/* Rank Badge */}
-                        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#111827] text-[10px] font-bold text-white shrink-0">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-black/[0.05] text-[10px] font-semibold text-[#1d1d1f] shrink-0">
                           {rankNumber}
                         </span>
 
-                        <h3 className="text-base font-bold text-[#1d1d1f] truncate">
+                        <h3 className="text-sm font-semibold text-[#1d1d1f] truncate">
                           {centre.name}
                         </h3>
 
-                        {/* Aircon Indicator Badge */}
-                        {centre.hasAircon ? (
+                        {centre.hasAircon && (
                           <span
-                            className="inline-flex items-center gap-1 rounded-full bg-cyan-50 border border-cyan-200/90 px-2 py-0.5 text-[10px] font-bold text-cyan-800 shrink-0"
-                            title="Air-Conditioned Indoor Dining"
+                            className="inline-flex items-center gap-0.5 rounded-full bg-cyan-50 border border-cyan-200/80 px-1.5 py-0.2 text-[9px] font-semibold text-cyan-800 shrink-0"
+                            title="Aircon"
                           >
-                            <Snowflake className="h-3 w-3 text-cyan-600" />
+                            <Snowflake className="h-2.5 w-2.5 text-cyan-600" />
                             <span>Aircon</span>
-                          </span>
-                        ) : (
-                          <span
-                            className="inline-flex items-center gap-1 rounded-full bg-stone-100 border border-stone-200/80 px-2 py-0.5 text-[10px] font-medium text-[#6e6e73] shrink-0"
-                            title="Naturally Ventilated / Open-Air Dining"
-                          >
-                            <Wind className="h-3 w-3 text-stone-500" />
-                            <span>Open-Air</span>
                           </span>
                         )}
 
-                        <span className="rounded-full bg-emerald-50 border border-emerald-200/70 px-2 py-0.5 text-[10px] font-bold text-emerald-800 shrink-0">
+                        <span className="rounded-full bg-emerald-50 border border-emerald-200/60 px-1.5 py-0.2 text-[9px] font-medium text-emerald-800 shrink-0">
                           Open
                         </span>
                       </div>
 
-                      <p className="mt-1 flex items-center gap-1 text-xs text-[#6e6e73] truncate">
-                        <MapPin className="h-3.5 w-3.5 text-red-500 shrink-0" />
-                        <span className="truncate">{centre.address}</span>
+                      <p className="mt-1 text-xs text-[#86868b] truncate">
+                        {centre.address}
                       </p>
                     </div>
 
-                    {/* Primary Ranking Highlight Metric (Distance or Rating) */}
+                    {/* Metric Column */}
                     <div className="text-right shrink-0 flex flex-col items-end">
                       {rankingMode === 'distance' && centre.distanceKm !== null ? (
                         <>
-                          <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 border border-blue-200/60 px-2.5 py-0.5 text-xs font-bold text-blue-700">
-                            <Navigation className="h-3 w-3" />
+                          <span className="text-xs font-semibold text-[#0071e3]">
                             {centre.distanceKm < 1
                               ? `${Math.round(centre.distanceKm * 1000)} m`
                               : `${centre.distanceKm} km`}
                           </span>
                           {centre.walkMins && (
-                            <span className="mt-0.5 text-[10px] text-[#6e6e73]">
+                            <span className="text-[10px] text-[#86868b]">
                               ~{centre.walkMins} min walk
                             </span>
                           )}
                         </>
                       ) : (
                         <>
-                          <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 border border-amber-200/60 px-2.5 py-0.5 text-xs font-bold text-amber-800">
+                          <span className="text-xs font-semibold text-amber-700 flex items-center gap-0.5">
                             <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
-                            ★ {centre.rating.toFixed(1)}
+                            {centre.rating.toFixed(1)}
                           </span>
                           {centre.distanceKm !== null && (
-                            <span className="mt-0.5 text-[10px] text-[#6e6e73]">
+                            <span className="text-[10px] text-[#86868b]">
                               {centre.distanceKm < 1
                                 ? `${Math.round(centre.distanceKm * 1000)} m`
                                 : `${centre.distanceKm} km`}
@@ -560,50 +551,27 @@ export function HomePage() {
                     </div>
                   </div>
 
-                  {/* Food Specialties Tags */}
-                  {centre.specialties.length > 0 && (
-                    <div className="mt-2.5 flex flex-wrap gap-1">
-                      {centre.specialties.map((s) => (
-                        <span
-                          key={s}
-                          className="rounded-full bg-black/5 px-2 py-0.5 text-[10px] text-[#6e6e73] font-medium"
-                        >
-                          {s}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* Footer: Stalls Count & Actions */}
-                  <div className="mt-3 flex items-center justify-between pt-2.5 border-t border-black/5">
-                    <span className="text-xs text-[#6e6e73] font-medium flex items-center gap-1">
-                      <Store className="h-3.5 w-3.5 text-amber-600" />
-                      {centre.stallsCount} Food Stalls • ★ {centre.rating.toFixed(1)}
+                  {/* Card Footer: Stalls count & Arrow */}
+                  <div className="mt-2.5 pt-2 border-t border-black/[0.04] flex items-center justify-between text-xs text-[#86868b]">
+                    <span className="flex items-center gap-1">
+                      <Store className="h-3.5 w-3.5 text-[#86868b]" />
+                      <span>{centre.stallsCount} stalls</span>
+                      {centre.specialties.length > 0 && (
+                        <>
+                          <span>•</span>
+                          <span className="truncate max-w-[180px] sm:max-w-xs">
+                            {centre.specialties.slice(0, 3).join(', ')}
+                          </span>
+                        </>
+                      )}
                     </span>
 
-                    <div className="flex items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedCentreId(centre.id);
-                        }}
-                        className="rounded-full bg-black/5 px-3 py-1.5 text-xs font-semibold text-[#1d1d1f] hover:bg-black/10 transition-colors"
-                      >
-                        Locate
-                      </button>
-
-                      <Link
-                        href={`/${centre.slug}/home` as any}
-                        className="inline-flex items-center gap-1.5 rounded-full bg-[#111827] px-3.5 py-1.5 text-xs font-bold text-white shadow-xs hover:bg-black transition-colors"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <span>Enter & Order</span>
-                        <ArrowRight className="h-3 w-3" />
-                      </Link>
+                    <div className="flex items-center gap-0.5 text-[#1d1d1f] font-medium text-[11px]">
+                      <span>View</span>
+                      <ChevronRight className="h-3.5 w-3.5 text-[#86868b]" />
                     </div>
                   </div>
-                </article>
+                </Link>
               );
             })
           )}

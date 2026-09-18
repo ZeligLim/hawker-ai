@@ -160,7 +160,7 @@ function AuthForm() {
         </button>
       )}
 
-      <div className="my-5 flex items-center gap-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#6e6e73]">
+      <div className="my-5 flex items-center gap-3 text-xs font-medium text-[#86868b]">
         <div className="h-px flex-1 bg-[#e5e7eb]" />
         or
         <div className="h-px flex-1 bg-[#e5e7eb]" />

@@ -106,7 +106,7 @@ export function ShopDetailClient({ shop, slug }: { shop: ShopData; slug: string 
 
             <div className="flex shrink-0 flex-col items-end gap-1 text-right">
               <span
-                className={`whitespace-nowrap rounded-full px-2 sm:px-2.5 py-0.5 sm:py-1 text-[10px] font-semibold uppercase tracking-[0.12em] ${
+                className={`whitespace-nowrap rounded-full px-2 sm:px-2.5 py-0.5 sm:py-1 text-[10px] font-semibold ${
                   shop.busy === 'Busy'
                     ? 'bg-[#fef3c7] text-[#b45309]'
                     : shop.busy === 'Moderate'

@@ -191,7 +191,7 @@ export default function PlansPage() {
 
           <div className="relative z-10 grid sm:grid-cols-3 gap-6 pt-8">
             <div className="space-y-2">
-              <p className="text-xs font-bold uppercase tracking-wider text-white/50">Setup & Software</p>
+              <p className="text-xs font-semibold text-white/60">Setup & software</p>
               <p className="text-2xl font-bold text-white">RM 0.00</p>
               <p className="text-xs text-white/60 leading-relaxed">
                 Free venue account, unlimited QR codes, and zero terminal rental charges.
@@ -199,7 +199,7 @@ export default function PlansPage() {
             </div>
 
             <div className="space-y-2">
-              <p className="text-xs font-bold uppercase tracking-wider text-[#2997ff]">Monetization Cut</p>
+              <p className="text-xs font-semibold text-[#2997ff]">Monetization cut</p>
               <p className="text-2xl font-bold text-white">Small Cut</p>
               <p className="text-xs text-white/60 leading-relaxed">
                 Transparent cut deducted from payment gateway transactions. No sales = RM 0 fee.
@@ -207,7 +207,7 @@ export default function PlansPage() {
             </div>
 
             <div className="space-y-2">
-              <p className="text-xs font-bold uppercase tracking-wider text-[#30d158]">Stall Payouts</p>
+              <p className="text-xs font-semibold text-[#30d158]">Stall payouts</p>
               <p className="text-2xl font-bold text-white">Direct & Fast</p>
               <p className="text-xs text-white/60 leading-relaxed">
                 Net earnings deposited automatically to your bank account with complete audit logs.
@@ -235,8 +235,8 @@ export default function PlansPage() {
       {/* ── ALL FEATURES UNLOCKED ── */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="max-w-2xl mx-auto text-center mb-12">
-          <p className="text-xs font-semibold tracking-wider uppercase text-[#0071e3] mb-2">
-            No Tier Gates
+          <p className="text-xs font-semibold text-[#0071e3] mb-2">
+            No tier gates
           </p>
           <h2 className="text-2xl sm:text-4xl font-semibold tracking-tight text-[#1d1d1f]">
             Everything unlocked from day one.
@@ -268,8 +268,8 @@ export default function PlansPage() {
       {/* ── COMPARISON TABLE: HAWKER VS LEGACY POS ── */}
       <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="max-w-2xl mx-auto text-center mb-12">
-          <p className="text-xs font-semibold tracking-wider uppercase text-[#0071e3] mb-2">
-            Clear Contrast
+          <p className="text-xs font-semibold text-[#0071e3] mb-2">
+            Clear contrast
           </p>
           <h2 className="text-2xl sm:text-4xl font-semibold tracking-tight text-[#1d1d1f]">
             Hawker vs. Legacy Subscription POS
@@ -280,9 +280,9 @@ export default function PlansPage() {
         </div>
 
         <div className="bg-white rounded-[32px] border border-black/[0.08] shadow-sm overflow-hidden">
-          <div className="grid grid-cols-[1.2fr_1fr_1fr] p-5 sm:p-6 bg-[#f5f5f7] border-b border-black/[0.06] text-xs font-bold uppercase tracking-wider text-[#6e6e73]">
+          <div className="grid grid-cols-[1.2fr_1fr_1fr] p-5 sm:p-6 bg-[#f5f5f7] border-b border-black/[0.06] text-xs font-semibold text-[#86868b]">
             <div>Feature</div>
-            <div className="text-[#0071e3]">Hawker (Pay-As-You-Grow)</div>
+            <div className="text-[#0071e3]">Hawker (Pay-as-you-grow)</div>
             <div className="text-[#86868b]">Traditional POS / SaaS</div>
           </div>
 
@@ -312,8 +312,8 @@ export default function PlansPage() {
       {/* ── FAQ SECTION ── */}
       <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="text-center mb-12">
-          <p className="text-xs font-semibold tracking-wider uppercase text-[#0071e3] mb-2">
-            Frequently Asked Questions
+          <p className="text-xs font-semibold text-[#0071e3] mb-2">
+            Frequently asked questions
           </p>
           <h2 className="text-2xl sm:text-4xl font-semibold tracking-tight text-[#1d1d1f]">
             Got questions? We have answers.

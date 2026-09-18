@@ -374,7 +374,7 @@ function CustomerStallContent() {
 
                       <div className="flex min-w-[84px] shrink-0 flex-col items-end gap-1 text-right">
                         <span
-                          className={`whitespace-nowrap rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider ${
+                          className={`whitespace-nowrap rounded-full px-2 py-0.5 text-[10px] font-semibold ${
                             stall.busy === 'Busy'
                               ? 'bg-amber-50 text-amber-800 border border-amber-200'
                               : stall.busy === 'Moderate'
@@ -387,9 +387,9 @@ function CustomerStallContent() {
                           {stall.busy}
                         </span>
                         {stall.busy !== 'Closed' && (
-                          <span className="whitespace-nowrap text-[10px] font-semibold text-[#6e6e73] flex items-center gap-1">
+                          <span className="whitespace-nowrap text-[10px] font-medium text-[#6e6e73] flex items-center gap-1">
                             <Clock className="h-2.5 w-2.5 text-amber-600" />
-                            ETA {stall.eta}
+                            ~{stall.eta}
                           </span>
                         )}
                       </div>

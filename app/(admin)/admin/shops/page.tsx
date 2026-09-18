@@ -73,8 +73,8 @@ export default function AdminShopsListPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-black/[0.06] pb-5">
         <div>
-          <span className="text-[11px] uppercase font-semibold tracking-wider text-[#6e6e73] bg-black/[0.04] border border-black/[0.06] px-2.5 py-0.5 rounded-full">
-            Platform Directory
+          <span className="text-xs font-semibold text-[#86868b] bg-black/[0.04] border border-black/[0.06] px-2.5 py-0.5 rounded-full">
+            Platform directory
           </span>
           <h1 className="mt-2 text-2xl sm:text-3xl font-semibold text-[#1d1d1f] tracking-[-0.03em]">
             Venues & Food Halls

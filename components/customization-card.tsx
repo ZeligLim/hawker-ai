@@ -41,7 +41,7 @@ export function CustomizationCard({
     <div className="fixed inset-x-4 bottom-24 z-30 mx-auto max-w-[398px] rounded-[26px] bg-white p-4 shadow-[0_24px_70px_rgba(15,23,42,0.24)] ring-1 ring-black/5">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#6e6e73]">Customize</p>
+          <p className="text-xs font-semibold text-[#86868b]">Customize</p>
           <h2 className="mt-1 text-lg font-semibold tracking-[-0.04em] text-[#1d1d1f]">{dishName}</h2>
           <p className="mt-1 text-xs text-[#6e6e73]">{customization.title}</p>
         </div>

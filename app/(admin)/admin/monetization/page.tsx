@@ -200,8 +200,8 @@ function AdminMonetizationContent() {
               Admin Overview
             </Link>
             <span className="text-[#86868b]">&bull;</span>
-            <span className="text-[11px] uppercase font-semibold tracking-wider text-[#6e6e73] bg-black/[0.04] border border-black/[0.06] px-2.5 py-0.5 rounded-full">
-              Monetization Engine
+            <span className="text-xs font-semibold text-[#86868b] bg-black/[0.04] border border-black/[0.06] px-2.5 py-0.5 rounded-full">
+              Monetization engine
             </span>
           </div>
           <h1 className="mt-2 text-2xl sm:text-3xl font-semibold text-[#1d1d1f] tracking-[-0.03em]">
@@ -242,8 +242,8 @@ function AdminMonetizationContent() {
             <div className="rounded-3xl bg-white p-6 sm:p-7 border border-black/[0.08] shadow-xs space-y-6">
               {/* Venue Selector */}
               <div>
-                <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#86868b] mb-2">
-                  Target Venue / Food Hall
+                <label className="block text-xs font-semibold text-[#86868b] mb-2">
+                  Target venue
                 </label>
                 <div className="relative">
                   <select
@@ -267,8 +267,8 @@ function AdminMonetizationContent() {
 
               {/* Fee Model Selector */}
               <div>
-                <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#86868b] mb-2">
-                  Commission Model
+                <label className="block text-xs font-semibold text-[#86868b] mb-2">
+                  Commission model
                 </label>
                 <div className="p-1 bg-black/[0.04] rounded-2xl grid grid-cols-3 gap-1 border border-black/5">
                   <button
@@ -325,8 +325,8 @@ function AdminMonetizationContent() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {feeMode === 'percentage' || feeMode === 'mixed' ? (
                   <div>
-                    <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#86868b] mb-2">
-                      Platform Fee (%)
+                    <label className="block text-xs font-semibold text-[#86868b] mb-2">
+                      Platform fee (%)
                     </label>
                     <div className="relative">
                       <input
@@ -363,8 +363,8 @@ function AdminMonetizationContent() {
 
                 {feeMode === 'fixed' || feeMode === 'mixed' ? (
                   <div>
-                    <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#86868b] mb-2">
-                      Flat Platform Fee (RM)
+                    <label className="block text-xs font-semibold text-[#86868b] mb-2">
+                      Flat platform fee (RM)
                     </label>
                     <div className="relative">
                       <span className="absolute left-3.5 top-2.5 text-xs font-semibold text-[#86868b]">RM</span>
@@ -399,8 +399,8 @@ function AdminMonetizationContent() {
 
               {/* Fee Payer Toggle */}
               <div>
-                <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#86868b] mb-2">
-                  Fee Payer Routing
+                <label className="block text-xs font-semibold text-[#86868b] mb-2">
+                  Fee payer routing
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <button
@@ -478,8 +478,8 @@ function AdminMonetizationContent() {
                   <Info className="h-4 w-4 text-[#0071e3]" />
                   <h3 className="text-sm font-semibold text-[#1d1d1f]">Live Order Simulation</h3>
                 </div>
-                <span className="text-[10px] uppercase font-semibold tracking-wider px-2 py-0.5 rounded-full bg-black/[0.04] text-[#6e6e73] border border-black/[0.06]">
-                  RM 20.00 Order
+                <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-black/[0.04] text-[#86868b] border border-black/[0.06]">
+                  RM 20.00 order
                 </span>
               </div>
 

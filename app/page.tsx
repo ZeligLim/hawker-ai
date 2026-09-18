@@ -347,7 +347,7 @@ export default function LandingPage() {
                         >
                           <div className="flex items-start justify-between">
                             <div>
-                              <span className="text-[9px] font-bold text-[#86868b] uppercase tracking-wider">
+                              <span className="text-[10px] font-medium text-[#86868b]">
                                 {booth.stall}
                               </span>
                               <p className="text-xs sm:text-sm font-bold text-[#1d1d1f] truncate">{booth.name}</p>
@@ -498,8 +498,8 @@ export default function LandingPage() {
       <section className="py-14 sm:py-24 bg-white border-y border-black/[0.06]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-2xl mx-auto text-center mb-10 sm:mb-16">
-            <p className="text-xs font-bold tracking-wider uppercase text-[#0071e3] mb-2">
-              The Food Hall Paradigm
+            <p className="text-xs font-semibold text-[#0071e3] mb-2">
+              The food hall paradigm
             </p>
             <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-[#1d1d1f]">
               The friction of old food halls. Reimagined.
@@ -601,8 +601,8 @@ export default function LandingPage() {
       <section id="how-it-works" className="py-14 sm:py-24 bg-[#f5f5f7]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-2xl mx-auto text-center mb-10 sm:mb-16">
-            <p className="text-xs font-bold tracking-wider uppercase text-[#0071e3] mb-2">
-              Frictionless Setup
+            <p className="text-xs font-semibold text-[#0071e3] mb-2">
+              Frictionless setup
             </p>
             <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-[#1d1d1f]">
               Up and running in four simple steps.
@@ -661,8 +661,8 @@ export default function LandingPage() {
           <div className="mt-8 sm:mt-12 bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-8 border border-black/[0.06] shadow-sm">
             <div className="grid lg:grid-cols-2 gap-6 sm:gap-8 items-center">
               <div>
-                <span className="text-xs font-bold text-[#0071e3] uppercase tracking-wider">
-                  The Booth Invitation Flow
+                <span className="text-xs font-semibold text-[#0071e3]">
+                  The booth invitation flow
                 </span>
                 <h3 className="text-xl sm:text-2xl font-bold tracking-tight text-[#1d1d1f] mt-1.5">
                   No complex setup for your stall holders.
@@ -689,8 +689,8 @@ export default function LandingPage() {
                 </div>
                 <div className="bg-white p-3.5 rounded-xl border border-black/[0.06] flex items-center justify-between gap-3">
                   <div className="min-w-0">
-                    <p className="text-[10px] text-[#86868b] uppercase tracking-wider font-semibold">
-                      Booth #04 Invitation Key
+                    <p className="text-xs text-[#86868b] font-semibold">
+                      Booth #04 invitation key
                     </p>
                     <p className="text-base sm:text-xl font-mono font-bold tracking-wider text-[#1d1d1f] mt-0.5 truncate">
                       HKR-8F92-KL
@@ -725,8 +725,8 @@ export default function LandingPage() {
       <section id="features" className="py-14 sm:py-24 bg-white border-t border-black/[0.06]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-2xl mx-auto text-center mb-10 sm:mb-16">
-            <p className="text-xs font-bold tracking-wider uppercase text-[#0071e3] mb-2">
-              Comprehensive Capability
+            <p className="text-xs font-semibold text-[#0071e3] mb-2">
+              Comprehensive capability
             </p>
             <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-[#1d1d1f]">
               Engineered for speed. Built for scale.
@@ -743,8 +743,8 @@ export default function LandingPage() {
                 <div className="w-10 h-10 rounded-2xl bg-white flex items-center justify-center text-[#0071e3] shadow-xs mb-4">
                   <Receipt className="w-5 h-5" />
                 </div>
-                <span className="text-xs font-bold text-[#0071e3] uppercase tracking-wider">
-                  Unified Checkout
+                <span className="text-xs font-semibold text-[#0071e3]">
+                  Unified checkout
                 </span>
                 <h3 className="text-xl sm:text-2xl font-bold text-[#1d1d1f] tracking-tight mt-1">
                   One order. One payment. Multiple stalls.
@@ -769,8 +769,8 @@ export default function LandingPage() {
                 <div className="w-10 h-10 rounded-2xl bg-white flex items-center justify-center text-[#30d158] shadow-xs mb-4">
                   <QrCode className="w-5 h-5" />
                 </div>
-                <span className="text-xs font-bold text-[#30d158] uppercase tracking-wider">
-                  Zero Friction
+                <span className="text-xs font-semibold text-[#248a3d]">
+                  Zero friction
                 </span>
                 <h3 className="text-xl font-bold text-[#1d1d1f] tracking-tight mt-1">
                   Instant Web App
@@ -791,8 +791,8 @@ export default function LandingPage() {
                 <div className="w-10 h-10 rounded-2xl bg-white flex items-center justify-center text-[#ff9f0a] shadow-xs mb-4">
                   <SlidersHorizontal className="w-5 h-5" />
                 </div>
-                <span className="text-xs font-bold text-[#ff9f0a] uppercase tracking-wider">
-                  Stall Control
+                <span className="text-xs font-semibold text-[#c96f00]">
+                  Stall control
                 </span>
                 <h3 className="text-xl font-bold text-[#1d1d1f] tracking-tight mt-1">
                   Stall Autonomy
@@ -813,8 +813,8 @@ export default function LandingPage() {
                 <div className="w-10 h-10 rounded-2xl bg-white flex items-center justify-center text-[#bf5af2] shadow-xs mb-4">
                   <BarChart3 className="w-5 h-5" />
                 </div>
-                <span className="text-xs font-bold text-[#bf5af2] uppercase tracking-wider">
-                  Operator Analytics
+                <span className="text-xs font-semibold text-[#bf5af2]">
+                  Operator analytics
                 </span>
                 <h3 className="text-xl sm:text-2xl font-bold text-[#1d1d1f] tracking-tight mt-1">
                   Granular food hall telemetry.
@@ -879,8 +879,8 @@ export default function LandingPage() {
             <div className="grid lg:grid-cols-2 gap-4 sm:gap-6 items-center">
               <div className="space-y-3">
                 <div className="bg-white/5 p-3.5 rounded-xl border border-white/10">
-                  <p className="text-[10px] text-white/50 uppercase tracking-wider font-semibold">
-                    Natural Language Search Prompt
+                  <p className="text-xs text-white/60 font-semibold">
+                    Natural language search prompt
                   </p>
                   <p className="text-sm sm:text-base font-semibold text-white mt-1">
                     &ldquo;{aiQueries[activeAiIndex].query}&rdquo;
@@ -888,8 +888,8 @@ export default function LandingPage() {
                 </div>
 
                 <div className="bg-black/40 p-3.5 rounded-xl border border-white/10 font-mono text-xs text-[#2997ff] space-y-1">
-                  <p className="text-[10px] text-white/40 uppercase tracking-wider font-sans font-semibold mb-1.5">
-                    Validated SearchIntent (Zod Output)
+                  <p className="text-xs text-white/60 font-sans font-semibold mb-1.5">
+                    Validated SearchIntent (Zod output)
                   </p>
                   <p>category: &quot;{aiQueries[activeAiIndex].intent.category}&quot;</p>
                   <p>dietary: {JSON.stringify(aiQueries[activeAiIndex].intent.dietary)}</p>
@@ -947,8 +947,8 @@ export default function LandingPage() {
       <section id="roles" className="py-14 sm:py-24 bg-[#f5f5f7]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-2xl mx-auto text-center mb-10 sm:mb-16">
-            <p className="text-xs font-bold tracking-wider uppercase text-[#0071e3] mb-2">
-              Tailored Experiences
+            <p className="text-xs font-semibold text-[#0071e3] mb-2">
+              Tailored experiences
             </p>
             <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-[#1d1d1f]">
               Designed for operators. Built for cooks.
@@ -1068,7 +1068,7 @@ export default function LandingPage() {
             <div className="rounded-2xl sm:rounded-3xl bg-[#f5f5f7] p-5 sm:p-8 border border-black/[0.06] flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between mb-4">
-                  <span className="px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-black/5 text-[#86868b]">
+                  <span className="px-3 py-1 rounded-full text-xs font-semibold bg-black/5 text-[#86868b]">
                     Legacy POS & SaaS
                   </span>
                   <span className="text-xs font-bold text-red-600 flex items-center gap-1">
@@ -1117,8 +1117,8 @@ export default function LandingPage() {
 
               <div>
                 <div className="flex items-center justify-between mb-4">
-                  <span className="px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-[#30d158]/20 text-[#30d158] border border-[#30d158]/30">
-                    The Hawker Standard
+                  <span className="px-3 py-1 rounded-full text-xs font-semibold bg-[#30d158]/20 text-[#30d158] border border-[#30d158]/30">
+                    The Hawker standard
                   </span>
                   <span className="text-xs font-bold text-[#30d158] flex items-center gap-1">
                     <CheckCircle2 className="w-3.5 h-3.5" /> 100% Aligned
@@ -1181,8 +1181,8 @@ export default function LandingPage() {
           {/* 4-Step Transaction Cut Breakdown */}
           <div className="rounded-2xl sm:rounded-3xl bg-[#fbfbfd] p-5 sm:p-8 border border-black/[0.06] shadow-2xs">
             <div className="max-w-2xl mb-6">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-[#0071e3]">
-                Transparent Fee Breakdown
+              <span className="text-xs font-semibold text-[#0071e3]">
+                Transparent fee breakdown
               </span>
               <h3 className="text-lg sm:text-xl font-bold text-[#1d1d1f] tracking-tight mt-1">
                 How a real RM 15.00 order works at your food hall.
@@ -1194,25 +1194,25 @@ export default function LandingPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
               <div className="p-4 rounded-xl bg-white border border-black/[0.06]">
-                <p className="text-[10px] font-bold text-[#86868b] uppercase tracking-wider">1. Customer Basket</p>
+                <p className="text-xs font-semibold text-[#86868b]">1. Customer basket</p>
                 <p className="text-lg font-bold text-[#1d1d1f] mt-0.5">RM 15.00</p>
                 <p className="text-xs text-[#6e6e73] mt-0.5">Chicken Rice + Iced Kopi across 2 stalls.</p>
               </div>
 
               <div className="p-4 rounded-xl bg-white border border-black/[0.06]">
-                <p className="text-[10px] font-bold text-[#0071e3] uppercase tracking-wider">2. Diner Platform Fee</p>
+                <p className="text-xs font-semibold text-[#0071e3]">2. Diner platform fee</p>
                 <p className="text-lg font-bold text-[#0071e3] mt-0.5">+ RM 0.50</p>
                 <p className="text-xs text-[#6e6e73] mt-0.5">Paid by diner at checkout.</p>
               </div>
 
               <div className="p-4 rounded-xl bg-white border border-[#30d158]/30 bg-[#30d158]/[0.02]">
-                <p className="text-[10px] font-bold text-[#30d158] uppercase tracking-wider">3. Hawkers Keep</p>
-                <p className="text-lg font-bold text-[#30d158] mt-0.5">RM 15.00 (100%)</p>
+                <p className="text-xs font-semibold text-[#248a3d]">3. Hawkers keep</p>
+                <p className="text-lg font-bold text-[#248a3d] mt-0.5">RM 15.00 (100%)</p>
                 <p className="text-xs text-[#6e6e73] mt-0.5">Zero stall cut. Hawkers retain full price.</p>
               </div>
 
               <div className="p-4 rounded-xl bg-white border border-black/[0.06]">
-                <p className="text-[10px] font-bold text-[#86868b] uppercase tracking-wider">4. Automated Payout</p>
+                <p className="text-xs font-semibold text-[#86868b]">4. Automated payout</p>
                 <p className="text-lg font-bold text-[#1d1d1f] mt-0.5">Daily / Direct</p>
                 <p className="text-xs text-[#6e6e73] mt-0.5">Settled via DuitNow bank transfer.</p>
               </div>
@@ -1298,8 +1298,8 @@ export default function LandingPage() {
       {/* ── FINAL CTA ── */}
       <section className="py-16 sm:py-28 bg-[#1d1d1f] text-white text-center relative overflow-hidden">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <p className="text-xs font-bold tracking-wider uppercase text-[#2997ff] mb-3">
-            The Modern Standard
+          <p className="text-xs font-semibold text-[#2997ff] mb-3">
+            The modern standard
           </p>
           <h2 className="text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-tight">
             Transform your food hall today.

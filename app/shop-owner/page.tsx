@@ -301,8 +301,8 @@ export default function ShopOwnerDashboard() {
 
                       {/* Stall Slots List */}
                       <div className="mt-3.5">
-                        <p className="text-[11px] font-semibold uppercase tracking-wider text-[#86868b] mb-2 truncate">
-                          Stall Slots
+                        <p className="text-xs font-semibold text-[#86868b] mb-2 truncate">
+                          Stall slots
                         </p>
                         {shop.booths.length === 0 ? (
                           <div className="rounded-xl bg-white p-3 text-center text-xs text-[#86868b] truncate">

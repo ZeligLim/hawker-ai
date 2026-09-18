@@ -383,8 +383,8 @@ export default function ApplyPage() {
               <div className="space-y-4">
                 <div className="flex items-center gap-2 pb-2 border-b border-black/[0.06]">
                   <Building2 className="w-4 h-4 text-[#0071e3]" />
-                  <h2 className="text-sm font-bold text-[#1d1d1f] uppercase tracking-wider">
-                    1. Venue & Establishment Profile
+                  <h2 className="text-sm font-semibold text-[#1d1d1f]">
+                    1. Venue profile
                   </h2>
                 </div>
 
@@ -443,8 +443,8 @@ export default function ApplyPage() {
               <div className="space-y-4 pt-2">
                 <div className="flex items-center gap-2 pb-2 border-b border-black/[0.06]">
                   <MapPin className="w-4 h-4 text-[#0071e3]" />
-                  <h2 className="text-sm font-bold text-[#1d1d1f] uppercase tracking-wider">
-                    2. Location & Operations
+                  <h2 className="text-sm font-semibold text-[#1d1d1f]">
+                    2. Location & operations
                   </h2>
                 </div>
 
@@ -510,8 +510,8 @@ export default function ApplyPage() {
               <div className="space-y-4 pt-2">
                 <div className="flex items-center gap-2 pb-2 border-b border-black/[0.06]">
                   <ShieldCheck className="w-4 h-4 text-[#0071e3]" />
-                  <h2 className="text-sm font-bold text-[#1d1d1f] uppercase tracking-wider">
-                    3. Activation & Stall Policy
+                  <h2 className="text-sm font-semibold text-[#1d1d1f]">
+                    3. Activation & stall policy
                   </h2>
                 </div>
 

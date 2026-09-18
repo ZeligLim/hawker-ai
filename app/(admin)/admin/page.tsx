@@ -88,8 +88,8 @@ export default function AdminDashboardPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-black/[0.06] pb-5">
         <div>
           <div className="flex items-center gap-2">
-            <span className="text-[11px] uppercase font-semibold tracking-wider text-[#6e6e73] bg-black/[0.04] border border-black/[0.06] px-2.5 py-0.5 rounded-full">
-              Platform Control Plane
+            <span className="text-xs font-semibold text-[#86868b] bg-black/[0.04] border border-black/[0.06] px-2.5 py-0.5 rounded-full">
+              Platform control plane
             </span>
           </div>
           <h1 className="mt-2 text-2xl sm:text-3xl font-semibold text-[#1d1d1f] tracking-[-0.03em]">
@@ -124,7 +124,7 @@ export default function AdminDashboardPage() {
         {/* Total Venues */}
         <div className="rounded-2xl bg-white p-5 border border-black/[0.06] shadow-xs">
           <div className="flex items-center justify-between text-[#86868b]">
-            <span className="text-[11px] font-semibold uppercase tracking-wider">Registered Venues</span>
+            <span className="text-xs font-semibold">Registered venues</span>
             <div className="w-8 h-8 rounded-xl bg-blue-50 text-[#0071e3] flex items-center justify-center">
               <Building2 className="w-4 h-4" />
             </div>
@@ -136,7 +136,7 @@ export default function AdminDashboardPage() {
         {/* Operating Stalls */}
         <div className="rounded-2xl bg-white p-5 border border-black/[0.06] shadow-xs">
           <div className="flex items-center justify-between text-[#86868b]">
-            <span className="text-[11px] font-semibold uppercase tracking-wider">Active Stalls / Booths</span>
+            <span className="text-xs font-semibold">Active stalls</span>
             <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
               <Store className="w-4 h-4" />
             </div>
@@ -148,7 +148,7 @@ export default function AdminDashboardPage() {
         {/* Monetization Model */}
         <div className="rounded-2xl bg-white p-5 border border-black/[0.06] shadow-xs">
           <div className="flex items-center justify-between text-[#86868b]">
-            <span className="text-[11px] font-semibold uppercase tracking-wider">Fee Distribution</span>
+            <span className="text-xs font-semibold">Fee distribution</span>
             <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center">
               <Coins className="w-4 h-4" />
             </div>
@@ -163,7 +163,7 @@ export default function AdminDashboardPage() {
         {/* Security & RBAC Status */}
         <div className="rounded-2xl bg-white p-5 border border-black/[0.06] shadow-xs">
           <div className="flex items-center justify-between text-[#86868b]">
-            <span className="text-[11px] font-semibold uppercase tracking-wider">Security & RLS</span>
+            <span className="text-xs font-semibold">Security & RLS</span>
             <div className="w-8 h-8 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center">
               <ShieldCheck className="w-4 h-4" />
             </div>
@@ -238,12 +238,12 @@ export default function AdminDashboardPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="border-b border-black/[0.06] bg-[#fafafc] text-[11px] font-semibold uppercase tracking-wider text-[#86868b]">
-                  <th className="py-3 px-5">Venue Name</th>
-                  <th className="py-3 px-5">URL Slug</th>
+                <tr className="border-b border-black/[0.06] bg-[#fafafc] text-xs font-semibold text-[#86868b]">
+                  <th className="py-3 px-5">Venue</th>
+                  <th className="py-3 px-5">URL slug</th>
                   <th className="py-3 px-5">Stalls</th>
-                  <th className="py-3 px-5">Fee Payer</th>
-                  <th className="py-3 px-5">Platform Fee Rate</th>
+                  <th className="py-3 px-5">Fee payer</th>
+                  <th className="py-3 px-5">Platform fee rate</th>
                   <th className="py-3 px-5 text-right">Actions</th>
                 </tr>
               </thead>

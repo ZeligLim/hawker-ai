@@ -305,8 +305,8 @@ export default function CustomerLandingPage() {
       <section id="how-it-works" className="py-16 sm:py-20 bg-white border-y border-black/[0.06]">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-xl mx-auto mb-12">
-            <span className="text-xs font-semibold text-[#0071e3] uppercase tracking-wider">
-              3 Simple Steps
+            <span className="text-xs font-semibold text-[#0071e3]">
+              3 simple steps
             </span>
             <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#1d1d1f] mt-1.5">
               How Table Ordering Works
@@ -356,8 +356,8 @@ export default function CustomerLandingPage() {
       {/* ── KEY BENEFITS ── */}
       <section id="benefits" className="py-16 sm:py-20 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-xl mx-auto mb-12">
-          <span className="text-xs font-semibold text-[#0071e3] uppercase tracking-wider">
-            Better Dining
+          <span className="text-xs font-semibold text-[#0071e3]">
+            Better dining
           </span>
           <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#1d1d1f] mt-1.5">
             Why Diners Love Hawker
@@ -412,8 +412,8 @@ export default function CustomerLandingPage() {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-3">
             <div>
-              <span className="text-xs font-semibold text-[#0071e3] uppercase tracking-wider">
-                Discover Venues
+              <span className="text-xs font-semibold text-[#0071e3]">
+                Discover venues
               </span>
               <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#1d1d1f] mt-1.5">
                 Popular Hawker Centres & Food Halls
@@ -488,8 +488,8 @@ export default function CustomerLandingPage() {
       {/* ── CUSTOMER FAQ (ACCORDION) ── */}
       <section id="faq" className="py-16 sm:py-20 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-xl mx-auto mb-10">
-          <span className="text-xs font-semibold text-[#0071e3] uppercase tracking-wider">
-            FAQ
+          <span className="text-xs font-semibold text-[#0071e3]">
+            Questions & answers
           </span>
           <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#1d1d1f] mt-1.5">
             Frequently Asked Questions

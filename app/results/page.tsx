@@ -128,7 +128,7 @@ function ResultsContent() {
                 H
               </Link>
               <div>
-                <p className={`text-[11px] font-semibold uppercase tracking-[0.24em] ${mutedText}`}>Search results</p>
+                <p className={`text-xs font-semibold ${mutedText}`}>Search results</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -146,7 +146,7 @@ function ResultsContent() {
           </header>
 
           <div className={`rounded-[28px] border ${isDark ? 'border-[#2a2b2f] bg-[#111214]' : 'border-[#e5e7eb] bg-[#fafafa]'} p-4`}>
-            <p className={`text-[11px] font-semibold uppercase tracking-[0.2em] ${mutedText}`}>Intent</p>
+            <p className={`text-xs font-semibold ${mutedText}`}>Intent</p>
             <h1 className={`mt-2 text-2xl font-semibold tracking-[-0.05em] ${isDark ? 'text-[#f5f5f7]' : 'text-[#1d1d1f]'}`}>
               {resolvedQuery}
             </h1>

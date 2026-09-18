@@ -135,8 +135,8 @@ export function CustomerReceipt({
       {/* Itemized Breakdown */}
       <div className="p-6 space-y-4">
         <div>
-          <p className="text-[11px] font-semibold tracking-wider uppercase text-[#86868b] mb-2.5">
-            Ordered Items
+          <p className="text-xs font-semibold text-[#86868b] mb-2.5">
+            Ordered items
           </p>
           <div className="divide-y divide-black/[0.04]">
             {data.items.map((item) => {
@@ -244,7 +244,7 @@ export function CustomerReceipt({
               </div>
             </div>
 
-            <span className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-white text-[#1d1d1f] shadow-sm border border-black/5">
+            <span className="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-white text-[#1d1d1f] shadow-sm border border-black/5">
               {data.paymentStatus}
             </span>
           </div>

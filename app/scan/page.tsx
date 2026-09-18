@@ -99,8 +99,8 @@ function ScanTableContent() {
           <ArrowLeft className="h-5 w-5" />
         </Link>
         <div>
-          <p className="text-[11px] font-bold uppercase tracking-wider text-[#0071e3]">Table link</p>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#1d1d1f]">Scan Table QR</h1>
+          <p className="text-xs font-semibold text-[#0071e3]">Table link</p>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#1d1d1f]">Scan table QR</h1>
         </div>
       </div>
 
@@ -108,7 +108,7 @@ function ScanTableContent() {
         <div className="flex h-20 w-20 items-center justify-center rounded-[20px] border border-white/20 bg-white/10 mb-3">
           <QrCode className="h-10 w-10 text-white" />
         </div>
-        <p className="text-sm font-semibold">Scan Table QR to Order</p>
+        <p className="text-sm font-semibold">Scan table QR to order</p>
         <p className="text-xs text-white/70 mt-1 max-w-[240px]">
           Point your phone camera at the QR code sticker on your table.
         </p>
@@ -116,8 +116,8 @@ function ScanTableContent() {
 
       {/* Quick table picker for testing & manual input */}
       <div className="mt-5">
-        <p className="text-xs font-semibold text-[#86868b] uppercase tracking-wider mb-2">
-          Or Select Quick Table
+        <p className="text-xs font-semibold text-[#86868b] mb-2">
+          Or select quick table
         </p>
         <div className="grid grid-cols-3 gap-2">
           {['04', '12', '01'].map((tbl) => (

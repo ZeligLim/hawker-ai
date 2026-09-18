@@ -478,17 +478,17 @@ function LaunchpadContent() {
                 {/* 3-Pillar Economics Banner */}
                 <div className="grid sm:grid-cols-3 gap-3 p-4 rounded-2xl bg-[#f5f5f7] border border-black/[0.06]">
                   <div className="space-y-0.5">
-                    <p className="text-[11px] uppercase tracking-wider text-[#86868b] font-semibold">Monthly Software</p>
+                    <p className="text-xs text-[#86868b] font-semibold">Monthly software</p>
                     <p className="text-base font-bold text-[#30d158]">RM 0.00 / mo</p>
                     <p className="text-[10px] text-[#6e6e73]">Free forever platform</p>
                   </div>
                   <div className="space-y-0.5">
-                    <p className="text-[11px] uppercase tracking-wider text-[#86868b] font-semibold">Hardware POS</p>
+                    <p className="text-xs text-[#86868b] font-semibold">Hardware POS</p>
                     <p className="text-base font-bold text-[#1d1d1f]">RM 0.00</p>
                     <p className="text-[10px] text-[#6e6e73]">Bring your own devices</p>
                   </div>
                   <div className="space-y-0.5">
-                    <p className="text-[11px] uppercase tracking-wider text-[#86868b] font-semibold">Monetization</p>
+                    <p className="text-xs text-[#86868b] font-semibold">Monetization</p>
                     <p className="text-base font-bold text-[#0071e3]">Payment Cut</p>
                     <p className="text-[10px] text-[#6e6e73]">Only on successful sales</p>
                   </div>
@@ -497,7 +497,7 @@ function LaunchpadContent() {
                 {/* Dual Fee Model Selector */}
                 <div className="space-y-3 pt-1">
                   <label className="block text-xs font-semibold text-[#1d1d1f]">
-                    Platform Fee Strategy
+                    Platform fee strategy
                   </label>
                   <div className="grid sm:grid-cols-2 gap-3.5">
                     <button
@@ -511,8 +511,8 @@ function LaunchpadContent() {
                     >
                       <div>
                         <div className="flex items-center justify-between mb-1.5">
-                          <span className="text-xs font-bold text-[#1d1d1f]">Diner Service Fee</span>
-                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#30d158]/15 text-[#30d158]">
+                          <span className="text-xs font-semibold text-[#1d1d1f]">Diner service fee</span>
+                          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#30d158]/15 text-[#248a3d]">
                             Recommended
                           </span>
                         </div>
@@ -520,7 +520,7 @@ function LaunchpadContent() {
                           Diners pay a flat <strong className="text-[#1d1d1f]">RM 0.50 platform service fee</strong> at checkout.
                         </p>
                       </div>
-                      <div className="mt-3 pt-3 border-t border-black/[0.06] text-[11px] text-[#30d158] font-semibold">
+                      <div className="mt-3 pt-3 border-t border-black/[0.06] text-[11px] text-[#248a3d] font-semibold">
                         Stall owners keep 100% of dish revenue
                       </div>
                     </button>
@@ -536,9 +536,9 @@ function LaunchpadContent() {
                     >
                       <div>
                         <div className="flex items-center justify-between mb-1.5">
-                          <span className="text-xs font-bold text-[#1d1d1f]">Venue-Absorbed Cut</span>
-                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-black/5 text-[#86868b]">
-                            All-Inclusive
+                          <span className="text-xs font-semibold text-[#1d1d1f]">Venue-absorbed cut</span>
+                          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-black/5 text-[#86868b]">
+                            All-inclusive
                           </span>
                         </div>
                         <p className="text-xs text-[#6e6e73] leading-relaxed">
@@ -556,8 +556,8 @@ function LaunchpadContent() {
                 <div className="space-y-4 pt-2">
                   <div className="flex items-center gap-2">
                     <Banknote className="w-4 h-4 text-[#0071e3]" />
-                    <h3 className="text-xs font-bold text-[#1d1d1f] uppercase tracking-wider">
-                      DuitNow & FAST Bank Settlement Details
+                    <h3 className="text-xs font-semibold text-[#1d1d1f]">
+                      DuitNow & FAST bank settlement details
                     </h3>
                   </div>
 
@@ -745,8 +745,8 @@ function LaunchpadContent() {
 
                   <div className="bg-white p-4 rounded-xl border border-black/[0.06] flex items-center justify-between gap-4">
                     <div>
-                      <p className="text-[10px] text-[#86868b] uppercase tracking-wider font-semibold">
-                        {firstStallSlot} &bull; Invitation Code
+                      <p className="text-xs text-[#86868b] font-semibold">
+                        {firstStallSlot} &bull; Invitation code
                       </p>
                       <p className="text-2xl font-mono font-bold tracking-widest text-[#1d1d1f] mt-0.5">
                         {generatedCode}
@@ -822,8 +822,8 @@ function LaunchpadContent() {
           {/* RIGHT: THE ZERO-RISK TRANSPARENCY CARD (Sticky) */}
           <aside className="bg-white rounded-[32px] p-6 sm:p-8 border border-black/[0.06] shadow-[0_4px_24px_rgba(0,0,0,0.03)] space-y-6 lg:sticky lg:top-20">
             <div>
-              <div className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-black/5 text-[#86868b] text-[10px] font-bold uppercase tracking-wider mb-2">
-                The Hawker Commitment
+              <div className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-black/5 text-[#86868b] text-xs font-semibold mb-2">
+                The Hawker commitment
               </div>
               <h3 className="text-xl font-semibold tracking-tight text-[#1d1d1f]">
                 Zero monthly subscriptions.

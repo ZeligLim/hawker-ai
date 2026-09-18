@@ -112,8 +112,8 @@ export function MonetizationSettingsCard({
       <div className="mt-5 space-y-4">
         {/* Charge Mode Selector */}
         <div>
-          <label className="block text-xs font-bold uppercase tracking-wider text-[#6e6e73] mb-2">
-            Charge Model
+          <label className="block text-xs font-semibold text-[#86868b] mb-2">
+            Charge model
           </label>
           <div className="grid grid-cols-3 gap-2">
             <button
@@ -159,8 +159,8 @@ export function MonetizationSettingsCard({
         {feeMode === 'percentage' || feeMode === 'mixed' ? (
           <div>
             <div className="flex items-center justify-between">
-              <label className="text-xs font-bold uppercase tracking-wider text-[#6e6e73]">
-                Percentage Charge (%)
+              <label className="text-xs font-semibold text-[#86868b]">
+                Percentage charge (%)
               </label>
               <span className="text-xs font-semibold text-amber-700">
                 {platformFeePercent}% per order
@@ -203,8 +203,8 @@ export function MonetizationSettingsCard({
         {/* Flat Fee Input */}
         {feeMode === 'fixed' || feeMode === 'mixed' ? (
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-[#6e6e73] mb-2">
-              Flat Fee Amount (RM)
+            <label className="block text-xs font-semibold text-[#86868b] mb-2">
+              Flat fee amount (RM)
             </label>
             <div className="flex items-center gap-2">
               <span className="text-sm font-bold text-[#6e6e73]">RM</span>
@@ -224,8 +224,8 @@ export function MonetizationSettingsCard({
 
         {/* Fee Payer */}
         <div>
-          <label className="block text-xs font-bold uppercase tracking-wider text-[#6e6e73] mb-2">
-            Fee Payer Model
+          <label className="block text-xs font-semibold text-[#86868b] mb-2">
+            Fee payer model
           </label>
           <div className="grid grid-cols-2 gap-2">
             <button

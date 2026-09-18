@@ -389,15 +389,15 @@ export function CentreDinerPage({ centre }: { centre: HawkerCentreSummary }) {
         {/* Stall Selector Carousel / Chips */}
         {stalls.length > 0 && (
           <div className="space-y-2">
-            <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-[#6e6e73]">
-              <span>Stalls in this Food Hall ({stalls.length})</span>
+            <div className="flex items-center justify-between text-xs font-semibold text-[#86868b]">
+              <span>Stalls in this food hall ({stalls.length})</span>
               {selectedStallId && (
                 <button
                   type="button"
                   onClick={() => setSelectedStallId(null)}
                   className="text-blue-600 hover:underline"
                 >
-                  Show All
+                  Show all
                 </button>
               )}
             </div>
@@ -502,8 +502,8 @@ export function CentreDinerPage({ centre }: { centre: HawkerCentreSummary }) {
             </p>
 
             <div className="mt-4">
-              <label className="block text-xs font-bold uppercase tracking-wider text-[#6e6e73] mb-1.5">
-                Table Identifier
+              <label className="block text-xs font-semibold text-[#86868b] mb-1.5">
+                Table number or identifier
               </label>
               <input
                 type="text"

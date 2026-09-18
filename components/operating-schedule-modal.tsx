@@ -157,8 +157,8 @@ function OperatingScheduleDialogContent({
             {/* Weekly Schedule Settings */}
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <h3 className="text-xs font-semibold uppercase tracking-wider text-[#6e6e73]">
-                  Daily Operating Hours
+                <h3 className="text-xs font-semibold text-[#86868b]">
+                  Daily operating hours
                 </h3>
                 <button
                   type="button"
@@ -166,7 +166,7 @@ function OperatingScheduleDialogContent({
                   className="inline-flex items-center gap-1 text-[11px] font-medium text-blue-600 hover:text-blue-700 hover:underline"
                 >
                   <Copy className="w-3 h-3" />
-                  Apply Monday to All Days
+                  Apply Monday to all days
                 </button>
               </div>
 

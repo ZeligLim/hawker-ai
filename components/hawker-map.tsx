@@ -253,28 +253,28 @@ export function HawkerMap({
             {/* Custom Marker Pin */}
             <div className="flex flex-col items-center group">
               <div
-                className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold shadow-lg transition-all border ${
+                className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold transition-all border ${
                   isSelected
-                    ? 'bg-[#111827] text-white border-white ring-2 ring-emerald-500 shadow-xl'
-                    : 'bg-white text-[#1d1d1f] border-black/10 hover:border-black/30'
+                    ? 'bg-[#1d1d1f] text-white border-[#1d1d1f] shadow-md ring-2 ring-black/10'
+                    : 'bg-white/95 backdrop-blur-md text-[#1d1d1f] border-black/10 shadow-xs hover:border-black/25'
                 }`}
               >
                 <Store className={`h-3.5 w-3.5 ${isSelected ? 'text-amber-400' : 'text-amber-600'}`} />
                 <span className="max-w-[120px] truncate">{c.name}</span>
                 {c.hasAircon && (
-                  <span title="Air-conditioned" aria-label="Air-conditioned" className="flex items-center">
-                    <Snowflake className="h-3 w-3 text-cyan-400 shrink-0" />
+                  <span title="Aircon" aria-label="Aircon" className="flex items-center">
+                    <Snowflake className="h-3 w-3 text-cyan-500 shrink-0" />
                   </span>
                 )}
-                <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-semibold ${isSelected ? 'bg-white/20 text-white' : 'bg-[#f5f5f7] text-[#6e6e73]'}`}>
-                  ★ {c.rating}
+                <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-medium ${isSelected ? 'bg-white/20 text-white' : 'bg-black/5 text-[#86868b]'}`}>
+                  ★ {c.rating.toFixed(1)}
                 </span>
               </div>
 
               {/* Pin Arrow Indicator */}
               <div
-                className={`w-2.5 h-2.5 rotate-45 -mt-1.5 shadow-sm border-r border-b ${
-                  isSelected ? 'bg-[#111827] border-white' : 'bg-white border-black/10'
+                className={`w-2 h-2 rotate-45 -mt-1 border-r border-b ${
+                  isSelected ? 'bg-[#1d1d1f] border-[#1d1d1f]' : 'bg-white border-black/10'
                 }`}
               />
             </div>
@@ -283,17 +283,17 @@ export function HawkerMap({
       })}
 
       {/* Map Controls */}
-      <div className={`absolute right-3 ${fullScreen ? 'top-20' : 'top-3'} z-30 flex flex-col gap-1.5`}>
+      <div className={`absolute right-3.5 ${fullScreen ? 'top-16' : 'top-3'} z-20 flex flex-col gap-1.5`}>
         <button
           type="button"
           onClick={(e) => {
             e.stopPropagation();
             setZoom((z) => Math.min(20, z + 1));
           }}
-          className="flex h-9 w-9 items-center justify-center rounded-full bg-white/95 text-[#1d1d1f] shadow-md hover:bg-white active:scale-95 transition-all border border-black/5"
+          className="flex h-8 w-8 items-center justify-center rounded-full bg-white/90 backdrop-blur-md text-[#1d1d1f] shadow-xs hover:bg-white active:scale-95 transition-all border border-black/[0.08]"
           aria-label="Zoom in"
         >
-          <Plus className="h-4 w-4" />
+          <Plus className="h-3.5 w-3.5" />
         </button>
         <button
           type="button"
@@ -301,10 +301,10 @@ export function HawkerMap({
             e.stopPropagation();
             setZoom((z) => Math.max(12, z - 1));
           }}
-          className="flex h-9 w-9 items-center justify-center rounded-full bg-white/95 text-[#1d1d1f] shadow-md hover:bg-white active:scale-95 transition-all border border-black/5"
+          className="flex h-8 w-8 items-center justify-center rounded-full bg-white/90 backdrop-blur-md text-[#1d1d1f] shadow-xs hover:bg-white active:scale-95 transition-all border border-black/[0.08]"
           aria-label="Zoom out"
         >
-          <Minus className="h-4 w-4" />
+          <Minus className="h-3.5 w-3.5" />
         </button>
         <button
           type="button"
@@ -315,46 +315,46 @@ export function HawkerMap({
               setZoom(16);
             }
           }}
-          className="flex h-9 w-9 items-center justify-center rounded-full bg-white/95 text-blue-600 shadow-md hover:bg-white active:scale-95 transition-all border border-black/5"
+          className="flex h-8 w-8 items-center justify-center rounded-full bg-white/90 backdrop-blur-md text-[#0071e3] shadow-xs hover:bg-white active:scale-95 transition-all border border-black/[0.08]"
           aria-label="Recenter to my location"
         >
-          <Locate className="h-4 w-4" />
+          <Locate className="h-3.5 w-3.5" />
         </button>
       </div>
 
       {/* Selected Centre Floating Info Card */}
       {selectedCentre && !fullScreen && (
-        <div className="absolute left-3 right-3 bottom-3 z-40 sm:left-4 sm:right-auto sm:max-w-xs animate-scale-in">
-          <div className="rounded-[22px] bg-white/95 backdrop-blur-md p-3.5 shadow-[0_12px_28px_rgba(0,0,0,0.15)] border border-black/10">
+        <div className="absolute left-3 right-3 bottom-3 z-30 sm:left-4 sm:right-auto sm:max-w-xs animate-scale-in">
+          <div className="rounded-2xl bg-white/90 backdrop-blur-xl p-3.5 shadow-sm border border-black/[0.08]">
             <div className="flex items-start justify-between gap-2">
               <div>
                 <div className="flex items-center gap-1.5">
-                  <h4 className="text-sm font-bold text-[#1d1d1f]">{selectedCentre.name}</h4>
+                  <h4 className="text-sm font-semibold text-[#1d1d1f]">{selectedCentre.name}</h4>
                   {selectedCentre.hasAircon && (
-                    <span className="inline-flex items-center gap-0.5 rounded-full bg-cyan-50 border border-cyan-200/80 px-1.5 py-0.2 text-[9px] font-bold text-cyan-800 shrink-0" title="Air-conditioned">
+                    <span className="inline-flex items-center gap-0.5 rounded-full bg-cyan-50 border border-cyan-200/80 px-1.5 py-0.2 text-[9px] font-semibold text-cyan-800 shrink-0" title="Aircon">
                       <Snowflake className="h-2.5 w-2.5 text-cyan-600" />
                       <span>Aircon</span>
                     </span>
                   )}
                 </div>
-                <p className="mt-0.5 text-xs text-[#6e6e73] line-clamp-1">{selectedCentre.address}</p>
+                <p className="mt-0.5 text-xs text-[#86868b] line-clamp-1">{selectedCentre.address}</p>
               </div>
-              <span className="rounded-full bg-emerald-50 border border-emerald-200 px-2 py-0.5 text-[10px] font-bold text-emerald-800 shrink-0">
+              <span className="rounded-full bg-emerald-50 border border-emerald-200 px-2 py-0.5 text-[10px] font-medium text-emerald-800 shrink-0">
                 Open
               </span>
             </div>
 
-            <div className="mt-2.5 flex items-center justify-between text-xs text-[#6e6e73]">
-              <span>{selectedCentre.stallsCount} Food Stalls</span>
+            <div className="mt-2 flex items-center gap-2 text-xs text-[#86868b]">
+              <span>{selectedCentre.stallsCount} stalls</span>
               <span>•</span>
-              <span>★ {selectedCentre.rating}</span>
+              <span>★ {selectedCentre.rating.toFixed(1)}</span>
             </div>
 
             <Link
               href={`/stall?centre=${encodeURIComponent(selectedCentre.slug)}` as any}
-              className="mt-3 flex w-full items-center justify-center gap-1.5 rounded-full bg-[#111827] py-2 text-xs font-bold text-white hover:bg-black transition-colors shadow-sm"
+              className="mt-3 flex w-full items-center justify-center gap-1.5 rounded-full bg-[#1d1d1f] py-2 text-xs font-semibold text-white hover:bg-black transition-colors shadow-xs"
             >
-              <span>Enter Centre & Order</span>
+              <span>View stalls</span>
               <ArrowRight className="h-3 w-3" />
             </Link>
           </div>
