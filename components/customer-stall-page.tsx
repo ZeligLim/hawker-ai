@@ -244,25 +244,13 @@ function CustomerStallContent() {
             </div>
           </div>
         ) : (
-          <div className="mb-4 flex items-center justify-between rounded-2xl bg-white p-3 shadow-xs">
-            <div className="flex items-center gap-2.5 min-w-0">
-              <div className="flex h-11 w-11 items-center justify-center rounded-full bg-black text-white shrink-0">
-                <QrCode className="h-5 w-5" />
-              </div>
-              <div className="min-w-0">
-                <p className="text-xs font-bold text-[#1d1d1f]">At a table?</p>
-                <p className="text-[10px] text-[#6e6e73]">Scan table QR code to order to your seat</p>
-              </div>
-            </div>
-
-            <Link
-              href={`/scan${centreSlugForScan ? `?centre=${encodeURIComponent(centreSlugForScan)}` : ''}` as any}
-              className="inline-flex h-11 items-center gap-2 rounded-full bg-black hover:bg-neutral-800 px-5 text-xs font-semibold text-white shadow-xs transition-colors shrink-0"
-            >
-              <QrCode className="h-4 w-4" />
-              <span>Scan QR</span>
-            </Link>
-          </div>
+          <Link
+            href={`/scan${centreSlugForScan ? `?centre=${encodeURIComponent(centreSlugForScan)}` : ''}` as any}
+            className="mb-4 flex h-11 w-full items-center justify-center gap-2 rounded-full bg-black text-white hover:bg-neutral-800 transition-colors shadow-xs"
+          >
+            <QrCode className="h-4 w-4" />
+            <span className="text-sm font-semibold">Scan table QR to order</span>
+          </Link>
         )}
 
         {/* Header & Centre Title */}
