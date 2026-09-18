@@ -205,7 +205,7 @@ export function HomePage() {
               router.push(`/results?q=${encodeURIComponent(searchQuery.trim())}`);
             }
           }}
-          className="shadow-md"
+          className="rounded-full shadow-md"
         />
 
         {/* View Switcher Segmented Control & Quick Actions */}

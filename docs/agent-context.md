@@ -14,10 +14,12 @@ Phase 29: Standard OpenStreetMap (Zero Watermark), Map Selected Shop Card, and D
    - Replaced the bulky multi-element card with a single, clean, full-width pure black button: `Scan table QR to order`.
    - Replaced all instances of the generic `Camera` icon with the proper `QrCode` icon across `customer-stall-page.tsx` and `centre-diner-page.tsx` to match the unified UI language.Clean vertical feed showing venue count, standard `h-11` Distance / Rating sorting controls, and search filtering.
 
-3. **Home Tab: Prominent Search Bar & Map/List Switcher (`components/home-page.tsx`)**:
-   - `HawkerSearchBar` placed prominently at the top of the Home tab.
-   - Standard `h-11` segmented control allowing diners to toggle between interactive monochrome **Map View** and a clean vertical **List View** of hawker centres.
-   - Quick Aircon filter toggle and Quick Scan QR button positioned below the search bar.
+4. **Home Tab: List View Redesign (`components/home-page.tsx`)**:
+   - The Distance/Rating sort toggle now exactly matches the Map/List toggle global styling (`h-9` pills inside a white rounded container).
+   - Completely redesigned the hawker centre cards in list view:
+     - The bulky black "View" button is gone. The entire card is now clickable.
+     - Stripped away unnecessary information (removed the long address string and walking time string which cluttered mobile).
+     - Condensed the stats (rating, stalls count, distance) into a single clean line with dot separators.
    - Completely removed any "Resume Table" button.
    - Centre cards in both views use smooth, solid `transition-colors` with zero hover animations or scale shifts.
 
