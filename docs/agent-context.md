@@ -545,6 +545,20 @@ Phase 20: Dedicated SaaS Superadmin Dashboard Route Group & Standalone Monetizat
     - Preserved table session indicator and QR camera scanner shortcut.
     - Added floating cart order bar with subtotal and item count.
 
+- **Phase 19: Cross-Centre Cart Isolation, Zero-Border Mobile UI Redesign, and Voice AI Agent (`use-cart-add.tsx`, `components/floating-ai-widget.tsx`)**:
+  - **Cross-Centre Cart Isolation**:
+    - Built a strict multi-centre cart isolation rule. The app throws a warning modal before adding items if the customer attempts to mix food from two different hawker centres (physically impossible delivery).
+    - Added custom hook `use-cart-add.tsx` with a pending state buffer and `CartWarningModal` wrapper, replacing direct `addItemToCart` calls site-wide.
+  - **Clean Zero-Border UI Design**:
+    - Swept all cards, list view items, and interactive components. Removed `border`, `ring`, and squashed flex items to comply strictly with pure white/black palette.
+    - Ensured `min-w-0 flex-1` on items allowing cart text truncation to avoid squashed layout.
+    - Removed arbitrary UI background coloring from the search bar.
+  - **Floating Voice AI Agent (`FloatingAiWidget`)**:
+    - Implemented a global floating action button allowing diners to hold-to-record voice or tap-to-chat.
+    - Real-time `SpeechRecognition` records voice input on button hold.
+    - Integrated Vercel AI SDK 4.x streaming natural language commands to `app/api/ai-chat/route.ts` via OpenRouter `google/gemini-1.5-pro`.
+    - Configured `addToCart` tool execution natively resolving the `SearchService` to return dishes directly to the client which programmatically triggers cart additions.
+
 ## Current Architecture
 - Frontend: Next.js App Router, TypeScript, React, Tailwind
 - Customer Navigation: 5-Tab Architecture (Home, Stall, Menu, Orders, Profile) with floating cart checkout pill
