@@ -559,6 +559,12 @@ Phase 20: Dedicated SaaS Superadmin Dashboard Route Group & Standalone Monetizat
     - Integrated Vercel AI SDK 4.x streaming natural language commands to `app/api/ai-chat/route.ts` via OpenRouter `google/gemini-1.5-pro`.
     - Configured `addToCart` tool execution natively resolving the `SearchService` to return dishes directly to the client which programmatically triggers cart additions.
 
+- **Phase 20: Anonymous Guest Mode & Guest Checkouts**:
+  - Overhauled authentication flow in `components/auth-provider.tsx` to assume guest mode (`isGuest: true`) by default for all unauthenticated users.
+  - Removed strict route redirect traps on `/orders` and `/stall` by bypassing them in guest mode.
+  - Wrote DB migration `021_guest_orders.sql` to drop `NOT NULL` constraint on `orders.customer_id`, allowing completely anonymous order creation.
+  - Updated `create_order_with_items` RPC and `api/orders/route.ts` to allow `auth.user` to be null, safely checking out guests while still preserving RLS access (via UUID referencing).
+
 ## Current Architecture
 - Frontend: Next.js App Router, TypeScript, React, Tailwind
 - Customer Navigation: 5-Tab Architecture (Home, Stall, Menu, Orders, Profile) with floating cart checkout pill
