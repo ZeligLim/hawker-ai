@@ -375,10 +375,10 @@ export function CentreDinerPage({ centre }: { centre: HawkerCentreSummary }) {
               key={filter.label}
               type="button"
               onClick={() => handleQuickFilter(filter)}
-              className={`rounded-full px-3.5 py-1.5 text-xs font-semibold whitespace-nowrap border transition-all ${
+              className={`h-9 px-4 rounded-full text-xs font-semibold whitespace-nowrap transition-all ${
                 activeFilter === filter.label
-                  ? 'border-[#111827] bg-[#111827] text-white shadow-sm'
-                  : 'border-black/5 bg-white text-[#1d1d1f] hover:bg-black/5'
+                  ? 'bg-[#1d1d1f] text-white shadow-xs'
+                  : 'bg-[#f2f2f7] text-[#8e8e93] hover:text-[#1d1d1f] hover:bg-[#e5e5ea]'
               }`}
             >
               {filter.label}
@@ -395,7 +395,7 @@ export function CentreDinerPage({ centre }: { centre: HawkerCentreSummary }) {
                 <button
                   type="button"
                   onClick={() => setSelectedStallId(null)}
-                  className="text-blue-600 hover:underline"
+                  className="text-[#007aff] hover:underline"
                 >
                   Show all
                 </button>
@@ -406,10 +406,10 @@ export function CentreDinerPage({ centre }: { centre: HawkerCentreSummary }) {
               <button
                 type="button"
                 onClick={() => setSelectedStallId(null)}
-                className={`flex items-center gap-1.5 rounded-full px-3.5 py-2 text-xs font-bold whitespace-nowrap border transition-all ${
+                className={`flex h-9 items-center gap-1.5 rounded-full px-4 text-xs font-semibold whitespace-nowrap transition-all ${
                   selectedStallId === null
-                    ? 'border-emerald-600 bg-emerald-50 text-emerald-800 shadow-sm'
-                    : 'border-black/5 bg-white text-[#1d1d1f] hover:bg-black/5'
+                    ? 'bg-[#1d1d1f] text-white shadow-xs'
+                    : 'bg-[#f2f2f7] text-[#8e8e93] hover:text-[#1d1d1f] hover:bg-[#e5e5ea]'
                 }`}
               >
                 <Store className="h-3.5 w-3.5" />
@@ -421,14 +421,14 @@ export function CentreDinerPage({ centre }: { centre: HawkerCentreSummary }) {
                   key={stall.id}
                   type="button"
                   onClick={() => setSelectedStallId(stall.id === selectedStallId ? null : stall.id)}
-                  className={`flex items-center gap-1.5 rounded-full px-3.5 py-2 text-xs font-semibold whitespace-nowrap border transition-all ${
+                  className={`flex h-9 items-center gap-1.5 rounded-full px-4 text-xs font-semibold whitespace-nowrap transition-all ${
                     selectedStallId === stall.id
-                      ? 'border-[#111827] bg-[#111827] text-white shadow-sm'
-                      : 'border-black/5 bg-white text-[#1d1d1f] hover:bg-black/5'
+                      ? 'bg-[#1d1d1f] text-white shadow-xs'
+                      : 'bg-[#f2f2f7] text-[#8e8e93] hover:text-[#1d1d1f] hover:bg-[#e5e5ea]'
                   }`}
                 >
                   <span>{stall.name}</span>
-                  <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${selectedStallId === stall.id ? 'bg-white/20 text-white' : 'bg-[#f5f5f7] text-[#6e6e73]'}`}>
+                  <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${selectedStallId === stall.id ? 'bg-white/20 text-white' : 'bg-black/[0.06] text-[#8e8e93]'}`}>
                     {stall.dishCount}
                   </span>
                 </button>
@@ -521,10 +521,10 @@ export function CentreDinerPage({ centre }: { centre: HawkerCentreSummary }) {
                   key={num}
                   type="button"
                   onClick={() => setManualTableInput(num)}
-                  className={`rounded-full px-3 py-1 text-xs font-semibold border transition-colors ${
+                  className={`h-8 px-3 rounded-full text-xs font-semibold transition-all ${
                     manualTableInput === num
-                      ? 'border-[#111827] bg-[#111827] text-white'
-                      : 'border-black/5 bg-[#f5f5f7] text-[#1d1d1f] hover:bg-black/5'
+                      ? 'bg-[#007aff] text-white shadow-xs'
+                      : 'bg-[#f2f2f7] text-[#1d1d1f] hover:bg-[#e5e5ea]'
                   }`}
                 >
                   Table {num}
@@ -536,14 +536,14 @@ export function CentreDinerPage({ centre }: { centre: HawkerCentreSummary }) {
               <button
                 type="button"
                 onClick={() => setIsTableModalOpen(false)}
-                className="w-1/2 rounded-full bg-[#f5f5f7] py-3 text-xs font-semibold text-[#6e6e73] hover:text-[#1d1d1f]"
+                className="h-11 w-1/2 rounded-full bg-[#f2f2f7] hover:bg-[#e5e5ea] text-sm font-semibold text-[#1d1d1f] transition-all active:scale-[0.98]"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={() => unlockTable(manualTableInput)}
-                className="w-1/2 rounded-full bg-[#111827] py-3 text-xs font-bold text-white hover:bg-black transition-colors"
+                className="h-11 w-1/2 rounded-full bg-[#007aff] hover:bg-[#0071e3] text-sm font-semibold text-white shadow-xs transition-all active:scale-[0.98]"
               >
                 Confirm Table
               </button>
@@ -569,12 +569,12 @@ export function CentreDinerPage({ centre }: { centre: HawkerCentreSummary }) {
           aria-label="Current Cart Order"
           className="fixed bottom-20 left-4 right-4 z-40 mx-auto max-w-lg animate-fade-in"
         >
-          <div className="flex items-center justify-between rounded-full bg-[#111827] p-2.5 pl-5 pr-2.5 shadow-[0_16px_36px_rgba(0,0,0,0.25)] text-white">
+          <div className="flex h-11 items-center justify-between rounded-full bg-[#1d1d1f] px-5 shadow-lg text-white">
             <div className="flex items-center gap-2.5">
-              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-500 text-xs font-bold text-white">
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#34c759] text-xs font-bold text-white">
                 {cartTotalItems}
               </span>
-              <div>
+              <div className="flex items-center gap-2">
                 <p className="text-xs font-medium text-white/70">
                   {cartTotalItems === 1 ? '1 item' : `${cartTotalItems} items`} · {formatTableLabel(tableSession?.tableNumber || manualTableInput)}
                 </p>
@@ -584,10 +584,10 @@ export function CentreDinerPage({ centre }: { centre: HawkerCentreSummary }) {
 
             <Link
               href="/orders"
-              className="inline-flex items-center gap-1.5 rounded-full bg-white px-4 py-2 text-xs font-bold text-[#111827] hover:bg-white/90 transition-colors shadow-sm"
+              className="inline-flex h-7 items-center gap-1 rounded-full bg-white px-3 text-xs font-semibold text-[#1d1d1f] hover:bg-[#f2f2f7] transition-all shadow-xs"
             >
               <span>View Order</span>
-              <ArrowRight className="h-3.5 w-3.5" />
+              <ArrowRight className="h-3 w-3" />
             </Link>
           </div>
         </aside>

@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { useCartItems } from '@/lib/order/cart';
 import type { HawkerCentreSummary } from '@/lib/hawker-centres/service';
+import { HawkerSearchBar } from '@/components/hawker-search-bar';
 import {
   clearTableSession,
   formatTableLabel,
@@ -256,10 +257,10 @@ function CustomerStallContent() {
 
             <Link
               href={`/scan${centreSlugForScan ? `?centre=${encodeURIComponent(centreSlugForScan)}` : ''}` as any}
-              className="inline-flex items-center gap-1.5 rounded-full bg-[#111827] px-3.5 py-1.5 text-xs font-bold text-white shadow-xs hover:bg-black transition-colors shrink-0"
+              className="inline-flex h-9 items-center gap-1.5 rounded-full bg-[#007aff] hover:bg-[#0071e3] px-4 text-xs font-semibold text-white shadow-xs transition-all shrink-0 active:scale-95"
             >
+              <Camera className="h-3.5 w-3.5" />
               <span>Scan QR</span>
-              <Camera className="h-3 w-3" />
             </Link>
           </div>
         )}
@@ -276,25 +277,12 @@ function CustomerStallContent() {
         </div>
 
         {/* Search Bar */}
-        <div className="relative mb-4">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#86868b]" />
-          <input
-            type="text"
+        <div className="mb-4">
+          <HawkerSearchBar
+            placeholder="Search stalls or cuisines"
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search stalls or cuisines..."
-            className="w-full rounded-full bg-white border border-black/10 pl-10 pr-9 py-2.5 text-xs sm:text-sm text-[#1d1d1f] shadow-xs outline-none focus:border-[#111827] transition-all"
+            onChange={setSearchQuery}
           />
-          {searchQuery && (
-            <button
-              type="button"
-              onClick={() => setSearchQuery('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-[#86868b] hover:text-[#1d1d1f]"
-              aria-label="Clear search"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          )}
         </div>
 
         {/* Filter Chips */}
@@ -302,10 +290,10 @@ function CustomerStallContent() {
           <button
             type="button"
             onClick={() => setFilterMode('all')}
-            className={`rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all shrink-0 border ${
+            className={`h-9 px-4 rounded-full text-xs font-semibold transition-all shrink-0 ${
               filterMode === 'all'
-                ? 'bg-[#111827] text-white border-[#111827] shadow-xs'
-                : 'bg-white text-[#1d1d1f] border-black/10 hover:border-black/30'
+                ? 'bg-[#1d1d1f] text-white shadow-xs'
+                : 'bg-[#f2f2f7] text-[#8e8e93] hover:text-[#1d1d1f] hover:bg-[#e5e5ea]'
             }`}
           >
             All Stalls ({stalls.length})
@@ -313,10 +301,10 @@ function CustomerStallContent() {
           <button
             type="button"
             onClick={() => setFilterMode('open')}
-            className={`rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all shrink-0 border ${
+            className={`h-9 px-4 rounded-full text-xs font-semibold transition-all shrink-0 ${
               filterMode === 'open'
-                ? 'bg-[#111827] text-white border-[#111827] shadow-xs'
-                : 'bg-white text-[#1d1d1f] border-black/10 hover:border-black/30'
+                ? 'bg-[#1d1d1f] text-white shadow-xs'
+                : 'bg-[#f2f2f7] text-[#8e8e93] hover:text-[#1d1d1f] hover:bg-[#e5e5ea]'
             }`}
           >
             Open Now
@@ -324,10 +312,10 @@ function CustomerStallContent() {
           <button
             type="button"
             onClick={() => setFilterMode('fast')}
-            className={`rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all shrink-0 border ${
+            className={`h-9 px-4 rounded-full text-xs font-semibold transition-all shrink-0 ${
               filterMode === 'fast'
-                ? 'bg-[#111827] text-white border-[#111827] shadow-xs'
-                : 'bg-white text-[#1d1d1f] border-black/10 hover:border-black/30'
+                ? 'bg-[#1d1d1f] text-white shadow-xs'
+                : 'bg-[#f2f2f7] text-[#8e8e93] hover:text-[#1d1d1f] hover:bg-[#e5e5ea]'
             }`}
           >
             Fast ETA (&le; 10 min)
@@ -419,7 +407,7 @@ function CustomerStallContent() {
         <div className="fixed bottom-20 left-4 right-4 z-40 mx-auto max-w-md animate-slide-up">
           <Link
             href="/orders"
-            className="flex items-center justify-between rounded-full bg-[#111827] px-5 py-3 text-white shadow-xl hover:bg-black transition-all"
+            className="flex h-11 items-center justify-between rounded-full bg-[#1d1d1f] px-5 text-white shadow-lg hover:bg-black transition-all active:scale-[0.98]"
           >
             <div className="flex items-center gap-2">
               <span className="flex h-6 w-6 items-center justify-center rounded-full bg-white/20 text-xs font-bold">

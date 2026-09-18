@@ -1,30 +1,38 @@
 # Current Project Context
 
 ## Current Phase
-Phase 25: Authentic Apple System Color Palette Integration & Multi-Modal Bottom Sheet Expansion Fix
+Phase 26: Unified Search Bar & Uniform Borderless Action Buttons (h-11 Touch Target)
 
 ## Current Feature
-1. **Multi-Modal Bottom Sheet Expansion Fix (`components/home-page.tsx`)**:
-   - **Root Cause**: The bottom navigation bar (`ClientBottomNav`, ~64px tall, `z-40`) was physically overlaying the bottom portion of the collapsed sheet (`bottom-0 z-30`), obscuring its peek summary and click targets. Furthermore, expansion was only listening to touch events, leaving desktop mouse and trackpad interactions unresponsive.
-   - **Positioning Architecture**:
-     - Collapsed State: Positioned at `bottom-[72px] sm:bottom-[76px] px-3.5 sm:px-0 z-40` as a sleek, floating Apple card sitting cleanly above `ClientBottomNav`. 100% of the drag handle, header bar, and peek banner is exposed and clickable.
-     - Expanded State: Expands seamlessly to `bottom-0 h-[86vh] sm:h-[88vh] rounded-t-[32px] z-50` with `pb-24` list padding.
-   - **Multi-Modal Trigger Support**:
-     - Click/Tap: Tapping anywhere on the pull handle, the header row, the peek banner ("View list →"), or the chevron button immediately expands or collapses the sheet.
-     - Pointer Events: Full mouse and touch drag support via `onPointerDown`, `onPointerMove`, and `onPointerUp` (`deltaY < -15` expands, `deltaY > 25` collapses).
-     - Touch Gestures: `onTouchStart`, `onTouchMove`, and `onTouchEnd` for mobile swiping.
-     - Wheel / Trackpad: `onWheel` listener dynamically expands on scroll up (`deltaY > 8`) and collapses on scroll down at the top of the list.
+1. **Universal Search Bar Architecture (`components/hawker-search-bar.tsx`)**:
+   - Standardized to Apple-inspired borderless design: `h-11 rounded-full bg-white/95 backdrop-blur-xl shadow-xs transition-all`.
+   - **NO BORDER**: Removed outline strokes, ring borders, and arbitrary border wrappers.
+   - Standardized internal geometry: left search icon at `left-3.5 text-[#8e8e93]`, input at `w-full h-full pl-10 pr-9 text-sm text-[#1d1d1f] placeholder-[#8e8e93] outline-none`, and right clear button `X` when text is present.
+   - Deployed universally across Home page, Customer Stall directory, Menu page, and Search views.
 
-2. **Authentic Apple System Color Palette Adoption**:
-   - Strictly replaced arbitrary Tailwind hex codes and arbitrary palettes across `components/home-page.tsx`, `components/hawker-map.tsx`, and `components/shared/client-bottom-nav.tsx` with authentic Apple Human Interface Guidelines system colors:
-     - **Apple System Blue** (`#007AFF` / text `#007AFF`, hover `bg-[#007AFF]/10`): Active controls, map recenter, distance highlights, view links, filter reset buttons.
-     - **Apple System Cyan** (`#32ADE6` / text `#0071A4`, badge `bg-[#32ADE6]/12 border-[#32ADE6]/25`): **Aircon logo indicator** pill and snowflake icon.
-     - **Apple System Green** (`#34C759` / text `#248A3D`, badge `bg-[#34C759]/12 border-[#34c759]/20`): "Open" status pills, active table session pulse and link.
-     - **Apple System Orange & Yellow** (`#FF9500` / `#FFCC00`): Star rating icons and values, locating indicator spinner, map pin store icons.
-     - **Apple System Gray 6 / System Grouped Background** (`#F2F2F7`): App background, rank number pills, subtle cards.
-     - **Apple System Gray 5** (`#E5E5EA`): Segmented toggle tracks.
-     - **Apple System Gray** (`#8E8E93`): Secondary labels, address lines, stall counts, search icon, drag handles.
-     - **Apple System Label** (`#1D1D1F`): Primary typography and dark pill elements.
+2. **Unified Borderless Action Buttons (`h-11 rounded-full`)**:
+   - Universal height matching the 44px Apple touch target guideline (`h-11`).
+   - **NO BORDER**: Replaced bordered button outlines with soft-fill tints, solid Apple system fills, and delicate shadows (`shadow-xs`).
+   - **Apple System Palette**:
+     - Primary Blue: `h-11 rounded-full bg-[#007aff] hover:bg-[#0071e3] text-white text-sm font-semibold shadow-xs transition-all active:scale-[0.98]`
+     - Primary Dark: `h-11 rounded-full bg-[#1d1d1f] hover:bg-black text-white text-sm font-semibold shadow-xs transition-all active:scale-[0.98]`
+     - Secondary Gray: `h-11 rounded-full bg-[#f2f2f7] hover:bg-[#e5e5ea] text-[#1d1d1f] text-sm font-semibold transition-all active:scale-[0.98]`
+     - Success Green: `h-11 rounded-full bg-[#34c759] hover:bg-[#2fb34f] text-white text-sm font-semibold shadow-xs transition-all active:scale-[0.98]`
+   - Applied across:
+     - `components/hawker-map.tsx`: "View stalls" call-to-action button (`h-11`, borderless `#007aff`).
+     - `components/home-page.tsx`: "Reset filters" button (`h-11`, borderless `#007aff`), aircon filter button (`borderless`), and table session pill (`borderless`).
+     - `components/customer-stall-page.tsx`: Floating Cart Bar button (`h-11`, borderless `#1d1d1f`), filter chips (`h-9`, borderless), and "Scan QR" button (`h-9`, borderless `#007aff`).
+     - `components/menu-page.tsx`: Category filter pills (`h-9`, borderless `#f2f2f7`) and Floating Cart Bar (`h-11`, borderless `#1d1d1f`).
+     - `components/centre-diner-page.tsx`: Quick filters (`h-9`, borderless), stall selector chips (`h-9`, borderless), table modal Cancel and Confirm buttons (`h-11`, borderless), and floating cart bar (`h-11`, borderless).
+     - `components/cart-summary.tsx`: "Pay RM xx" checkout button (`h-11`, borderless `#007aff`) and quantity adjustment controls (`borderless`).
+     - `components/result-card.tsx`: "Add to order" button (`h-11`, borderless `#007aff`) and dietary/spicy badges (`borderless`).
+     - `components/customization-card.tsx`: "Add to order" modal confirm button (`h-11`, borderless `#007aff`).
+     - `components/dish-card.tsx`: Image floating quantity controls and add button (`borderless`, `#007aff`).
+     - `app/scan/page.tsx`: Quick table picker pills (`h-11`, borderless `#f2f2f7`), submit button (`h-11`, borderless `#007aff`), and success button (`h-11`, borderless `#34c759`).
+     - `app/orders/page.tsx`: Checkout button (`h-11`, borderless), "Order more items" button (`h-11`, borderless `#007aff`), and "Browse dishes" button (`h-11`, borderless `#007aff`).
+     - `app/results/page.tsx`: Light/Dark toggle (`h-11`, borderless) and "New search" button (`h-11`, borderless `#007aff`).
+     - `components/hawker-search.tsx`: Header buttons (`h-11`, borderless) and "Search" submit button (`h-11`, borderless `#007aff`).
+     - `app/page.tsx`: Hero action CTAs (`h-11`, borderless `#007aff`, `#1d1d1f`, and `#f2f2f7`).
 
 3. **Verification**:
    - `npx tsc --noEmit`: 0 TypeScript errors.
@@ -33,7 +41,7 @@ Phase 25: Authentic Apple System Color Palette Integration & Multi-Modal Bottom 
    - `npm run build`: Production build succeeded across all 50 routes.
 
 ## Previous Phases
-Phase 24: Apple-Inspired Clean Minimal UI Overhaul, Component Sizing Standardization & Zero Uppercase / All-Caps Elimination
+Phase 25: Authentic Apple System Color Palette Integration & Multi-Modal Bottom Sheet Expansion Fix
 
 ## Previous Phases
 Phase 22: Apple-Inspired Visual Streamline for SaaS Platform Admin (`/admin`)

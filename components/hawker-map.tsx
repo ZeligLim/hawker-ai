@@ -339,7 +339,7 @@ export function HawkerMap({
                 </div>
                 <p className="mt-0.5 text-xs text-[#8e8e93] line-clamp-1">{selectedCentre.address}</p>
               </div>
-              <span className="rounded-full bg-[#34c759]/12 border border-[#34c759]/20 px-2 py-0.5 text-[10px] font-medium text-[#248a3d] shrink-0">
+              <span className="rounded-full bg-[#34c759]/12 px-2 py-0.5 text-[10px] font-medium text-[#248a3d] shrink-0">
                 Open
               </span>
             </div>
@@ -355,10 +355,10 @@ export function HawkerMap({
 
             <Link
               href={`/stall?centre=${encodeURIComponent(selectedCentre.slug)}` as any}
-              className="mt-3 flex w-full items-center justify-center gap-1.5 rounded-full bg-[#1d1d1f] py-2 text-xs font-semibold text-white hover:bg-black transition-colors shadow-xs"
+              className="mt-3 flex h-11 w-full items-center justify-center gap-1.5 rounded-full bg-[#007aff] hover:bg-[#0071e3] px-5 text-sm font-semibold text-white transition-all shadow-xs active:scale-[0.98]"
             >
               <span>View stalls</span>
-              <ArrowRight className="h-3 w-3" />
+              <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
         </div>

@@ -317,7 +317,7 @@ export function HomePage() {
                 ? (`/${tableSession.centreSlug}/home` as any)
                 : ('/home' as any)
             }
-            className="flex items-center justify-between rounded-full bg-[#1d1d1f]/90 backdrop-blur-xl px-3.5 py-1.5 text-xs text-white shadow-xs border border-white/10 hover:bg-black transition-all"
+            className="flex items-center justify-between rounded-full bg-[#1d1d1f]/90 backdrop-blur-xl px-3.5 py-1.5 text-xs text-white shadow-xs hover:bg-black transition-all"
           >
             <div className="flex items-center gap-2 truncate">
               <span className="h-1.5 w-1.5 rounded-full bg-[#34c759] animate-pulse shrink-0" />
@@ -333,7 +333,7 @@ export function HomePage() {
         )}
 
         {/* Minimal Search Pill */}
-        <div className="relative flex items-center h-11 rounded-full bg-white/90 backdrop-blur-xl shadow-[0_4px_16px_rgba(0,0,0,0.06)] border border-black/[0.08] focus-within:border-black/20 transition-all">
+        <div className="relative flex items-center h-11 rounded-full bg-white/95 backdrop-blur-xl shadow-xs transition-all">
           <Search className="absolute left-3.5 h-4 w-4 text-[#8e8e93] pointer-events-none" />
           <input
             type="text"
@@ -465,10 +465,10 @@ export function HomePage() {
                   e.stopPropagation();
                   setAirconOnly((prev) => !prev);
                 }}
-                className={`flex items-center gap-1 px-2.5 py-0.5 text-[11px] rounded-full border transition-all ${
+                className={`flex items-center gap-1 px-2.5 py-1 text-[11px] rounded-full transition-all ${
                   airconOnly
-                    ? 'bg-[#32ade6] text-white border-[#32ade6] font-semibold shadow-xs'
-                    : 'bg-white/60 text-[#8e8e93] border-black/[0.08] hover:text-[#1d1d1f]'
+                    ? 'bg-[#32ade6] text-white font-semibold shadow-xs'
+                    : 'bg-[#f2f2f7] text-[#8e8e93] hover:text-[#1d1d1f] hover:bg-[#e5e5ea]'
                 }`}
               >
                 <Snowflake
@@ -557,7 +557,7 @@ export function HomePage() {
                       setSearchQuery('');
                       setAirconOnly(false);
                     }}
-                    className="mt-3 inline-flex items-center gap-1 rounded-full bg-[#007aff] px-3.5 py-1 text-xs font-semibold text-white hover:bg-[#0071e3] transition-colors shadow-xs"
+                    className="mt-3 inline-flex h-11 items-center justify-center gap-1.5 rounded-full bg-[#007aff] px-5 text-sm font-semibold text-white hover:bg-[#0071e3] transition-all shadow-xs active:scale-[0.98]"
                   >
                     Reset filters
                   </button>
@@ -583,7 +583,7 @@ export function HomePage() {
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-1.5 flex-wrap">
-                          <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#f2f2f7] border border-black/[0.06] text-[10px] font-semibold text-[#1d1d1f] shrink-0">
+                          <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#f2f2f7] text-[10px] font-semibold text-[#1d1d1f] shrink-0">
                             {rankNumber}
                           </span>
 
@@ -593,7 +593,7 @@ export function HomePage() {
 
                           {centre.hasAircon && (
                             <span
-                              className="inline-flex items-center gap-0.5 rounded-full bg-[#32ade6]/12 border border-[#32ade6]/25 px-1.5 py-0.2 text-[9px] font-semibold text-[#0071a4] shrink-0"
+                              className="inline-flex items-center gap-0.5 rounded-full bg-[#32ade6]/12 px-1.5 py-0.2 text-[9px] font-semibold text-[#0071a4] shrink-0"
                               title="Aircon"
                             >
                               <Snowflake className="h-2.5 w-2.5 text-[#32ade6]" />
@@ -601,7 +601,7 @@ export function HomePage() {
                             </span>
                           )}
 
-                          <span className="rounded-full bg-[#34c759]/12 border border-[#34c759]/20 px-1.5 py-0.2 text-[9px] font-medium text-[#248a3d] shrink-0">
+                          <span className="rounded-full bg-[#34c759]/12 px-1.5 py-0.2 text-[9px] font-medium text-[#248a3d] shrink-0">
                             Open
                           </span>
                         </div>

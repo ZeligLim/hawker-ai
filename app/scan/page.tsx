@@ -128,7 +128,7 @@ function ScanTableContent() {
                 setInput(tbl);
                 void linkTable(tbl, initialCentre);
               }}
-              className="py-2.5 px-3 rounded-2xl bg-[#f5f5f7] hover:bg-black/5 font-semibold text-xs text-[#1d1d1f] border border-black/[0.04] transition-colors"
+              className="h-11 px-3 rounded-full bg-[#f2f2f7] hover:bg-[#e5e5ea] font-semibold text-xs text-[#1d1d1f] transition-all active:scale-[0.98]"
             >
               Table {tbl}
             </button>
@@ -150,7 +150,7 @@ function ScanTableContent() {
         <button
           type="submit"
           disabled={status === 'saving'}
-          className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#111827] px-4 py-3 text-sm font-semibold text-white hover:bg-black transition-colors disabled:opacity-70 shadow-sm"
+          className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-full bg-[#007aff] hover:bg-[#0071e3] px-5 text-sm font-semibold text-white transition-all disabled:opacity-70 shadow-xs active:scale-[0.98]"
         >
           <ScanLine className="h-4 w-4" />
           {status === 'saving' ? 'Linking table...' : 'Link Table & Order'}
@@ -171,9 +171,9 @@ function ScanTableContent() {
       {status === 'success' && (
         <button
           onClick={() => router.push('/home' as any)}
-          className="mt-3 w-full py-3 rounded-full bg-[#0071e3] text-white font-semibold text-xs flex items-center justify-center gap-1.5 shadow-md"
+          className="mt-3 flex h-11 w-full items-center justify-center gap-1.5 rounded-full bg-[#34c759] hover:bg-[#2fb34f] px-5 text-sm font-semibold text-white transition-all shadow-xs active:scale-[0.98]"
         >
-          Go to Menu Now <ArrowRight className="w-3.5 h-3.5" />
+          Go to Menu Now <ArrowRight className="w-4 h-4" />
         </button>
       )}
 

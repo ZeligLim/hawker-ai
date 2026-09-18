@@ -1,45 +1,78 @@
 'use client';
 
-import { Search } from 'lucide-react';
-import type { FormEvent } from 'react';
+import { Search, X } from 'lucide-react';
+import type { FormEvent, ReactNode } from 'react';
 
-type HawkerSearchBarProps = {
-  placeholder: string;
+export type HawkerSearchBarProps = {
+  placeholder?: string;
   value: string;
   onChange: (value: string) => void;
   onSubmit?: (event: FormEvent<HTMLFormElement>) => void;
+  onClear?: () => void;
   buttonLabel?: string;
+  rightActions?: ReactNode;
   className?: string;
+  autoFocus?: boolean;
 };
 
 export function HawkerSearchBar({
-  placeholder,
+  placeholder = 'Search',
   value,
   onChange,
   onSubmit,
+  onClear,
   buttonLabel = 'Search',
+  rightActions,
   className = '',
+  autoFocus,
 }: HawkerSearchBarProps) {
-  return (
-    <div className={`sticky top-0 z-10 bg-transparent pb-2 pt-1 ${className}`}>
-      <form onSubmit={onSubmit} className="mt-2">
-      <div className="flex items-center gap-3 rounded-[28px] bg-white px-4 py-2.5 shadow-[0_6px_18px_rgba(15,23,42,0.03)]">
-        <input
-          value={value}
-          onChange={(event) => onChange(event.target.value)}
-          aria-label={placeholder}
-          placeholder={placeholder}
-          className="h-10 flex-1 border-0 bg-transparent text-sm text-[#1d1d1f] placeholder:text-[#6e6e73] focus:outline-none"
-        />
-        <button
-          type="submit"
-          aria-label={buttonLabel}
-          className="flex h-10 w-10 items-center justify-center rounded-full bg-[#1d1d1f] text-white"
-        >
-          <Search className="h-[18px] w-[18px]" strokeWidth={1.8} />
-        </button>
+  const handleClear = () => {
+    if (onClear) {
+      onClear();
+    } else {
+      onChange('');
+    }
+  };
+
+  const hasExtraRight = Boolean(value || rightActions);
+
+  const content = (
+    <div className="relative flex items-center h-11 w-full rounded-full bg-white/95 backdrop-blur-xl shadow-xs transition-all">
+      <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#8e8e93] pointer-events-none shrink-0" />
+      <input
+        type="text"
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        aria-label={placeholder}
+        placeholder={placeholder}
+        autoFocus={autoFocus}
+        className={`w-full h-full pl-10 ${
+          hasExtraRight ? 'pr-20' : 'pr-4'
+        } bg-transparent text-sm text-[#1d1d1f] placeholder-[#8e8e93] outline-none font-normal`}
+      />
+      <div className="absolute right-2 flex items-center gap-1">
+        {value ? (
+          <button
+            type="button"
+            onClick={handleClear}
+            aria-label="Clear search"
+            className="p-1.5 rounded-full text-[#8e8e93] hover:text-[#1d1d1f] transition-colors"
+          >
+            <X className="h-3.5 w-3.5" />
+          </button>
+        ) : null}
+        {rightActions}
       </div>
-      </form>
     </div>
   );
+
+  if (onSubmit) {
+    return (
+      <form onSubmit={onSubmit} className={`w-full ${className}`}>
+        {content}
+      </form>
+    );
+  }
+
+  return <div className={`w-full ${className}`}>{content}</div>;
 }

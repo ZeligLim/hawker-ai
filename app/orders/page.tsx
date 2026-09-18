@@ -168,7 +168,7 @@ export default function OrdersPage() {
           <div className="mt-6 flex justify-center gap-3">
             <Link
               href="/"
-              className="rounded-full bg-[#111827] px-5 py-2.5 text-xs font-semibold text-white shadow-sm hover:bg-black transition-colors"
+              className="inline-flex h-11 items-center justify-center rounded-full bg-[#007aff] hover:bg-[#0071e3] px-5 text-sm font-semibold text-white shadow-xs transition-all active:scale-[0.98]"
             >
               Order more items
             </Link>
@@ -205,7 +205,7 @@ export default function OrdersPage() {
                 <p className="mt-1 text-xs text-[#6e6e73]">Add some delicious hawker dishes from the menu to start ordering.</p>
                 <Link
                   href="/home"
-                  className="mt-4 inline-flex items-center justify-center rounded-full bg-[#111827] px-5 py-2.5 text-xs font-semibold text-white shadow-xs hover:bg-black transition-colors"
+                  className="mt-4 inline-flex h-11 items-center justify-center rounded-full bg-[#007aff] hover:bg-[#0071e3] px-5 text-sm font-semibold text-white shadow-xs transition-all active:scale-[0.98]"
                 >
                   Browse dishes
                 </Link>
@@ -334,7 +334,7 @@ export default function OrdersPage() {
                 type="button"
                 onClick={() => void checkout()}
                 disabled={checkoutState === 'submitting' || checkoutState === 'success' || cartItems.length === 0}
-                className="mt-6 w-full rounded-full bg-white py-3 text-sm font-bold text-[#111827] disabled:opacity-50 shadow-sm hover:bg-white/95 active:scale-[0.98] transition-all"
+                className="mt-6 flex h-11 w-full items-center justify-center rounded-full bg-white px-5 text-sm font-semibold text-[#1d1d1f] disabled:opacity-50 shadow-xs hover:bg-[#f2f2f7] active:scale-[0.98] transition-all"
               >
                 {checkoutState === 'submitting'
                   ? 'Placing Order...'

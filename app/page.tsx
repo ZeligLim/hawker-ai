@@ -162,23 +162,23 @@ export default function LandingPage() {
             {roles.hasShopOwner ? (
               <Link
                 href="/shop-owner/booths"
-                className="w-full sm:w-auto h-12 px-7 rounded-full text-sm font-semibold bg-[#1d1d1f] text-white hover:bg-black transition-all shadow-md flex items-center justify-center gap-2"
+                className="w-full sm:w-auto h-11 px-6 rounded-full text-sm font-semibold bg-[#1d1d1f] text-white hover:bg-black transition-all shadow-xs flex items-center justify-center gap-2 active:scale-[0.98]"
               >
                 Shop Dashboard <ArrowRight className="w-4 h-4" />
               </Link>
             ) : (
               <Link
                 href={'/apply' as any}
-                className="w-full sm:w-auto h-12 px-7 rounded-full text-sm font-semibold bg-[#0071e3] text-white hover:bg-[#0077ed] transition-all shadow-[0_4px_16px_rgba(0,113,227,0.3)] flex items-center justify-center gap-2"
+                className="w-full sm:w-auto h-11 px-6 rounded-full text-sm font-semibold bg-[#007aff] text-white hover:bg-[#0071e3] transition-all shadow-xs flex items-center justify-center gap-2 active:scale-[0.98]"
               >
                 Start Free as Operator <ArrowRight className="w-4 h-4" />
               </Link>
             )}
             <Link
               href="/scan"
-              className="w-full sm:w-auto h-12 px-6 rounded-full text-sm font-semibold bg-white text-[#1d1d1f] hover:bg-black/5 border border-black/[0.08] transition-all flex items-center justify-center gap-2"
+              className="w-full sm:w-auto h-11 px-6 rounded-full text-sm font-semibold bg-[#f2f2f7] text-[#1d1d1f] hover:bg-[#e5e5ea] transition-all flex items-center justify-center gap-2 active:scale-[0.98]"
             >
-              <QrCode className="w-4 h-4 text-[#0071e3]" /> Scan Table QR
+              <QrCode className="w-4 h-4 text-[#007aff]" /> Scan Table QR
             </Link>
           </div>
 

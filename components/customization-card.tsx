@@ -101,7 +101,7 @@ export function CustomizationCard({
         type="button"
         onClick={() => onConfirm({ options: selectedOptions, price: basePrice + extraPrice })}
         disabled={!customization.multiSelect && selectedOptions.length === 0}
-        className="mt-4 w-full rounded-full bg-[#111827] px-4 py-3 text-sm font-semibold text-white disabled:opacity-50"
+        className="mt-4 flex h-11 w-full items-center justify-center rounded-full bg-[#007aff] hover:bg-[#0071e3] px-5 text-sm font-semibold text-white disabled:opacity-50 transition-all shadow-xs active:scale-[0.98]"
       >
         Add to order · RM {(basePrice + extraPrice).toFixed(2)}
       </button>

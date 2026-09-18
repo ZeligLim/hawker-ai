@@ -135,11 +135,11 @@ function ResultsContent() {
               <button
                 type="button"
                 onClick={() => setTheme((current) => (current === 'light' ? 'dark' : 'light'))}
-                className={`rounded-full border px-3 py-1.5 text-xs font-medium ${isDark ? 'border-[#2a2b2f] bg-[#17181d] text-[#f5f5f7]' : 'border-[#dfe3ea] bg-white text-[#1d1d1f]'}`}
+                className={`flex h-11 items-center px-4 rounded-full text-xs font-semibold transition-all active:scale-[0.98] ${isDark ? 'bg-[#1c1c1e] text-[#f5f5f7] hover:bg-[#2c2c2e]' : 'bg-[#f2f2f7] text-[#1d1d1f] hover:bg-[#e5e5ea]'}`}
               >
                 {isDark ? 'Light mode' : 'Dark mode'}
               </button>
-              <Link href="/" className={`rounded-full border px-3 py-1.5 text-sm font-medium ${isDark ? 'border-[#2a2b2f] bg-[#17181d] text-[#f5f5f7]' : 'border-[#dfe3ea] bg-[#f7f7f7] text-[#1d1d1f]'}`}>
+              <Link href="/" className="flex h-11 items-center px-4 rounded-full text-xs font-semibold bg-[#007aff] hover:bg-[#0071e3] text-white transition-all shadow-xs active:scale-[0.98]">
                 New search
               </Link>
             </div>

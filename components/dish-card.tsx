@@ -57,7 +57,7 @@ export function DishCard({
           {/* Vegetarian Badge */}
           {isVegetarian ? (
             <div
-              className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-50 text-emerald-700 shadow-sm border border-emerald-200"
+              className="flex h-7 w-7 items-center justify-center rounded-full bg-[#34c759]/15 text-[#248a3d]"
               title="Vegetarian"
               aria-label="Vegetarian"
             >
@@ -68,11 +68,11 @@ export function DishCard({
           {/* Spicy Badge (shown when spicy level is 1 or higher) */}
           {spiceLevel !== undefined && spiceLevel >= 1 ? (
             <div
-              className="flex h-7 w-7 items-center justify-center rounded-full bg-red-50 text-red-600 shadow-sm border border-red-200"
+              className="flex h-7 w-7 items-center justify-center rounded-full bg-[#ff3b30]/15 text-[#ff3b30]"
               title={`Spicy Level ${spiceLevel}`}
               aria-label={`Spicy Level ${spiceLevel}`}
             >
-              <Flame className="h-3.5 w-3.5 fill-red-500/20" strokeWidth={2} />
+              <Flame className="h-3.5 w-3.5 fill-[#ff3b30]/20" strokeWidth={2} />
             </div>
           ) : null}
         </div>
@@ -80,7 +80,7 @@ export function DishCard({
         {/* Quantity Controls Floating on Image Bottom */}
         <div className="absolute bottom-2.5 left-2.5 right-2.5">
           {quantity > 0 ? (
-            <div className="flex w-full items-center justify-between rounded-full bg-white/95 px-2 py-1 shadow-[0_8px_20px_rgba(0,0,0,0.14)] backdrop-blur-md border border-black/5">
+            <div className="flex w-full items-center justify-between rounded-full bg-white/95 px-2 py-1 shadow-md backdrop-blur-md">
               <button
                 type="button"
                 aria-label={`Decrease ${name} quantity`}
@@ -88,7 +88,7 @@ export function DishCard({
                   e.stopPropagation();
                   onUpdateQuantity(-1);
                 }}
-                className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full bg-[#f5f5f7] text-base sm:text-lg font-bold text-[#1d1d1f] hover:bg-[#e5e5ea] active:scale-95 transition-all"
+                className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full bg-[#f2f2f7] text-base sm:text-lg font-bold text-[#1d1d1f] hover:bg-[#e5e5ea] active:scale-95 transition-all"
               >
                 −
               </button>
@@ -102,7 +102,7 @@ export function DishCard({
                   e.stopPropagation();
                   onUpdateQuantity(1);
                 }}
-                className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full bg-[#111827] text-base sm:text-lg font-bold text-white hover:bg-black active:scale-95 transition-all"
+                className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full bg-[#1d1d1f] text-base sm:text-lg font-bold text-white hover:bg-black active:scale-95 transition-all"
               >
                 +
               </button>
@@ -115,7 +115,7 @@ export function DishCard({
                   e.stopPropagation();
                   onAdd();
                 }}
-                className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-full bg-[#111827] text-white shadow-[0_8px_18px_rgba(17,24,39,0.2)] hover:bg-black hover:scale-105 active:scale-95 transition-all"
+                className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-full bg-[#007aff] text-white shadow-xs hover:bg-[#0071e3] hover:scale-105 active:scale-95 transition-all"
                 aria-label={`Add ${name} to cart`}
               >
                 <Plus className="h-4 w-4" strokeWidth={2.2} />

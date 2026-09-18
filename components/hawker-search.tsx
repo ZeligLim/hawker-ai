@@ -157,11 +157,11 @@ export function HawkerSearch({ initialQuery = 'I want a vegetarian meal under RM
               <button
                 type="button"
                 onClick={() => setTheme((current) => (current === 'light' ? 'dark' : 'light'))}
-                className={`rounded-full border px-3 py-1.5 text-xs font-medium transition ${border} ${chipBg}`}
+                className={`flex h-11 items-center rounded-full px-4 text-xs font-semibold transition-all active:scale-[0.98] ${isDark ? 'bg-[#1c1c1e] text-[#f5f5f7] hover:bg-[#2c2c2e]' : 'bg-[#f2f2f7] text-[#1d1d1f] hover:bg-[#e5e5ea]'}`}
               >
                 {isDark ? 'Light mode' : 'Dark mode'}
               </button>
-              <Link href={resultsHref as any} className={`hidden rounded-full border px-3 py-1.5 text-sm font-medium transition sm:inline-flex ${border} ${chipBg}`}>
+              <Link href={resultsHref as any} className="hidden h-11 items-center rounded-full bg-[#007aff] hover:bg-[#0071e3] px-4 text-xs font-semibold text-white transition-all shadow-xs active:scale-[0.98] sm:inline-flex">
                 Browse results
               </Link>
             </div>
@@ -195,7 +195,7 @@ export function HawkerSearch({ initialQuery = 'I want a vegetarian meal under RM
                     key={idea}
                     type="button"
                     onClick={() => setQuery(idea)}
-                    className={`rounded-full border px-3 py-1.5 text-sm transition ${border} ${isDark ? 'bg-[#17181d] text-[#f5f5f7] hover:bg-[#1d1f24]' : 'bg-white text-[#3c3c43] hover:bg-[#fafafa]'}`}
+                    className={`rounded-full px-3.5 py-1.5 text-xs font-medium transition-all ${isDark ? 'bg-[#1c1c1e] text-[#f5f5f7] hover:bg-[#2c2c2e]' : 'bg-[#f2f2f7] text-[#1d1d1f] hover:bg-[#e5e5ea]'}`}
                   >
                     {idea}
                   </button>
@@ -207,14 +207,12 @@ export function HawkerSearch({ initialQuery = 'I want a vegetarian meal under RM
                   <button
                     type="button"
                     onClick={() => setVegetarian((current) => (current === 'true' ? '' : 'true'))}
-                    className={`rounded-full px-3 py-1.5 text-sm font-medium transition ${
+                    className={`rounded-full px-4 py-2 text-xs font-semibold transition-all ${
                       vegetarian === 'true'
-                        ? isDark
-                          ? 'bg-[#f5f5f7] text-[#111214]'
-                          : 'bg-[#111827] text-white'
+                        ? 'bg-[#007aff] text-white shadow-xs'
                         : isDark
-                          ? 'border border-[#2a2b2f] bg-[#17181d] text-[#f5f5f7]'
-                          : 'border border-[#dfe3ea] bg-[#f9fafb] text-[#3c3c43]'
+                          ? 'bg-[#1c1c1e] text-[#8e8e93] hover:text-white'
+                          : 'bg-[#f2f2f7] text-[#8e8e93] hover:text-[#1d1d1f]'
                     }`}
                   >
                     Vegetarian
@@ -222,31 +220,29 @@ export function HawkerSearch({ initialQuery = 'I want a vegetarian meal under RM
                   <button
                     type="button"
                     onClick={() => setHalal((current) => (current === 'true' ? '' : 'true'))}
-                    className={`rounded-full px-3 py-1.5 text-sm font-medium transition ${
+                    className={`rounded-full px-4 py-2 text-xs font-semibold transition-all ${
                       halal === 'true'
-                        ? isDark
-                          ? 'bg-[#f5f5f7] text-[#111214]'
-                          : 'bg-[#111827] text-white'
+                        ? 'bg-[#007aff] text-white shadow-xs'
                         : isDark
-                          ? 'border border-[#2a2b2f] bg-[#17181d] text-[#f5f5f7]'
-                          : 'border border-[#dfe3ea] bg-[#f9fafb] text-[#3c3c43]'
+                          ? 'bg-[#1c1c1e] text-[#8e8e93] hover:text-white'
+                          : 'bg-[#f2f2f7] text-[#8e8e93] hover:text-[#1d1d1f]'
                     }`}
                   >
                     Halal
                   </button>
-                  <label className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm ${isDark ? 'border-[#2a2b2f] bg-[#17181d] text-[#f5f5f7]' : 'border-[#dfe3ea] bg-[#f9fafb] text-[#3c3c43]'}`}>
+                  <label className={`inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-xs font-semibold ${isDark ? 'bg-[#1c1c1e] text-[#f5f5f7]' : 'bg-[#f2f2f7] text-[#3c3c43]'}`}>
                     <span>Budget</span>
                     <input
                       type="number"
                       min="0"
                       value={maxPrice}
                       onChange={(event) => setMaxPrice(event.target.value)}
-                      className={`w-16 bg-transparent text-right outline-none ${isDark ? 'text-[#f5f5f7]' : 'text-[#1d1d1f]'}`}
+                      className={`w-16 bg-transparent text-right outline-none font-normal ${isDark ? 'text-[#f5f5f7]' : 'text-[#1d1d1f]'}`}
                     />
                   </label>
-                  <label className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm ${isDark ? 'border-[#2a2b2f] bg-[#17181d] text-[#f5f5f7]' : 'border-[#dfe3ea] bg-[#f9fafb] text-[#3c3c43]'}`}>
+                  <label className={`inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-xs font-semibold ${isDark ? 'bg-[#1c1c1e] text-[#f5f5f7]' : 'bg-[#f2f2f7] text-[#3c3c43]'}`}>
                     <span>Heat</span>
-                    <select value={spiceLevel} onChange={(event) => setSpiceLevel(event.target.value)} className={`bg-transparent outline-none ${isDark ? 'text-[#f5f5f7]' : 'text-[#1d1d1f]'}`}>
+                    <select value={spiceLevel} onChange={(event) => setSpiceLevel(event.target.value)} className={`bg-transparent outline-none font-normal ${isDark ? 'text-[#f5f5f7]' : 'text-[#1d1d1f]'}`}>
                       <option value="">Any</option>
                       {[0, 1, 2, 3, 4, 5].map((level) => (
                         <option key={level} value={String(level)}>
@@ -258,11 +254,11 @@ export function HawkerSearch({ initialQuery = 'I want a vegetarian meal under RM
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <label className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm ${isDark ? 'border-[#2a2b2f] bg-[#17181d] text-[#f5f5f7]' : 'border-[#dfe3ea] bg-[#f9fafb] text-[#3c3c43]'}`}>
+                  <label className={`inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-xs font-semibold ${isDark ? 'bg-[#1c1c1e] text-[#f5f5f7]' : 'bg-[#f2f2f7] text-[#3c3c43]'}`}>
                     <span>Results</span>
-                    <input type="number" min="1" max="20" value={limit} onChange={(event) => setLimit(event.target.value)} className={`w-12 bg-transparent text-right outline-none ${isDark ? 'text-[#f5f5f7]' : 'text-[#1d1d1f]'}`} />
+                    <input type="number" min="1" max="20" value={limit} onChange={(event) => setLimit(event.target.value)} className={`w-12 bg-transparent text-right outline-none font-normal ${isDark ? 'text-[#f5f5f7]' : 'text-[#1d1d1f]'}`} />
                   </label>
-                  <button type="submit" disabled={loading} className={`rounded-full px-4 py-2.5 text-sm font-semibold transition ${isDark ? 'bg-[#f5f5f7] text-[#111214] hover:bg-white' : 'bg-[#111827] text-white hover:bg-[#1f2937]'} disabled:cursor-not-allowed disabled:opacity-60`}>
+                  <button type="submit" disabled={loading} className="flex h-11 items-center justify-center rounded-full bg-[#007aff] hover:bg-[#0071e3] px-6 text-sm font-semibold text-white shadow-xs transition-all active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60">
                     {loading ? 'Searching…' : 'Search'}
                   </button>
                 </div>

@@ -30,7 +30,7 @@ export function ResultCard({
           <div className="absolute right-2.5 top-2.5 flex items-center gap-1.5">
             {dish.isVegetarian ? (
               <div
-                className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-50 text-emerald-700 shadow-sm border border-emerald-200"
+                className="flex h-7 w-7 items-center justify-center rounded-full bg-[#34c759]/15 text-[#248a3d]"
                 title="Vegetarian"
                 aria-label="Vegetarian"
               >
@@ -39,11 +39,11 @@ export function ResultCard({
             ) : null}
             {dish.spiceLevel >= 1 ? (
               <div
-                className="flex h-7 w-7 items-center justify-center rounded-full bg-red-50 text-red-600 shadow-sm border border-red-200"
+                className="flex h-7 w-7 items-center justify-center rounded-full bg-[#ff3b30]/15 text-[#ff3b30]"
                 title={`Spicy Level ${dish.spiceLevel}`}
                 aria-label={`Spicy Level ${dish.spiceLevel}`}
               >
-                <Flame className="h-3.5 w-3.5 fill-red-500/20" strokeWidth={2} />
+                <Flame className="h-3.5 w-3.5 fill-[#ff3b30]/20" strokeWidth={2} />
               </div>
             ) : null}
           </div>
@@ -54,23 +54,23 @@ export function ResultCard({
           <p className="text-xs font-semibold text-[#8e8e93]">{dish.restaurantName}</p>
           <h3 className="mt-2 text-xl font-semibold tracking-[-0.04em] text-[#1d1d1f]">{dish.name}</h3>
         </div>
-        <div className="rounded-full bg-[#f5f5f7] px-2.5 py-1 text-sm font-medium text-[#1d1d1f]">RM {dish.price.toFixed(2)}</div>
+        <div className="rounded-full bg-[#f2f2f7] px-2.5 py-1 text-sm font-medium text-[#1d1d1f]">RM {dish.price.toFixed(2)}</div>
       </div>
 
-      <p className="mt-3 text-sm text-[#4b5563]">{dish.stallName}</p>
+      <p className="mt-3 text-sm text-[#8e8e93]">{dish.stallName}</p>
 
       <div className="mt-4 flex flex-wrap gap-2 text-[11px] font-medium">
         {dish.isVegetarian ? (
-          <span className="inline-flex items-center gap-1 rounded-full bg-[#ecfdf5] px-2.5 py-1 text-[#065f46]">
+          <span className="inline-flex items-center gap-1 rounded-full bg-[#34c759]/12 px-2.5 py-1 text-[#248a3d]">
             <Leaf className="h-3 w-3" strokeWidth={2} /> Vegetarian
           </span>
         ) : (
-          <span className="rounded-full bg-[#f3f4f6] px-2.5 py-1 text-[#4b5563]">Non-veg</span>
+          <span className="rounded-full bg-[#f2f2f7] px-2.5 py-1 text-[#8e8e93]">Non-veg</span>
         )}
-        <span className="rounded-full bg-[#ecfeff] px-2.5 py-1 text-[#0f766e]">{dish.isHalal ? 'Halal' : 'Non-halal'}</span>
+        <span className="rounded-full bg-[#007aff]/10 px-2.5 py-1 text-[#0071e3]">{dish.isHalal ? 'Halal' : 'Non-halal'}</span>
         {dish.spiceLevel >= 1 ? (
-          <span className="inline-flex items-center gap-1 rounded-full bg-red-50 px-2.5 py-1 text-red-700 border border-red-100">
-            <Flame className="h-3 w-3 fill-red-500/20" strokeWidth={2} />
+          <span className="inline-flex items-center gap-1 rounded-full bg-[#ff3b30]/12 px-2.5 py-1 text-[#ff3b30]">
+            <Flame className="h-3 w-3 fill-[#ff3b30]/20" strokeWidth={2} />
             {spiceLabels[dish.spiceLevel as keyof typeof spiceLabels] ?? `Spicy ${dish.spiceLevel}`}
           </span>
         ) : (
@@ -107,9 +107,10 @@ export function ResultCard({
         type="button"
         onClick={() => onAddToCart?.(dish)}
         aria-label={`Add ${dish.name} to your order`}
-        className="mt-5 flex w-full items-center justify-center rounded-full bg-[#111827] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#1f2937]"
+        className="mt-5 flex h-11 w-full items-center justify-center gap-1.5 rounded-full bg-[#007aff] hover:bg-[#0071e3] px-5 text-sm font-semibold text-white transition-all shadow-xs active:scale-[0.98]"
       >
-        <Plus className="h-5 w-5" strokeWidth={2} />
+        <Plus className="h-4 w-4" strokeWidth={2.5} />
+        <span>Add to order</span>
       </button>
     </article>
   );

@@ -59,16 +59,16 @@ export function CartSummary({
                     <button
                       type="button"
                       onClick={() => onUpdateQuantity(item.id, Math.max(0, item.quantity - 1))}
-                      className="flex h-7 w-7 items-center justify-center rounded-full border border-[#dfe3ea] bg-white text-lg text-[#1d1d1f]"
+                      className="flex h-7 w-7 items-center justify-center rounded-full bg-[#f2f2f7] hover:bg-[#e5e5ea] text-base font-semibold text-[#1d1d1f] transition-all active:scale-95"
                       aria-label={`Decrease quantity for ${item.name}`}
                     >
                       −
                     </button>
-                    <span className="min-w-5 text-center text-sm font-medium text-[#1d1d1f]">{item.quantity}</span>
+                    <span className="min-w-5 text-center text-sm font-semibold text-[#1d1d1f]">{item.quantity}</span>
                     <button
                       type="button"
                       onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
-                      className="flex h-7 w-7 items-center justify-center rounded-full border border-[#dfe3ea] bg-white text-lg text-[#1d1d1f]"
+                      className="flex h-7 w-7 items-center justify-center rounded-full bg-[#1d1d1f] hover:bg-black text-base font-semibold text-white shadow-xs transition-all active:scale-95"
                       aria-label={`Increase quantity for ${item.name}`}
                     >
                       +
@@ -99,7 +99,7 @@ export function CartSummary({
       <button
         type="button"
         onClick={onCheckout}
-        className="mt-5 w-full rounded-full bg-[#111827] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#1f2937]"
+        className="mt-5 flex h-11 w-full items-center justify-center rounded-full bg-[#007aff] hover:bg-[#0071e3] px-5 text-sm font-semibold text-white transition-all shadow-xs active:scale-[0.98]"
       >
         Pay RM {total.toFixed(2)}
       </button>
