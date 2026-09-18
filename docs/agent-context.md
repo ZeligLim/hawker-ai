@@ -4,10 +4,10 @@
 Phase 29: Standard OpenStreetMap (Zero Watermark), Map Selected Shop Card, and Dedicated List View Mode
 
 ## Current Feature
-1. **Watermark-Free Esri Light Gray Base (`components/hawker-map.tsx`)**:
-   - Switched map tile endpoint from standard OSM to Esri World Light Gray Base (`server.arcgisonline.com/.../Canvas/World_Light_Gray_Base/...`). This provides a natively designed minimalist, high-quality map without any watermarks.
-   - Removed the CSS `grayscale(100%)` filter, which was causing standard OSM to look muddy, grainy, and low-res.
-   - **Bugfix**: Added missing `overflow-hidden` to the map container when `fullScreen={true}`. Previously, unbounded absolutely positioned map tiles were spilling over and breaking the entire page layout, making everything look arbitrarily placed.
+1. **High-Res Pure Black & White Map (`components/hawker-map.tsx`)**:
+   - Switched map tile endpoint to high-res Google Maps tiles (`mt0.google.com/vt/lyrs=m...&scale=2`) to resolve low-res pixelation issues on retina displays (which occurred with Esri Light Gray).
+   - Applied a custom CSS filter (`grayscale(100%) contrast(120%) brightness(105%)`) to perfectly strip all colors and enforce the requested pure white and black high-contrast look without watermarks.
+   - **Bugfix**: Moved the map zoom controls down to `top-24` when in `fullScreen={true}` to prevent them from crashing into the top search bar.
 
 3. **Dedicated List View Mode (`components/home-page.tsx`)**:
    - The list of hawker centres now displays strictly when the user toggles to **List** view (`viewMode === 'list'`).

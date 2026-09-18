@@ -335,21 +335,31 @@ export default function OrdersPage() {
         {customizingItem ? (
           <CustomizationCard
             dishName={customizingItem.name}
-            basePrice={
-              customizingItem.price -
-              (customizingItem.customizations ?? []).reduce((total, label) => {
-                const option = getDishCustomization(customizingItem.name)?.options.find(
-                  (candidate) => candidate.label === label,
-                );
-                return total + (option?.price ?? 0);
-              }, 0)
-            }
+            basePrice={(() => {
+              const customization = getDishCustomization(customizingItem.name);
+              const allAvailableOptions = [
+                ...(customization?.options || []),
+                ...(customization?.spiceOptions || []),
+              ];
+              return (
+                customizingItem.price -
+                (customizingItem.customizations ?? []).reduce((total, label) => {
+                  const option = allAvailableOptions.find((candidate) => candidate.label === label);
+                  return total + (option?.price ?? 0);
+                }, 0)
+              );
+            })()}
             customization={getDishCustomization(customizingItem.name)!}
-            initialSelection={getDishCustomization(customizingItem.name)
-              ?.options.filter((option) =>
-                customizingItem.customizations?.includes(option.label),
-              )
-              .map((option) => option.id)}
+            initialSelection={(() => {
+              const customization = getDishCustomization(customizingItem.name);
+              const allAvailableOptions = [
+                ...(customization?.options || []),
+                ...(customization?.spiceOptions || []),
+              ];
+              return allAvailableOptions
+                .filter((option) => customizingItem.customizations?.includes(option.label))
+                .map((option) => option.id);
+            })()}
             onCancel={() => setCustomizingItem(null)}
             onConfirm={confirmCustomization}
           />

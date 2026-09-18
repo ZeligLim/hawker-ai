@@ -5,9 +5,13 @@ export type CustomizationOption = {
 };
 
 export type DishCustomization = {
-  title: string;
-  options: CustomizationOption[];
+  // Extras / Add-ons
+  title?: string;
+  options?: CustomizationOption[];
   multiSelect?: boolean;
+  
+  // Spice Level
+  spiceOptions?: CustomizationOption[];
 };
 
 export type CustomizationSource =
@@ -19,38 +23,30 @@ export type CustomizationSource =
       spice_level?: number;
     };
 
+const SPICE_OPTIONS: CustomizationOption[] = [
+  { id: 'spice-0', label: 'Level 0 · Mild / No chili', price: 0 },
+  { id: 'spice-1', label: 'Level 1 · Light spice', price: 0 },
+  { id: 'spice-2', label: 'Level 2 · Medium spice', price: 0 },
+  { id: 'spice-3', label: 'Level 3 · Extra hot', price: 0.5 },
+];
+
 export function getDishCustomization(source: CustomizationSource | null | undefined): DishCustomization | null {
   if (!source) return null;
+
+  let isSpicy = false;
+  let parsedOptions: CustomizationOption[] = [];
+  let dishName = '';
 
   // Case 1: Object passed with real database customizations or spice level
   if (typeof source === 'object') {
     const rawCustoms = source.customizations;
     const spice = Number(source.spiceLevel ?? source.spice_level ?? 0);
-    const dishName = (source.name ?? '').trim();
+    dishName = (source.name ?? '').trim();
 
-    // Check if the dish is spicy by spice level or by culinary keywords
-    const isSpicy =
-      spice > 0 ||
-      /curry|laksa|sambal|chili|chilli|spicy|pedas|tomyum|tom yum|mala|nasi lemak|mee goreng|pan mee|kway teow|char kway|rendang|hot/i.test(
-        dishName
-      );
-
-    if (isSpicy) {
-      const spiceOptions: CustomizationOption[] = [
-        { id: 'spice-0', label: 'Level 0 · Mild / No chili', price: 0 },
-        { id: 'spice-1', label: 'Level 1 · Light spice', price: 0 },
-        { id: 'spice-2', label: 'Level 2 · Medium spice', price: 0 },
-        { id: 'spice-3', label: 'Level 3 · Extra hot', price: 0.5 },
-      ];
-      return {
-        title: 'Choose your spice level',
-        options: spiceOptions,
-        multiSelect: false,
-      };
-    }
+    isSpicy = spice > 0 || /curry|laksa|sambal|chili|chilli|spicy|pedas|tomyum|tom yum|mala|nasi lemak|mee goreng|pan mee|kway teow|char kway|rendang|hot/i.test(dishName);
 
     if (Array.isArray(rawCustoms) && rawCustoms.length > 0) {
-      const parsedOptions: CustomizationOption[] = rawCustoms
+      parsedOptions = rawCustoms
         .map((item, index) => {
           if (!item) return null;
           if (typeof item === 'string') {
@@ -71,55 +67,37 @@ export function getDishCustomization(source: CustomizationSource | null | undefi
           return null;
         })
         .filter((opt): opt is CustomizationOption => opt !== null);
-
-      if (parsedOptions.length > 0) {
-        return {
-          title: 'Select options & add-ons',
-          options: parsedOptions,
-          multiSelect: true,
-        };
-      }
     }
+  } else {
+    // Case 2: String dish name passed (legacy fallback)
+    dishName = source.toLowerCase().trim();
+    isSpicy = /curry|laksa|sambal|chili|chilli|spicy|pedas|tomyum|tom yum|mala|nasi lemak|mee goreng|pan mee|kway teow|char kway|rendang|hot/i.test(dishName);
+  }
 
-    // Fall back to dish name checks for legacy/demo dishes
-    if (dishName) {
-      return getDishCustomization(dishName);
-    }
+  // Fallback to legacy extras if no parsedOptions found
+  if (parsedOptions.length === 0 && (dishName.includes('chicken rice') || dishName.includes('rice') || dishName.includes('noodle'))) {
+    parsedOptions = [
+      { id: 'large', label: 'Make it large', price: 2 },
+      { id: 'egg', label: 'Add egg', price: 1.5 },
+    ];
+  }
 
+  // Return null if neither spicy nor has options
+  if (!isSpicy && parsedOptions.length === 0) {
     return null;
   }
 
-  // Case 2: String dish name passed (legacy fallback)
-  const name = source.toLowerCase().trim();
-
-  const isSpicy =
-    /curry|laksa|sambal|chili|chilli|spicy|pedas|tomyum|tom yum|mala|nasi lemak|mee goreng|pan mee|kway teow|char kway|rendang|hot/i.test(
-      name
-    );
-
+  const result: DishCustomization = {};
+  
+  if (parsedOptions.length > 0) {
+    result.title = 'Select options & add-ons';
+    result.options = parsedOptions;
+    result.multiSelect = true;
+  }
+  
   if (isSpicy) {
-    return {
-      title: 'Choose your spice level',
-      options: [
-        { id: 'spice-0', label: 'Level 0 · Mild / No chili', price: 0 },
-        { id: 'spice-1', label: 'Level 1 · Light spice', price: 0 },
-        { id: 'spice-2', label: 'Level 2 · Medium spice', price: 0 },
-        { id: 'spice-3', label: 'Level 3 · Extra hot', price: 0.5 },
-      ],
-      multiSelect: false,
-    };
+    result.spiceOptions = SPICE_OPTIONS;
   }
 
-  if (name.includes('chicken rice') || name.includes('rice') || name.includes('noodle')) {
-    return {
-      title: 'Add extras',
-      options: [
-        { id: 'large', label: 'Make it large', price: 2 },
-        { id: 'egg', label: 'Add egg', price: 1.5 },
-      ],
-      multiSelect: true,
-    };
-  }
-
-  return null;
+  return result;
 }
