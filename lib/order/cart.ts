@@ -97,7 +97,19 @@ export function addItemToCart(
     notes: dish.notes ?? '',
   };
 
-  const existingIndex = items.findIndex(
+  // Ensure cart isolation per hawker centre (restaurant)
+  const differentCentreIndex = items.findIndex(
+    (item) => item.restaurantName !== normalizedDish.restaurantName
+  );
+
+  let activeItems = items;
+  if (differentCentreIndex >= 0) {
+    // If attempting to order from a different hawker centre, we MUST clear the cart first
+    // as it is physically impossible to combine them.
+    activeItems = [];
+  }
+
+  const existingIndex = activeItems.findIndex(
     (item) =>
       item.dishId === normalizedDish.dishId &&
       item.stallId === normalizedDish.stallId &&
@@ -105,14 +117,14 @@ export function addItemToCart(
   );
 
   if (existingIndex >= 0) {
-    return items.map((item, index) => {
+    return activeItems.map((item, index) => {
       if (index !== existingIndex) return item;
       return { ...item, quantity: item.quantity + normalizedDish.quantity };
     });
   }
 
   return [
-    ...items,
+    ...activeItems,
     {
       ...normalizedDish,
       id: `${normalizedDish.stallId}:${normalizedDish.dishId}:${Date.now()}`,
