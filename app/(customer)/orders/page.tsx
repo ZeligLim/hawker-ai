@@ -10,7 +10,7 @@ import { buildCartSummary, updateCartItemCustomization, updateCartItemQuantity, 
 import { getDishCustomization } from '@/lib/order/customizations';
 import { supabase } from '@/lib/supabase/client';
 import { CustomerReceipt, type ReceiptData } from '@/components/customer-receipt';
-import { formatTableLabel, getCurrentTableSession } from '@/lib/table-session';
+import { getCurrentTableSession } from '@/lib/table-session';
 
 export default function OrdersPage() {
   const { cartItems, setCartItems } = useCartItems();
@@ -19,18 +19,7 @@ export default function OrdersPage() {
   const [customizingItem, setCustomizingItem] = useState<CartItem | null>(null);
   const [checkoutState, setCheckoutState] = useState<'idle' | 'submitting' | 'success'>('idle');
   const [checkoutError, setCheckoutError] = useState('');
-  const [tableLabel] = useState(() => formatTableLabel(getCurrentTableSession().tableNumber));
   const [placedReceipt, setPlacedReceipt] = useState<ReceiptData | null>(null);
-
-  const orderItems = useMemo(
-    () =>
-      cartItems.map((item) => ({
-        name: item.name,
-        qty: item.quantity,
-        price: item.price,
-      })),
-    [cartItems],
-  );
 
   const summary = useMemo(() => buildCartSummary(cartItems), [cartItems]);
 
@@ -127,7 +116,6 @@ export default function OrdersPage() {
 
     setPlacedReceipt({
       id: payload.orderId ?? `ord_${Date.now()}`,
-      tableLabel,
       venueName: cartItems[0]?.restaurantName ?? 'Hawker Centre',
       subtotal: summary.subtotal,
       serviceFee: summary.serviceFee,
@@ -155,10 +143,10 @@ export default function OrdersPage() {
 
   if (placedReceipt) {
     return (
-      <main className="min-h-screen bg-[#f5f5f7] px-4 pb-28 pt-8 text-[#1d1d1f]">
+      <main className="min-h-screen bg-white px-4 pb-28 pt-8 text-black">
         <div className="mx-auto max-w-[480px]">
           <div className="mb-6 text-center">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold border border-emerald-200">
+            <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-emerald-100 text-emerald-800 text-xs font-semibold">
               ✓ Order placed successfully
             </span>
           </div>
@@ -167,8 +155,8 @@ export default function OrdersPage() {
 
           <div className="mt-6 flex justify-center gap-3">
             <Link
-              href="/"
-              className="inline-flex h-11 items-center justify-center rounded-full bg-[#007aff] hover:bg-[#0071e3] px-5 text-sm font-semibold text-white shadow-xs transition-all active:scale-[0.98]"
+              href="/home"
+              className="inline-flex h-11 items-center justify-center rounded-full bg-black hover:bg-neutral-800 px-6 text-sm font-semibold text-white shadow-xs transition-colors"
             >
               Order more items
             </Link>
@@ -179,33 +167,23 @@ export default function OrdersPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#f5f5f7] px-4 pb-32 pt-5 text-[#1d1d1f] sm:px-6">
+    <main className="min-h-screen bg-white px-4 pb-32 pt-5 text-black sm:px-6">
       <div className="mx-auto w-full max-w-md sm:max-w-xl md:max-w-3xl lg:max-w-5xl">
-        <div className="mb-6 flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#1d1d1f]">Your order</h1>
-            <p className="text-xs sm:text-sm text-[#6e6e73] mt-0.5">Review items and checkout</p>
-          </div>
-          <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 border border-emerald-200">
-            {tableLabel}
-          </span>
-        </div>
-
         <div className="md:grid md:grid-cols-[1fr_360px] lg:grid-cols-[1fr_380px] md:gap-6 md:items-start">
           {/* Left Column: Order Items */}
-          <section className="rounded-[28px] bg-white p-5 sm:p-6 shadow-[0_12px_28px_rgba(15,23,42,0.04)] border border-black/[0.04]">
+          <section className="rounded-3xl bg-neutral-50 p-5 sm:p-6 shadow-sm">
             <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-base sm:text-lg font-bold tracking-tight text-[#1d1d1f]">Cart Items</h2>
-              <span className="text-xs sm:text-sm text-[#6e6e73] font-medium">{cartItems.length} items</span>
+              <h2 className="text-base sm:text-lg font-bold text-black">Cart Items</h2>
+              <span className="text-xs sm:text-sm text-neutral-500 font-semibold">{cartItems.length} items</span>
             </div>
 
             {cartItems.length === 0 ? (
-              <div className="rounded-[20px] bg-[#f5f5f7] p-8 text-center">
-                <p className="text-sm font-medium text-[#1d1d1f]">Your cart is empty</p>
-                <p className="mt-1 text-xs text-[#6e6e73]">Add some delicious hawker dishes from the menu to start ordering.</p>
+              <div className="rounded-2xl bg-white p-8 text-center shadow-xs">
+                <p className="text-sm font-bold text-black">Your cart is empty</p>
+                <p className="mt-1 text-xs text-neutral-500">Add dishes from the menu to start ordering.</p>
                 <Link
                   href="/home"
-                  className="mt-4 inline-flex h-11 items-center justify-center rounded-full bg-[#007aff] hover:bg-[#0071e3] px-5 text-sm font-semibold text-white shadow-xs transition-all active:scale-[0.98]"
+                  className="mt-4 inline-flex h-11 items-center justify-center rounded-full bg-black hover:bg-neutral-800 px-6 text-sm font-semibold text-white shadow-xs transition-colors"
                 >
                   Browse dishes
                 </Link>
@@ -213,37 +191,37 @@ export default function OrdersPage() {
             ) : (
               <div className="space-y-3">
                 {cartItems.map((item) => (
-                  <div key={item.id} className="rounded-[20px] bg-[#f5f5f7] p-4 border border-black/[0.02]">
+                  <div key={item.id} className="rounded-2xl bg-white p-4 shadow-xs">
                     <div className="flex items-start justify-between gap-3">
                       <div>
-                        <p className="text-sm sm:text-base font-semibold text-[#1d1d1f]">{item.name}</p>
-                        <p className="text-xs text-[#6e6e73] mt-0.5">RM {item.price.toFixed(2)} each</p>
+                        <p className="text-sm sm:text-base font-bold text-black">{item.name}</p>
+                        <p className="text-xs text-neutral-500 mt-0.5">RM {item.price.toFixed(2)} each</p>
                         {item.customizations?.length ? (
-                          <p className="mt-1 text-xs text-[#6e6e73] bg-white/70 px-2 py-0.5 rounded-md inline-block">
+                          <p className="mt-1 text-xs text-neutral-600 bg-neutral-100 px-2 py-0.5 rounded-full inline-block font-medium">
                             Customised: {item.customizations.join(' · ')}
                           </p>
                         ) : null}
                       </div>
-                      <p className="text-sm sm:text-base font-bold text-[#1d1d1f]">
+                      <p className="text-sm sm:text-base font-bold text-black">
                         RM {(item.price * item.quantity).toFixed(2)}
                       </p>
                     </div>
 
-                    <div className="mt-3 flex items-center justify-between gap-3 pt-2 border-t border-black/[0.04]">
+                    <div className="mt-3 flex items-center justify-between gap-3 pt-2">
                       <div className="flex items-center gap-2">
                         <button
                           type="button"
                           onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                          className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-base font-semibold text-[#1d1d1f] shadow-xs hover:bg-[#f0f0f2] active:scale-95 transition-all"
+                          className="flex h-8 w-8 items-center justify-center rounded-full bg-neutral-100 text-base font-bold text-black hover:bg-neutral-200 transition-colors"
                           aria-label={`Decrease quantity of ${item.name}`}
                         >
                           −
                         </button>
-                        <span className="min-w-6 text-center text-xs sm:text-sm font-semibold">{item.quantity}</span>
+                        <span className="min-w-6 text-center text-xs sm:text-sm font-bold">{item.quantity}</span>
                         <button
                           type="button"
                           onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                          className="flex h-8 w-8 items-center justify-center rounded-full bg-[#1d1d1f] text-base font-semibold text-white shadow-xs hover:bg-black active:scale-95 transition-all"
+                          className="flex h-8 w-8 items-center justify-center rounded-full bg-black text-base font-bold text-white hover:bg-neutral-800 transition-colors"
                           aria-label={`Increase quantity of ${item.name}`}
                         >
                           +
@@ -253,8 +231,8 @@ export default function OrdersPage() {
                       {getDishCustomization(item.name) ? (
                         <button
                           type="button"
-                          onClick={() => setCustomizingItem(item)}
-                          className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#1d1d1f] shadow-xs hover:bg-[#f0f0f2] active:scale-95 transition-all"
+                          onClick={() => openCustomization(item)}
+                          className="flex h-8 w-8 items-center justify-center rounded-full bg-neutral-100 text-black hover:bg-neutral-200 transition-colors"
                           aria-label={`Customize ${item.name}`}
                         >
                           <Settings2 className="h-4 w-4" />
@@ -269,7 +247,7 @@ export default function OrdersPage() {
                         onChange={(event) => updateComment(item.id, event.target.value)}
                         placeholder="Add special instructions or allergies..."
                         rows={2}
-                        className="w-full resize-none rounded-[14px] border border-black/5 bg-white px-3 py-2 text-xs text-[#1d1d1f] outline-none placeholder:text-[#8e8e93] focus:border-black/20 focus:ring-1 focus:ring-black/10"
+                        className="w-full resize-none rounded-xl bg-neutral-100 px-3 py-2 text-xs text-black outline-none placeholder:text-neutral-400"
                       />
                     </label>
                   </div>
@@ -278,7 +256,7 @@ export default function OrdersPage() {
                 <div className="pt-2">
                   <Link
                     href="/home"
-                    className="inline-flex items-center text-xs font-semibold text-[#0071e3] hover:underline"
+                    className="inline-flex items-center text-xs font-semibold text-black hover:underline"
                   >
                     + Add more dishes
                   </Link>
@@ -287,18 +265,11 @@ export default function OrdersPage() {
             )}
           </section>
 
-          {/* Right Column: Checkout & Bill Summary (Sticky on Desktop/Tablet) */}
+          {/* Right Column: Checkout & Bill Summary */}
           <div className="mt-6 md:mt-0 space-y-4 md:sticky md:top-6">
-            <section className="rounded-[28px] bg-[#111827] p-5 sm:p-6 text-white shadow-[0_16px_36px_rgba(17,24,39,0.18)]">
-              <div className="flex items-center justify-between text-xs font-semibold text-white/70">
+            <section className="rounded-3xl bg-black p-5 sm:p-6 text-white shadow-xl">
+              <div className="text-xs font-bold text-white/70">
                 <span>Order summary</span>
-                <button
-                  type="button"
-                  onClick={() => router.push('/scan' as any)}
-                  className="text-white hover:text-white/80 underline-offset-4 hover:underline"
-                >
-                  {tableLabel}
-                </button>
               </div>
 
               <div className="mt-4">
@@ -309,7 +280,7 @@ export default function OrdersPage() {
               </div>
 
               {cartItems.length > 0 && (
-                <div className="mt-5 space-y-2.5 pt-4 border-t border-white/10 text-xs">
+                <div className="mt-5 space-y-2.5 pt-4 text-xs">
                   <div className="flex justify-between text-white/75">
                     <span>Subtotal</span>
                     <span className="font-semibold text-white">RM {summary.subtotal.toFixed(2)}</span>
@@ -317,13 +288,13 @@ export default function OrdersPage() {
                   <div className="flex justify-between text-white/75">
                     <span className="flex items-center gap-1.5">
                       Platform Fee
-                      <span className="text-[10px] text-white/60 bg-white/10 px-1.5 py-0.5 rounded font-medium">
+                      <span className="text-[10px] text-white bg-white/20 px-2 py-0.5 rounded-full font-semibold">
                         Flat
                       </span>
                     </span>
                     <span className="font-semibold text-white">RM {summary.serviceFee.toFixed(2)}</span>
                   </div>
-                  <div className="flex justify-between text-sm font-bold text-white pt-2 border-t border-dashed border-white/20">
+                  <div className="flex justify-between text-sm font-bold text-white pt-2">
                     <span>Total</span>
                     <span className="text-base">RM {summary.total.toFixed(2)}</span>
                   </div>
@@ -334,7 +305,7 @@ export default function OrdersPage() {
                 type="button"
                 onClick={() => void checkout()}
                 disabled={checkoutState === 'submitting' || checkoutState === 'success' || cartItems.length === 0}
-                className="mt-6 flex h-11 w-full items-center justify-center rounded-full bg-white px-5 text-sm font-semibold text-[#1d1d1f] disabled:opacity-50 shadow-xs hover:bg-[#f2f2f7] active:scale-[0.98] transition-all"
+                className="mt-6 flex h-11 w-full items-center justify-center rounded-full bg-white px-5 text-sm font-semibold text-black disabled:opacity-50 shadow-xs hover:bg-neutral-100 transition-colors"
               >
                 {checkoutState === 'submitting'
                   ? 'Placing Order...'
@@ -342,21 +313,19 @@ export default function OrdersPage() {
                     ? 'Order Placed!'
                     : (
                       <span>
-                        <span className="hidden xs:inline">Pay & Place Order • </span>
-                        <span className="xs:hidden">Pay </span>
-                        RM {summary.total.toFixed(2)}
+                        Pay & Place Order • RM {summary.total.toFixed(2)}
                       </span>
                     )}
               </button>
 
               {checkoutError && (
-                <p className="mt-3 text-center text-xs text-rose-300 bg-rose-950/40 p-2 rounded-xl border border-rose-800/50">
+                <p className="mt-3 text-center text-xs text-rose-300 bg-rose-950/60 p-2.5 rounded-xl font-medium">
                   {checkoutError}
                 </p>
               )}
               {checkoutState === 'success' && (
-                <p className="mt-3 text-center text-xs text-emerald-300 bg-emerald-950/40 p-2 rounded-xl border border-emerald-800/50">
-                  Order placed successfully! Keep your eye on the Orders tab.
+                <p className="mt-3 text-center text-xs text-emerald-300 bg-emerald-950/60 p-2.5 rounded-xl font-medium">
+                  Order placed successfully!
                 </p>
               )}
             </section>

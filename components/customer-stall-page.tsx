@@ -340,10 +340,10 @@ function CustomerStallContent() {
                   href={`/shop/${stall.slug}` as any}
                   className="block group"
                 >
-                  <article className="rounded-[22px] bg-white p-3.5 shadow-xs border border-black/5 hover:border-black/20 hover:shadow-md transition-all">
+                  <article className="rounded-3xl bg-white p-4 shadow-sm hover:bg-neutral-50 transition-colors">
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex min-w-0 items-start gap-3">
-                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[14px] bg-[#f5f5f7] text-sm font-bold text-[#1d1d1f] shadow-xs ring-1 ring-black/5 group-hover:scale-105 transition-transform">
+                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-neutral-100 text-sm font-bold text-black shadow-xs">
                           {stall.name
                             .split(' ')
                             .slice(0, 2)

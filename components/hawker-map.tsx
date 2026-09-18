@@ -168,7 +168,7 @@ export function HawkerMap({
   return (
     <div
       ref={containerRef}
-      className={`relative w-full ${fullScreen ? 'h-full' : 'h-[360px] sm:h-[420px] rounded-[28px] overflow-hidden border border-black/10 shadow-[0_12px_32px_rgba(0,0,0,0.06)]'} select-none bg-[#f4f4f6] cursor-grab active:cursor-grabbing ${className}`}
+      className={`relative w-full ${fullScreen ? 'h-full' : 'h-[360px] sm:h-[420px] rounded-[28px] overflow-hidden shadow-[0_12px_32px_rgba(0,0,0,0.06)]'} select-none bg-white cursor-grab active:cursor-grabbing ${className}`}
       onMouseDown={(e) => {
         if (e.button === 0) handlePointerDown(e.clientX, e.clientY);
       }}
@@ -183,8 +183,13 @@ export function HawkerMap({
       }}
       onTouchEnd={handlePointerUp}
     >
-      {/* Map Tile Layer */}
-      <div className="absolute inset-0 pointer-events-none">
+      {/* Map Tile Layer - Pure Black & White Filter (removes yellowish/tan tones) */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          filter: 'grayscale(100%) contrast(108%) brightness(102%)',
+        }}
+      >
         {visibleTiles.map((tile) => (
           /* eslint-disable-next-line @next/next/no-img-element */
           <img
@@ -203,10 +208,11 @@ export function HawkerMap({
 
       {/* Map Vignette Overlay */}
       {!fullScreen && (
-        <div className="absolute inset-0 pointer-events-none ring-1 ring-inset ring-black/10 rounded-[28px]" />
+        <div className="absolute inset-0 pointer-events-none ring-1 ring-inset ring-black/5 rounded-[28px]" />
       )}
 
       {/* User Location Radar Pin */}
+      {/* Current User Geolocation Radar Dot */}
       {userScreen && (
         <div
           className="absolute z-20 -translate-x-1/2 -translate-y-1/2 pointer-events-none transition-transform duration-100"
@@ -215,9 +221,9 @@ export function HawkerMap({
           }}
         >
           <div className="relative flex items-center justify-center">
-            <span className="absolute h-10 w-10 rounded-full bg-[#007aff]/20 animate-ping" />
-            <span className="absolute h-6 w-6 rounded-full bg-[#007aff]/35" />
-            <span className="relative flex h-3.5 w-3.5 rounded-full bg-[#007aff] border-2 border-white shadow-md" />
+            <span className="absolute h-8 w-8 rounded-full bg-black/15" />
+            <span className="absolute h-5 w-5 rounded-full bg-black/25" />
+            <span className="relative flex h-3.5 w-3.5 rounded-full bg-black shadow-md" />
           </div>
         </div>
       )}
@@ -236,7 +242,7 @@ export function HawkerMap({
         return (
           <div
             key={c.id}
-            className={`absolute z-30 -translate-x-1/2 -translate-y-full transition-transform duration-200 cursor-pointer ${
+            className={`absolute z-30 -translate-x-1/2 -translate-y-full transition-transform duration-150 cursor-pointer ${
               isSelected ? 'scale-110 z-40' : 'hover:scale-105'
             }`}
             style={{
@@ -250,50 +256,43 @@ export function HawkerMap({
               }
             }}
           >
-            {/* Custom Marker Pin */}
+            {/* Custom Marker Pin - Pure Black and White Pill with 0 Border and No Diamond Arrow */}
             <div className="flex flex-col items-center group">
               <div
-                className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold transition-all border ${
+                className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold shadow-md transition-colors ${
                   isSelected
-                    ? 'bg-[#1d1d1f] text-white border-[#1d1d1f] shadow-md ring-2 ring-black/10'
-                    : 'bg-white/95 backdrop-blur-md text-[#1d1d1f] border-black/10 shadow-xs hover:border-black/25'
+                    ? 'bg-black text-white'
+                    : 'bg-white text-black hover:bg-neutral-100'
                 }`}
               >
-                <Store className="h-3.5 w-3.5 text-[#ff9500]" />
-                <span className="max-w-[120px] truncate">{c.name}</span>
+                <Store className="h-3.5 w-3.5" />
+                <span className="max-w-[130px] truncate">{c.name}</span>
                 {c.hasAircon && (
                   <span title="Aircon" aria-label="Aircon" className="flex items-center">
-                    <Snowflake className="h-3 w-3 text-[#32ade6] shrink-0" />
+                    <Snowflake className="h-3 w-3 shrink-0" />
                   </span>
                 )}
-                <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-medium ${isSelected ? 'bg-white/20 text-white' : 'bg-black/5 text-[#8e8e93]'}`}>
+                <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-medium ${isSelected ? 'bg-white/20 text-white' : 'bg-black/5 text-neutral-600'}`}>
                   ★ {c.rating.toFixed(1)}
                 </span>
               </div>
-
-              {/* Pin Arrow Indicator */}
-              <div
-                className={`w-2 h-2 rotate-45 -mt-1 border-r border-b ${
-                  isSelected ? 'bg-[#1d1d1f] border-[#1d1d1f]' : 'bg-white border-black/10'
-                }`}
-              />
             </div>
           </div>
         );
       })}
 
-      {/* Map Controls */}
-      <div className={`absolute right-3.5 ${fullScreen ? 'top-16' : 'top-3'} z-20 flex flex-col gap-1.5`}>
+      {/* Map Controls - Pure White & Black, h-11, Borderless */}
+      <div className={`absolute right-3.5 ${fullScreen ? 'top-5' : 'top-3'} z-20 flex flex-col gap-2`}>
         <button
           type="button"
           onClick={(e) => {
             e.stopPropagation();
             setZoom((z) => Math.min(20, z + 1));
           }}
-          className="flex h-8 w-8 items-center justify-center rounded-full bg-white/90 backdrop-blur-md text-[#1d1d1f] shadow-xs hover:bg-white active:scale-95 transition-all border border-black/[0.08]"
+          className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-black shadow-md hover:bg-neutral-100 active:scale-95 transition-all"
           aria-label="Zoom in"
         >
-          <Plus className="h-3.5 w-3.5" />
+          <Plus className="h-4 w-4" />
         </button>
         <button
           type="button"
@@ -301,10 +300,10 @@ export function HawkerMap({
             e.stopPropagation();
             setZoom((z) => Math.max(12, z - 1));
           }}
-          className="flex h-8 w-8 items-center justify-center rounded-full bg-white/90 backdrop-blur-md text-[#1d1d1f] shadow-xs hover:bg-white active:scale-95 transition-all border border-black/[0.08]"
+          className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-black shadow-md hover:bg-neutral-100 active:scale-95 transition-all"
           aria-label="Zoom out"
         >
-          <Minus className="h-3.5 w-3.5" />
+          <Minus className="h-4 w-4" />
         </button>
         <button
           type="button"
@@ -315,47 +314,47 @@ export function HawkerMap({
               setZoom(16);
             }
           }}
-          className="flex h-8 w-8 items-center justify-center rounded-full bg-white/90 backdrop-blur-md text-[#007aff] shadow-xs hover:bg-white active:scale-95 transition-all border border-black/[0.08]"
+          className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-black shadow-md hover:bg-neutral-100 active:scale-95 transition-all"
           aria-label="Recenter to my location"
         >
-          <Locate className="h-3.5 w-3.5" />
+          <Locate className="h-4 w-4" />
         </button>
       </div>
 
-      {/* Selected Centre Floating Info Card */}
+      {/* Selected Centre Floating Info Card (when not fullScreen) */}
       {selectedCentre && !fullScreen && (
-        <div className="absolute left-3 right-3 bottom-3 z-30 sm:left-4 sm:right-auto sm:max-w-xs animate-scale-in">
-          <div className="rounded-2xl bg-white/90 backdrop-blur-xl p-3.5 shadow-sm border border-black/[0.08]">
+        <div className="absolute left-3 right-3 bottom-3 z-30 sm:left-4 sm:right-auto sm:max-w-xs">
+          <div className="rounded-3xl bg-white p-4 shadow-xl text-black">
             <div className="flex items-start justify-between gap-2">
               <div>
                 <div className="flex items-center gap-1.5">
-                  <h4 className="text-sm font-semibold text-[#1d1d1f]">{selectedCentre.name}</h4>
+                  <h4 className="text-sm font-semibold text-black">{selectedCentre.name}</h4>
                   {selectedCentre.hasAircon && (
-                    <span className="inline-flex items-center gap-0.5 rounded-full bg-[#32ade6]/12 border border-[#32ade6]/25 px-1.5 py-0.2 text-[9px] font-semibold text-[#0071a4] shrink-0" title="Aircon">
-                      <Snowflake className="h-2.5 w-2.5 text-[#32ade6]" />
+                    <span className="inline-flex items-center gap-0.5 rounded-full bg-black/5 px-1.5 py-0.2 text-[9px] font-semibold text-black shrink-0" title="Aircon">
+                      <Snowflake className="h-2.5 w-2.5" />
                       <span>Aircon</span>
                     </span>
                   )}
                 </div>
-                <p className="mt-0.5 text-xs text-[#8e8e93] line-clamp-1">{selectedCentre.address}</p>
+                <p className="mt-0.5 text-xs text-neutral-500 line-clamp-1">{selectedCentre.address}</p>
               </div>
-              <span className="rounded-full bg-[#34c759]/12 px-2 py-0.5 text-[10px] font-medium text-[#248a3d] shrink-0">
+              <span className="rounded-full bg-black/5 px-2 py-0.5 text-[10px] font-medium text-black shrink-0">
                 Open
               </span>
             </div>
 
-            <div className="mt-2 flex items-center gap-2 text-xs text-[#8e8e93]">
+            <div className="mt-2 flex items-center gap-2 text-xs text-neutral-500">
               <span>{selectedCentre.stallsCount} stalls</span>
               <span>•</span>
-              <span className="flex items-center gap-0.5">
-                <span className="text-[#ff9500]">★</span>
+              <span className="flex items-center gap-0.5 text-black font-medium">
+                <span>★</span>
                 <span>{selectedCentre.rating.toFixed(1)}</span>
               </span>
             </div>
 
             <Link
               href={`/stall?centre=${encodeURIComponent(selectedCentre.slug)}` as any}
-              className="mt-3 flex h-11 w-full items-center justify-center gap-1.5 rounded-full bg-[#007aff] hover:bg-[#0071e3] px-5 text-sm font-semibold text-white transition-all shadow-xs active:scale-[0.98]"
+              className="mt-3 flex h-11 w-full items-center justify-center gap-1.5 rounded-full bg-black hover:bg-neutral-800 px-5 text-sm font-semibold text-white transition-all shadow-xs active:scale-[0.98]"
             >
               <span>View stalls</span>
               <ArrowRight className="h-4 w-4" />
@@ -363,11 +362,6 @@ export function HawkerMap({
           </div>
         </div>
       )}
-
-      {/* Map Attribution */}
-      <div className={`absolute left-2.5 ${fullScreen ? 'bottom-20 sm:bottom-24' : 'bottom-1.5'} z-10 text-[9px] text-[#8e8e93] bg-white/70 backdrop-blur-xs px-1.5 py-0.5 rounded-md pointer-events-none`}>
-        © CARTO Positron • © OpenStreetMap contributors
-      </div>
     </div>
   );
 }

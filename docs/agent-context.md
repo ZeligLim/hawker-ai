@@ -1,47 +1,58 @@
 # Current Project Context
 
 ## Current Phase
-Phase 26: Unified Search Bar & Uniform Borderless Action Buttons (h-11 Touch Target)
+Phase 27: Global 0-Border Enforcement, Account-Isolated Orders, Mobile-First Map Bottom Sheet, and 5-Domain Architecture
 
 ## Current Feature
-1. **Universal Search Bar Architecture (`components/hawker-search-bar.tsx`)**:
-   - Standardized to Apple-inspired borderless design: `h-11 rounded-full bg-white/95 backdrop-blur-xl shadow-xs transition-all`.
-   - **NO BORDER**: Removed outline strokes, ring borders, and arbitrary border wrappers.
-   - Standardized internal geometry: left search icon at `left-3.5 text-[#8e8e93]`, input at `w-full h-full pl-10 pr-9 text-sm text-[#1d1d1f] placeholder-[#8e8e93] outline-none`, and right clear button `X` when text is present.
-   - Deployed universally across Home page, Customer Stall directory, Menu page, and Search views.
+1. **Global 0-Border & Clean Design System**:
+   - Universal rule enforced across all styles: 0 borders (`border-0`, no `border-*`, no `ring-*`, no `divide-*`, no `hover:border-*`).
+   - Pure Black & Pure White color palette: `bg-white`, `bg-black`, `bg-neutral-50`, `bg-neutral-100`, `text-black`, `text-white`.
+   - Hover borders completely eliminated across the entire application.
+   - Bouncy and unnecessary animations (`animate-ping`, `animate-bounce`, `scale-in`, `hover:scale-*`) removed in favor of instant, crisp `transition-colors`.
 
-2. **Unified Borderless Action Buttons (`h-11 rounded-full`)**:
-   - Universal height matching the 44px Apple touch target guideline (`h-11`).
-   - **NO BORDER**: Replaced bordered button outlines with soft-fill tints, solid Apple system fills, and delicate shadows (`shadow-xs`).
-   - **Apple System Palette**:
-     - Primary Blue: `h-11 rounded-full bg-[#007aff] hover:bg-[#0071e3] text-white text-sm font-semibold shadow-xs transition-all active:scale-[0.98]`
-     - Primary Dark: `h-11 rounded-full bg-[#1d1d1f] hover:bg-black text-white text-sm font-semibold shadow-xs transition-all active:scale-[0.98]`
-     - Secondary Gray: `h-11 rounded-full bg-[#f2f2f7] hover:bg-[#e5e5ea] text-[#1d1d1f] text-sm font-semibold transition-all active:scale-[0.98]`
-     - Success Green: `h-11 rounded-full bg-[#34c759] hover:bg-[#2fb34f] text-white text-sm font-semibold shadow-xs transition-all active:scale-[0.98]`
-   - Applied across:
-     - `components/hawker-map.tsx`: "View stalls" call-to-action button (`h-11`, borderless `#007aff`).
-     - `components/home-page.tsx`: "Reset filters" button (`h-11`, borderless `#007aff`), aircon filter button (`borderless`), and table session pill (`borderless`).
-     - `components/customer-stall-page.tsx`: Floating Cart Bar button (`h-11`, borderless `#1d1d1f`), filter chips (`h-9`, borderless), and "Scan QR" button (`h-9`, borderless `#007aff`).
-     - `components/menu-page.tsx`: Category filter pills (`h-9`, borderless `#f2f2f7`) and Floating Cart Bar (`h-11`, borderless `#1d1d1f`).
-     - `components/centre-diner-page.tsx`: Quick filters (`h-9`, borderless), stall selector chips (`h-9`, borderless), table modal Cancel and Confirm buttons (`h-11`, borderless), and floating cart bar (`h-11`, borderless).
-     - `components/cart-summary.tsx`: "Pay RM xx" checkout button (`h-11`, borderless `#007aff`) and quantity adjustment controls (`borderless`).
-     - `components/result-card.tsx`: "Add to order" button (`h-11`, borderless `#007aff`) and dietary/spicy badges (`borderless`).
-     - `components/customization-card.tsx`: "Add to order" modal confirm button (`h-11`, borderless `#007aff`).
-     - `components/dish-card.tsx`: Image floating quantity controls and add button (`borderless`, `#007aff`).
-     - `app/scan/page.tsx`: Quick table picker pills (`h-11`, borderless `#f2f2f7`), submit button (`h-11`, borderless `#007aff`), and success button (`h-11`, borderless `#34c759`).
-     - `app/orders/page.tsx`: Checkout button (`h-11`, borderless), "Order more items" button (`h-11`, borderless `#007aff`), and "Browse dishes" button (`h-11`, borderless `#007aff`).
-     - `app/results/page.tsx`: Light/Dark toggle (`h-11`, borderless) and "New search" button (`h-11`, borderless `#007aff`).
-     - `components/hawker-search.tsx`: Header buttons (`h-11`, borderless) and "Search" submit button (`h-11`, borderless `#007aff`).
-     - `app/page.tsx`: Hero action CTAs (`h-11`, borderless `#007aff`, `#1d1d1f`, and `#f2f2f7`).
+2. **Mobile-First Map Bottom Sheet & Shop Pins**:
+   - In `components/hawker-map.tsx`:
+     - Removed the downward diamond arrow on shop label pins.
+     - Removed map watermark / attribution banner.
+     - Kept high-contrast monochrome tile filter (`grayscale(100%) contrast(108%) brightness(102%)`).
+   - In `components/home-page.tsx`:
+     - Removed "Table 04" button from the map view.
+     - Mobile-first swipe-up gesture bottom sheet (`onTouchStart`, `onTouchMove`, `onTouchEnd`) filling full bottom width (`w-full inset-x-0 bottom-0`).
+     - Standardized Distance and Rating filter pills to `h-11` (44px) height, with pure white inactive background (`bg-white text-black`) and pure black active background (`bg-black text-white`).
 
-3. **Verification**:
+3. **Orders Page Cleanup**:
+   - In `app/(customer)/orders/page.tsx`:
+     - Removed `"Your order"`, `"Review items and checkout"`, and the `"Table 04"` banner.
+     - Removed table session buttons from the summary box.
+     - Enforced strictly 0 borders and pure black-and-white theme throughout.
+
+4. **Account-Isolated Order History & Receipts**:
+   - In `app/(customer)/profile/page.tsx`:
+     - Local storage cache is strictly scoped to the authenticated user's ID (`hawker-profile-${authProfile.id}`).
+     - Switching between accounts immediately clears previous user orders.
+     - Remote orders from `/api/orders` always overwrite state (including empty `[]`), preventing order leakage between accounts.
+     - Previous orders list cards styled with 0 border, soft fill `bg-white hover:bg-neutral-100`, and pure black/white typography.
+   - In `components/customer-receipt.tsx` & `app/(customer)/profile/order/[id]/page.tsx`:
+     - Completely removed all borders, dividers, dashed lines, and spin animations.
+
+5. **5-Domain App Structure**:
+   - Organized `app/` into 5 clean Next.js route groups:
+     1. `app/(website)`: `/`, `/pricing`, `/plans`, `/apply`, `/auth`, `/customer`, `/subscribe`
+     2. `app/(customer)`: `/home`, `/[centreSlug]`, `/stall`, `/stalls`, `/menu`, `/orders`, `/scan`, `/results`, `/shop`, `/profile`
+     3. `app/(stall)`: `/owner`, `/booths`
+     4. `app/(center)`: `/shop-owner`, `/analytics`
+     5. `app/(saas)`: `/admin`
+     - Root files maintained: `app/api/`, `app/globals.css`, `app/layout.tsx`.
+   - Added convenience redirects in `next.config.mjs` for `/center` and `/saas` paths.
+
+6. **Verification**:
    - `npx tsc --noEmit`: 0 TypeScript errors.
-   - `npm test`: 31/31 unit and integration tests passed.
+   - `npm test`: 31/31 unit & integration tests passed.
    - `npm run lint`: 0 errors.
    - `npm run build`: Production build succeeded across all 50 routes.
 
 ## Previous Phases
-Phase 25: Authentic Apple System Color Palette Integration & Multi-Modal Bottom Sheet Expansion Fix
+Phase 26: Unified Search Bar & Uniform Borderless Action Buttons (h-11 Touch Target)
 
 ## Previous Phases
 Phase 22: Apple-Inspired Visual Streamline for SaaS Platform Admin (`/admin`)

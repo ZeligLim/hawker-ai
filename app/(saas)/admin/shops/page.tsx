@@ -125,7 +125,7 @@ export default function AdminShopsListPage() {
             return (
               <div
                 key={shop.id}
-                className="rounded-3xl bg-white p-6 border border-black/[0.08] shadow-xs flex flex-col justify-between gap-5 hover:border-black/15 transition"
+                className="rounded-3xl bg-white p-6 shadow-sm flex flex-col justify-between gap-5 hover:bg-neutral-50 transition-colors"
               >
                 <div>
                   <div className="flex items-start justify-between gap-3">
