@@ -564,7 +564,7 @@ Phase 20: Dedicated SaaS Superadmin Dashboard Route Group & Standalone Monetizat
   - Removed strict route redirect traps on `/orders` and `/stall` by bypassing them in guest mode.
   - Wrote DB migration `021_guest_orders.sql` to drop `NOT NULL` constraint on `orders.customer_id`, allowing completely anonymous order creation.
 - **Phase 21: Stall Allocation UI Simplification & Soft Deletes (`shop-owner/booths`)**:
-  - Removed bloated wordings and operating schedule configurations from the center owner's interface, strictly streamlining the layout to manage vendor access and active states.
+  - Removed bloated wordings and operating schedule configurations from the center owner's interface, strictly streamlining the layout to manage vendor access and active states. (Note: Restored venue-level operating hours schedule).
   - Reduced stall overrides to a singular "Active/Inactive" toggle for the center owner. Added a confirmation prompt notifying that setting a stall inactive will take effect at 3:00 AM the following morning.
   - Implemented a "Soft Delete" mechanism for booths: updated the database migration (`022_soft_delete_booths.sql`) and `delete_booth_slot` RPC (`023_update_delete_booth_rpc.sql`). Deleting a stall now simply strips vendor access immediately and flags the data as `deleted_at = NOW()`, preserving the data for one year of recovery instead of performing a hard destructive deletion.
   - Overhauled layout elements on the stalls management page to obey the "0 Border" global styling rule, introduced soft shadows, and prevented text input truncation layout issues on mobile views.
