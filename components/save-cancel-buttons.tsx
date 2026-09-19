@@ -8,6 +8,7 @@ type SaveCancelButtonsProps = {
   cancelLabel?: string;
   className?: string;
   type?: 'button' | 'submit';
+  cancelBg?: 'white' | 'grey';
 };
 
 export function SaveCancelButtons({
@@ -18,6 +19,7 @@ export function SaveCancelButtons({
   cancelLabel = 'Cancel',
   className = '',
   type = 'button',
+  cancelBg = 'grey',
 }: SaveCancelButtonsProps) {
   return (
     <div className={`flex items-center gap-3 ${className}`}>
@@ -34,7 +36,7 @@ export function SaveCancelButtons({
       <button
         type="button"
         onClick={onCancel}
-        className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-[#f5f5f7] text-[#1d1d1f] hover:bg-neutral-200 transition-colors shrink-0"
+        className={`inline-flex h-11 w-11 items-center justify-center rounded-full text-[#1d1d1f] transition-colors shrink-0 ${cancelBg === 'white' ? 'bg-white hover:bg-neutral-100 shadow-xs' : 'bg-[#f5f5f7] hover:bg-neutral-200'}`}
         aria-label={cancelLabel}
         title={cancelLabel}
       >

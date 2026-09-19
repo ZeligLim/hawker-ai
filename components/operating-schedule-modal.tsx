@@ -225,6 +225,7 @@ function OperatingScheduleDialogContent({
               onCancel={onClose}
               saveLabel="Save Schedule"
               cancelLabel="Cancel"
+              cancelBg="white"
             />
           </div>
         </form>
