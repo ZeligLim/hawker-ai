@@ -8,7 +8,7 @@ import {
   Building2,
   Check,
   CheckCircle2,
-  
+  Clock,
   Copy,
   LoaderCircle,
   Mail,
@@ -23,6 +23,8 @@ import {
   X,
 } from 'lucide-react';
 import { authenticatedFetch } from '@/lib/supabase/client';
+import { OperatingScheduleModal } from '@/components/operating-schedule-modal';
+import type { OperatingSchedule } from '@/lib/schedule/operating-hours';
 
 type BoothMember = {
   userId: string;
@@ -44,6 +46,7 @@ type Booth = {
   status: 'Active' | 'Needs update';
   isOpen?: boolean;
   isActive?: boolean;
+  schedule?: OperatingSchedule | null;
   restaurantId?: string;
   manager?: string;
   members?: BoothMember[];
@@ -55,11 +58,13 @@ type ShopMembership = {
   name: string;
   role: string;
   isActive?: boolean;
+  schedule?: OperatingSchedule | null;
   booths: Array<{
     id: string;
     name: string;
     isOpen?: boolean;
     isActive?: boolean;
+    schedule?: OperatingSchedule | null;
     members?: BoothMember[];
     invitations?: BoothInvitation[];
   }>;
@@ -112,7 +117,21 @@ export default function ShopOwnerBoothsPage() {
     return () => window.clearTimeout(timeoutId);
   }, [loadShops]);
 
-  
+  const [scheduleModal, setScheduleModal] = useState<{
+    isOpen: boolean;
+    targetType: 'shop' | 'booth';
+    targetId: string;
+    title: string;
+    description: string;
+    initialSchedule?: OperatingSchedule | null;
+  }>({
+    isOpen: false,
+    targetType: 'shop',
+    targetId: '',
+    title: '',
+    description: '',
+  });
+
   const boothList: Booth[] = shops.flatMap((shop) =>
     shop.booths.map((booth) => ({
       id: booth.id,
@@ -120,12 +139,14 @@ export default function ShopOwnerBoothsPage() {
       status: 'Active' as const,
       isOpen: booth.isOpen !== false,
       isActive: booth.isActive !== false,
+      schedule: booth.schedule,
       restaurantId: shop.id,
       manager: shop.role,
       members: booth.members ?? [],
       invitations: booth.invitations ?? [],
     })),
   );
+
 
   // Master Override Layer: Venue Owner toggles booth Active / Inactive
   const handleToggleBoothActive = async (boothId: string, currentIsActive: boolean) => {
@@ -182,6 +203,31 @@ export default function ShopOwnerBoothsPage() {
         prev.map((s) => (s.id === shopId ? { ...s, isActive: currentIsActive } : s))
       );
     }
+  };
+
+  const handleSaveSchedule = async (schedule: OperatingSchedule) => {
+    if (scheduleModal.targetType === 'shop') {
+      const res = await authenticatedFetch(`/api/owner/shops/${scheduleModal.targetId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ schedule }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error ?? 'Failed to update shop operating hours schedule');
+      }
+    } else {
+      const res = await authenticatedFetch(`/api/owner/booths/${scheduleModal.targetId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ schedule }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error ?? 'Failed to update booth operating hours schedule');
+      }
+    }
+    await loadShops();
   };
 
   const handleOpenAddSlot = () => {
@@ -401,7 +447,25 @@ export default function ShopOwnerBoothsPage() {
           <div className="flex items-center gap-2 shrink-0">
             {shops[0] && (
               <>
-                                <button
+                <button
+                  type="button"
+                  onClick={() =>
+                    setScheduleModal({
+                      isOpen: true,
+                      targetType: 'shop',
+                      targetId: shops[0].id,
+                      title: `${shops[0].name} Operating Hours`,
+                      description: 'Configure automated operating hours and weekly schedule for the hawker centre.',
+                      initialSchedule: shops[0].schedule,
+                    })
+                  }
+                  title="Configure Venue Operating Schedule"
+                  className="inline-flex h-9 items-center justify-center gap-1.5 rounded-full bg-white px-3 text-xs font-semibold text-[#1d1d1f] shadow-xs hover:bg-black/[0.03] transition-all shrink-0"
+                >
+                  <Clock className="h-3.5 w-3.5 text-blue-600" />
+                  <span className="hidden sm:inline">Venue Hours</span>
+                </button>
+                <button
                   type="button"
                   onClick={() => handleToggleShopActive(shops[0].id, shops[0].isActive !== false)}
                   title={shops[0].isActive !== false ? 'Put shop as inactive' : 'Set shop as active'}
@@ -503,8 +567,8 @@ export default function ShopOwnerBoothsPage() {
                         }
                         className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-semibold transition-all ${
                           booth.isActive !== false
-                            ? 'bg-[#f5f5f7] text-neutral-900 hover:bg-neutral-200'
-                            : 'bg-neutral-900 text-white hover:bg-black'
+                            ? 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
+                            : 'bg-black text-white'
                         }`}
                       >
                         <ShieldAlert className="w-3 h-3" />
@@ -512,7 +576,9 @@ export default function ShopOwnerBoothsPage() {
                       </button>
 
                       
+
                       
+
                       <Link
                         href={`/shop-owner/analytics?boothId=${booth.id}`}
                         className="flex h-8 w-8 items-center justify-center rounded-xl bg-white text-[#1d1d1f] hover:bg-black/5 transition-all shadow-xs shrink-0"
@@ -961,6 +1027,14 @@ export default function ShopOwnerBoothsPage() {
         </div>
       ) : null}
 
-          </main>
+      <OperatingScheduleModal
+        isOpen={scheduleModal.isOpen}
+        onClose={() => setScheduleModal((prev) => ({ ...prev, isOpen: false }))}
+        title={scheduleModal.title}
+        description={scheduleModal.description}
+        initialSchedule={scheduleModal.initialSchedule}
+        onSave={handleSaveSchedule}
+      />
+    </main>
   );
 }
