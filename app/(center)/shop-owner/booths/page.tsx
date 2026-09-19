@@ -431,19 +431,7 @@ export default function ShopOwnerBoothsPage() {
   return (
     <main className="min-h-screen bg-[#f5f5f7] px-4 pb-32 pt-5 sm:px-6 text-[#1d1d1f]">
       <div className="mx-auto max-w-7xl">
-        <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div className="min-w-0">
-            <div className="inline-flex items-center gap-1.5 rounded-full bg-black/5 px-2.5 py-0.5 text-[11px] font-semibold text-[#1d1d1f] mb-1.5">
-              <Store className="w-3.5 h-3.5" />
-              <span>Stall Allocation</span>
-            </div>
-            <h1 className="text-2xl sm:text-3xl font-semibold tracking-[-0.035em] text-[#1d1d1f] truncate">
-              Stalls Management
-            </h1>
-            <p className="mt-1 text-xs sm:text-sm text-[#6e6e73] truncate">
-              Manage active stalls and vendor access.
-            </p>
-          </div>
+        <header className="flex flex-col sm:flex-row sm:items-center sm:justify-end gap-4">
           <div className="flex items-center gap-2 shrink-0">
             {shops[0] && (
               <>
