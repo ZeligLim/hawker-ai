@@ -470,14 +470,13 @@ export default function ShopOwnerBoothsPage() {
                   onClick={() => handleToggleShopActive(shops[0].id, shops[0].isActive !== false)}
                   title={shops[0].isActive !== false ? 'Put shop as inactive' : 'Set shop as active'}
                   aria-label={shops[0].isActive !== false ? 'Put shop as inactive' : 'Set shop as active'}
-                  className={`inline-flex h-9 items-center justify-center gap-1.5 rounded-full  px-3 text-xs font-semibold transition-all shadow-xs shrink-0 ${
+                  className={`inline-flex h-9 w-9 items-center justify-center rounded-full transition-all shadow-xs shrink-0 ${
                     shops[0].isActive !== false
-                      ? ' bg-amber-50/80 text-amber-700 hover:bg-amber-100'
-                      : ' bg-emerald-50/80 text-emerald-700 hover:bg-emerald-100'
+                      ? 'bg-amber-50/80 text-amber-700 hover:bg-amber-100'
+                      : 'bg-emerald-50/80 text-emerald-700 hover:bg-emerald-100'
                   }`}
                 >
-                  <Power className="h-3.5 w-3.5" />
-                  <span>{shops[0].isActive !== false ? 'Shop Active' : 'Shop Inactive'}</span>
+                  <Power className="h-4 w-4" />
                 </button>
               </>
             )}
