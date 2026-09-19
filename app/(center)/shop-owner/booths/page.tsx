@@ -8,7 +8,7 @@ import {
   Building2,
   Check,
   CheckCircle2,
-  Clock,
+  
   Copy,
   LoaderCircle,
   Mail,
@@ -23,8 +23,6 @@ import {
   X,
 } from 'lucide-react';
 import { authenticatedFetch } from '@/lib/supabase/client';
-import { OperatingScheduleModal } from '@/components/operating-schedule-modal';
-import type { OperatingSchedule } from '@/lib/schedule/operating-hours';
 
 type BoothMember = {
   userId: string;
@@ -46,7 +44,6 @@ type Booth = {
   status: 'Active' | 'Needs update';
   isOpen?: boolean;
   isActive?: boolean;
-  schedule?: OperatingSchedule | null;
   restaurantId?: string;
   manager?: string;
   members?: BoothMember[];
@@ -58,13 +55,11 @@ type ShopMembership = {
   name: string;
   role: string;
   isActive?: boolean;
-  schedule?: OperatingSchedule | null;
   booths: Array<{
     id: string;
     name: string;
     isOpen?: boolean;
     isActive?: boolean;
-    schedule?: OperatingSchedule | null;
     members?: BoothMember[];
     invitations?: BoothInvitation[];
   }>;
@@ -117,21 +112,7 @@ export default function ShopOwnerBoothsPage() {
     return () => window.clearTimeout(timeoutId);
   }, [loadShops]);
 
-  const [scheduleModal, setScheduleModal] = useState<{
-    isOpen: boolean;
-    targetType: 'shop' | 'booth';
-    targetId: string;
-    title: string;
-    description: string;
-    initialSchedule?: OperatingSchedule | null;
-  }>({
-    isOpen: false,
-    targetType: 'shop',
-    targetId: '',
-    title: '',
-    description: '',
-  });
-
+  
   const boothList: Booth[] = shops.flatMap((shop) =>
     shop.booths.map((booth) => ({
       id: booth.id,
@@ -139,44 +120,12 @@ export default function ShopOwnerBoothsPage() {
       status: 'Active' as const,
       isOpen: booth.isOpen !== false,
       isActive: booth.isActive !== false,
-      schedule: booth.schedule,
       restaurantId: shop.id,
       manager: shop.role,
       members: booth.members ?? [],
       invitations: booth.invitations ?? [],
     })),
   );
-
-  const handleToggleBoothOpen = async (boothId: string, currentIsOpen: boolean) => {
-    const nextOpen = !currentIsOpen;
-    setShops((prev) =>
-      prev.map((s) => ({
-        ...s,
-        booths: s.booths.map((b) => (b.id === boothId ? { ...b, isOpen: nextOpen } : b)),
-      }))
-    );
-
-    try {
-      const res = await authenticatedFetch(`/api/owner/booths/${boothId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ is_open: nextOpen }),
-      });
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error ?? 'Failed to update booth status');
-      }
-      await loadShops();
-    } catch (err) {
-      alert(err instanceof Error ? err.message : 'Failed to update booth status');
-      setShops((prev) =>
-        prev.map((s) => ({
-          ...s,
-          booths: s.booths.map((b) => (b.id === boothId ? { ...b, isOpen: currentIsOpen } : b)),
-        }))
-      );
-    }
-  };
 
   // Master Override Layer: Venue Owner toggles booth Active / Inactive
   const handleToggleBoothActive = async (boothId: string, currentIsActive: boolean) => {
@@ -233,31 +182,6 @@ export default function ShopOwnerBoothsPage() {
         prev.map((s) => (s.id === shopId ? { ...s, isActive: currentIsActive } : s))
       );
     }
-  };
-
-  const handleSaveSchedule = async (schedule: OperatingSchedule) => {
-    if (scheduleModal.targetType === 'shop') {
-      const res = await authenticatedFetch(`/api/owner/shops/${scheduleModal.targetId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ schedule }),
-      });
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error ?? 'Failed to update shop operating hours schedule');
-      }
-    } else {
-      const res = await authenticatedFetch(`/api/owner/booths/${scheduleModal.targetId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ schedule }),
-      });
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error ?? 'Failed to update booth operating hours schedule');
-      }
-    }
-    await loadShops();
   };
 
   const handleOpenAddSlot = () => {
@@ -468,42 +392,24 @@ export default function ShopOwnerBoothsPage() {
               <span>Stall Allocation</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-semibold tracking-[-0.035em] text-[#1d1d1f] truncate">
-              Booth Slots & Access
+              Stalls Management
             </h1>
             <p className="mt-1 text-xs sm:text-sm text-[#6e6e73] truncate">
-              Send setup links to vendor emails. Only authorized emails can edit the store; removing an email revokes control immediately.
+              Manage active stalls and vendor access.
             </p>
           </div>
           <div className="flex items-center gap-2 shrink-0">
             {shops[0] && (
               <>
-                <button
-                  type="button"
-                  onClick={() =>
-                    setScheduleModal({
-                      isOpen: true,
-                      targetType: 'shop',
-                      targetId: shops[0].id,
-                      title: `${shops[0].name} Operating Hours`,
-                      description: 'Configure automated operating hours and weekly schedule for the hawker centre.',
-                      initialSchedule: shops[0].schedule,
-                    })
-                  }
-                  title="Configure Venue Operating Schedule"
-                  className="inline-flex h-9 items-center justify-center gap-1.5 rounded-full border border-black/10 bg-white px-3 text-xs font-semibold text-[#1d1d1f] shadow-xs hover:bg-black/[0.03] transition-all shrink-0"
-                >
-                  <Clock className="h-3.5 w-3.5 text-blue-600" />
-                  <span className="hidden sm:inline">Venue Hours</span>
-                </button>
-                <button
+                                <button
                   type="button"
                   onClick={() => handleToggleShopActive(shops[0].id, shops[0].isActive !== false)}
                   title={shops[0].isActive !== false ? 'Put shop as inactive' : 'Set shop as active'}
                   aria-label={shops[0].isActive !== false ? 'Put shop as inactive' : 'Set shop as active'}
-                  className={`inline-flex h-9 items-center justify-center gap-1.5 rounded-full border px-3 text-xs font-semibold transition-all shadow-xs shrink-0 ${
+                  className={`inline-flex h-9 items-center justify-center gap-1.5 rounded-full  px-3 text-xs font-semibold transition-all shadow-xs shrink-0 ${
                     shops[0].isActive !== false
-                      ? 'border-amber-200 bg-amber-50/80 text-amber-700 hover:bg-amber-100'
-                      : 'border-emerald-200 bg-emerald-50/80 text-emerald-700 hover:bg-emerald-100'
+                      ? ' bg-amber-50/80 text-amber-700 hover:bg-amber-100'
+                      : ' bg-emerald-50/80 text-emerald-700 hover:bg-emerald-100'
                   }`}
                 >
                   <Power className="h-3.5 w-3.5" />
@@ -513,7 +419,7 @@ export default function ShopOwnerBoothsPage() {
             )}
             <Link
               href={'/shop-owner/analytics' as any}
-              className="inline-flex h-9 items-center justify-center gap-1.5 rounded-full border border-black/10 bg-white px-3.5 text-xs font-semibold text-[#1d1d1f] shadow-xs hover:bg-black/[0.03] transition-all shrink-0"
+              className="inline-flex h-9 items-center justify-center gap-1.5 rounded-full bg-white px-3.5 text-xs font-semibold text-[#1d1d1f] shadow-xs hover:bg-black/[0.03] transition-all shrink-0"
               title="Venue Analytics"
             >
               <BarChart3 className="h-3.5 w-3.5" />
@@ -535,7 +441,7 @@ export default function ShopOwnerBoothsPage() {
               <LoaderCircle className="h-4 w-4 animate-spin mr-2 text-[#111827]" /> Loading booths…
             </div>
           ) : boothList.length === 0 ? (
-            <div className="col-span-full rounded-[24px] bg-white p-8 text-center shadow-[0_12px_26px_rgba(15,23,42,0.04)] border border-black/[0.04]">
+            <div className="col-span-full rounded-[24px] bg-white p-8 text-center shadow-[0_12px_26px_rgba(15,23,42,0.04)] /[0.04]">
               <Store className="h-10 w-10 text-[#86868b] mx-auto mb-3" />
               <p className="text-base font-semibold text-[#1d1d1f] truncate">No booth slots created yet</p>
               <p className="mt-1 text-xs text-[#6e6e73] max-w-sm mx-auto truncate">
@@ -562,7 +468,7 @@ export default function ShopOwnerBoothsPage() {
               return (
                 <article
                   key={booth.id}
-                  className="flex flex-col justify-between rounded-[24px] bg-white p-4 sm:p-5 shadow-[0_12px_26px_rgba(15,23,42,0.04)] border border-black/[0.04] transition-all hover:shadow-[0_16px_32px_rgba(15,23,42,0.06)]"
+                  className="flex flex-col justify-between rounded-[24px] bg-white p-4 sm:p-5 shadow-[0_12px_26px_rgba(15,23,42,0.04)] /[0.04] transition-all hover:shadow-[0_16px_32px_rgba(15,23,42,0.06)]"
                 >
                   {/* Booth Slot Header */}
                   <div className="flex items-center justify-between gap-2.5">
@@ -578,77 +484,38 @@ export default function ShopOwnerBoothsPage() {
                       </div>
                     </div>
                     <div className="flex items-center gap-1.5 shrink-0 flex-wrap justify-end">
-                      {/* Master Override (Venue Owner) */}
+                      {/* Active / Inactive Toggle */}
                       <button
                         type="button"
-                        onClick={() => handleToggleBoothActive(booth.id, booth.isActive !== false)}
+                        onClick={() => {
+                          if (booth.isActive !== false) {
+                            if (window.confirm('Setting the stall to inactive will take effect at 3:00 AM the next morning. Continue?')) {
+                              handleToggleBoothActive(booth.id, false);
+                            }
+                          } else {
+                            handleToggleBoothActive(booth.id, true);
+                          }
+                        }}
                         title={
                           booth.isActive !== false
-                            ? 'Master Override: Set Inactive (Offline to customers)'
-                            : 'Master Override: Set Active'
+                            ? 'Set Inactive (Takes effect at 3:00 AM)'
+                            : 'Set Active'
                         }
-                        className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-semibold border transition-all ${
+                        className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-semibold transition-all ${
                           booth.isActive !== false
-                            ? 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100'
-                            : 'bg-red-50 text-red-700 border-red-200 hover:bg-red-100'
+                            ? 'bg-[#f5f5f7] text-neutral-900 hover:bg-neutral-200'
+                            : 'bg-neutral-900 text-white hover:bg-black'
                         }`}
                       >
                         <ShieldAlert className="w-3 h-3" />
                         <span>{booth.isActive !== false ? 'Active' : 'Inactive'}</span>
                       </button>
 
-                      {/* Operational Open/Closed Status */}
-                      <span
-                        className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold border ${
-                          booth.isOpen !== false
-                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                            : 'bg-zinc-100 text-zinc-600 border-zinc-200'
-                        }`}
-                      >
-                        <span
-                          className={`w-1.5 h-1.5 rounded-full ${
-                            booth.isOpen !== false ? 'bg-emerald-500 animate-pulse' : 'bg-zinc-400'
-                          }`}
-                        />
-                        {booth.isOpen !== false ? 'Open' : 'Closed'}
-                      </span>
-
-                      <button
-                        type="button"
-                        onClick={() => handleToggleBoothOpen(booth.id, booth.isOpen !== false)}
-                        title={booth.isOpen !== false ? 'Close Stall' : 'Open Stall'}
-                        aria-label={booth.isOpen !== false ? 'Close Stall' : 'Open Stall'}
-                        className="flex h-8 w-8 items-center justify-center rounded-xl border border-black/10 bg-white text-[#1d1d1f] hover:bg-black/5 transition-all shadow-xs shrink-0"
-                      >
-                        <Power
-                          className={`h-3.5 w-3.5 ${
-                            booth.isOpen !== false ? 'text-emerald-600' : 'text-zinc-400'
-                          }`}
-                        />
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setScheduleModal({
-                            isOpen: true,
-                            targetType: 'booth',
-                            targetId: booth.id,
-                            title: `${booth.name} Operating Hours`,
-                            description: 'Configure automated operating schedule for this booth slot.',
-                            initialSchedule: booth.schedule,
-                          })
-                        }
-                        title={`Operating Hours for ${booth.name}`}
-                        aria-label={`Operating Hours for ${booth.name}`}
-                        className="flex h-8 w-8 items-center justify-center rounded-xl border border-black/10 bg-white text-[#1d1d1f] hover:bg-black/5 transition-all shadow-xs shrink-0"
-                      >
-                        <Clock className="h-3.5 w-3.5 text-blue-600" />
-                      </button>
-
+                      
+                      
                       <Link
                         href={`/shop-owner/analytics?boothId=${booth.id}`}
-                        className="flex h-8 w-8 items-center justify-center rounded-xl border border-black/10 bg-white text-[#1d1d1f] hover:bg-black/5 transition-all shadow-xs shrink-0"
+                        className="flex h-8 w-8 items-center justify-center rounded-xl bg-white text-[#1d1d1f] hover:bg-black/5 transition-all shadow-xs shrink-0"
                         title={`Analytics for ${booth.name}`}
                         aria-label={`Analytics for ${booth.name}`}
                       >
@@ -658,7 +525,7 @@ export default function ShopOwnerBoothsPage() {
                       <button
                         type="button"
                         onClick={() => setEditing(booth)}
-                        className="flex h-8 w-8 items-center justify-center rounded-xl border border-black/10 bg-white text-[#1d1d1f] hover:bg-black/5 transition-all shadow-xs shrink-0"
+                        className="flex h-8 w-8 items-center justify-center rounded-xl bg-white text-[#1d1d1f] hover:bg-black/5 transition-all shadow-xs shrink-0"
                         aria-label="Edit Slot"
                         title="Edit slot identifier"
                       >
@@ -671,7 +538,7 @@ export default function ShopOwnerBoothsPage() {
                           setBoothToDelete(booth);
                           setDeleteError('');
                         }}
-                        className="flex h-8 w-8 items-center justify-center rounded-xl border border-red-200 bg-red-50/80 text-red-600 hover:bg-red-100 transition-all shadow-xs shrink-0"
+                        className="flex h-8 w-8 items-center justify-center rounded-xl bg-red-50/80 text-red-600 hover:bg-red-100 transition-all shadow-xs shrink-0"
                         aria-label="Delete Booth Slot"
                         title={`Delete ${booth.name}`}
                       >
@@ -682,7 +549,7 @@ export default function ShopOwnerBoothsPage() {
 
                   {/* Master Inactive Alert Banner if disabled by venue owner */}
                   {booth.isActive === false && (
-                    <div className="mt-3 flex items-center gap-2 p-2.5 rounded-xl bg-red-50 text-red-700 text-xs border border-red-200">
+                    <div className="mt-3 flex items-center gap-2 p-2.5 rounded-xl bg-red-50 text-red-700 text-xs">
                       <AlertCircle className="w-4 h-4 shrink-0 text-red-600" />
                       <span className="leading-tight font-medium">
                         Master Override: This booth is marked Inactive by venue operator. It is strictly offline to customers regardless of operational open state.
@@ -691,7 +558,7 @@ export default function ShopOwnerBoothsPage() {
                   )}
 
                   {/* Send Setup Link Section */}
-                  <div className="mt-4 rounded-[20px] bg-[#f5f5f7] p-3.5 border border-black/[0.04]">
+                  <div className="mt-4 rounded-[20px] bg-[#f5f5f7] p-3.5 /[0.04]">
                     <div className="mb-2">
                       <p className="text-xs font-semibold text-[#1d1d1f]">Send Setup Link</p>
                       <p className="text-[11px] text-[#6e6e73] truncate">
@@ -715,7 +582,7 @@ export default function ShopOwnerBoothsPage() {
                             }
                           }}
                           placeholder="vendor@stall.com"
-                          className="w-full rounded-full border border-black/10 bg-white py-1.5 pl-8 pr-3 text-xs text-[#1d1d1f] placeholder:text-[#86868b] focus:border-black/30 focus:outline-none"
+                          className="w-full rounded-full bg-white shadow-sm py-1.5 pl-8 pr-3 text-xs text-[#1d1d1f] placeholder:text-[#86868b] focus: focus:outline-none"
                         />
                       </div>
                       <button
@@ -738,8 +605,8 @@ export default function ShopOwnerBoothsPage() {
                       <div
                         className={`mt-2.5 flex flex-col gap-1.5 rounded-xl p-2.5 text-xs ${
                           feedback.type === 'success'
-                            ? 'bg-[#30d158]/10 text-[#166534] border border-[#30d158]/20'
-                            : 'bg-red-50 text-red-700 border border-red-200'
+                            ? 'bg-[#30d158]/10 text-[#166534]  -[#30d158]/20'
+                            : 'bg-red-50 text-red-700  '
                         }`}
                       >
                         <div className="flex items-center gap-2 min-w-0 flex-1">
@@ -772,7 +639,7 @@ export default function ShopOwnerBoothsPage() {
                   </div>
 
                   {/* Authorized Emails List */}
-                  <div className="mt-3.5 pt-3 border-t border-black/[0.04]">
+                  <div className="mt-3.5 pt-3 /[0.04]">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-1.5">
                         <ShieldCheck className="h-3.5 w-3.5 text-[#111827]" />
@@ -799,7 +666,7 @@ export default function ShopOwnerBoothsPage() {
                           return (
                             <div
                               key={member.userId || member.email}
-                              className="flex items-center justify-between gap-2 rounded-xl bg-[#f5f5f7]/60 px-3 py-1.5 text-xs border border-black/[0.03]"
+                              className="flex items-center justify-between gap-2 rounded-xl bg-[#f5f5f7]/60 px-3 py-1.5 text-xs /[0.03]"
                             >
                               <div className="flex items-center gap-2 min-w-0">
                                 <span className="h-2 w-2 rounded-full bg-[#30d158] shrink-0" />
@@ -817,7 +684,7 @@ export default function ShopOwnerBoothsPage() {
                                 onClick={() => void handleRemoveAccess(booth.id, member.email)}
                                 title="Revoke access"
                                 aria-label="Revoke access"
-                                className="flex h-7 w-7 items-center justify-center rounded-lg border border-red-200 bg-red-50/80 text-red-600 hover:bg-red-100 transition-all shrink-0 disabled:opacity-50 shadow-xs"
+                                className="flex h-7 w-7 items-center justify-center rounded-lg bg-red-50/80 text-red-600 hover:bg-red-100 transition-all shrink-0 disabled:opacity-50 shadow-xs"
                               >
                                 {isRemoving ? (
                                   <LoaderCircle className="h-3.5 w-3.5 animate-spin" />
@@ -839,7 +706,7 @@ export default function ShopOwnerBoothsPage() {
                           return (
                             <div
                               key={invite.id}
-                              className="flex items-center justify-between gap-2 rounded-xl bg-[#f5f5f7]/60 px-3 py-1.5 text-xs border border-black/[0.03]"
+                              className="flex items-center justify-between gap-2 rounded-xl bg-[#f5f5f7]/60 px-3 py-1.5 text-xs /[0.03]"
                             >
                               <div className="flex items-center gap-2 min-w-0">
                                 <span className="h-2 w-2 rounded-full bg-amber-500 shrink-0" />
@@ -862,7 +729,7 @@ export default function ShopOwnerBoothsPage() {
                                   }
                                   title="Copy invitation link"
                                   aria-label="Copy invitation link"
-                                  className="flex h-7 w-7 items-center justify-center rounded-lg border border-black/10 bg-white text-[#1d1d1f] hover:bg-black/5 transition-all shadow-xs shrink-0"
+                                  className="flex h-7 w-7 items-center justify-center rounded-lg bg-white text-[#1d1d1f] hover:bg-black/5 transition-all shadow-xs shrink-0"
                                 >
                                   {isCopied ? (
                                     <Check className="h-3.5 w-3.5 text-emerald-600" />
@@ -876,7 +743,7 @@ export default function ShopOwnerBoothsPage() {
                                   onClick={() => void handleRemoveAccess(booth.id, invite.email)}
                                   title="Cancel invitation"
                                   aria-label="Cancel invitation"
-                                  className="flex h-7 w-7 items-center justify-center rounded-lg border border-red-200 bg-red-50/80 text-red-600 hover:bg-red-100 transition-all shrink-0 disabled:opacity-50 shadow-xs"
+                                  className="flex h-7 w-7 items-center justify-center rounded-lg bg-red-50/80 text-red-600 hover:bg-red-100 transition-all shrink-0 disabled:opacity-50 shadow-xs"
                                 >
                                   {isRemoving ? (
                                     <LoaderCircle className="h-3.5 w-3.5 animate-spin" />
@@ -901,7 +768,7 @@ export default function ShopOwnerBoothsPage() {
       {/* ADD BOOTH SLOT MODAL */}
       {isAddSlotOpen ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-xs">
-          <div className="w-full max-w-md rounded-[28px] bg-white p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+          <div className="w-full max-w-md rounded-[28px] bg-white p-4 sm:p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Store className="h-5 w-5 text-[#111827]" />
@@ -926,7 +793,7 @@ export default function ShopOwnerBoothsPage() {
                     onChange={(event) =>
                       setNewSlot({ ...newSlot, restaurantId: event.target.value })
                     }
-                    className="mt-1.5 w-full rounded-2xl border border-black/10 bg-white px-3.5 py-2.5 text-sm outline-none focus:border-black/30"
+                    className="mt-1.5 w-full rounded-2xl bg-white shadow-sm px-3.5 py-2.5 text-sm outline-none focus:"
                   >
                     {shops.map((shop) => (
                       <option key={shop.id} value={shop.id}>
@@ -943,7 +810,7 @@ export default function ShopOwnerBoothsPage() {
                   value={newSlot.slotName}
                   onChange={(event) => setNewSlot({ ...newSlot, slotName: event.target.value })}
                   placeholder="e.g. Slot #02, Counter 2"
-                  className="mt-1.5 w-full rounded-2xl border border-black/10 bg-white px-3.5 py-2.5 text-sm outline-none focus:border-black/30"
+                  className="mt-1.5 w-full rounded-2xl bg-white shadow-sm px-3.5 py-2.5 text-sm outline-none focus:"
                   required
                 />
               </label>
@@ -957,7 +824,7 @@ export default function ShopOwnerBoothsPage() {
                     setNewSlot({ ...newSlot, vendorEmail: event.target.value })
                   }
                   placeholder="vendor@stall.com"
-                  className="mt-1.5 w-full rounded-2xl border border-black/10 bg-white px-3.5 py-2.5 text-sm outline-none focus:border-black/30"
+                  className="mt-1.5 w-full rounded-2xl bg-white shadow-sm px-3.5 py-2.5 text-sm outline-none focus:"
                 />
                 <span className="mt-1 block text-[11px] text-[#86868b]">
                   If provided, a setup link will be automatically sent to this email upon creation.
@@ -989,7 +856,7 @@ export default function ShopOwnerBoothsPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-xs">
           <form
             onSubmit={handleSaveBooth}
-            className="w-full max-w-md rounded-[28px] bg-white p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto"
+            className="w-full max-w-md rounded-[28px] bg-white p-4 sm:p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto"
           >
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-semibold text-[#1d1d1f]">Edit Booth Slot</h2>
@@ -1007,7 +874,7 @@ export default function ShopOwnerBoothsPage() {
               <input
                 value={editing.name}
                 onChange={(event) => setEditing({ ...editing, name: event.target.value })}
-                className="mt-1.5 w-full rounded-2xl border border-black/10 bg-white px-3.5 py-2.5 text-sm outline-none focus:border-black/30"
+                className="mt-1.5 w-full rounded-2xl bg-white shadow-sm px-3.5 py-2.5 text-sm outline-none focus:"
               />
             </label>
 
@@ -1024,7 +891,7 @@ export default function ShopOwnerBoothsPage() {
       {/* DELETE BOOTH SLOT CONFIRMATION MODAL */}
       {boothToDelete ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-xs">
-          <div className="w-full max-w-md rounded-[28px] bg-white p-6 shadow-2xl space-y-4">
+          <div className="w-full max-w-md rounded-[28px] bg-white p-4 sm:p-6 shadow-2xl space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
                 <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-red-50 text-red-600">
@@ -1050,11 +917,11 @@ export default function ShopOwnerBoothsPage() {
 
             <p className="text-xs sm:text-sm text-[#6e6e73] leading-relaxed">
               Are you sure you want to delete <strong className="text-[#1d1d1f] font-semibold">{boothToDelete.name}</strong>?
-              This will permanently revoke all vendor invitations, disconnect assigned staff, and remove all associated menu items and records for this slot.
+              This will remove vendor access immediately. The stall data will be kept as recently deleted for one year for recovery purposes.
             </p>
 
             {deleteError && (
-              <div className="rounded-xl bg-red-50 p-3 text-xs text-red-700 border border-red-200">
+              <div className="rounded-xl bg-red-50 p-3 text-xs text-red-700">
                 {deleteError}
               </div>
             )}
@@ -1067,7 +934,7 @@ export default function ShopOwnerBoothsPage() {
                   setBoothToDelete(null);
                   setDeleteError('');
                 }}
-                className="flex-1 rounded-full border border-black/10 py-2.5 text-xs font-semibold text-[#1d1d1f] hover:bg-black/5 transition-all"
+                className="flex-1 rounded-full py-2.5 text-xs font-semibold text-[#1d1d1f] hover:bg-black/5 transition-all"
               >
                 Cancel
               </button>
@@ -1094,14 +961,6 @@ export default function ShopOwnerBoothsPage() {
         </div>
       ) : null}
 
-      <OperatingScheduleModal
-        isOpen={scheduleModal.isOpen}
-        onClose={() => setScheduleModal((prev) => ({ ...prev, isOpen: false }))}
-        title={scheduleModal.title}
-        description={scheduleModal.description}
-        initialSchedule={scheduleModal.initialSchedule}
-        onSave={handleSaveSchedule}
-      />
-    </main>
+          </main>
   );
 }
