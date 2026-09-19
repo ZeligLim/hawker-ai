@@ -67,9 +67,7 @@ export default function StallOverviewPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isOpenOverride, setIsOpenOverride] = useState<boolean | null>(null);
-  const [isTogglingOpen, setIsTogglingOpen] = useState(false);
-  const [isScheduleOpen, setIsScheduleOpen] = useState(false);
-  const [error, setError] = useState('');
+      const [error, setError] = useState('');
 
   const currentBooth = roles.booths?.[0];
   const stallName = currentBooth?.name || 'Stall';
@@ -77,61 +75,8 @@ export default function StallOverviewPage() {
   const isOpen = isOpenOverride ?? (currentBooth?.isOpen !== false);
   const isMasterInactive = currentBooth?.isActive === false || currentBooth?.venueIsActive === false;
 
-  const handleToggleStallOpen = async () => {
-    const boothId = currentBooth?.id;
-    if (!boothId) return;
-
-    const nextOpen = !isOpen;
-    setIsOpenOverride(nextOpen);
-    setIsTogglingOpen(true);
-
-    try {
-      if (!supabase) return;
-      const session = (await supabase.auth.getSession())?.data?.session;
-      const token = session?.access_token;
-      const res = await fetch(`/api/owner/booths/${boothId}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify({ is_open: nextOpen }),
-      });
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error ?? 'Failed to update stall status');
-      }
-      await refreshRoles();
-    } catch (err) {
-      setIsOpenOverride(!nextOpen);
-      setError(err instanceof Error ? err.message : 'Failed to update stall status');
-    } finally {
-      setIsTogglingOpen(false);
-    }
-  };
-
-  const handleSaveStallSchedule = async (schedule: OperatingSchedule) => {
-    const boothId = currentBooth?.id;
-    if (!boothId) return;
-
-    if (!supabase) return;
-    const session = (await supabase.auth.getSession())?.data?.session;
-    const token = session?.access_token;
-    const res = await fetch(`/api/owner/booths/${boothId}`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      },
-      body: JSON.stringify({ schedule }),
-    });
-    if (!res.ok) {
-      const data = await res.json();
-      throw new Error(data.error ?? 'Failed to update operating hours schedule');
-    }
-    await refreshRoles();
-  };
-
+  
+  
   const handleManualRefresh = async () => {
     setIsRefreshing(true);
     try {
@@ -341,36 +286,7 @@ export default function StallOverviewPage() {
                 ))}
               </select>
             )}
-            {roles.booths?.[0]?.id && (
-              <>
-                <button
-                  type="button"
-                  onClick={() => setIsScheduleOpen(true)}
-                  title="Operating Hours & Weekly Schedule"
-                  aria-label="Operating Hours & Weekly Schedule"
-                  className="inline-flex h-9 items-center justify-center gap-1.5 rounded-full border border-black/10 bg-white px-3 text-xs font-semibold text-[#1d1d1f] shadow-xs hover:bg-black/[0.03] transition-all shrink-0"
-                >
-                  <Clock className="h-3.5 w-3.5 text-blue-600" />
-                  <span className="hidden sm:inline">Operating Hours</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => void handleToggleStallOpen()}
-                  disabled={isTogglingOpen}
-                  title={isOpen ? 'Set stall as closed' : 'Set stall as open'}
-                  aria-label={isOpen ? 'Set stall as closed' : 'Set stall as open'}
-                  className={`inline-flex h-9 items-center justify-center gap-1.5 rounded-full border px-3 text-xs font-semibold transition-all shadow-xs disabled:opacity-50 shrink-0 ${
-                    isOpen
-                      ? 'border-emerald-200 bg-emerald-50/80 text-emerald-700 hover:bg-emerald-100'
-                      : 'border-zinc-200 bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
-                  }`}
-                >
-                  <Power className={`h-3.5 w-3.5 ${isOpen ? 'text-emerald-600' : 'text-zinc-500'}`} />
-                  <span>{isOpen ? 'Stall Open' : 'Stall Closed'}</span>
-                </button>
-              </>
-            )}
+            
 
             <button
               type="button"
@@ -529,14 +445,7 @@ export default function StallOverviewPage() {
         </section>
       </div>
 
-      <OperatingScheduleModal
-        isOpen={isScheduleOpen}
-        onClose={() => setIsScheduleOpen(false)}
-        title={`${stallName} Operating Hours`}
-        description=""
-        initialSchedule={currentBooth?.schedule}
-        onSave={handleSaveStallSchedule}
-      />
+      
     </main>
   );
 }
