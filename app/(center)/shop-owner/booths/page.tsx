@@ -627,7 +627,7 @@ export default function ShopOwnerBoothsPage() {
                               void handleSendSetupLink(booth.id);
                             }
                           }}
-                          placeholder="vendor@email.com to send setup link"
+                          placeholder="vendor@email.com"
                           className="w-full rounded-full bg-white shadow-sm py-1.5 pl-8 pr-3 text-xs text-[#1d1d1f] placeholder:text-[#86868b] focus: focus:outline-none"
                         />
                       </div>
