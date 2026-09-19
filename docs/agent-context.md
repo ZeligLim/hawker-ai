@@ -567,7 +567,14 @@ Phase 20: Dedicated SaaS Superadmin Dashboard Route Group & Standalone Monetizat
   - Removed bloated wordings and operating schedule configurations from the center owner's interface, strictly streamlining the layout to manage vendor access and active states. (Note: Restored venue-level operating hours schedule).
   - Reduced stall overrides to a singular "Active/Inactive" toggle for the center owner. Added a confirmation prompt notifying that setting a stall inactive will take effect at 3:00 AM the following morning.
   - Implemented a "Soft Delete" mechanism for booths: updated the database migration (`022_soft_delete_booths.sql`) and `delete_booth_slot` RPC (`023_update_delete_booth_rpc.sql`). Deleting a stall now simply strips vendor access immediately and flags the data as `deleted_at = NOW()`, preserving the data for one year of recovery instead of performing a hard destructive deletion.
-  - Overhauled layout elements on the stalls management page to obey the "0 Border" global styling rule, introduced soft shadows, and prevented text input truncation layout issues on mobile views.
+  - **Phase 22: Venue Hours & Stalls Management Overhaul (`shop-owner/booths`)**:
+  - Removed remaining bloated headings and descriptions from the Stalls Management page (such as "Stall Allocation" and "Authorized Store Access") for an ultra-minimal look.
+  - Simplified the "Send Setup Link" input block by removing its grey background container and reducing the text prompt to just an input placeholder.
+  - Polished the `OperatingScheduleModal`: 
+    - Removed extraneous description strings.
+    - Simplified the "Apply Monday to all days" button.
+    - Fixed scrolling issues by changing the sticky footer background to solid white instead of off-white.
+    - Updated primary buttons to adhere strictly to the Apple 44px (`h-11`) standard shape.
 
 ## Current Architecture
 - Frontend: Next.js App Router, TypeScript, React, Tailwind
