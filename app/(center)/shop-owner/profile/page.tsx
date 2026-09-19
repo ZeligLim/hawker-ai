@@ -1,6 +1,6 @@
 'use client';
 
-import { LogOut, Save, Check, Clock, ShieldAlert, Settings } from 'lucide-react';
+import { LogOut, Save, Check, Clock, ShieldAlert, Settings, X, LoaderCircle } from 'lucide-react';
 import { OperatingScheduleModal } from '@/components/operating-schedule-modal';
 import type { OperatingSchedule } from '@/lib/schedule/operating-hours';
 import { useCallback, useEffect, useState } from 'react';
@@ -266,16 +266,20 @@ export default function ShopOwnerProfilePage() {
                   type="button"
                   onClick={() => { void handleSave(); setIsEditing(false); }}
                   disabled={saving}
-                  className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-[#111827] px-5 text-sm font-semibold text-white shadow-xs hover:bg-black disabled:opacity-70 transition-all"
+                  className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-[#111827] text-white shadow-xs hover:bg-black disabled:opacity-70 transition-all shrink-0"
+                  aria-label="Save shop details"
+                  title="Save shop details"
                 >
-                  <Save className="h-4 w-4" /> {saving ? 'Saving changes…' : 'Save shop details'}
+                  {saving ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Check className="h-5 w-5" />}
                 </button>
                 <button
                   type="button"
                   onClick={() => setIsEditing(false)}
-                  className="inline-flex h-11 items-center justify-center rounded-full bg-transparent px-4 text-sm font-semibold text-neutral-500 hover:text-black transition-colors"
+                  className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-[#f5f5f7] text-[#1d1d1f] hover:bg-neutral-200 transition-colors shrink-0"
+                  aria-label="Cancel editing"
+                  title="Cancel"
                 >
-                  Cancel
+                  <X className="h-5 w-5" />
                 </button>
                 {saveSuccess ? (
                   <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-600 animate-fade-in ml-auto">
