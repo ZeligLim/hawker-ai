@@ -536,7 +536,7 @@ export default function StallOverviewPage() {
         isOpen={isScheduleOpen}
         onClose={() => setIsScheduleOpen(false)}
         title={`${stallName} Operating Hours`}
-        description="Configure automated operating hours and weekly schedule for this stall."
+        description=""
         initialSchedule={currentBooth?.schedule}
         onSave={handleSaveStallSchedule}
       />

@@ -443,7 +443,7 @@ export default function ShopOwnerBoothsPage() {
                       targetType: 'shop',
                       targetId: shops[0].id,
                       title: `${shops[0].name} Operating Hours`,
-                      description: 'Configure automated operating hours and weekly schedule for the hawker centre.',
+                      description: '',
                       initialSchedule: shops[0].schedule,
                     })
                   }
