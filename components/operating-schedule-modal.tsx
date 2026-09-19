@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Clock, X, Check, AlertCircle, Copy } from 'lucide-react';
+import { Clock, X, Check, AlertCircle, Copy, ChevronLeft } from 'lucide-react';
 import {
   DAYS_OF_WEEK,
   DEFAULT_WEEKLY_SCHEDULE,
@@ -95,31 +95,24 @@ function OperatingScheduleDialogContent({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-150">
-      <div
-        className="w-full max-w-xl bg-white rounded-2xl shadow-2xl  overflow-hidden flex flex-col max-h-[90vh]"
-        role="dialog"
-        aria-modal="true"
-      >
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 ">
-          <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-blue-50 text-blue-600">
-              <Clock className="w-5 h-5" />
-            </div>
-            <div>
-              <h2 className="text-base font-bold text-[#1d1d1f]">{title}</h2>
-              {description ? <p className="text-xs text-[#6e6e73]">{description}</p> : null}
-            </div>
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="p-1.5 rounded-full text-[#86868b] hover:text-[#1d1d1f] hover:bg-black/5 transition"
-          >
-            <X className="w-4 h-4" />
-          </button>
+    <div className="fixed inset-0 z-50 flex flex-col bg-[#f5f5f7] animate-in slide-in-from-bottom-4 duration-200" role="dialog" aria-modal="true">
+      {/* Header */}
+      <div className="flex shrink-0 items-center border-b border-black/[0.04] bg-white px-4 py-3 sm:px-6 gap-3">
+        <button
+          type="button"
+          onClick={onClose}
+          className="p-2 -ml-2 rounded-full text-[#1d1d1f] hover:bg-black/5 transition-colors"
+          aria-label="Go back"
+        >
+          <ChevronLeft className="w-6 h-6" />
+        </button>
+        <div className="flex-1">
+          <h2 className="text-lg font-semibold tracking-[-0.03em] text-[#1d1d1f]">
+            {title}
+          </h2>
+          {description && <p className="text-xs text-[#86868b]">{description}</p>}
         </div>
+      </div>
 
         {/* Content */}
         <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden">
@@ -154,21 +147,20 @@ function OperatingScheduleDialogContent({
 
             {/* Weekly Schedule Settings */}
             <div className="space-y-3">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-2">
                 <h3 className="text-xs font-semibold text-[#86868b]">
                   Daily operating hours
                 </h3>
                 <button
                   type="button"
                   onClick={() => handleApplyToAll('mon')}
-                  className="inline-flex h-8 items-center justify-center gap-1.5 rounded-full bg-neutral-100 px-3 text-xs font-semibold text-neutral-600 transition-colors hover:bg-neutral-200 shadow-xs"
-                >
+                  className="inline-flex h-11 sm:h-8 w-full sm:w-auto items-center justify-center gap-1.5 rounded-full bg-neutral-100 px-4 text-xs font-semibold text-neutral-600 transition-colors hover:bg-neutral-200 shadow-xs">
                   <Copy className="w-3 h-3" />
                   Apply Monday to all
                 </button>
               </div>
 
-              <div className="rounded-2xl bg-[#f5f5f7] overflow-hidden p-1 flex flex-col gap-1">
+              <div className="flex flex-col gap-2">
                 {DAYS_OF_WEEK.map(({ key, label }) => {
                   const day = weekly[key] || { isOpen: true, open: '08:00', close: '22:00' };
                   const isOvernight = day.isOpen && day.open > day.close;
@@ -176,7 +168,7 @@ function OperatingScheduleDialogContent({
                   return (
                     <div
                       key={key}
-                      className={`rounded-xl p-3 transition-colors ${day.isOpen ? 'bg-white shadow-sm' : 'bg-transparent'}`}
+                      className={`rounded-2xl p-4 transition-colors shadow-xs ${day.isOpen ? 'bg-white' : 'bg-white/50'}`}
                     >
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
                         <div className="flex items-center gap-2.5 min-w-[120px]">
@@ -204,14 +196,14 @@ function OperatingScheduleDialogContent({
                                 type="time"
                                 value={day.open}
                                 onChange={(e) => handleTimeChange(key, 'open', e.target.value)}
-                                className="px-2 py-1 text-xs rounded-lg  bg-white text-[#1d1d1f] font-mono focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                className="px-3 py-2 text-xs rounded-[10px] bg-[#f5f5f7] text-[#1d1d1f] font-mono font-medium outline-none focus:bg-[#e5e5ea] transition-colors"
                               />
                               <span className="text-xs text-[#86868b]">to</span>
                               <input
                                 type="time"
                                 value={day.close}
                                 onChange={(e) => handleTimeChange(key, 'close', e.target.value)}
-                                className="px-2 py-1 text-xs rounded-lg  bg-white text-[#1d1d1f] font-mono focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                className="px-3 py-2 text-xs rounded-[10px] bg-[#f5f5f7] text-[#1d1d1f] font-mono font-medium outline-none focus:bg-[#e5e5ea] transition-colors"
                               />
                             </div>
                             {isOvernight && (
@@ -250,7 +242,6 @@ function OperatingScheduleDialogContent({
             </button>
           </div>
         </form>
-      </div>
     </div>
   );
 }

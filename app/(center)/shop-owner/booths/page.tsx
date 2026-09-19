@@ -435,13 +435,7 @@ export default function ShopOwnerBoothsPage() {
           <div className="flex items-center gap-2 shrink-0">
             
             
-            <button
-              type="button"
-              onClick={handleOpenAddSlot}
-              className="inline-flex h-9 items-center justify-center gap-1.5 rounded-full bg-[#111827] px-4 text-xs font-semibold text-white shadow-xs hover:bg-black transition-all shrink-0"
-            >
-              <Plus className="h-3.5 w-3.5" /> Add Booth Slot
-            </button>
+            
           </div>
         </header>
 
@@ -948,6 +942,15 @@ export default function ShopOwnerBoothsPage() {
         initialSchedule={scheduleModal.initialSchedule}
         onSave={handleSaveSchedule}
       />
+      <button
+        type="button"
+        onClick={handleOpenAddSlot}
+        className="fixed bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-[#111827] text-white shadow-lg hover:bg-black transition-all"
+        aria-label="Add Booth Slot"
+        title="Add Booth Slot"
+      >
+        <Plus className="h-6 w-6" />
+      </button>
     </main>
   );
 }
