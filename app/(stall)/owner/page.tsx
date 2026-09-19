@@ -319,7 +319,7 @@ export default function StallOverviewPage() {
         {/* Stall Header */}
         <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="min-w-0">
-            <div className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 px-2.5 py-0.5 text-[11px] font-semibold text-amber-800 mb-1.5">
+            <div className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/10  px-2.5 py-0.5 text-[11px] font-semibold text-amber-800 mb-1.5">
               <Store className="h-3 w-3 shrink-0" />
               <span className="truncate">{stallName}{venueName ? ` • ${venueName}` : ''}</span>
             </div>
@@ -414,21 +414,18 @@ export default function StallOverviewPage() {
         )}
 
         {/* Database Metric Cards */}
-        <section className="mt-6 grid gap-3 sm:grid-cols-3">
+        <section className="mt-6 grid gap-2 grid-cols-3 sm:gap-3">
           {stats.map((stat) => (
-            <div
-              key={stat.label}
-              className="rounded-[24px] bg-white p-4 sm:p-5 shadow-[0_12px_26px_rgba(15,23,42,0.04)] border border-black/[0.04]"
-            >
-              <p className="text-xs sm:text-sm font-medium text-[#6e6e73] truncate">{stat.label}</p>
-              <p className="mt-2 text-2xl sm:text-3xl font-semibold tracking-[-0.05em] text-[#1d1d1f]">
+            <div key={stat.label} className="rounded-[20px] sm:rounded-[24px] bg-white p-3 sm:p-5 shadow-xs flex flex-col justify-between overflow-hidden">
+              <p className="text-[10px] sm:text-sm font-medium text-[#6e6e73] truncate">{stat.label}</p>
+              <p className="mt-1 sm:mt-2 text-lg sm:text-3xl font-semibold tracking-[-0.05em] text-[#1d1d1f] truncate">
                 {isLoading ? (
                   <span className="inline-block h-8 w-20 animate-pulse rounded bg-black/5" />
                 ) : (
                   stat.value
                 )}
               </p>
-              <p className="mt-1 text-[11px] sm:text-xs text-[#6e6e73] truncate">
+              <p className="mt-0.5 sm:mt-1 text-[9px] sm:text-xs text-[#6e6e73] truncate">
                 {isLoading ? 'Loading metrics...' : stat.detail}
               </p>
             </div>
@@ -438,7 +435,7 @@ export default function StallOverviewPage() {
         {/* Order Activity */}
         <section className="mt-5">
           {/* Live Database Order Activity */}
-          <div className="rounded-[26px] bg-white p-5 sm:p-6 shadow-[0_12px_26px_rgba(15,23,42,0.04)] border border-black/[0.04]">
+          <div className="rounded-[26px] bg-white p-5 sm:p-6 shadow-xs">
             <div className="flex items-center justify-between gap-2">
               <h2 className="text-lg sm:text-xl font-semibold tracking-[-0.03em] text-[#1d1d1f]">
                 Recent Orders
