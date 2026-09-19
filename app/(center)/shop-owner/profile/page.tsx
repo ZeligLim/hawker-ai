@@ -1,6 +1,6 @@
 'use client';
 
-import { LogOut, Save, Check, Clock, ShieldAlert } from 'lucide-react';
+import { LogOut, Save, Check, Clock, ShieldAlert, Settings } from 'lucide-react';
 import { OperatingScheduleModal } from '@/components/operating-schedule-modal';
 import type { OperatingSchedule } from '@/lib/schedule/operating-hours';
 import { useCallback, useEffect, useState } from 'react';
@@ -49,6 +49,17 @@ export default function ShopOwnerProfilePage() {
   const handleToggleShopActive = async () => {
     if (!shop) return;
     const nextActive = shop.isActive !== false ? false : true;
+    
+    if (nextActive === false) {
+      if (!window.confirm('Are you sure you want to deactivate this venue? It will no longer be visible to customers.')) {
+        return;
+      }
+    } else {
+      if (!window.confirm('Are you sure you want to activate this venue?')) {
+        return;
+      }
+    }
+    
     setShop({ ...shop, isActive: nextActive });
     try {
       const res = await authenticatedFetch(`/api/owner/shops/${shop.id}`, {
@@ -214,9 +225,10 @@ export default function ShopOwnerProfilePage() {
                 <button
                   type="button"
                   onClick={() => setIsEditing(true)}
-                  className="inline-flex h-9 items-center justify-center rounded-full bg-[#f5f5f7] px-4 text-xs font-semibold text-[#1d1d1f] hover:bg-neutral-200 transition-colors shadow-xs"
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#f5f5f7] text-[#1d1d1f] hover:bg-neutral-200 transition-colors shadow-xs"
+                  aria-label="Edit Profile"
                 >
-                  Edit
+                  <Settings className="h-4 w-4" />
                 </button>
                 <button
                   type="button"

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Clock, X, Check, AlertCircle, Copy, ChevronLeft } from 'lucide-react';
+import { Clock, X, Check, AlertCircle, Copy, ChevronLeft, ArrowLeft } from 'lucide-react';
 import {
   DAYS_OF_WEEK,
   DEFAULT_WEEKLY_SCHEDULE,
@@ -97,14 +97,9 @@ function OperatingScheduleDialogContent({
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-[#f5f5f7] animate-in slide-in-from-bottom-4 duration-200" role="dialog" aria-modal="true">
       {/* Header */}
-      <div className="flex shrink-0 items-center border-b border-black/[0.04] bg-white px-4 py-3 sm:px-6 gap-3">
-        <button
-          type="button"
-          onClick={onClose}
-          className="p-2 -ml-2 rounded-full text-[#1d1d1f] hover:bg-black/5 transition-colors"
-          aria-label="Go back"
-        >
-          <ChevronLeft className="w-6 h-6" />
+      <div className="flex shrink-0 items-center border-b border-black/[0.04] bg-[#f5f5f7] px-4 py-3 sm:px-6 gap-3">
+        <button type="button" onClick={onClose} className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-[#1d1d1f] shadow-xs hover:bg-black/5 transition-colors -ml-1 shrink-0" aria-label="Go back">
+          <ArrowLeft className="w-5 h-5" />
         </button>
         <div className="flex-1">
           <h2 className="text-lg font-semibold tracking-[-0.03em] text-[#1d1d1f]">
@@ -154,7 +149,7 @@ function OperatingScheduleDialogContent({
                 <button
                   type="button"
                   onClick={() => handleApplyToAll('mon')}
-                  className="inline-flex h-11 sm:h-8 w-full sm:w-auto items-center justify-center gap-1.5 rounded-full bg-neutral-100 px-4 text-xs font-semibold text-neutral-600 transition-colors hover:bg-neutral-200 shadow-xs">
+                  className="inline-flex h-11 sm:h-8 w-full sm:w-auto items-center justify-center gap-1.5 rounded-full bg-black px-4 text-xs font-semibold text-white transition-colors hover:bg-neutral-800 shadow-xs">
                   <Copy className="w-3 h-3" />
                   Apply Monday to all
                 </button>
@@ -224,7 +219,7 @@ function OperatingScheduleDialogContent({
           </div>
 
           {/* Footer Actions */}
-          <div className="flex items-center justify-end gap-2.5 px-6 py-4 bg-white sticky bottom-0">
+          <div className="flex items-center justify-end gap-2.5 px-6 py-4 bg-[#f5f5f7] border-t border-black/[0.04] sticky bottom-0">
             <button
               type="button"
               onClick={onClose}
