@@ -85,8 +85,6 @@ export async function GET(request: NextRequest) {
         restSlug === s ||
         restSlugNorm === sNorm ||
         restNameNorm === sNorm ||
-        (sNorm.length >= 3 && (restSlugNorm.includes(sNorm) || sNorm.includes(restSlugNorm))) ||
-        (sNorm.length >= 3 && (restNameNorm.includes(sNorm) || sNorm.includes(restNameNorm))) ||
         outletSlug === s ||
         outlet.restaurant_id === s
       );
