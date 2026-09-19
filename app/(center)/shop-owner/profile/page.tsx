@@ -18,6 +18,7 @@ type Shop = {
 export default function ShopOwnerProfilePage() {
   const { signOut } = useAuth();
   const [isSignOutDialogOpen, setIsSignOutDialogOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const [shop, setShop] = useState<Shop | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -158,47 +159,73 @@ export default function ShopOwnerProfilePage() {
 
         {/* General Shop Profile */}
         <section className="rounded-[26px] bg-white p-5 sm:p-6 shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
-          <div className="flex items-center gap-3">
-            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#111827] text-lg font-semibold text-white">
-              {shop.name.charAt(0).toUpperCase()}
+          
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#111827] text-lg font-semibold text-white">
+                {shop.name.charAt(0).toUpperCase()}
+              </div>
+              <div>
+                <h2 className="text-lg font-semibold">{shop.name}</h2>
+                <p className="mt-1 text-sm text-[#6e6e73]">{shop.booths.length} booths · {shop.role}</p>
+              </div>
             </div>
-            <div>
-              <h2 className="text-lg font-semibold">{shop.name}</h2>
-              <p className="mt-1 text-sm text-[#6e6e73]">{shop.booths.length} booths · {shop.role}</p>
-            </div>
+            {!isEditing && (
+              <button
+                type="button"
+                onClick={() => setIsEditing(true)}
+                className="inline-flex h-9 items-center justify-center rounded-full bg-[#f5f5f7] px-4 text-xs font-semibold text-[#1d1d1f] hover:bg-neutral-200 transition-colors shadow-xs"
+              >
+                Edit
+              </button>
+            )}
           </div>
 
-          <div className="mt-5 space-y-3">
-            <label className="block text-sm font-medium">
-              Shop name
-              <input value={draft.name} onChange={(event) => setDraft({ ...draft, name: event.target.value })} className="mt-2 w-full rounded-[14px] bg-[#f5f5f7] px-3 py-2.5 outline-none" />
-            </label>
-            <label className="block text-sm font-medium">
-              Shop slug (URL identifier)
-              <input value={draft.slug} onChange={(event) => setDraft({ ...draft, slug: event.target.value })} className="mt-2 w-full rounded-[14px] bg-[#f5f5f7] px-3 py-2.5 outline-none font-mono text-sm" />
-            </label>
-            <label className="block text-sm font-medium">
-              Address
-              <input value={draft.address} onChange={(event) => setDraft({ ...draft, address: event.target.value })} className="mt-2 w-full rounded-[14px] bg-[#f5f5f7] px-3 py-2.5 outline-none" />
-            </label>
-          </div>
 
-          <div className="mt-5 flex items-center gap-3">
-            <button
-              type="button"
-              onClick={() => void handleSave()}
-              disabled={saving}
-              className="inline-flex items-center gap-2 rounded-full bg-[#111827] px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-black disabled:opacity-70 transition-all"
-            >
-              <Save className="h-4 w-4" /> {saving ? 'Saving changes…' : 'Save shop details'}
-            </button>
-            {saveSuccess ? (
-              <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-600 animate-fade-in">
-                <Check className="h-4 w-4" /> Shop details updated
-              </span>
-            ) : null}
-          </div>
+          
+          {isEditing && (
+            <div className="mt-5 border-t border-black/5 pt-5 animate-in fade-in slide-in-from-top-2">
+              <div className="space-y-3">
+                <label className="block text-sm font-medium">
+                  Shop name
+                  <input value={draft.name} onChange={(event) => setDraft({ ...draft, name: event.target.value })} className="mt-2 w-full rounded-[14px] bg-[#f5f5f7] px-3 py-2.5 outline-none" />
+                </label>
+                <label className="block text-sm font-medium">
+                  Shop slug (URL identifier)
+                  <input value={draft.slug} onChange={(event) => setDraft({ ...draft, slug: event.target.value })} className="mt-2 w-full rounded-[14px] bg-[#f5f5f7] px-3 py-2.5 outline-none font-mono text-sm" />
+                </label>
+                <label className="block text-sm font-medium">
+                  Address
+                  <input value={draft.address} onChange={(event) => setDraft({ ...draft, address: event.target.value })} className="mt-2 w-full rounded-[14px] bg-[#f5f5f7] px-3 py-2.5 outline-none" />
+                </label>
+              </div>
+
+              <div className="mt-5 flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => { void handleSave(); setIsEditing(false); }}
+                  disabled={saving}
+                  className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-[#111827] px-5 text-sm font-semibold text-white shadow-xs hover:bg-black disabled:opacity-70 transition-all"
+                >
+                  <Save className="h-4 w-4" /> {saving ? 'Saving changes…' : 'Save shop details'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsEditing(false)}
+                  className="inline-flex h-11 items-center justify-center rounded-full bg-transparent px-4 text-sm font-semibold text-neutral-500 hover:text-black transition-colors"
+                >
+                  Cancel
+                </button>
+                {saveSuccess ? (
+                  <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-600 animate-fade-in ml-auto">
+                    <Check className="h-4 w-4" /> Updated
+                  </span>
+                ) : null}
+              </div>
+            </div>
+          )}
         </section>
+
 
         <div className="mt-6">
           <RoleModeSwitcher currentMode="shop_owner" />

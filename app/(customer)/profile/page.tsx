@@ -78,10 +78,18 @@ function mapOrderPayload(payload: any): OrderRecord[] {
 }
 
 export default function ProfilePage() {
-  const { status, profile: authProfile, isGuest, signOut } = useAuth();
+  const { status, profile: authProfile, isGuest, signOut, updateProfile } = useAuth();
   const [profile, setProfile] = useState<ProfileState>(defaultProfileState);
   const [isMounted, setIsMounted] = useState(false);
+  useEffect(() => {
+    if (authProfile?.displayName) {
+      setEditName(authProfile.displayName);
+    }
+  }, [authProfile?.displayName]);
   const [isSignOutDialogOpen, setIsSignOutDialogOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editName, setEditName] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
   const { name, orders } = profile;
   const signedIn = status === 'authenticated' && !isGuest && Boolean(authProfile);
   const displayName = authProfile?.displayName ?? name;
@@ -181,6 +189,21 @@ export default function ProfilePage() {
     [orders],
   );
 
+
+  const handleSaveProfile = async () => {
+    if (editName.trim() && editName.trim() !== authProfile?.displayName) {
+      setIsSaving(true);
+      try {
+        await updateProfile(editName);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setIsSaving(false);
+      }
+    }
+    setIsEditing(false);
+  };
+
   const handleSignOut = async () => {
     setIsSignOutDialogOpen(false);
     setProfile(defaultProfileState);
@@ -238,13 +261,16 @@ export default function ProfilePage() {
                   </div>
                 </div>
                 <div className="flex shrink-0 items-center justify-end gap-2">
-                  <Link
-                    href={'/profile/settings' as any}
-                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-neutral-100 text-black hover:bg-neutral-200 transition-colors shadow-xs"
-                    aria-label="Edit settings"
-                  >
-                    <Settings className="h-4 w-4 sm:h-5 sm:w-5" />
-                  </Link>
+                  {!isEditing && (
+                    <button
+                      type="button"
+                      onClick={() => setIsEditing(true)}
+                      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-neutral-100 text-black hover:bg-neutral-200 transition-colors shadow-xs"
+                      aria-label="Edit settings"
+                    >
+                      <Settings className="h-4 w-4 sm:h-5 sm:w-5" />
+                    </button>
+                  )}
                   <button
                     type="button"
                     onClick={() => setIsSignOutDialogOpen(true)}
@@ -255,6 +281,44 @@ export default function ProfilePage() {
                   </button>
                 </div>
               </div>
+
+            {isEditing && (
+              <div className="mt-4 border-t border-black/5 pt-4 animate-in fade-in slide-in-from-top-2">
+                <label className="block text-sm font-bold text-black mb-2">
+                  Display Name
+                </label>
+                <input
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                  className="w-full h-11 rounded-full bg-neutral-100 px-4 text-sm outline-none focus:bg-neutral-200 transition-colors mb-4"
+                />
+                
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsEditing(false)}
+                    className="flex h-11 flex-1 items-center justify-center rounded-full bg-neutral-100 text-sm font-bold text-black hover:bg-neutral-200 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleSaveProfile}
+                    disabled={isSaving}
+                    className="flex h-11 flex-1 items-center justify-center rounded-full bg-black text-sm font-bold text-white hover:bg-neutral-800 transition-colors disabled:opacity-50"
+                  >
+                    {isSaving ? 'Saving...' : 'Save Changes'}
+                  </button>
+                </div>
+                
+                <div className="mt-4 flex flex-col gap-2">
+                  <Link href="/profile/settings/password" className="flex h-11 w-full items-center justify-center rounded-full bg-neutral-100 text-sm font-bold text-black hover:bg-neutral-200 transition-colors">
+                    Change Password
+                  </Link>
+                </div>
+              </div>
+            )}
+
             </section>
 
             <div className="mt-4">
