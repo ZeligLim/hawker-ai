@@ -137,21 +137,16 @@ function ShopOwnerAnalyticsContent() {
         {/* Top Header & Timeframe Switcher */}
         <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2">
           <div>
-            <div className="inline-flex items-center gap-1.5 rounded-full bg-black/5 px-2.5 py-0.5 text-[11px] font-semibold text-[#1d1d1f] mb-1.5">
-              <BarChart3 className="w-3.5 h-3.5" />
-              <span>Real-Time Business Intelligence</span>
-            </div>
+            
             <h1 className="text-2xl sm:text-3xl font-semibold tracking-[-0.035em] text-[#1d1d1f]">
               Venue Analytics
             </h1>
-            <p className="mt-1 text-xs sm:text-sm text-[#6e6e73]">
-              {activePeriodMeta?.description} &bull; Cross-stall volume, order frequency, and settlement estimates.
-            </p>
+            
           </div>
 
           <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
             {/* Stall Focus Filter */}
-            <div className="inline-flex h-[44px] items-center gap-1.5 rounded-full bg-white px-3.5 border border-black/[0.06] shadow-xs text-xs">
+            <div className="inline-flex h-11 items-center gap-1.5 rounded-full bg-white px-3.5  shadow-xs text-xs">
               <Store className="w-3.5 h-3.5 text-[#6e6e73]" />
               <select
                 value={selectedBoothId}
@@ -179,7 +174,7 @@ function ShopOwnerAnalyticsContent() {
             </div>
 
             {/* Timeframe Segmented Switcher */}
-            <div className="inline-flex items-center rounded-full bg-white p-1 border border-black/[0.06] shadow-xs">
+            <div className="inline-flex items-center rounded-full bg-white p-1  shadow-xs">
               {periods.map((period) => {
                 const active = selectedPeriod === period.id;
                 return (
@@ -276,7 +271,7 @@ function ShopOwnerAnalyticsContent() {
 
         {/* Widescreen KPI Ribbon: 2 cols on mobile, 3 on md, 5 on lg/xl */}
         <section className="mt-5 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
-          <div className="rounded-[22px] bg-white p-4 sm:p-5 border border-black/[0.04] shadow-xs flex flex-col justify-between">
+          <div className="rounded-[22px] bg-white p-4 sm:p-5  shadow-xs flex flex-col justify-between">
             <div className="flex items-center justify-between text-[#86868b]">
               <span className="text-xs font-medium">Gross Revenue</span>
               <TrendingUp className="w-4 h-4 text-emerald-600" />
@@ -289,7 +284,7 @@ function ShopOwnerAnalyticsContent() {
             </div>
           </div>
 
-          <div className="rounded-[22px] bg-white p-4 sm:p-5 border border-black/[0.04] shadow-xs flex flex-col justify-between">
+          <div className="rounded-[22px] bg-white p-4 sm:p-5  shadow-xs flex flex-col justify-between">
             <div className="flex items-center justify-between text-[#86868b]">
               <span className="text-xs font-medium">Total Orders</span>
               <ShoppingBag className="w-4 h-4 text-[#111827]" />
@@ -302,7 +297,7 @@ function ShopOwnerAnalyticsContent() {
             </div>
           </div>
 
-          <div className="rounded-[22px] bg-white p-4 sm:p-5 border border-black/[0.04] shadow-xs flex flex-col justify-between">
+          <div className="rounded-[22px] bg-white p-4 sm:p-5  shadow-xs flex flex-col justify-between">
             <div className="flex items-center justify-between text-[#86868b]">
               <span className="text-xs font-medium">Average Ticket</span>
               <Receipt className="w-4 h-4 text-[#111827]" />
@@ -315,7 +310,7 @@ function ShopOwnerAnalyticsContent() {
             </div>
           </div>
 
-          <div className="rounded-[22px] bg-white p-4 sm:p-5 border border-black/[0.04] shadow-xs flex flex-col justify-between">
+          <div className="rounded-[22px] bg-white p-4 sm:p-5  shadow-xs flex flex-col justify-between">
             <div className="flex items-center justify-between text-[#86868b]">
               <span className="text-xs font-medium">Active Stalls</span>
               <Store className="w-4 h-4 text-[#111827]" />
@@ -328,7 +323,7 @@ function ShopOwnerAnalyticsContent() {
             </div>
           </div>
 
-          <div className="col-span-2 md:col-span-1 lg:col-span-1 rounded-[22px] bg-white p-4 sm:p-5 border border-black/[0.04] shadow-xs flex flex-col justify-between">
+          <div className="col-span-2 md:col-span-1 lg:col-span-1 rounded-[22px] bg-white p-4 sm:p-5  shadow-xs flex flex-col justify-between">
             <div className="flex items-center justify-between text-[#86868b]">
               <span className="text-xs font-medium">Stall Avg. Sales</span>
               <Coins className="w-4 h-4 text-emerald-600" />
@@ -346,19 +341,15 @@ function ShopOwnerAnalyticsContent() {
         <section className="mt-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Main Left Column (8 cols): Stall Leaderboard & Trading Breakdown */}
           <div className="lg:col-span-8 space-y-6">
-            <div className="rounded-[26px] bg-white p-5 sm:p-6 border border-black/[0.04] shadow-xs">
+            <div className="rounded-[26px] bg-white p-5 sm:p-6  shadow-xs">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-5">
                 <div>
                   <h2 className="text-lg sm:text-xl font-semibold tracking-tight text-[#1d1d1f]">
                     Stall Performance Leaderboard
                   </h2>
-                  <p className="text-xs text-[#6e6e73] mt-0.5">
-                    Individual stall sales, order volume, and venue revenue contribution.
-                  </p>
+                  
                 </div>
-                <span className="text-xs font-semibold text-[#86868b]">
-                  {booths.length} configured stalls
-                </span>
+                
               </div>
 
               {loading ? (
@@ -382,7 +373,7 @@ function ShopOwnerAnalyticsContent() {
                       const relativeWidth = maxRevenue > 0 ? (booth.periodRevenue / maxRevenue) * 100 : 0;
                       const stallAvgTicket =
                         booth.periodOrders > 0 ? booth.periodRevenue / booth.periodOrders : 0;
-                      const medalClass = rankMedalStyles[index] ?? 'bg-black/5 text-[#1d1d1f] border border-black/5';
+                      const medalClass = rankMedalStyles[index] ?? 'bg-black/5 text-[#1d1d1f] ';
                       const isSelected = booth.id === selectedBoothId;
 
                       return (
@@ -391,8 +382,8 @@ function ShopOwnerAnalyticsContent() {
                           onClick={() => setSelectedBoothId(isSelected ? '' : booth.id)}
                           className={`flex flex-col justify-between rounded-2xl cursor-pointer p-3.5 sm:p-4 transition-all ${
                             isSelected
-                              ? 'bg-white border-2 border-[#111827] shadow-md ring-2 ring-black/5'
-                              : 'bg-[#f5f5f7]/70 border border-black/[0.04] hover:bg-[#f5f5f7] hover:shadow-2xs'
+                              ? 'bg-white shadow-md ring-0'
+                              : 'bg-[#f5f5f7]/70  hover:bg-[#f5f5f7] hover:shadow-2xs'
                           }`}
                         >
                           <div>
@@ -467,7 +458,7 @@ function ShopOwnerAnalyticsContent() {
             </div>
 
             {/* Trading Velocity & Benchmarks */}
-            <div className="rounded-[26px] bg-white p-5 sm:p-6 border border-black/[0.04] shadow-xs">
+            <div className="rounded-[26px] bg-white p-5 sm:p-6  shadow-xs">
               <h2 className="text-base sm:text-lg font-semibold tracking-tight text-[#1d1d1f] mb-4">
                 Operational Insights & Velocity
               </h2>
@@ -508,7 +499,7 @@ function ShopOwnerAnalyticsContent() {
           {/* Right Column (4 cols): Market Share, Settlements & Fast Actions */}
           <div className="lg:col-span-4 space-y-6">
             {/* Visual Revenue Share Breakdown */}
-            <div className="rounded-[26px] bg-white p-5 sm:p-6 border border-black/[0.04] shadow-xs">
+            <div className="rounded-[26px] bg-white p-5 sm:p-6  shadow-xs">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-base sm:text-lg font-semibold tracking-tight text-[#1d1d1f]">
                   Revenue Share
@@ -564,7 +555,7 @@ function ShopOwnerAnalyticsContent() {
             </div>
 
             {/* Platform Economics & Disbursements Card */}
-            <div className="rounded-[26px] bg-white p-5 sm:p-6 border border-black/[0.04] shadow-xs">
+            <div className="rounded-[26px] bg-white p-5 sm:p-6  shadow-xs">
               <div className="flex items-center justify-between mb-2">
                 <h2 className="text-base sm:text-lg font-semibold tracking-tight text-[#1d1d1f]">
                   Disbursements & Fees
