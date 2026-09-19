@@ -17,7 +17,7 @@ export default function OrdersPage() {
   const { status, isGuest } = useAuth();
   const router = useRouter();
   const [customizingItem, setCustomizingItem] = useState<CartItem | null>(null);
-  const [checkoutState, setCheckoutState] = useState<'idle' | 'submitting' | 'success'>('idle');
+  const [checkoutState, setCheckoutState] = useState<'idle' | 'tng_redirect' | 'submitting' | 'success'>('idle');
   const [checkoutError, setCheckoutError] = useState('');
   const [placedReceipt, setPlacedReceipt] = useState<ReceiptData | null>(null);
 
@@ -63,6 +63,8 @@ export default function OrdersPage() {
       return;
     }
 
+    setCheckoutState('tng_redirect');
+    await new Promise((resolve) => setTimeout(resolve, 800)); // Simulate TNG deep link / redirect
     setCheckoutState('submitting');
     const { data: sessionData } = await supabase.auth.getSession();
     const headers: Record<string, string> = {
@@ -302,18 +304,16 @@ export default function OrdersPage() {
               <button
                 type="button"
                 onClick={() => void checkout()}
-                disabled={checkoutState === 'submitting' || checkoutState === 'success' || cartItems.length === 0}
+                disabled={checkoutState === 'submitting' || checkoutState === 'tng_redirect' || checkoutState === 'success' || cartItems.length === 0}
                 className="mt-6 flex h-11 w-full items-center justify-center rounded-full bg-white px-5 text-sm font-semibold text-black disabled:opacity-50 shadow-xs hover:bg-neutral-100 transition-colors"
               >
-                {checkoutState === 'submitting'
-                  ? 'Placing Order...'
-                  : checkoutState === 'success'
-                    ? 'Order Placed!'
-                    : (
-                      <span>
-                        Pay & Place Order • RM {summary.total.toFixed(2)}
-                      </span>
-                    )}
+                {checkoutState === 'tng_redirect' 
+                  ? 'Connecting to TNG...' 
+                  : checkoutState === 'submitting'
+                    ? 'Processing Payment...'
+                    : checkoutState === 'success'
+                      ? 'Paid!'
+                      : 'Pay'}
               </button>
 
               {checkoutError && (
