@@ -60,13 +60,7 @@ export default function OwnerProfilePage() {
   return (
     <main className="min-h-screen bg-[#f5f5f7] px-4 pb-32 pt-5 text-[#1d1d1f]">
       <div className="mx-auto max-w-[760px]">
-        <header className="flex items-center gap-3">
-          <div>
-            <h1 className="mt-1 text-3xl font-semibold tracking-[-0.06em]">Stall Profile</h1>
-          </div>
-        </header>
-
-        <section className="mt-6 rounded-[26px] bg-white p-5 shadow-xs">
+        <section className="rounded-[26px] bg-white p-5 shadow-xs">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#111827] text-lg font-semibold text-white">

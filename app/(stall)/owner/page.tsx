@@ -262,46 +262,20 @@ export default function StallOverviewPage() {
     <main className="min-h-screen bg-[#f5f5f7] px-4 pb-32 pt-5 sm:px-6 text-[#1d1d1f]">
       <div className="mx-auto w-full max-w-md sm:max-w-xl md:max-w-3xl lg:max-w-5xl">
         {/* Stall Header */}
-        <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div className="min-w-0">
-            <div className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/10  px-2.5 py-0.5 text-[11px] font-semibold text-amber-800 mb-1.5">
-              <Store className="h-3 w-3 shrink-0" />
-              <span className="truncate">{stallName}{venueName ? ` • ${venueName}` : ''}</span>
-            </div>
-            <h1 className="text-2xl sm:text-3xl font-semibold tracking-[-0.035em] text-[#1d1d1f] truncate">
-              Stall Overview
-            </h1>
-          </div>
-
-          <div className="flex items-center gap-2 shrink-0">
-            {roles.booths && roles.booths.length > 1 && (
-              <select
-                className="inline-flex h-9 items-center justify-center rounded-full border border-black/10 bg-white px-3 text-xs font-semibold text-[#1d1d1f] shadow-xs outline-none cursor-pointer"
-                aria-label="Select booth"
-              >
-                {roles.booths.map((b) => (
-                  <option key={b.id} value={b.id}>
-                    {b.name}
-                  </option>
-                ))}
-              </select>
-            )}
-            
-
-            <button
-              type="button"
-              onClick={() => void handleManualRefresh()}
-              disabled={isRefreshing || isLoading}
-              title="Refresh stall data"
-              aria-label="Refresh stall data"
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-[#1d1d1f] shadow-xs border border-black/5 hover:bg-black/[0.03] transition-all disabled:opacity-50 shrink-0"
+        {roles.booths && roles.booths.length > 1 && (
+          <div className="mb-4 flex justify-end">
+            <select
+              className="inline-flex h-9 items-center justify-center rounded-full bg-white px-3 text-xs font-semibold text-[#1d1d1f] shadow-xs outline-none cursor-pointer"
+              aria-label="Select booth"
             >
-              <RefreshCw
-                className={`h-4 w-4 ${isRefreshing ? 'animate-spin text-amber-600' : 'text-[#6e6e73]'}`}
-              />
-            </button>
+              {roles.booths.map((b) => (
+                <option key={b.id} value={b.id}>
+                  {b.name}
+                </option>
+              ))}
+            </select>
           </div>
-        </header>
+        )}
 
         {/* Master Inactive Alert (Venue Override) */}
         {isMasterInactive && (
@@ -446,6 +420,17 @@ export default function StallOverviewPage() {
       </div>
 
       
+    
+      <button
+        type="button"
+        onClick={() => void handleManualRefresh()}
+        disabled={isRefreshing || isLoading}
+        className="fixed bottom-24 sm:bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-white text-[#1d1d1f] shadow-lg hover:bg-neutral-50 transition-all disabled:opacity-50"
+        aria-label="Refresh stall data"
+        title="Refresh stall data"
+      >
+        <RefreshCw className={`h-6 w-6 ${isRefreshing ? 'animate-spin text-amber-600' : ''}`} />
+      </button>
     </main>
   );
 }

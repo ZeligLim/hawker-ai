@@ -111,31 +111,7 @@ export default function OwnerMenuPage() {
   return (
     <main className="min-h-screen bg-[#f5f5f7] px-4 pb-32 pt-5 text-[#1d1d1f] sm:px-6">
       <div className="mx-auto w-full max-w-md sm:max-w-xl md:max-w-3xl lg:max-w-5xl">
-        <header className="flex items-center justify-between gap-3">
-          <div className="min-w-0">
-            <h1 className="mt-1 text-2xl sm:text-3xl font-bold tracking-tight text-[#1d1d1f] truncate">Menu</h1>
-          </div>
-          <div className="flex items-center gap-2">
-            <Link
-              href={'/owner/menu/scan' as any}
-              className="inline-flex h-9 items-center justify-center gap-1.5 rounded-full border border-black/15 bg-white px-4 text-xs font-semibold text-[#1d1d1f] shadow-xs hover:bg-black/[0.04] transition-colors shrink-0"
-              aria-label="Scan menu"
-              title="Scan physical menu using AI"
-            >
-              <Camera className="h-4 w-4" />
-              <span className="hidden xs:inline">Scan</span>
-            </Link>
-            <Link
-              href={'/owner/menu/new' as any}
-              className="inline-flex h-9 items-center justify-center gap-1.5 rounded-full bg-[#111827] px-4 text-xs font-semibold text-white shadow-xs hover:bg-black transition-colors shrink-0"
-              aria-label="Add dish"
-              title="Add dish"
-            >
-              <Plus className="h-4 w-4" />
-              <span className="hidden xs:inline">Add dish</span>
-            </Link>
-          </div>
-        </header>
+        
 
         {error ? (
           <div className="mt-4 rounded-[18px] border border-[#fecaca] bg-[#fff1f2] p-4 text-xs sm:text-sm text-[#9f1239] truncate">
@@ -226,6 +202,25 @@ export default function OwnerMenuPage() {
             ))}
           </div>
         </section>
+      </div>
+    
+      <div className="fixed bottom-24 sm:bottom-6 right-6 z-40 flex flex-col gap-3">
+        <Link
+          href={'/owner/menu/scan' as any}
+          className="flex h-14 w-14 items-center justify-center rounded-full bg-white text-[#1d1d1f] shadow-lg hover:bg-neutral-50 transition-all"
+          aria-label="Scan menu"
+          title="Scan physical menu using AI"
+        >
+          <Camera className="h-6 w-6" />
+        </Link>
+        <Link
+          href={'/owner/menu/new' as any}
+          className="flex h-14 w-14 items-center justify-center rounded-full bg-[#111827] text-white shadow-lg hover:bg-black transition-all"
+          aria-label="Add dish"
+          title="Add dish"
+        >
+          <Plus className="h-6 w-6" />
+        </Link>
       </div>
     </main>
   );

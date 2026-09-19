@@ -232,22 +232,7 @@ export default function OwnerOrdersPage() {
   return (
     <main className="min-h-screen bg-[#f5f5f7] px-4 pb-32 pt-6 text-[#1d1d1f] sm:px-6">
       <div className="mx-auto w-full max-w-md sm:max-w-xl md:max-w-3xl lg:max-w-5xl">
-        <header className="flex items-center justify-between gap-3">
-          <div className="min-w-0">
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#1d1d1f] truncate">
-              Kitchen Tickets
-            </h1>
-          </div>
-          <button
-            type="button"
-            onClick={() => setRefreshTrigger((c) => c + 1)}
-            title="Refresh tickets"
-            aria-label="Refresh tickets"
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-white border border-black/10 text-[#1d1d1f] hover:bg-black/5 shadow-xs transition-colors shrink-0"
-          >
-            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin text-amber-600' : 'text-[#6e6e73]'}`} />
-          </button>
-        </header>
+        
 
         {/* Filter Tabs */}
         <div className="mt-5 grid grid-cols-2 rounded-[20px] bg-white p-1 shadow-[0_12px_26px_rgba(15,23,42,0.04)] border border-black/[0.04]">
@@ -450,6 +435,16 @@ export default function OwnerOrdersPage() {
         )}
       </section>
       </div>
+    
+      <button
+        type="button"
+        onClick={() => setRefreshTrigger((c) => c + 1)}
+        className="fixed bottom-24 sm:bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-white text-[#1d1d1f] shadow-lg hover:bg-neutral-50 transition-all disabled:opacity-50"
+        aria-label="Refresh tickets"
+        title="Refresh tickets"
+      >
+        <RefreshCw className={`w-6 h-6 ${loading ? 'animate-spin text-amber-600' : ''}`} />
+      </button>
     </main>
   );
 }
