@@ -218,7 +218,7 @@ function OperatingScheduleDialogContent({
           </div>
 
           {/* Footer Actions */}
-          <div className="flex items-center justify-end gap-2.5 px-6 py-4 bg-[#f5f5f7] border-t border-black/[0.04] sticky bottom-0">
+          <div className="flex items-center justify-start gap-2.5 px-6 py-4 bg-[#f5f5f7] border-t border-black/[0.04] sticky bottom-0">
             <SaveCancelButtons
               type="submit"
               isSaving={isSaving}
