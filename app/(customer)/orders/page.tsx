@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import { Settings2 } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { init as initAirwallex, createElement as createAirwallexElement } from '@airwallex/components-sdk';
 import { useRouter } from 'next/navigation';
 import { CustomizationCard } from '@/components/customization-card';
 import { useAuth } from '@/components/auth-provider';
@@ -17,7 +18,8 @@ export default function OrdersPage() {
   const { status, isGuest } = useAuth();
   const router = useRouter();
   const [customizingItem, setCustomizingItem] = useState<CartItem | null>(null);
-  const [checkoutState, setCheckoutState] = useState<'idle' | 'tng_redirect' | 'submitting' | 'success'>('idle');
+  const [checkoutState, setCheckoutState] = useState<'idle' | 'generating_intent' | 'airwallex_ready' | 'tng_redirect' | 'submitting' | 'success'>('idle');
+  const [airwallexElement, setAirwallexElement] = useState<any>(null);
   const [checkoutError, setCheckoutError] = useState('');
   const [placedReceipt, setPlacedReceipt] = useState<ReceiptData | null>(null);
 
@@ -54,18 +56,77 @@ export default function OrdersPage() {
 
   const checkout = async () => {
     setCheckoutError('');
-    if (!supabase) {
-      setCheckoutError('Supabase is not configured.');
-      return;
-    }
     if (cartItems.length === 0) {
       setCheckoutError('Add at least one dish before checking out.');
       return;
     }
 
-    setCheckoutState('tng_redirect');
-    await new Promise((resolve) => setTimeout(resolve, 800)); // Simulate TNG deep link / redirect
+    setCheckoutState('generating_intent');
+    
+    try {
+      const res = await fetch('/api/payment-intent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: summary.total,
+          currency: 'MYR',
+        })
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.id || !data.client_secret) {
+        throw new Error(data.error || 'Failed to initialize payment');
+      }
+
+      await initAirwallex({
+        env: 'demo',
+        enabledElements: ['payments']
+      });
+
+      const element = await createAirwallexElement('dropIn', {
+        intent_id: data.id,
+        client_secret: data.client_secret,
+        currency: 'MYR'
+      });
+
+      setAirwallexElement(element);
+      setCheckoutState('airwallex_ready');
+    } catch (err: any) {
+      console.error(err);
+      setCheckoutError(err.message || 'Payment service unavailable');
+      setCheckoutState('idle');
+    }
+  };
+
+  useEffect(() => {
+    if (checkoutState === 'airwallex_ready' && airwallexElement) {
+      const timer = setTimeout(() => {
+        const container = document.getElementById('airwallex-drop-in-container');
+        if (container) {
+          airwallexElement.mount('airwallex-drop-in-container');
+          
+          airwallexElement.on('success', async (event: any) => {
+            console.log('Payment successful', event);
+            await submitFinalOrder(event?.detail?.paymentIntentId || `pi_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`);
+          });
+
+          airwallexElement.on('error', (event: any) => {
+            console.error('Payment error', event);
+            setCheckoutError('Payment failed. Please try again.');
+          });
+        }
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [checkoutState, airwallexElement]);
+
+  const submitFinalOrder = async (paymentIntentId: string) => {
     setCheckoutState('submitting');
+    if (!supabase) {
+      setCheckoutError('Supabase is not configured.');
+      setCheckoutState('idle');
+      return;
+    }
     const { data: sessionData } = await supabase.auth.getSession();
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
@@ -73,8 +134,6 @@ export default function OrdersPage() {
     if (sessionData.session) {
       headers['Authorization'] = `Bearer ${sessionData.session.access_token}`;
     }
-
-    const paymentIntentId = `pi_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
 
     const response = await fetch('/api/orders', {
       method: 'POST',
@@ -301,20 +360,27 @@ export default function OrdersPage() {
                 </div>
               )}
 
-              <button
-                type="button"
-                onClick={() => void checkout()}
-                disabled={checkoutState === 'submitting' || checkoutState === 'tng_redirect' || checkoutState === 'success' || cartItems.length === 0}
-                className="mt-6 flex h-11 w-full items-center justify-center rounded-full bg-white px-5 text-sm font-semibold text-black disabled:opacity-50 shadow-xs hover:bg-neutral-100 transition-colors"
-              >
-                {checkoutState === 'tng_redirect' 
-                  ? 'Connecting to TNG...' 
-                  : checkoutState === 'submitting'
-                    ? 'Processing Payment...'
-                    : checkoutState === 'success'
-                      ? 'Paid!'
-                      : 'Pay'}
-              </button>
+              {checkoutState === 'airwallex_ready' ? (
+                <div className="mt-6 p-4 rounded-[24px] bg-white shadow-xs">
+                  <h3 className="text-sm font-semibold text-[#1d1d1f] mb-4 text-center">Complete Payment</h3>
+                  <div id="airwallex-drop-in-container" className="min-h-[300px] w-full" />
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => void checkout()}
+                  disabled={checkoutState === 'generating_intent' || checkoutState === 'submitting' || checkoutState === 'success' || cartItems.length === 0}
+                  className="mt-6 flex h-11 w-full items-center justify-center rounded-full bg-white px-5 text-sm font-semibold text-black disabled:opacity-50 shadow-xs hover:bg-neutral-100 transition-colors"
+                >
+                  {checkoutState === 'generating_intent' 
+                    ? 'Secure Checkout...' 
+                    : checkoutState === 'submitting'
+                      ? 'Processing Order...'
+                      : checkoutState === 'success'
+                        ? 'Paid!'
+                        : 'Pay'}
+                </button>
+              )}
 
               {checkoutError && (
                 <p className="mt-3 text-center text-xs text-rose-300 bg-rose-950/60 p-2.5 rounded-xl font-medium">
