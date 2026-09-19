@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ImagePlus, LoaderCircle, Plus, Trash2 } from 'lucide-react';
+import { ArrowLeft, ImagePlus, LoaderCircle, Plus, Trash2 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase/client';
@@ -168,6 +168,13 @@ export default function OwnerDishEditorPage() {
     <main className="min-h-screen bg-[#f5f5f7] px-4 pb-32 pt-5 text-[#1d1d1f]">
       <div className="mx-auto max-w-[620px]">
         <header className="flex items-center gap-3">
+          <Link
+            href="/owner/menu"
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-[#1d1d1f] hover:bg-neutral-100 transition-colors shadow-xs"
+            aria-label="Back to menu"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </Link>
           <div><h1 className="text-3xl font-semibold tracking-[-0.06em]">{isNew ? 'Add dish' : 'Edit dish'}</h1></div>
         </header>
         <form onSubmit={save} className="mt-6 space-y-4">
