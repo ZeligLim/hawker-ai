@@ -243,15 +243,7 @@ function CustomerStallContent() {
               </button>
             </div>
           </div>
-        ) : (
-          <Link
-            href={`/scan${centreSlugForScan ? `?centre=${encodeURIComponent(centreSlugForScan)}` : ''}` as any}
-            className="mb-4 flex h-11 w-full items-center justify-center gap-2 rounded-full bg-black text-white hover:bg-neutral-800 transition-colors shadow-xs"
-          >
-            <QrCode className="h-4 w-4" />
-            <span className="text-sm font-semibold">Scan table QR to order</span>
-          </Link>
-        )}
+        ) : null}
 
         {/* Header & Centre Title */}
         <div className="mb-5">
@@ -411,6 +403,18 @@ function CustomerStallContent() {
             </div>
           </Link>
         </div>
+      )}
+    
+      {/* Floating Scan QR Button */}
+      {!tableSession?.tableNumber && (
+        <Link
+          href={`/scan${centreSlugForScan ? `?centre=${encodeURIComponent(centreSlugForScan)}` : ''}` as any}
+          className={`fixed right-4 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-black text-white shadow-lg hover:bg-neutral-800 transition-all ${totalCartCount > 0 ? 'bottom-36' : 'bottom-20'}`}
+          aria-label="Scan table QR"
+          title="Scan table QR"
+        >
+          <QrCode className="h-6 w-6" />
+        </Link>
       )}
     </main>
   );
