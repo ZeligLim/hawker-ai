@@ -335,14 +335,7 @@ export default function ShopOwnerDashboard() {
                                     >
                                       {hasMember ? 'Claimed' : 'Available'}
                                     </span>
-                                    <Link
-                                      href={`/shop-owner/analytics?boothId=${booth.id}`}
-                                      className="flex h-8 w-8 items-center justify-center rounded-xl border border-black/10 bg-[#f5f5f7] text-[#1d1d1f] hover:bg-black/5 transition-all shrink-0 shadow-xs"
-                                      title={`View analytics for ${booth.name}`}
-                                      aria-label={`View analytics for ${booth.name}`}
-                                    >
-                                      <BarChart3 className="w-4 h-4 text-[#111827]" />
-                                    </Link>
+                                    
                                   </div>
                                 </div>
                               );
@@ -386,23 +379,7 @@ export default function ShopOwnerDashboard() {
                   <ChevronRight className="w-4 h-4 text-[#86868b] group-hover:translate-x-0.5 transition-transform shrink-0" />
                 </Link>
 
-                <Link
-                  href={'/shop-owner/analytics' as any}
-                  className="group flex items-center justify-between rounded-2xl bg-[#f5f5f7] p-3.5 hover:bg-black/5 transition-all border border-black/[0.02]"
-                >
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-8 h-8 rounded-xl bg-[#111827] text-white flex items-center justify-center shadow-xs shrink-0">
-                      <CalendarRange className="w-4 h-4" />
-                    </div>
-                    <div className="min-w-0">
-                      <p className="text-xs font-semibold text-[#1d1d1f] group-hover:text-black truncate">
-                        Venue Analytics
-                      </p>
-                      <p className="text-[11px] text-[#86868b] truncate">Sales volume & ticket metrics</p>
-                    </div>
-                  </div>
-                  <ChevronRight className="w-4 h-4 text-[#86868b] group-hover:translate-x-0.5 transition-transform shrink-0" />
-                </Link>
+                
 
                 <Link
                   href={'/shop-owner/profile' as any}

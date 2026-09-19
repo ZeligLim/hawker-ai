@@ -36,7 +36,7 @@ export function KpiRibbon({
           <p className="text-xl sm:text-2xl lg:text-3xl font-semibold tracking-tight text-[#1d1d1f]">
             {totalOrders.toLocaleString()}
           </p>
-          <p className="mt-0.5 text-[11px] text-[#86868b]">Completed kitchen tickets</p>
+          
         </div>
       </div>
 
@@ -49,7 +49,7 @@ export function KpiRibbon({
           <p className="text-xl sm:text-2xl lg:text-3xl font-semibold tracking-tight text-[#1d1d1f]">
             RM {averageTicket.toFixed(2)}
           </p>
-          <p className="mt-0.5 text-[11px] text-[#86868b]">Spend per order</p>
+          
         </div>
       </div>
 
@@ -62,7 +62,7 @@ export function KpiRibbon({
           <p className="text-xl sm:text-2xl lg:text-3xl font-semibold tracking-tight text-[#1d1d1f]">
             {activeBoothCount}
           </p>
-          <p className="mt-0.5 text-[11px] text-[#86868b]">Trading in period</p>
+          
         </div>
       </div>
 
@@ -75,7 +75,7 @@ export function KpiRibbon({
           <p className="text-xl sm:text-2xl lg:text-3xl font-semibold tracking-tight text-[#1d1d1f]">
             RM {averageStallRevenue.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
           </p>
-          <p className="mt-0.5 text-[11px] text-[#86868b]">Per active stall</p>
+          
         </div>
       </div>
     </section>

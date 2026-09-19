@@ -27,13 +27,7 @@ export function StallLeaderboard({
 
   return (
     <div className="rounded-[26px] bg-white p-5 sm:p-6 shadow-xs">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-5">
-        <div>
-          <h2 className="text-lg sm:text-xl font-semibold tracking-tight text-[#1d1d1f]">
-            Stall Performance Leaderboard
-          </h2>
-        </div>
-      </div>
+      
 
       {loading ? (
         <div className="flex items-center justify-center p-12 text-xs text-[#86868b]">

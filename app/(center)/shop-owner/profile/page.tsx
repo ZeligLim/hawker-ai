@@ -1,6 +1,8 @@
 'use client';
 
-import { LogOut, Save, Check } from 'lucide-react';
+import { LogOut, Save, Check, Clock, ShieldAlert } from 'lucide-react';
+import { OperatingScheduleModal } from '@/components/operating-schedule-modal';
+import type { OperatingSchedule } from '@/lib/schedule/operating-hours';
 import { useCallback, useEffect, useState } from 'react';
 import { RoleModeSwitcher } from '@/components/role-mode-switcher';
 import { useAuth } from '@/components/auth-provider';
@@ -13,6 +15,8 @@ type Shop = {
   address: string | null;
   role: string;
   booths: Array<{ id: string; name: string }>;
+  isActive?: boolean;
+  schedule?: OperatingSchedule;
 };
 
 export default function ShopOwnerProfilePage() {
@@ -30,6 +34,45 @@ export default function ShopOwnerProfilePage() {
     slug: '',
   });
   const [createForm, setCreateForm] = useState({ name: '', address: '' });
+
+  const [scheduleModal, setScheduleModal] = useState<{
+    isOpen: boolean;
+    targetType: 'shop' | 'booth';
+    targetId: string;
+    title: string;
+    description: string;
+    initialSchedule?: any;
+  }>({ isOpen: false, targetType: 'shop', targetId: '', title: '', description: '' });
+
+
+
+  const handleToggleShopActive = async () => {
+    if (!shop) return;
+    const nextActive = shop.isActive !== false ? false : true;
+    setShop({ ...shop, isActive: nextActive });
+    try {
+      const res = await authenticatedFetch(`/api/owner/shops/${shop.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ is_active: nextActive }),
+      });
+      if (!res.ok) throw new Error('Failed to update shop status');
+    } catch (err) {
+      alert('Failed to update status');
+      setShop({ ...shop, isActive: !nextActive });
+    }
+  };
+
+  const handleSaveSchedule = async (schedule: any) => {
+    if (!shop) return;
+    const res = await authenticatedFetch(`/api/owner/shops/${shop.id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ schedule }),
+    });
+    if (!res.ok) throw new Error('Failed to save schedule');
+    await loadShop();
+  };
 
   const loadShop = useCallback(async () => {
     try {
@@ -233,6 +276,42 @@ export default function ShopOwnerProfilePage() {
         </section>
 
 
+
+        <section className="mt-6 rounded-[26px] bg-white p-5 sm:p-6 shadow-xs">
+          <h3 className="text-sm font-semibold text-[#1d1d1f] mb-3">Venue Operations</h3>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <button
+              type="button"
+              onClick={() =>
+                setScheduleModal({
+                  isOpen: true,
+                  targetType: 'shop',
+                  targetId: shop.id,
+                  title: `${shop.name} Operating Hours`,
+                  description: '',
+                  initialSchedule: shop.schedule,
+                })
+              }
+              className="inline-flex h-11 items-center justify-center gap-1.5 rounded-full bg-[#f5f5f7] px-4 text-xs font-semibold text-[#1d1d1f] hover:bg-neutral-200 transition-colors shadow-xs"
+            >
+              <Clock className="h-4 w-4 text-blue-600" />
+              Venue Hours
+            </button>
+            <button
+              type="button"
+              onClick={handleToggleShopActive}
+              className={`inline-flex h-11 items-center justify-center gap-1.5 rounded-full px-4 text-xs font-semibold transition-colors shadow-xs ${
+                shop.isActive !== false
+                  ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
+                  : 'bg-[#f5f5f7] text-[#6e6e73] hover:bg-neutral-200'
+              }`}
+            >
+              <ShieldAlert className="h-4 w-4" />
+              {shop.isActive !== false ? 'Put Inactive' : 'Activate Venue'}
+            </button>
+          </div>
+        </section>
+
         <div className="mt-6">
           <RoleModeSwitcher currentMode="shop_owner" />
         </div>
@@ -255,6 +334,19 @@ export default function ShopOwnerProfilePage() {
             </div>
           </div>
         ) : null}
+
+        <OperatingScheduleModal
+          isOpen={scheduleModal.isOpen}
+          onClose={() => setScheduleModal((prev) => ({ ...prev, isOpen: false }))}
+          title={scheduleModal.title}
+          description={scheduleModal.description}
+          initialSchedule={scheduleModal.initialSchedule}
+          onSave={async (schedule: OperatingSchedule) => {
+            await handleSaveSchedule(schedule);
+            setScheduleModal((prev) => ({ ...prev, isOpen: false }));
+          }}
+        />
+
       </div>
     </main>
   );

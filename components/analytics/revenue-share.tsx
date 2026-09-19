@@ -19,12 +19,7 @@ export function RevenueShare({
 }) {
   return (
     <div className="rounded-[26px] bg-white p-5 sm:p-6 shadow-xs">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-base sm:text-lg font-semibold tracking-tight text-[#1d1d1f]">
-          Revenue Share
-        </h2>
-        <PieChart className="w-4 h-4 text-[#86868b]" />
-      </div>
+      
 
       {totalRevenue === 0 ? (
         <p className="text-xs text-[#86868b] italic py-2">
