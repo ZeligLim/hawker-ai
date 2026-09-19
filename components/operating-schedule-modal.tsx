@@ -125,9 +125,7 @@ function OperatingScheduleDialogContent({
                 <p className="text-sm font-semibold text-[#1d1d1f]">
                   Automated Operating Hours
                 </p>
-                <p className="text-xs text-[#6e6e73]">
-                  {enabled ? 'Status switches automatically based on configured hours.' : ''}
-                </p>
+
               </div>
               <label className="relative inline-flex items-center cursor-pointer">
                 <input
