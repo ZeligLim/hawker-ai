@@ -1,5 +1,10 @@
 'use client';
 
+import { FocusedStallBanner } from '@/components/analytics/focused-stall-banner';
+import { KpiRibbon } from '@/components/analytics/kpi-ribbon';
+import { StallLeaderboard } from '@/components/analytics/stall-leaderboard';
+import { RevenueShare } from '@/components/analytics/revenue-share';
+import { OperationalInsights } from '@/components/analytics/operational-insights';
 import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
@@ -138,9 +143,7 @@ function ShopOwnerAnalyticsContent() {
         <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2">
           <div>
             
-            <h1 className="text-2xl sm:text-3xl font-semibold tracking-[-0.035em] text-[#1d1d1f]">
-              Venue Analytics
-            </h1>
+            
             
           </div>
 
@@ -197,404 +200,49 @@ function ShopOwnerAnalyticsContent() {
           </div>
         </header>
 
-        {/* Focused Stall Banner */}
-        {selectedBooth && (
-          <div className="mt-4 rounded-[24px] bg-[#111827] text-white p-5 sm:p-6 shadow-sm border border-black/10">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-              <div className="flex items-center gap-3">
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/10 text-white shrink-0">
-                  <Store className="h-6 w-6" />
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h2 className="text-lg sm:text-xl font-bold tracking-tight text-white">{selectedBooth.name}</h2>
-                    <span className="rounded-full bg-white/15 px-2.5 py-0.5 text-[11px] font-semibold text-white">
-                      Rank #{selectedBoothIndex + 1} of {booths.length}
-                    </span>
-                  </div>
-                  <p className="text-xs text-white/70 mt-0.5">
-                    Individual booth metrics for {activePeriodMeta?.description.toLowerCase()}
-                  </p>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => setSelectedBoothId('')}
-                className="inline-flex items-center gap-1.5 rounded-full bg-white/10 hover:bg-white/20 px-3.5 py-1.5 text-xs font-semibold text-white transition-all self-start sm:self-auto cursor-pointer"
-              >
-                <X className="h-3.5 w-3.5" />
-                <span>Show All Stalls</span>
-              </button>
-            </div>
+        
+        <FocusedStallBanner
+          selectedBooth={selectedBooth}
+          selectedBoothIndex={selectedBoothIndex}
+          totalBooths={booths.length}
+          activePeriodDescription={activePeriodMeta?.description ?? ''}
+          totalRevenue={totalRevenue}
+          totalOrders={totalOrders}
+          onClear={() => setSelectedBoothId('')}
+        />
 
-            <div className="mt-5 grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-white/10">
-              <div className="rounded-xl bg-white/5 p-3.5">
-                <p className="text-[11px] text-white/60">Stall Sales</p>
-                <p className="text-xl sm:text-2xl font-bold text-white mt-1">
-                  RM {selectedBooth.periodRevenue.toFixed(2)}
-                </p>
-                <p className="text-[10px] text-white/50 mt-0.5">
-                  {totalRevenue > 0 ? ((selectedBooth.periodRevenue / totalRevenue) * 100).toFixed(1) : 0}% of venue total
-                </p>
-              </div>
-
-              <div className="rounded-xl bg-white/5 p-3.5">
-                <p className="text-[11px] text-white/60">Orders Fulfilled</p>
-                <p className="text-xl sm:text-2xl font-bold text-white mt-1">
-                  {selectedBooth.periodOrders.toLocaleString()}
-                </p>
-                <p className="text-[10px] text-white/50 mt-0.5">
-                  {totalOrders > 0 ? ((selectedBooth.periodOrders / totalOrders) * 100).toFixed(1) : 0}% of venue orders
-                </p>
-              </div>
-
-              <div className="rounded-xl bg-white/5 p-3.5">
-                <p className="text-[11px] text-white/60">Average Ticket</p>
-                <p className="text-xl sm:text-2xl font-bold text-white mt-1">
-                  RM {selectedBooth.periodOrders > 0 ? (selectedBooth.periodRevenue / selectedBooth.periodOrders).toFixed(2) : '0.00'}
-                </p>
-                <p className="text-[10px] text-white/50 mt-0.5">Spend per order</p>
-              </div>
-
-              <div className="rounded-xl bg-white/5 p-3.5">
-                <p className="text-[11px] text-white/60">Operational Status</p>
-                <p className="text-xl sm:text-2xl font-bold text-emerald-400 mt-1">
-                  {selectedBooth.periodOrders > 0 ? 'Active' : 'Idle'}
-                </p>
-                <p className="text-[10px] text-white/50 mt-0.5">
-                  {selectedBooth.periodOrders > 0 ? 'Processing orders' : 'No orders in period'}
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Widescreen KPI Ribbon: 2 cols on mobile, 3 on md, 5 on lg/xl */}
-        <section className="mt-5 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
-          <div className="rounded-[22px] bg-white p-4 sm:p-5  shadow-xs flex flex-col justify-between">
-            <div className="flex items-center justify-between text-[#86868b]">
-              <span className="text-xs font-medium">Gross Revenue</span>
-              <TrendingUp className="w-4 h-4 text-emerald-600" />
-            </div>
-            <div className="mt-3">
-              <p className="text-xl sm:text-2xl lg:text-3xl font-semibold tracking-tight text-[#1d1d1f]">
-                RM {totalRevenue.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
-              </p>
-              <p className="mt-0.5 text-[11px] text-[#86868b]">Non-cancelled orders</p>
-            </div>
-          </div>
-
-          <div className="rounded-[22px] bg-white p-4 sm:p-5  shadow-xs flex flex-col justify-between">
-            <div className="flex items-center justify-between text-[#86868b]">
-              <span className="text-xs font-medium">Total Orders</span>
-              <ShoppingBag className="w-4 h-4 text-[#111827]" />
-            </div>
-            <div className="mt-3">
-              <p className="text-xl sm:text-2xl lg:text-3xl font-semibold tracking-tight text-[#1d1d1f]">
-                {totalOrders.toLocaleString()}
-              </p>
-              <p className="mt-0.5 text-[11px] text-[#86868b]">Completed kitchen tickets</p>
-            </div>
-          </div>
-
-          <div className="rounded-[22px] bg-white p-4 sm:p-5  shadow-xs flex flex-col justify-between">
-            <div className="flex items-center justify-between text-[#86868b]">
-              <span className="text-xs font-medium">Average Ticket</span>
-              <Receipt className="w-4 h-4 text-[#111827]" />
-            </div>
-            <div className="mt-3">
-              <p className="text-xl sm:text-2xl lg:text-3xl font-semibold tracking-tight text-[#1d1d1f]">
-                RM {averageTicket.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-              </p>
-              <p className="mt-0.5 text-[11px] text-[#86868b]">Average spend per customer</p>
-            </div>
-          </div>
-
-          <div className="rounded-[22px] bg-white p-4 sm:p-5  shadow-xs flex flex-col justify-between">
-            <div className="flex items-center justify-between text-[#86868b]">
-              <span className="text-xs font-medium">Active Stalls</span>
-              <Store className="w-4 h-4 text-[#111827]" />
-            </div>
-            <div className="mt-3">
-              <p className="text-xl sm:text-2xl lg:text-3xl font-semibold tracking-tight text-[#1d1d1f]">
-                {activeBoothCount} <span className="text-xs font-normal text-[#86868b]">/ {totalBooths}</span>
-              </p>
-              <p className="mt-0.5 text-[11px] text-[#86868b]">Operating with orders</p>
-            </div>
-          </div>
-
-          <div className="col-span-2 md:col-span-1 lg:col-span-1 rounded-[22px] bg-white p-4 sm:p-5  shadow-xs flex flex-col justify-between">
-            <div className="flex items-center justify-between text-[#86868b]">
-              <span className="text-xs font-medium">Stall Avg. Sales</span>
-              <Coins className="w-4 h-4 text-emerald-600" />
-            </div>
-            <div className="mt-3">
-              <p className="text-xl sm:text-2xl lg:text-3xl font-semibold tracking-tight text-[#1d1d1f]">
-                RM {averageBoothRevenue.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
-              </p>
-              <p className="mt-0.5 text-[11px] text-[#86868b]">Per provisioned stall</p>
-            </div>
-          </div>
-        </section>
-
-        {/* Widescreen Multi-Column Content Area */}
-        <section className="mt-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* Main Left Column (8 cols): Stall Leaderboard & Trading Breakdown */}
+        <KpiRibbon
+          totalRevenue={totalRevenue}
+          totalOrders={totalOrders}
+          averageTicket={averageTicket}
+          activeBoothCount={activeBoothCount}
+          averageStallRevenue={averageBoothRevenue}
+        />
+<section className="mt-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+          
+          {/* Main Left Column */}
           <div className="lg:col-span-8 space-y-6">
-            <div className="rounded-[26px] bg-white p-5 sm:p-6  shadow-xs">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-5">
-                <div>
-                  <h2 className="text-lg sm:text-xl font-semibold tracking-tight text-[#1d1d1f]">
-                    Stall Performance Leaderboard
-                  </h2>
-                  
-                </div>
-                
-              </div>
-
-              {loading ? (
-                <div className="flex items-center justify-center p-12 text-xs text-[#86868b]">
-                  <LoaderCircle className="w-4 h-4 animate-spin mr-2 text-[#111827]" />
-                  Loading performance data…
-                </div>
-              ) : booths.length === 0 ? (
-                <div className="rounded-2xl bg-[#f5f5f7] p-8 text-center text-xs text-[#6e6e73]">
-                  <Store className="w-8 h-8 text-[#86868b] mx-auto mb-2 opacity-50" />
-                  <p className="font-semibold text-sm text-[#1d1d1f]">No booth orders yet</p>
-                  <p className="mt-1">
-                    When customers place orders at your food hall stalls, live analytics will appear here.
-                  </p>
-                </div>
-              ) : (
-                <>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
-                    {displayedBooths.map((booth, index) => {
-                      const sharePct = totalRevenue > 0 ? (booth.periodRevenue / totalRevenue) * 100 : 0;
-                      const relativeWidth = maxRevenue > 0 ? (booth.periodRevenue / maxRevenue) * 100 : 0;
-                      const stallAvgTicket =
-                        booth.periodOrders > 0 ? booth.periodRevenue / booth.periodOrders : 0;
-                      const medalClass = rankMedalStyles[index] ?? 'bg-black/5 text-[#1d1d1f] ';
-                      const isSelected = booth.id === selectedBoothId;
-
-                      return (
-                        <div
-                          key={booth.id || booth.name}
-                          onClick={() => setSelectedBoothId(isSelected ? '' : booth.id)}
-                          className={`flex flex-col justify-between rounded-2xl cursor-pointer p-3.5 sm:p-4 transition-all ${
-                            isSelected
-                              ? 'bg-white shadow-md ring-0'
-                              : 'bg-[#f5f5f7]/70  hover:bg-[#f5f5f7] hover:shadow-2xs'
-                          }`}
-                        >
-                          <div>
-                            <div className="flex items-start justify-between gap-2">
-                              <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                                <span
-                                  className={`flex h-6 w-6 sm:h-7 sm:w-7 items-center justify-center rounded-xl text-xs font-bold shrink-0 ${medalClass}`}
-                                >
-                                  {index === 0 ? '1' : index === 1 ? '2' : index === 2 ? '3' : index + 1}
-                                </span>
-                                <div className="min-w-0 flex-1">
-                                  <p className="text-xs sm:text-sm font-semibold text-[#1d1d1f] truncate flex items-center gap-1.5" title={booth.name}>
-                                    <span>{booth.name}</span>
-                                    {isSelected && (
-                                      <span className="text-[9px] bg-[#111827] text-white px-1.5 py-0.5 rounded-full font-bold">
-                                        Selected
-                                      </span>
-                                    )}
-                                  </p>
-                                  <p className="text-[10px] sm:text-[11px] text-[#6e6e73] truncate">
-                                    {booth.periodOrders.toLocaleString()} orders &bull; Avg. RM{' '}
-                                    {stallAvgTicket.toFixed(2)}
-                                  </p>
-                                </div>
-                              </div>
-
-                              <span className="rounded-full bg-black/5 px-2 py-0.5 text-[10px] font-semibold text-[#1d1d1f] shrink-0">
-                                {sharePct.toFixed(1)}%
-                              </span>
-                            </div>
-
-                            <div className="mt-3 flex items-baseline justify-between border-t border-black/[0.03] pt-2">
-                              <span className="text-[10px] sm:text-[11px] font-medium text-[#86868b]">Period Revenue</span>
-                              <span className="text-sm sm:text-base font-semibold text-[#1d1d1f]">
-                                RM {booth.periodRevenue.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
-                              </span>
-                            </div>
-                          </div>
-
-                          {/* Relative Volume Progress Bar */}
-                          <div className="mt-3 h-1.5 sm:h-2 w-full overflow-hidden rounded-full bg-black/5">
-                            <div
-                              className={`h-full rounded-full transition-all duration-500 ${
-                                index === 0
-                                  ? 'bg-[#111827]'
-                                  : index === 1
-                                  ? 'bg-emerald-600'
-                                  : 'bg-[#6e6e73]'
-                              }`}
-                              style={{ width: `${Math.max(relativeWidth, 2)}%` }}
-                            />
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-
-                  {booths.length > 6 && (
-                    <div className="mt-4 flex justify-center">
-                      <button
-                        type="button"
-                        onClick={() => setShowAllBooths((prev) => !prev)}
-                        className="inline-flex items-center gap-1.5 rounded-full bg-black/5 hover:bg-black/10 px-4 py-2 text-xs font-semibold text-[#1d1d1f] transition-all"
-                      >
-                        {showAllBooths ? 'Collapse to Top 6 (2-3 Rows)' : `View All ${booths.length} Stalls`}
-                        <ChevronRight className={`w-3.5 h-3.5 transition-transform ${showAllBooths ? '-rotate-90' : 'rotate-90'}`} />
-                      </button>
-                    </div>
-                  )}
-                </>
-              )}
-            </div>
-
-            {/* Trading Velocity & Benchmarks */}
-            <div className="rounded-[26px] bg-white p-5 sm:p-6  shadow-xs">
-              <h2 className="text-base sm:text-lg font-semibold tracking-tight text-[#1d1d1f] mb-4">
-                Operational Insights & Velocity
-              </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div className="rounded-2xl bg-[#f5f5f7] p-3.5 border border-black/[0.02]">
-                  <p className="text-xs font-semibold text-[#86868b]">Top earner</p>
-                  <p className="mt-1 text-sm font-semibold text-[#1d1d1f] truncate">
-                    {topBooth?.name ?? '—'}
-                  </p>
-                  <p className="text-[11px] text-emerald-600 font-medium mt-0.5">
-                    {topBooth && totalRevenue > 0
-                      ? `${((topBooth.periodRevenue / totalRevenue) * 100).toFixed(1)}% venue volume`
-                      : 'No trading activity'}
-                  </p>
-                </div>
-
-                <div className="rounded-2xl bg-[#f5f5f7] p-3.5 border border-black/[0.02]">
-                  <p className="text-xs font-semibold text-[#86868b]">Occupancy rate</p>
-                  <p className="mt-1 text-sm font-semibold text-[#1d1d1f]">
-                    {totalBooths > 0 ? `${((activeBoothCount / totalBooths) * 100).toFixed(0)}%` : '0%'}
-                  </p>
-                  <p className="text-[11px] text-[#6e6e73] mt-0.5">
-                    {activeBoothCount} of {totalBooths} stalls active
-                  </p>
-                </div>
-
-                <div className="rounded-2xl bg-[#f5f5f7] p-3.5 border border-black/[0.02]">
-                  <p className="text-xs font-semibold text-[#86868b]">Average stall velocity</p>
-                  <p className="mt-1 text-sm font-semibold text-[#1d1d1f]">
-                    {activeBoothCount > 0 ? (totalOrders / activeBoothCount).toFixed(1) : 0} orders
-                  </p>
-                  <p className="text-[11px] text-[#6e6e73] mt-0.5">Per active stall</p>
-                </div>
-              </div>
-            </div>
+            <StallLeaderboard
+              booths={booths}
+              loading={loading}
+              selectedBoothId={selectedBoothId}
+              setSelectedBoothId={setSelectedBoothId}
+              totalRevenue={totalRevenue}
+            />
+            <OperationalInsights
+              topBooth={topBooth}
+              totalRevenue={totalRevenue}
+              activeBoothCount={activeBoothCount}
+              totalBooths={totalBooths}
+              totalOrders={totalOrders}
+            />
           </div>
 
-          {/* Right Column (4 cols): Market Share, Settlements & Fast Actions */}
+          {/* Right Column */}
           <div className="lg:col-span-4 space-y-6">
-            {/* Visual Revenue Share Breakdown */}
-            <div className="rounded-[26px] bg-white p-5 sm:p-6  shadow-xs">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-base sm:text-lg font-semibold tracking-tight text-[#1d1d1f]">
-                  Revenue Share
-                </h2>
-                <PieChart className="w-4 h-4 text-[#86868b]" />
-              </div>
-
-              {totalRevenue === 0 ? (
-                <p className="text-xs text-[#86868b] italic py-2">
-                  No sales recorded for this timeframe.
-                </p>
-              ) : (
-                <>
-                  {/* Segmented Bar Chart */}
-                  <div className="flex h-3 w-full overflow-hidden rounded-full bg-black/5 gap-0.5">
-                    {booths.slice(0, 6).map((booth, idx) => {
-                      const pct = (booth.periodRevenue / totalRevenue) * 100;
-                      if (pct <= 0) return null;
-                      return (
-                        <div
-                          key={booth.id || booth.name}
-                          className={`h-full ${colorPalette[idx % colorPalette.length]} transition-all`}
-                          style={{ width: `${pct}%` }}
-                          title={`${booth.name}: ${pct.toFixed(1)}%`}
-                        />
-                      );
-                    })}
-                  </div>
-
-                  {/* Legend */}
-                  <div className="mt-4 space-y-2">
-                    {booths.slice(0, 5).map((booth, idx) => {
-                      const pct = totalRevenue > 0 ? (booth.periodRevenue / totalRevenue) * 100 : 0;
-                      return (
-                        <div key={booth.id || booth.name} className="flex items-center justify-between text-xs">
-                          <div className="flex items-center gap-2 min-w-0">
-                            <span
-                              className={`h-2.5 w-2.5 rounded-full shrink-0 ${
-                                colorPalette[idx % colorPalette.length]
-                              }`}
-                            />
-                            <span className="truncate font-medium text-[#1d1d1f]">{booth.name}</span>
-                          </div>
-                          <span className="font-semibold text-[#1d1d1f] shrink-0">
-                            {pct.toFixed(1)}%
-                          </span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </>
-              )}
-            </div>
-
-            {/* Platform Economics & Disbursements Card */}
-            <div className="rounded-[26px] bg-white p-5 sm:p-6  shadow-xs">
-              <div className="flex items-center justify-between mb-2">
-                <h2 className="text-base sm:text-lg font-semibold tracking-tight text-[#1d1d1f]">
-                  Disbursements & Fees
-                </h2>
-                <Coins className="w-4 h-4 text-[#86868b]" />
-              </div>
-              <p className="text-xs text-[#6e6e73]">
-                Estimated breakdown for merchant payouts and platform cut.
-              </p>
-
-              <div className="mt-4 space-y-3 border-t border-black/[0.04] pt-3">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-[#6e6e73]">Gross Transactions</span>
-                  <span className="font-semibold text-[#1d1d1f]">
-                    RM {totalRevenue.toFixed(2)}
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-[#6e6e73]">Merchant Direct Payouts</span>
-                  <span className="font-semibold text-emerald-700">
-                    RM {merchantPayout.toFixed(2)}
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-[#6e6e73]">Platform Infrastructure Cut</span>
-                  <span className="font-semibold text-[#1d1d1f]">
-                    RM {platformFee.toFixed(2)}
-                  </span>
-                </div>
-              </div>
-
-              <div className="mt-4 rounded-xl bg-[#f5f5f7] p-3 text-[11px] text-[#6e6e73] leading-relaxed">
-                Zero monthly subscriptions. The platform only takes a nominal fee per processed transaction.
-              </div>
-            </div>
+            <RevenueShare totalRevenue={totalRevenue} booths={booths} />
           </div>
-        </section>
+</section>
       </div>
     </main>
   );

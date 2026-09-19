@@ -151,11 +151,7 @@ export default function ShopOwnerProfilePage() {
   return (
     <main className="min-h-screen bg-[#f5f5f7] px-4 pb-32 pt-5 sm:px-6 text-[#1d1d1f]">
       <div className="mx-auto max-w-3xl space-y-6">
-        <header className="flex items-center justify-between gap-3">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-semibold tracking-[-0.035em] text-[#1d1d1f]">Shop information</h1>
-          </div>
-        </header>
+        
 
         {/* General Shop Profile */}
         <section className="rounded-[26px] bg-white p-5 sm:p-6 shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
@@ -171,13 +167,23 @@ export default function ShopOwnerProfilePage() {
               </div>
             </div>
             {!isEditing && (
-              <button
-                type="button"
-                onClick={() => setIsEditing(true)}
-                className="inline-flex h-9 items-center justify-center rounded-full bg-[#f5f5f7] px-4 text-xs font-semibold text-[#1d1d1f] hover:bg-neutral-200 transition-colors shadow-xs"
-              >
-                Edit
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsEditing(true)}
+                  className="inline-flex h-9 items-center justify-center rounded-full bg-[#f5f5f7] px-4 text-xs font-semibold text-[#1d1d1f] hover:bg-neutral-200 transition-colors shadow-xs"
+                >
+                  Edit
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsSignOutDialogOpen(true)}
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#f5f5f7] text-[#1d1d1f] hover:bg-neutral-200 transition-colors shadow-xs"
+                  aria-label="Sign out"
+                >
+                  <LogOut className="h-4 w-4" />
+                </button>
+              </div>
             )}
           </div>
 
@@ -231,13 +237,7 @@ export default function ShopOwnerProfilePage() {
           <RoleModeSwitcher currentMode="shop_owner" />
         </div>
 
-        <button
-          type="button"
-          onClick={() => setIsSignOutDialogOpen(true)}
-          className="mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-[#111827] px-4 py-3 text-sm font-semibold text-white hover:bg-black transition-all"
-        >
-          <LogOut className="h-4 w-4" /> Sign out
-        </button>
+        
 
         {isSignOutDialogOpen ? (
           <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/35 px-4" role="presentation">

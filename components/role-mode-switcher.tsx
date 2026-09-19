@@ -45,23 +45,6 @@ export function RoleModeSwitcher({ currentMode }: RoleModeSwitcherProps) {
   // User has authorized operator or stall roles!
   return (
     <div className="rounded-[26px] bg-white p-4 sm:p-5 shadow-[0_12px_26px_rgba(15,23,42,0.04)] border border-black/[0.04]">
-      <div className="flex items-start justify-between gap-2.5 mb-3.5">
-        <div className="min-w-0 flex-1">
-          <p className="text-xs font-semibold text-[#86868b]">
-            Switch active mode
-          </p>
-        </div>
-        <span className="text-[10px] sm:text-[11px] font-semibold px-2 sm:px-2.5 py-1 rounded-full bg-[#0071e3]/10 text-[#0071e3] shrink-0 whitespace-nowrap">
-          {roles.isSuperAdmin || roles.isSaasOwner
-            ? 'Superadmin'
-            : roles.hasShopOwner && roles.hasBooth
-              ? 'Multi-Role'
-              : roles.hasShopOwner
-                ? 'Owner'
-                : 'Stall'}
-        </span>
-      </div>
-
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-2.5">
         {/* 1. Customer / Diner Mode (Always present) */}
         <button
