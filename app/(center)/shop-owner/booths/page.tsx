@@ -611,10 +611,10 @@ export default function ShopOwnerBoothsPage() {
                   )}
 
                   {/* Send Setup Link Section */}
-                  <div className="mt-4 rounded-[20px] bg-[#f5f5f7] p-3.5 /[0.04]">
+                  <div className="mt-4 flex flex-col gap-2">
                     <div className="flex items-center gap-2">
                       <div className="relative flex-1 min-w-0">
-                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#86868b]" />
+                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#86868b]" />
                         <input
                           type="email"
                           value={emailInputs[booth.id] ?? ''}
@@ -628,21 +628,21 @@ export default function ShopOwnerBoothsPage() {
                             }
                           }}
                           placeholder="vendor@email.com"
-                          className="w-full rounded-full bg-white shadow-sm py-1.5 pl-8 pr-3 text-xs text-[#1d1d1f] placeholder:text-[#86868b] focus: focus:outline-none"
+                          className="h-11 w-full rounded-full bg-[#f5f5f7] shadow-sm py-2 pl-9 pr-4 text-sm text-[#1d1d1f] placeholder:text-[#86868b] outline-none transition-colors hover:bg-neutral-200 focus:bg-neutral-200"
                         />
                       </div>
                       <button
                         type="button"
                         disabled={isSending}
                         onClick={() => void handleSendSetupLink(booth.id)}
-                        className="flex h-8 w-8 items-center justify-center rounded-full bg-[#111827] text-white hover:bg-black disabled:opacity-50 transition-colors shrink-0 shadow-xs"
+                        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#111827] text-white transition-colors hover:bg-black disabled:opacity-50 shadow-xs"
                         aria-label="Send setup link"
                         title="Send setup link"
                       >
                         {isSending ? (
-                          <LoaderCircle className="h-3.5 w-3.5 animate-spin" />
+                          <LoaderCircle className="h-4 w-4 animate-spin" />
                         ) : (
-                          <Send className="h-3.5 w-3.5" />
+                          <Send className="h-4 w-4 -ml-0.5" />
                         )}
                       </button>
                     </div>
@@ -683,26 +683,9 @@ export default function ShopOwnerBoothsPage() {
                       </div>
                     )}
                   </div>
-
                   {/* Authorized Emails List */}
-                  <div className="mt-3.5 pt-3 /[0.04]">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-1.5">
-                        <ShieldCheck className="h-3.5 w-3.5 text-[#111827]" />
-                        <span className="text-xs font-semibold text-[#1d1d1f]">
-                          Authorized Store Access ({activeMembers.length + pendingInvites.length})
-                        </span>
-                      </div>
-                      <span className="text-[11px] text-[#86868b] truncate">
-                        Only listed emails can edit
-                      </span>
-                    </div>
-
-                    {!hasAuthorizedUsers ? (
-                      <p className="text-xs text-[#86868b] italic py-1 truncate">
-                        No vendor emails authorized yet. Enter an email above to send a setup link.
-                      </p>
-                    ) : (
+                  <div className="mt-2 flex flex-col gap-1.5">
+                    {!hasAuthorizedUsers ? null : (
                       <div className="space-y-1.5 mt-2">
                         {/* Active members */}
                         {activeMembers.map((member) => {
