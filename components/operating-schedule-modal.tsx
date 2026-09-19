@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Clock, X, Check, AlertCircle, Copy, ChevronLeft, ArrowLeft } from 'lucide-react';
+import { SaveCancelButtons } from '@/components/save-cancel-buttons';
 import {
   DAYS_OF_WEEK,
   DEFAULT_WEEKLY_SCHEDULE,
@@ -218,21 +219,13 @@ function OperatingScheduleDialogContent({
 
           {/* Footer Actions */}
           <div className="flex items-center justify-end gap-2.5 px-6 py-4 bg-[#f5f5f7] border-t border-black/[0.04] sticky bottom-0">
-            <button
-              type="button"
-              onClick={onClose}
-              disabled={isSaving}
-              className="inline-flex h-11 items-center justify-center rounded-full px-5 text-sm font-semibold text-neutral-600 hover:text-black hover:bg-neutral-100 transition-colors"
-            >
-              Cancel
-            </button>
-            <button
+            <SaveCancelButtons
               type="submit"
-              disabled={isSaving}
-              className="inline-flex h-11 items-center justify-center gap-1.5 rounded-full px-5 text-sm font-semibold text-white bg-black hover:bg-neutral-800 transition-colors disabled:opacity-50 shadow-xs"
-            >
-              {isSaving ? 'Saving...' : 'Save Schedule'}
-            </button>
+              isSaving={isSaving}
+              onCancel={onClose}
+              saveLabel="Save Schedule"
+              cancelLabel="Cancel"
+            />
           </div>
         </form>
     </div>
