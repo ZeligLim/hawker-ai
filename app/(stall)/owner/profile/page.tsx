@@ -119,6 +119,43 @@ export default function OwnerProfilePage() {
           </div>
         </section>
 
+        <section className="mt-6 rounded-[26px] bg-white p-5 sm:p-6 shadow-xs">
+          <h3 className="text-sm font-semibold text-[#1d1d1f] mb-3">Payment & Payouts</h3>
+          <p className="mb-4 text-xs text-[#6e6e73]">
+            Connect your Airwallex account to receive payouts from online orders.
+          </p>
+          <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="airwallex_account_id" className="text-xs font-semibold text-[#1d1d1f]">
+                Airwallex Connected Account ID
+              </label>
+              <input
+                id="airwallex_account_id"
+                type="text"
+                placeholder="e.g. acct_..."
+                defaultValue={currentBooth?.airwallex_account_id || ''}
+                className="w-full rounded-xl bg-[#f5f5f7] px-4 py-3 text-sm text-[#1d1d1f] placeholder:text-[#86868b] focus:outline-none focus:ring-2 focus:ring-[#0071e3]"
+                onBlur={async (e) => {
+                  const val = e.target.value.trim() || null;
+                  if (val === currentBooth?.airwallex_account_id) return;
+                  if (!currentBooth?.id) return;
+                  try {
+                    const res = await authenticatedFetch(`/api/owner/booths/${currentBooth.id}`, {
+                      method: 'PATCH',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ airwallex_account_id: val }),
+                    });
+                    if (!res.ok) throw new Error('Failed to update Airwallex account');
+                    window.location.reload();
+                  } catch (err) {
+                    alert('Failed to update Airwallex account ID');
+                  }
+                }}
+              />
+            </div>
+          </div>
+        </section>
+
         <div className="mt-6">
           <RoleModeSwitcher currentMode="booth" />
         </div>

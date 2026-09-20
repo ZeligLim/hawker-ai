@@ -599,6 +599,12 @@ Phase 20: Dedicated SaaS Superadmin Dashboard Route Group & Standalone Monetizat
 - Password recovery depends on Supabase Auth email configuration
 - Live Stripe/HitPay/Curlec transactions require live API credentials in production; local sandbox fallback provides smooth development and demo testing
 
+- **Phase 23: Stall Payouts Integration**:
+  - Added `airwallex_account_id` column to the `food_outlets` table to capture Airwallex connected account IDs for stall payout routing.
+  - Wrote DB migration `024_add_airwallex_account_id.sql` and updated `lib/database.types.ts`.
+  - Updated the `/api/user/roles` API and `AuthContextType` to surface the connected account ID to the frontend.
+  - Implemented a "Payment & Payouts" section in the Stall Owner profile page (`app/(stall)/owner/profile/page.tsx`) to allow stall owners to save their Airwallex Account ID.
+
 ## Next Task
 - End-to-end user checkout and verify realtime multi-stall kitchen routing and sold-out refund synchronization.
 

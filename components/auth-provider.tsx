@@ -37,6 +37,7 @@ export type UserRoles = {
     isOpen?: boolean;
     isActive?: boolean;
     schedule?: any;
+    airwallex_account_id?: string | null;
     venueId?: string;
     venueName?: string;
     venueIsActive?: boolean;

@@ -48,6 +48,7 @@ export type Database = {
           is_active?: boolean;
           schedule?: Json;
           status?: string;
+          airwallex_account_id?: string | null;
           created_at: string;
         };
         Insert: Omit<Database['public']['Tables']['food_outlets']['Row'], 'id' | 'created_at' | 'fee_payer' | 'platform_fee_fixed' | 'platform_fee_percent'> & {
@@ -60,6 +61,7 @@ export type Database = {
           is_active?: boolean;
           schedule?: Json;
           status?: string;
+          airwallex_account_id?: string | null;
         };
         Update: Partial<Database['public']['Tables']['food_outlets']['Insert']>;
         Relationships: [];

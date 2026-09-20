@@ -10,7 +10,7 @@ async function checkBoothAccess(auth: Awaited<ReturnType<typeof requireRequestUs
 
   const { data: booth, error: boothError } = await dbClient
     .from('food_outlets')
-    .select('id, restaurant_id, name, is_open, is_active, schedule, status, created_at')
+    .select('id, restaurant_id, name, is_open, is_active, schedule, status, airwallex_account_id, created_at')
     .eq('id', boothId)
     .maybeSingle();
 
@@ -96,6 +96,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     schedule?: any;
     status?: string;
     name?: string;
+    airwallex_account_id?: string | null;
   } = {};
 
   // Master Override Layer: Venue Owner can toggle booth Active / Inactive
@@ -113,6 +114,11 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
   // Operating Hours Schedule
   if (body.schedule !== undefined) {
     update.schedule = body.schedule;
+  }
+
+  // Airwallex account update
+  if (body.airwallex_account_id !== undefined) {
+    update.airwallex_account_id = body.airwallex_account_id;
   }
 
   // Operational Open/Closed toggle
@@ -143,7 +149,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     .from('food_outlets')
     .update(update)
     .eq('id', id)
-    .select('id, restaurant_id, name, is_open, is_active, schedule, status, created_at')
+    .select('id, restaurant_id, name, is_open, is_active, schedule, status, airwallex_account_id, created_at')
     .single();
 
   if (updateError || !updatedBooth) {

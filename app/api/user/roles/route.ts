@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
   try {
     const { data: merchMemberships } = await auth.client
       .from('merchant_memberships')
-      .select('food_outlet_id, role, food_outlets(id, name, is_open, is_active, schedule, restaurants(id, name, is_active, schedule))')
+      .select('food_outlet_id, role, food_outlets(id, name, is_open, is_active, schedule, airwallex_account_id, restaurants(id, name, is_active, schedule))')
       .eq('user_id', auth.user.id);
 
     if (merchMemberships) {
@@ -64,6 +64,7 @@ export async function GET(request: NextRequest) {
         isOpen: m.food_outlets?.is_open ?? true,
         isActive: m.food_outlets?.is_active ?? true,
         schedule: m.food_outlets?.schedule,
+        airwallex_account_id: m.food_outlets?.airwallex_account_id || null,
         role: m.role || 'owner',
         venueId: m.food_outlets?.restaurants?.id,
         venueName: m.food_outlets?.restaurants?.name,
