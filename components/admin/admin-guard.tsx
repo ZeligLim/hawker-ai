@@ -6,7 +6,7 @@ import { useAuth } from '@/components/auth-provider';
 import { ShieldAlert, ArrowLeft, LogIn, Lock } from 'lucide-react';
 
 export function AdminGuard({ children }: { children: React.ReactNode }) {
-  const { status, roles, user, isGuest } = useAuth();
+  const { status, roles, user, isGuest, signOut } = useAuth();
 
   // 1. Loading state: resolving authentication and platform RBAC
   if (status === 'loading' || roles.isLoading) {
@@ -91,12 +91,15 @@ export function AdminGuard({ children }: { children: React.ReactNode }) {
                 Food Hall Portal
               </Link>
             )}
-            <Link
-              href={'/auth?redirect=/admin' as any}
+            <button
+              onClick={async () => {
+                await signOut();
+                window.location.href = '/auth?redirect=/admin';
+              }}
               className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl bg-[#1d1d1f] py-2.5 text-xs font-semibold text-white shadow-xs hover:bg-black transition"
             >
               Switch Account
-            </Link>
+            </button>
           </div>
         </div>
       </div>
