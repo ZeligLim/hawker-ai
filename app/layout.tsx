@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="bg-[#f5f5f7]">
       <head>
         {/* Suppress unhandled errors from browser extensions (e.g. Safari AdBlock webkit-masked-url useCache bug) from triggering Next.js dev overlay */}
         <Script
