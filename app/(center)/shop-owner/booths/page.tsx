@@ -15,6 +15,7 @@ import {
   Pencil,
   Plus,
   Power,
+  Receipt,
   Send,
   ShieldAlert,
   ShieldCheck,
@@ -91,6 +92,13 @@ export default function ShopOwnerBoothsPage() {
   const [boothToDelete, setBoothToDelete] = useState<Booth | null>(null);
   const [isDeletingBooth, setIsDeletingBooth] = useState(false);
   const [deleteError, setDeleteError] = useState('');
+
+  // Rent Billing state
+  const [rentModalBooth, setRentModalBooth] = useState<Booth | null>(null);
+  const [rentAmount, setRentAmount] = useState('');
+  const [rentDescription, setRentDescription] = useState('Monthly Rent');
+  const [isBillingRent, setIsBillingRent] = useState(false);
+  const [rentFeedback, setRentFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
   const loadShops = useCallback(async () => {
     try {
@@ -408,6 +416,42 @@ export default function ShopOwnerBoothsPage() {
     }
   };
 
+  const handleBillRent = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!rentModalBooth || !rentAmount) return;
+    
+    setIsBillingRent(true);
+    setRentFeedback(null);
+    try {
+      const response = await authenticatedFetch('/api/owner/rent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          boothId: rentModalBooth.id,
+          amount: parseFloat(rentAmount),
+          description: rentDescription,
+        }),
+      });
+      
+      const payload = await response.json();
+      if (!response.ok) {
+        throw new Error(payload.error ?? 'Failed to issue rent bill.');
+      }
+      
+      setRentFeedback({ type: 'success', message: 'Rent bill issued successfully.' });
+      setTimeout(() => {
+        setRentModalBooth(null);
+        setRentFeedback(null);
+        setRentAmount('');
+        setRentDescription('Monthly Rent');
+      }, 1500);
+    } catch (error) {
+      setRentFeedback({ type: 'error', message: error instanceof Error ? error.message : 'Failed to bill rent.' });
+    } finally {
+      setIsBillingRent(false);
+    }
+  };
+
   const handleDeleteBooth = async (boothId: string) => {
     setIsDeletingBooth(true);
     setDeleteError('');
@@ -520,6 +564,16 @@ export default function ShopOwnerBoothsPage() {
                       
 
                       
+
+                      <button
+                        type="button"
+                        onClick={() => setRentModalBooth(booth)}
+                        className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#f5f5f7] text-[#1d1d1f] hover:bg-black/5 transition-all shadow-xs shrink-0"
+                        aria-label="Charge Rent"
+                        title="Issue Rent Bill"
+                      >
+                        <Receipt className="h-3.5 w-3.5 text-[#1d1d1f]" />
+                      </button>
 
                       <button
                         type="button"
@@ -821,6 +875,76 @@ export default function ShopOwnerBoothsPage() {
               </button>
             </form>
           </div>
+        </div>
+      ) : null}
+
+      {/* RENT BILLING MODAL */}
+      {rentModalBooth ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-xs">
+          <form
+            onSubmit={handleBillRent}
+            className="w-full max-w-md rounded-[28px] bg-white p-4 sm:p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto"
+          >
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-semibold text-[#1d1d1f]">Issue Rent Bill</h2>
+              <button
+                type="button"
+                aria-label="Close rent dialog"
+                onClick={() => setRentModalBooth(null)}
+              >
+                <X className="h-5 w-5 text-[#6e6e73]" />
+              </button>
+            </div>
+
+            <p className="text-sm text-[#6e6e73]">
+              Billing <strong className="text-[#1d1d1f] font-semibold">{rentModalBooth.name}</strong>. They will receive an invoice payable via Airwallex.
+            </p>
+
+            {rentFeedback && (
+              <div className={`rounded-xl p-3 text-xs ${rentFeedback.type === 'success' ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700'}`}>
+                {rentFeedback.message}
+              </div>
+            )}
+
+            <label className="block text-xs font-semibold text-[#1d1d1f]">
+              Amount (RM)
+              <input
+                type="number"
+                step="0.01"
+                min="0.01"
+                value={rentAmount}
+                onChange={(event) => setRentAmount(event.target.value)}
+                placeholder="e.g. 500.00"
+                className="mt-1.5 w-full rounded-2xl bg-[#f5f5f7] px-3.5 py-2.5 text-sm outline-none focus:ring-2 focus:ring-[#111827]"
+                required
+              />
+            </label>
+
+            <label className="block text-xs font-semibold text-[#1d1d1f]">
+              Description
+              <input
+                value={rentDescription}
+                onChange={(event) => setRentDescription(event.target.value)}
+                placeholder="e.g. November 2026 Rent"
+                className="mt-1.5 w-full rounded-2xl bg-[#f5f5f7] px-3.5 py-2.5 text-sm outline-none focus:ring-2 focus:ring-[#111827]"
+                required
+              />
+            </label>
+
+            <button
+              type="submit"
+              disabled={isBillingRent}
+              className="mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-[#111827] px-4 py-3 text-xs font-semibold text-white hover:bg-black transition-all disabled:opacity-50"
+            >
+              {isBillingRent ? (
+                <>
+                  <LoaderCircle className="h-4 w-4 animate-spin" /> Issuing...
+                </>
+              ) : (
+                'Issue Rent Bill'
+              )}
+            </button>
+          </form>
         </div>
       ) : null}
 

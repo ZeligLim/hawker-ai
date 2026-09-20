@@ -605,6 +605,12 @@ Phase 20: Dedicated SaaS Superadmin Dashboard Route Group & Standalone Monetizat
   - Updated the `/api/user/roles` API and `AuthContextType` to surface the connected account ID to the frontend.
   - Implemented a "Payment & Payouts" section in the Stall Owner profile page (`app/(stall)/owner/profile/page.tsx`) to allow stall owners to save their Airwallex Account ID.
 
+- **Phase 24: Stall Rent Collection**:
+  - Created `rent_invoices` table via migration `025_rent_invoices.sql` to manage rent billing from the venue to stall owners.
+  - Added a "Charge Rent" button in the Center Owner's Booth management UI (`app/(center)/shop-owner/booths/page.tsx`) which issues a rent invoice.
+  - Created `/api/owner/rent` and `/api/owner/rent/[id]/pay` route handlers for creating, fetching, and paying invoices.
+  - Implemented the `RentInvoices` UI component for stall owners to view their pending rent bills and seamlessly pay via Airwallex Drop-in on the frontend.
+
 ## Next Task
 - End-to-end user checkout and verify realtime multi-stall kitchen routing and sold-out refund synchronization.
 

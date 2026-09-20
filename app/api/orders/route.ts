@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
   // 3. Execute order creation RPC with full monetization parameters
   let orderId: string | null = null;
   const rpcFullArgs = {
-    p_table_session_id: input.tableSessionId,
+    p_table_session_id: input.tableSessionId || '',
     p_subtotal: subtotalAmount,
     p_service_fee: platformFeeAmount,
     p_total: totalAmount,
@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
   } else {
     // If database function has the legacy 6-argument signature, invoke legacy and update row
     const legacyArgs = {
-      p_table_session_id: input.tableSessionId,
+      p_table_session_id: input.tableSessionId || '',
       p_subtotal: subtotalAmount,
       p_service_fee: platformFeeAmount,
       p_total: totalAmount,

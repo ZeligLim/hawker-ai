@@ -8,6 +8,7 @@ import { OperatingScheduleModal } from '@/components/operating-schedule-modal';
 import type { OperatingSchedule } from '@/lib/schedule/operating-hours';
 import { authenticatedFetch } from '@/lib/supabase/client';
 import { SaveCancelButtons } from '@/components/save-cancel-buttons';
+import { RentInvoices } from '@/components/rent-invoices';
 
 export default function OwnerProfilePage() {
   const { profile, signOut, roles } = useAuth();
@@ -155,6 +156,8 @@ export default function OwnerProfilePage() {
             </div>
           </div>
         </section>
+
+        {currentBooth?.id && <RentInvoices boothId={currentBooth.id} />}
 
         <div className="mt-6">
           <RoleModeSwitcher currentMode="booth" />
