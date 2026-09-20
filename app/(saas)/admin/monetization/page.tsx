@@ -31,6 +31,7 @@ type Shop = {
   feePayer?: 'CUSTOMER' | 'MERCHANT';
   platformFeeFixed?: number;
   platformFeePercent?: number;
+  aiEnabled?: boolean;
   booths: Array<{ id: string; name: string }>;
 };
 
@@ -50,6 +51,7 @@ function AdminMonetizationContent() {
   const [feePayer, setFeePayer] = useState<'CUSTOMER' | 'MERCHANT'>('CUSTOMER');
   const [platformFeePercent, setPlatformFeePercent] = useState<number>(5.0);
   const [platformFeeFixed, setPlatformFeeFixed] = useState<number>(0.50);
+  const [aiEnabled, setAiEnabled] = useState<boolean>(true);
 
   const populateShopForm = (shop: Shop) => {
     const rawPercent = shop.platformFeePercent ?? 0.0000;
@@ -65,6 +67,7 @@ function AdminMonetizationContent() {
     setFeePayer(rawPayer);
     setPlatformFeePercent(rawPercent > 0 ? Number((rawPercent * 100).toFixed(2)) : 5.0);
     setPlatformFeeFixed(rawFixed);
+    setAiEnabled(shop.aiEnabled ?? true);
   };
 
   const handleRefresh = async () => {
@@ -162,6 +165,7 @@ function AdminMonetizationContent() {
           fee_payer: feePayer,
           platform_fee_fixed: feeFixedAmount,
           platform_fee_percent: feePercentDecimal,
+          ai_enabled: aiEnabled,
         }),
       });
 
@@ -435,6 +439,34 @@ function AdminMonetizationContent() {
                     <p className="mt-1 text-xs text-[#6e6e73]">
                       Deducted from vendor sales payout.
                     </p>
+                  </button>
+                </div>
+              </div>
+
+              {/* AI Capability Toggle */}
+              <div className="space-y-3 pt-3 border-t border-black/[0.06]">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-sm font-semibold text-[#1d1d1f]">AI Copilot Features</h3>
+                    <p className="mt-1 text-xs text-[#6e6e73]">
+                      Toggle AI smart scanning and search for this venue.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    role="switch"
+                    aria-checked={aiEnabled}
+                    onClick={() => setAiEnabled(!aiEnabled)}
+                    className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                      aiEnabled ? 'bg-emerald-600' : 'bg-gray-200'
+                    }`}
+                  >
+                    <span
+                      aria-hidden="true"
+                      className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                        aiEnabled ? 'translate-x-5' : 'translate-x-0'
+                      }`}
+                    />
                   </button>
                 </div>
               </div>
