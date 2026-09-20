@@ -192,7 +192,7 @@ export function HomePage() {
   }, []);
 
   return (
-    <div className="fixed inset-0 w-screen h-screen overflow-hidden bg-white text-black">
+    <div className={`fixed inset-0 w-screen h-screen overflow-hidden text-black ${viewMode === 'list' ? 'bg-[#f5f5f7]' : 'bg-white'}`}>
       {/* 1. Prominent Top Section: Search Bar & View Mode / Filter Switchers (No Resume Button, 0 Borders) */}
       <div className="fixed top-3.5 inset-x-3.5 sm:inset-x-4 max-w-lg mx-auto z-40 flex flex-col gap-2 pointer-events-auto">
         <HawkerSearchBar
@@ -344,10 +344,6 @@ export function HomePage() {
         <div className="h-full w-full overflow-y-auto pt-32 pb-28 px-4 max-w-lg mx-auto">
           {/* List View Subheader: Count & Distance/Rating Sort Controls */}
           <div className="mb-4 flex items-center justify-between gap-3 px-1">
-            <span className="text-sm font-bold text-black">
-              {filteredCentres.length} {filteredCentres.length === 1 ? 'centre' : 'centres'} found
-            </span>
-
             {/* Distance & Rating Toggles: Styled exactly like the Map/List switcher */}
             <div className="flex items-center bg-white p-1 rounded-full shadow-md shrink-0">
               <button
@@ -373,6 +369,10 @@ export function HomePage() {
                 Rating
               </button>
             </div>
+
+            <span className="text-sm font-bold text-black text-right">
+              {filteredCentres.length} {filteredCentres.length === 1 ? 'centre' : 'centres'} found
+            </span>
           </div>
 
           {/* Clean Vertical Feed of Hawker Centres */}
