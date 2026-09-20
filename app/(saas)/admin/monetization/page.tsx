@@ -444,29 +444,44 @@ function AdminMonetizationContent() {
               </div>
 
               {/* AI Capability Toggle */}
-              <div className="space-y-3 pt-3 border-t border-black/[0.06]">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-sm font-semibold text-[#1d1d1f]">AI Copilot Features</h3>
-                    <p className="mt-1 text-xs text-[#6e6e73]">
-                      Toggle AI smart scanning and search for this venue.
-                    </p>
-                  </div>
+              <div>
+                <label className="block text-xs font-semibold text-[#86868b] mb-2">
+                  AI Copilot Features
+                </label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <button
                     type="button"
-                    role="switch"
-                    aria-checked={aiEnabled}
-                    onClick={() => setAiEnabled(!aiEnabled)}
-                    className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                      aiEnabled ? 'bg-emerald-600' : 'bg-gray-200'
+                    onClick={() => setAiEnabled(true)}
+                    className={`rounded-2xl p-4 text-left border transition-all ${
+                      aiEnabled
+                        ? 'border-purple-600 bg-purple-50/50 shadow-xs'
+                        : 'border-black/[0.08] bg-black/[0.01] hover:bg-black/[0.03] text-[#6e6e73]'
                     }`}
                   >
-                    <span
-                      aria-hidden="true"
-                      className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
-                        aiEnabled ? 'translate-x-5' : 'translate-x-0'
-                      }`}
-                    />
+                    <p className={`flex items-center gap-1.5 text-xs font-semibold ${aiEnabled ? 'text-purple-700' : 'text-[#1d1d1f]'}`}>
+                      <Sparkles className={`w-3.5 h-3.5 ${aiEnabled ? 'text-purple-600' : 'text-[#86868b]'}`} />
+                      AI Enabled
+                    </p>
+                    <p className="mt-1 text-xs text-[#6e6e73]">
+                      Smart scanning and search active.
+                    </p>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setAiEnabled(false)}
+                    className={`rounded-2xl p-4 text-left border transition-all ${
+                      !aiEnabled
+                        ? 'border-[#1d1d1f] bg-black/[0.02] shadow-xs'
+                        : 'border-black/[0.08] bg-black/[0.01] hover:bg-black/[0.03] text-[#6e6e73]'
+                    }`}
+                  >
+                    <p className={`text-xs font-semibold ${!aiEnabled ? 'text-[#1d1d1f]' : 'text-[#1d1d1f]'}`}>
+                      AI Disabled
+                    </p>
+                    <p className="mt-1 text-xs text-[#6e6e73]">
+                      Standard browsing only.
+                    </p>
                   </button>
                 </div>
               </div>
@@ -490,13 +505,6 @@ function AdminMonetizationContent() {
                   <Save className="h-3.5 w-3.5" />
                   <span>{saving ? 'Saving…' : 'Save'}</span>
                 </button>
-
-                {saveSuccess && (
-                  <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200/60 px-3 py-1 rounded-full">
-                    <Check className="h-3.5 w-3.5" />
-                    <span>Monetization settings updated</span>
-                  </span>
-                )}
               </div>
             </div>
           </div>
