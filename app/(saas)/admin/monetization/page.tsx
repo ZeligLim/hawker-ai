@@ -488,7 +488,7 @@ function AdminMonetizationContent() {
                   className="inline-flex items-center justify-center gap-2 rounded-full bg-[#1d1d1f] px-5 py-2.5 text-xs sm:text-sm font-semibold text-white shadow-xs hover:bg-black disabled:opacity-50 transition"
                 >
                   <Save className="h-3.5 w-3.5" />
-                  <span>{saving ? 'Applying rate changes…' : 'Save Platform Policy'}</span>
+                  <span>{saving ? 'Saving…' : 'Save'}</span>
                 </button>
 
                 {saveSuccess && (
