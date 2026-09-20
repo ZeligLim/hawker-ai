@@ -34,14 +34,12 @@ export default function OrdersPage() {
         const data = await res.json();
         if (active && data.outlets?.[0]) {
            const outlet = data.outlets[0];
-           const r = outlet.restaurants;
-           if (r) {
-             setFeeConfig({
-               feePayer: outlet.fee_payer ?? r.fee_payer ?? 'CUSTOMER',
-               platformFeeFixed: Number(outlet.platform_fee_fixed ?? r.platform_fee_fixed ?? 0.50),
-               platformFeePercent: Number(outlet.platform_fee_percent ?? r.platform_fee_percent ?? 0.00)
-             });
-           }
+           const r = Array.isArray(outlet.restaurants) ? outlet.restaurants[0] : outlet.restaurants;
+           setFeeConfig({
+             feePayer: r?.fee_payer ?? outlet.fee_payer ?? 'CUSTOMER',
+             platformFeeFixed: Number(r?.platform_fee_fixed ?? outlet.platform_fee_fixed ?? 0.50),
+             platformFeePercent: Number(r?.platform_fee_percent ?? outlet.platform_fee_percent ?? 0.00)
+           });
         }
       } catch {}
     }
