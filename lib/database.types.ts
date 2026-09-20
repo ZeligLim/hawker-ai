@@ -625,6 +625,7 @@ export type Database = {
       restaurants: {
         Row: {
           address: string
+          ai_enabled: boolean
           created_at: string
           fee_payer: string
           has_aircon: boolean
@@ -642,6 +643,7 @@ export type Database = {
         }
         Insert: {
           address: string
+          ai_enabled?: boolean
           created_at?: string
           fee_payer?: string
           has_aircon?: boolean
@@ -659,6 +661,7 @@ export type Database = {
         }
         Update: {
           address?: string
+          ai_enabled?: boolean
           created_at?: string
           fee_payer?: string
           has_aircon?: boolean

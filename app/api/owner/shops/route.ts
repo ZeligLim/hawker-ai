@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
     const adminClient = createAdminClient() ?? auth.client;
     const { data: allRestaurants, error: allRestError } = await adminClient
       .from('restaurants')
-      .select('id, name, slug, address, is_active, schedule, status, fee_payer, platform_fee_fixed, platform_fee_percent, created_at')
+      .select('id, name, slug, address, is_active, schedule, status, fee_payer, platform_fee_fixed, platform_fee_percent, ai_enabled, created_at')
       .order('name');
 
     if (allRestError) {
