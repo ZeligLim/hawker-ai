@@ -66,7 +66,11 @@ export function MarketingNav({ currentPath = '/' }: MarketingNavProps) {
   }, []);
 
   const isAuthenticated = status === 'authenticated' && Boolean(user);
-  const isLoading = status === 'loading';
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+  const isLoading = !mounted || status === 'loading';
 
   // Role capability checks
   const hasShop = roles.hasShopOwner;

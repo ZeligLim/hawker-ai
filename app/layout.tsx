@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Script from 'next/script';
 import { AppShell } from '@/components/app-shell';
 import { AuthProvider } from '@/components/auth-provider';
 import './globals.css';
@@ -13,7 +14,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="en">
       <head>
         {/* Suppress unhandled errors from browser extensions (e.g. Safari AdBlock webkit-masked-url useCache bug) from triggering Next.js dev overlay */}
-        <script
+        <Script
+          id="suppress-extension-errors"
+          strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
             __html: `
               if (typeof window !== 'undefined') {
