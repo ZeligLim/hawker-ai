@@ -611,6 +611,10 @@ Phase 20: Dedicated SaaS Superadmin Dashboard Route Group & Standalone Monetizat
   - Created `/api/owner/rent` and `/api/owner/rent/[id]/pay` route handlers for creating, fetching, and paying invoices.
   - Implemented the `RentInvoices` UI component for stall owners to view their pending rent bills and seamlessly pay via Airwallex Drop-in on the frontend.
 
+- **Phase 25: Cart fee calculation reflection & fix customer page ui bug**:
+  - Dynamically load platform fee percentage config from database in the customer cart page to accurately render service fee subtotal and amounts.
+  - Added UI guard for `aiEnabled` settings in the stall page camera widget display.
+
 ## Next Task
 - End-to-end user checkout and verify realtime multi-stall kitchen routing and sold-out refund synchronization.
 
