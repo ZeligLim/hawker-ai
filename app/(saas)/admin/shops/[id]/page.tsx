@@ -367,7 +367,7 @@ export default function AdminShopDetailPage({ params }: { params: Promise<{ id: 
                 <div>
                   <h3 className="text-sm font-semibold text-[#1d1d1f]">AI Copilot Features</h3>
                   <p className="mt-1 text-xs text-[#6e6e73]">
-                    Enable or disable AI smart scanning and conversational search for this venue.
+                    Toggle AI smart scanning and search for this venue.
                   </p>
                 </div>
                 <button

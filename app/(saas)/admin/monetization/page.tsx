@@ -415,8 +415,8 @@ function AdminMonetizationContent() {
                     <p className={`text-xs font-semibold ${feePayer === 'CUSTOMER' ? 'text-[#0071e3]' : 'text-[#1d1d1f]'}`}>
                       Diner Pays Surcharge
                     </p>
-                    <p className="mt-1 text-xs text-[#6e6e73] leading-relaxed">
-                      Added directly to the diner’s bill at checkout as a service charge.
+                    <p className="mt-1 text-xs text-[#6e6e73]">
+                      Added to diner bill as service charge.
                     </p>
                   </button>
 
@@ -432,8 +432,8 @@ function AdminMonetizationContent() {
                     <p className={`text-xs font-semibold ${feePayer === 'MERCHANT' ? 'text-emerald-700' : 'text-[#1d1d1f]'}`}>
                       Stall Pays Commission
                     </p>
-                    <p className="mt-1 text-xs text-[#6e6e73] leading-relaxed">
-                      Deducted automatically from vendor payouts on order completion.
+                    <p className="mt-1 text-xs text-[#6e6e73]">
+                      Deducted from vendor sales payout.
                     </p>
                   </button>
                 </div>
