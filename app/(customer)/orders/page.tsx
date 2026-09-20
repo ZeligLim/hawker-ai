@@ -22,8 +22,34 @@ export default function OrdersPage() {
   const [airwallexElement, setAirwallexElement] = useState<any>(null);
   const [checkoutError, setCheckoutError] = useState('');
   const [placedReceipt, setPlacedReceipt] = useState<ReceiptData | null>(null);
+  const [feeConfig, setFeeConfig] = useState<any>(undefined);
 
-  const summary = useMemo(() => buildCartSummary(cartItems), [cartItems]);
+  useEffect(() => {
+    let active = true;
+    async function fetchFeeConfig() {
+      if (cartItems.length === 0) return;
+      try {
+        const res = await fetch(`/api/outlets?id=${cartItems[0].stallId}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        if (active && data.outlets?.[0]) {
+           const outlet = data.outlets[0];
+           const r = outlet.restaurants;
+           if (r) {
+             setFeeConfig({
+               feePayer: outlet.fee_payer ?? r.fee_payer ?? 'CUSTOMER',
+               platformFeeFixed: Number(outlet.platform_fee_fixed ?? r.platform_fee_fixed ?? 0.50),
+               platformFeePercent: Number(outlet.platform_fee_percent ?? r.platform_fee_percent ?? 0.00)
+             });
+           }
+        }
+      } catch {}
+    }
+    fetchFeeConfig();
+    return () => { active = false; };
+  }, [cartItems.length > 0 ? cartItems[0].stallId : null]);
+
+  const summary = useMemo(() => buildCartSummary(cartItems, feeConfig), [cartItems, feeConfig]);
 
   const updateQuantity = (itemId: string, quantity: number) => {
     setCartItems((currentItems) => updateCartItemQuantity(currentItems, itemId, quantity));

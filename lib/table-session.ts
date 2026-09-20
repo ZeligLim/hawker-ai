@@ -6,6 +6,7 @@ export type CurrentTableSession = {
   centreId?: string | null;
   centreSlug?: string | null;
   centreName?: string | null;
+  aiEnabled?: boolean | null;
   scannedAt?: string | null;
 };
 
@@ -32,6 +33,7 @@ export function getStoredTableSession(): CurrentTableSession | null {
       centreId: parsed.centreId ?? null,
       centreSlug: parsed.centreSlug ?? null,
       centreName: parsed.centreName ?? null,
+      aiEnabled: parsed.aiEnabled ?? true,
       scannedAt: parsed.scannedAt ?? null,
     };
   } catch {
@@ -56,6 +58,7 @@ export function setCurrentTableSession(
     centreId?: string | null;
     centreSlug?: string | null;
     centreName?: string | null;
+    aiEnabled?: boolean | null;
   },
 ) {
   if (typeof window === 'undefined') return;
@@ -69,6 +72,7 @@ export function setCurrentTableSession(
     centreId: centreInfo?.centreId ?? null,
     centreSlug: centreInfo?.centreSlug ?? null,
     centreName: centreInfo?.centreName ?? null,
+    aiEnabled: centreInfo?.aiEnabled ?? true,
     scannedAt: new Date().toISOString(),
   };
 

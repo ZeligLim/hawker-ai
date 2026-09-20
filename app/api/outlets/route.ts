@@ -30,13 +30,19 @@ export async function GET(request: NextRequest) {
       is_active,
       schedule,
       status,
+      fee_payer,
+      platform_fee_fixed,
+      platform_fee_percent,
       restaurants (
         id,
         name,
         slug,
         address,
         is_active,
-        schedule
+        schedule,
+        fee_payer,
+        platform_fee_fixed,
+        platform_fee_percent
       ),
       dishes (
         id,

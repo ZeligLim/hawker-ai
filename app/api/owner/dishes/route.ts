@@ -50,6 +50,26 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Forbidden: Stall worker authorization required.' }, { status: 403 });
     }
 
+    // Determine if AI is enabled for the parent restaurant
+    let aiEnabled = true;
+    if (allOutletIds.length > 0) {
+      try {
+        const { data: outletData } = await auth.client
+          .from('food_outlets')
+          .select('restaurants(ai_enabled)')
+          .in('id', allOutletIds)
+          .limit(1)
+          .maybeSingle();
+
+        const rest = Array.isArray(outletData?.restaurants) ? outletData.restaurants[0] : outletData?.restaurants;
+        if (rest && rest.ai_enabled === false) {
+          aiEnabled = false;
+        }
+      } catch (e) {
+        // Fallback to true
+      }
+    }
+
     // Query dishes for all authorized outlets
     const { data, error } = await auth.client
       .from('dishes')
@@ -64,6 +84,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       dishes: data ?? [],
       foodOutletIds: allOutletIds,
+      aiEnabled,
     });
   } catch (err: any) {
     console.error('Owner dishes error:', err);

@@ -74,9 +74,19 @@ export function CentreDinerPage({ centre }: { centre: HawkerCentreSummary }) {
   useEffect(() => {
     const timer = setTimeout(() => {
       const existing = getStoredTableSession();
-      // Accept session if for this centre or update centre context
       if (existing && existing.tableNumber) {
-        setTableSession(existing);
+        // Automatically sync the centre ID and AI state when the user visits the centre menu page while having a table
+        if (existing.centreId !== centre.id || existing.aiEnabled !== centre.aiEnabled) {
+          setCurrentTableSession(existing.tableNumber, existing.tableId, {
+            centreId: centre.id,
+            centreSlug: centre.slug,
+            centreName: centre.name,
+            aiEnabled: centre.aiEnabled ?? true,
+          });
+          setTableSession(getStoredTableSession());
+        } else {
+          setTableSession(existing);
+        }
         setManualTableInput(existing.tableNumber);
       }
       setHasCheckedSession(true);
