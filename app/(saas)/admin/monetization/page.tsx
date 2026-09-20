@@ -270,7 +270,7 @@ function AdminMonetizationContent() {
                 <label className="block text-xs font-semibold text-[#86868b] mb-2">
                   Commission model
                 </label>
-                <div className="p-1 bg-black/[0.04] rounded-2xl grid grid-cols-3 gap-1 border border-black/5">
+                <div className="p-1 bg-black/[0.04] rounded-2xl grid grid-cols-1 sm:grid-cols-3 gap-1 border border-black/5">
                   <button
                     type="button"
                     onClick={() => setFeeMode('percentage')}
