@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
 
     if (outlets && outlets.length > 0) {
       const firstOutlet: any = outlets[0];
-      const rest = firstOutlet.restaurants;
+      const rest = Array.isArray(firstOutlet.restaurants) ? firstOutlet.restaurants[0] : firstOutlet.restaurants;
       feePayer = (firstOutlet.fee_payer ?? rest?.fee_payer ?? 'CUSTOMER') as 'CUSTOMER' | 'MERCHANT';
       feeFixed = Number(firstOutlet.platform_fee_fixed ?? rest?.platform_fee_fixed ?? 0.50);
       feePercent = Number(firstOutlet.platform_fee_percent ?? rest?.platform_fee_percent ?? 0.0000);

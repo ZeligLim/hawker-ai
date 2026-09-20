@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { Settings2 } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useCallback } from 'react';
 import { init as initAirwallex, createElement as createAirwallexElement } from '@airwallex/components-sdk';
 import { useRouter } from 'next/navigation';
 import { CustomizationCard } from '@/components/customization-card';
@@ -124,29 +124,7 @@ export default function OrdersPage() {
     }
   };
 
-  useEffect(() => {
-    if (checkoutState === 'airwallex_ready' && airwallexElement) {
-      const timer = setTimeout(() => {
-        const container = document.getElementById('airwallex-drop-in-container');
-        if (container) {
-          airwallexElement.mount('airwallex-drop-in-container');
-          
-          airwallexElement.on('success', async (event: any) => {
-            console.log('Payment successful', event);
-            await submitFinalOrder(event?.detail?.paymentIntentId || `pi_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`);
-          });
-
-          airwallexElement.on('error', (event: any) => {
-            console.error('Payment error', event);
-            setCheckoutError('Payment failed. Please try again.');
-          });
-        }
-      }, 100);
-      return () => clearTimeout(timer);
-    }
-  }, [checkoutState, airwallexElement]);
-
-  const submitFinalOrder = async (paymentIntentId: string) => {
+  const submitFinalOrder = useCallback(async (paymentIntentId: string) => {
     setCheckoutState('submitting');
     if (!supabase) {
       setCheckoutError('Supabase is not configured.');
@@ -174,57 +152,67 @@ export default function OrdersPage() {
         totalAmount: summary.total,
         merchantPayoutAmount: summary.merchantPayoutAmount,
         paymentReference: paymentIntentId,
-        paymentIntentId,
         items: cartItems.map((item) => ({
           dishId: item.dishId,
           stallId: item.stallId,
-          name: item.name,
-          price: item.price,
           quantity: item.quantity,
-          customizations: item.customizations ?? [],
-          notes: item.notes ?? '',
+          price: item.price,
+          notes: item.notes,
+          customizations: item.customizations,
         })),
       }),
     });
 
-    const payload = (await response.json().catch(() => ({}))) as {
-      error?: string;
-      orderId?: string;
-      paymentIntentId?: string;
-    };
-
     if (!response.ok) {
+      const err = await response.json();
+      setCheckoutError(err.error || 'Failed to submit order. Please check with counter.');
       setCheckoutState('idle');
-      setCheckoutError(payload.error ?? 'Unable to place your order.');
       return;
     }
 
+    const result = await response.json();
+    setCartItems([]);
     setPlacedReceipt({
-      id: payload.orderId ?? `ord_${Date.now()}`,
+      id: result.order.id,
       venueName: cartItems[0]?.restaurantName ?? 'Hawker Centre',
+      createdAt: new Date().toISOString(),
       subtotal: summary.subtotal,
       serviceFee: summary.serviceFee,
       total: summary.total,
       paymentStatus: 'PAID',
       refundAmount: 0,
-      paymentIntentId: payload.paymentIntentId ?? paymentIntentId,
-      createdAt: new Date().toISOString(),
       items: cartItems.map((item) => ({
         id: item.id,
-        dishId: item.dishId,
         name: item.name,
-        price: item.price,
         quantity: item.quantity,
-        customizations: item.customizations ?? [],
-        notes: item.notes ?? '',
-        isRefunded: false,
-        refundAmount: 0,
+        price: item.price,
+        customizations: item.customizations,
       })),
     });
-
-    setCartItems([]);
     setCheckoutState('success');
-  };
+  }, [cartItems, summary, setCartItems]);
+
+  useEffect(() => {
+    if (checkoutState === 'airwallex_ready' && airwallexElement) {
+      const timer = setTimeout(() => {
+        const container = document.getElementById('airwallex-drop-in-container');
+        if (container) {
+          airwallexElement.mount('airwallex-drop-in-container');
+          
+          airwallexElement.on('success', async (event: any) => {
+            console.log('Payment successful', event);
+            await submitFinalOrder(event?.detail?.paymentIntentId || `pi_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`);
+          });
+
+          airwallexElement.on('error', (event: any) => {
+            console.error('Payment error', event);
+            setCheckoutError('Payment failed. Please try again.');
+          });
+        }
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [checkoutState, airwallexElement, submitFinalOrder]);
 
   if (placedReceipt) {
     return (
