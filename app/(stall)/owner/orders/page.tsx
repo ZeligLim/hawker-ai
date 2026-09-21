@@ -43,15 +43,14 @@ const backendStatus: Record<string, OrderStatus> = {
   cancelled: 'Completed',
 };
 const nextBackendStatus: Record<OrderStatus, string> = {
-  New: 'preparing',
-  Preparing: 'ready',
+  New: 'served',
+  Preparing: 'served',
   Ready: 'served',
   Completed: 'served',
 };
 
-function nextStatus(status: OrderStatus) {
-  const index = statusOrder.indexOf(status);
-  return statusOrder[Math.min(index + 1, statusOrder.length - 1)];
+function nextStatus(status: OrderStatus): OrderStatus {
+  return 'Completed';
 }
 
 export default function OwnerOrdersPage() {
@@ -421,10 +420,10 @@ export default function OwnerOrdersPage() {
                       <button
                         type="button"
                         onClick={() => advanceOrder(order.backendId, order.status)}
-                        className="inline-flex h-9 items-center justify-center gap-1.5 rounded-full bg-[#111827] px-4 text-xs font-semibold text-white shadow-xs hover:bg-black transition-colors shrink-0"
+                        className="flex h-11 w-full sm:w-auto px-8 items-center justify-center gap-2 rounded-xl bg-black text-sm font-semibold text-white shadow-xs hover:bg-neutral-800 transition shrink-0"
                       >
-                        {order.status === 'Ready' ? <Check className="h-3.5 w-3.5" /> : <Clock3 className="h-3.5 w-3.5" />}
-                        <span>Mark {nextStatus(order.status)}</span>
+                        <Check className="h-4 w-4" />
+                        <span>Done</span>
                       </button>
                     ) : null}
                   </div>

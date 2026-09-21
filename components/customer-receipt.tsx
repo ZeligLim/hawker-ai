@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { CheckCircle2, AlertCircle, ArrowLeft, Receipt, ShieldCheck } from 'lucide-react';
+import { CheckCircle2, AlertCircle, Clock3, ArrowLeft, Receipt, ShieldCheck } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 
 export type ReceiptItem = {
@@ -40,11 +40,27 @@ export function CustomerReceipt({
 }) {
   const [data, setData] = useState<ReceiptData>(initialData);
   const [liveBanner, setLiveBanner] = useState<string | null>(null);
+  const [orderStatus, setOrderStatus] = useState<string>('preparing');
 
   useEffect(() => {
     if (!supabase || !data.id) return;
 
+    // Initial fetch for order status
+    supabase
+      .from('orders')
+      .select('status')
+      .eq('id', data.id)
+      .single()
+      .then(({ data: d }) => {
+        if (d) setOrderStatus(d.status);
+      });
+
     const channel = supabase.channel(`order-${data.id}`)
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'orders', filter: `id=eq.${data.id}` }, (payload: any) => {
+        if (payload.new && payload.new.status) {
+          setOrderStatus(payload.new.status);
+        }
+      })
       .on('broadcast', { event: 'order_refunded' }, (payload: any) => {
         const refundPayload = payload.payload;
         if (refundPayload) {
@@ -93,6 +109,27 @@ export function CustomerReceipt({
           <p className="font-medium">{liveBanner}</p>
         </div>
       ) : null}
+
+      {/* Live Status Banner */}
+      <div className="bg-[#1d1d1f] px-4 py-3.5 flex items-center justify-between text-white">
+        <div className="flex items-center gap-2">
+          {orderStatus === 'served' ? (
+            <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+          ) : orderStatus === 'ready' ? (
+            <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+          ) : (
+            <Clock3 className="w-5 h-5 text-neutral-400" />
+          )}
+          <span className="text-sm font-semibold">
+            {orderStatus === 'served' || orderStatus === 'ready'
+              ? 'Order Completed'
+              : 'Preparing your food...'}
+          </span>
+        </div>
+        {orderStatus !== 'served' && orderStatus !== 'ready' && (
+          <span className="text-xs font-medium text-neutral-300">ETA 10-15 mins</span>
+        )}
+      </div>
 
       {/* Header */}
       <div className="p-6 pb-4 bg-neutral-50">
