@@ -61,6 +61,12 @@ export default function ApplyPage() {
   // Derived existing shop from roles or from API check
   const existingShop = (roles.hasShopOwner && roles.shops.length > 0 ? roles.shops[0] : null) || apiCheckedShop;
 
+  useEffect(() => {
+    if (existingShop) {
+      router.push('/shop-owner/booths' as any);
+    }
+  }, [existingShop, router]);
+
   // Display user details
   const displayName =
     profile?.displayName ||
@@ -252,55 +258,17 @@ export default function ApplyPage() {
           </div>
         ) : existingShop ? (
           /* State 3: User already owns a shop - Avoid duplicate creation! */
-          <div className="bg-white rounded-3xl border border-black/[0.08] shadow-[0_16px_40px_rgba(0,0,0,0.06)] p-6 sm:p-10 text-center">
-            <div className="w-16 h-16 rounded-2xl bg-[#30d158]/15 text-[#248a3d] flex items-center justify-center mx-auto mb-6 shadow-sm">
-              <CheckCircle2 className="w-8 h-8" />
+          <div className="bg-white rounded-3xl border border-black/[0.08] shadow-[0_16px_40px_rgba(0,0,0,0.06)] p-6 sm:p-10 text-center animate-in fade-in zoom-in-95 duration-200">
+            <div className="w-16 h-16 rounded-2xl bg-black/5 text-[#1d1d1f] flex items-center justify-center mx-auto mb-6 shadow-sm">
+              <div className="w-8 h-8 rounded-full border-4 border-black/10 border-t-[#1d1d1f] animate-spin" />
             </div>
-
-            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-[#30d158]/15 text-[#248a3d] mb-3">
-              Active Shop Found
-            </span>
-
+            
             <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#1d1d1f]">
-              You Already Manage {existingShop.name}
+              Signing you in...
             </h1>
             <p className="text-sm sm:text-base text-[#6e6e73] mt-2 max-w-lg mx-auto">
-              Your user account (<strong className="text-[#1d1d1f]">{userEmail}</strong>) is already the verified Shop Owner of an active hawker venue. You do not need to register another venue.
+              You already manage {existingShop.name}. Redirecting to your dashboard.
             </p>
-
-            <div className="mt-6 p-4 rounded-2xl bg-[#f5f5f7] max-w-md mx-auto text-left text-xs space-y-1.5 border border-black/[0.04]">
-              <div className="flex justify-between">
-                <span className="text-[#6e6e73]">Registered Venue:</span>
-                <span className="font-semibold text-[#1d1d1f]">{existingShop.name}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-[#6e6e73]">Account Role:</span>
-                <span className="font-semibold text-[#1d1d1f] capitalize">Shop Owner</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-[#6e6e73]">Status:</span>
-                <span className="inline-flex items-center gap-1 font-semibold text-[#248a3d]">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#30d158]" />
-                  Active & Approved
-                </span>
-              </div>
-            </div>
-
-            <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3 max-w-md mx-auto">
-              <Link
-                href="/shop-owner/booths"
-                className="w-full sm:w-auto flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full text-sm font-semibold text-white bg-[#1d1d1f] hover:bg-black transition-all shadow-sm"
-              >
-                <LayoutDashboard className="w-4 h-4" />
-                Go to Shop Dashboard
-              </Link>
-              <Link
-                href="/shop-owner/analytics"
-                className="w-full sm:w-auto flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full text-sm font-semibold text-[#1d1d1f] bg-black/5 hover:bg-black/10 transition-all"
-              >
-                View Financial Analytics
-              </Link>
-            </div>
           </div>
         ) : submittedShop ? (
           /* State 4: Just submitted successfully */
