@@ -1,4 +1,5 @@
 'use client';
+import { ClientBottomNav } from '@/components/shared/client-bottom-nav';
 
 import React, { useState } from 'react';
 import Link from 'next/link';
@@ -45,7 +46,7 @@ const navItems = [
 export function AdminShell({ children }: AdminShellProps) {
   const pathname = usePathname();
   const { user, roles, signOut } = useAuth();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   const [isSignOutDialogOpen, setIsSignOutDialogOpen] = useState(false);
 
   const roleLabel = roles.isSaasOwner ? 'SaaS Owner' : 'Superadmin';
@@ -67,27 +68,19 @@ export function AdminShell({ children }: AdminShellProps) {
         </div>
         <button
           type="button"
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="p-2 rounded-xl bg-black/[0.04] text-[#1d1d1f] hover:bg-black/[0.08] transition"
-          aria-label="Toggle navigation"
+          onClick={() => setIsSignOutDialogOpen(true)}
+          className="p-2 rounded-xl bg-red-50 text-red-600 hover:bg-red-100 transition"
+          aria-label="Sign Out"
         >
-          {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          <LogOut className="w-5 h-5" />
         </button>
       </header>
 
-      {/* Backdrop for mobile drawer */}
-      {mobileMenuOpen && (
-        <div
-          className="fixed inset-0 bg-black/30 backdrop-blur-xs z-40 md:hidden"
-          onClick={() => setMobileMenuOpen(false)}
-        />
-      )}
 
-      {/* Desktop & Mobile Sidebar Navigation Shell */}
+
+      {/* Desktop Sidebar Navigation Shell */}
       <aside
-        className={`fixed md:sticky top-0 bottom-0 left-0 z-50 w-64 lg:w-72 bg-white md:bg-[#fbfbfd]/90 md:backdrop-blur-xl border-r border-black/[0.08] flex flex-col transition-transform duration-200 ease-in-out md:translate-x-0 ${
-          mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
+        className="hidden md:flex sticky top-0 bottom-0 left-0 z-50 w-64 lg:w-72 bg-[#fbfbfd]/90 backdrop-blur-xl border-r border-black/[0.08] flex-col"
         style={{ height: '100vh' }}
       >
         {/* Brand Header */}
@@ -127,7 +120,6 @@ export function AdminShell({ children }: AdminShellProps) {
                   <Link
                     key={item.href}
                     href={item.href as any}
-                    onClick={() => setMobileMenuOpen(false)}
                     className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-all ${
                       isActive
                         ? 'bg-[#1d1d1f] text-white shadow-xs font-semibold'
@@ -198,11 +190,19 @@ export function AdminShell({ children }: AdminShellProps) {
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 min-w-0 bg-[#f5f5f7] flex flex-col">
+      <main className="flex-1 min-w-0 bg-[#f5f5f7] flex flex-col pb-20 md:pb-0">
         <div className="flex-1 p-4 sm:p-6 md:p-8 max-w-7xl w-full mx-auto">
           {children}
         </div>
       </main>
+
+      <div className="md:hidden">
+        <ClientBottomNav
+          items={navItems}
+          theme="owner"
+          ariaLabel="Admin Navigation"
+        />
+      </div>
 
       {/* Sign Out Confirmation Modal */}
       {isSignOutDialogOpen && (
