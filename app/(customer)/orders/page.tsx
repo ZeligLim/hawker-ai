@@ -23,11 +23,16 @@ export default function OrdersPage() {
   const [checkoutError, setCheckoutError] = useState('');
   const [placedReceipt, setPlacedReceipt] = useState<ReceiptData | null>(null);
   const [feeConfig, setFeeConfig] = useState<any>(undefined);
+  const [isFeeConfigLoading, setIsFeeConfigLoading] = useState(true);
 
   useEffect(() => {
     let active = true;
     async function fetchFeeConfig() {
-      if (cartItems.length === 0) return;
+      if (cartItems.length === 0) {
+        setIsFeeConfigLoading(false);
+        return;
+      }
+      setIsFeeConfigLoading(true);
       try {
         const res = await fetch(`/api/outlets?id=${cartItems[0].stallId}`);
         if (!res.ok) return;
@@ -41,7 +46,9 @@ export default function OrdersPage() {
              platformFeePercent: Number(r?.platform_fee_percent ?? outlet.platform_fee_percent ?? 0.00)
            });
         }
-      } catch {}
+      } catch {} finally {
+        if (active) setIsFeeConfigLoading(false);
+      }
     }
     fetchFeeConfig();
     return () => { active = false; };
@@ -343,35 +350,49 @@ export default function OrdersPage() {
                 <span>Order summary</span>
               </div>
 
-              <div className="mt-4">
-                <p className="text-3xl font-bold tracking-tight">RM {summary.total.toFixed(2)}</p>
-                <p className="mt-1 text-xs text-white/70">
-                  {cartItems.reduce((count, item) => count + item.quantity, 0)} items from {summary.merchantGroups.length} stalls
-                </p>
-              </div>
-
-              {cartItems.length > 0 && (
-                <div className="mt-5 space-y-2.5 pt-4 text-xs">
-                  <div className="flex justify-between text-white/75">
-                    <span>Subtotal</span>
-                    <span className="font-semibold text-white">RM {summary.subtotal.toFixed(2)}</span>
-                  </div>
-                  {feeConfig?.feePayer !== 'MERCHANT' && (
-                    <div className="flex justify-between text-white/75">
-                      <span className="flex items-center gap-1.5">
-                        Platform Fee
-                        <span className="text-[10px] text-white bg-white/20 px-2 py-0.5 rounded-full font-semibold">
-                          {feeConfig?.platformFeePercent > 0 ? `${(feeConfig.platformFeePercent * 100).toFixed(1)}%` : 'Flat'}
-                        </span>
-                      </span>
-                      <span className="font-semibold text-white">RM {summary.serviceFee.toFixed(2)}</span>
-                    </div>
-                  )}
-                  <div className="flex justify-between text-sm font-bold text-white pt-2">
-                    <span>Total</span>
-                    <span className="text-base">RM {summary.total.toFixed(2)}</span>
+              {isFeeConfigLoading ? (
+                <div className="mt-4 space-y-4 animate-pulse">
+                  <div className="h-9 w-32 bg-white/20 rounded-lg"></div>
+                  <div className="h-4 w-48 bg-white/10 rounded"></div>
+                  <div className="mt-5 space-y-2.5 pt-4">
+                    <div className="h-4 w-full bg-white/10 rounded"></div>
+                    <div className="h-4 w-full bg-white/10 rounded"></div>
+                    <div className="h-5 w-full bg-white/20 rounded pt-2"></div>
                   </div>
                 </div>
+              ) : (
+                <>
+                  <div className="mt-4">
+                    <p className="text-3xl font-bold tracking-tight">RM {summary.total.toFixed(2)}</p>
+                    <p className="mt-1 text-xs text-white/70">
+                      {cartItems.reduce((count, item) => count + item.quantity, 0)} items from {summary.merchantGroups.length} stalls
+                    </p>
+                  </div>
+
+                  {cartItems.length > 0 && (
+                    <div className="mt-5 space-y-2.5 pt-4 text-xs">
+                      <div className="flex justify-between text-white/75">
+                        <span>Subtotal</span>
+                        <span className="font-semibold text-white">RM {summary.subtotal.toFixed(2)}</span>
+                      </div>
+                      {feeConfig?.feePayer !== 'MERCHANT' && (
+                        <div className="flex justify-between text-white/75">
+                          <span className="flex items-center gap-1.5">
+                            Platform Fee
+                            <span className="text-[10px] text-white bg-white/20 px-2 py-0.5 rounded-full font-semibold">
+                              {feeConfig?.platformFeePercent > 0 ? `${(feeConfig.platformFeePercent * 100).toFixed(1)}%` : 'Flat'}
+                            </span>
+                          </span>
+                          <span className="font-semibold text-white">RM {summary.serviceFee.toFixed(2)}</span>
+                        </div>
+                      )}
+                      <div className="flex justify-between text-sm font-bold text-white pt-2">
+                        <span>Total</span>
+                        <span className="text-base">RM {summary.total.toFixed(2)}</span>
+                      </div>
+                    </div>
+                  )}
+                </>
               )}
 
               {checkoutState === 'airwallex_ready' ? (
@@ -383,7 +404,7 @@ export default function OrdersPage() {
                 <button
                   type="button"
                   onClick={() => void checkout()}
-                  disabled={checkoutState === 'generating_intent' || checkoutState === 'submitting' || checkoutState === 'success' || cartItems.length === 0}
+                  disabled={checkoutState === 'generating_intent' || checkoutState === 'submitting' || checkoutState === 'success' || cartItems.length === 0 || isFeeConfigLoading}
                   className="mt-6 flex h-11 w-full items-center justify-center rounded-full bg-white px-5 text-sm font-semibold text-black disabled:opacity-50 shadow-xs hover:bg-neutral-100 transition-colors"
                 >
                   {checkoutState === 'generating_intent' 
