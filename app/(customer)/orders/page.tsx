@@ -356,15 +356,17 @@ export default function OrdersPage() {
                     <span>Subtotal</span>
                     <span className="font-semibold text-white">RM {summary.subtotal.toFixed(2)}</span>
                   </div>
-                  <div className="flex justify-between text-white/75">
-                    <span className="flex items-center gap-1.5">
-                      Platform Fee
-                      <span className="text-[10px] text-white bg-white/20 px-2 py-0.5 rounded-full font-semibold">
-                        Flat
+                  {feeConfig?.feePayer !== 'MERCHANT' && (
+                    <div className="flex justify-between text-white/75">
+                      <span className="flex items-center gap-1.5">
+                        Platform Fee
+                        <span className="text-[10px] text-white bg-white/20 px-2 py-0.5 rounded-full font-semibold">
+                          {feeConfig?.platformFeePercent > 0 ? `${(feeConfig.platformFeePercent * 100).toFixed(1)}%` : 'Flat'}
+                        </span>
                       </span>
-                    </span>
-                    <span className="font-semibold text-white">RM {summary.serviceFee.toFixed(2)}</span>
-                  </div>
+                      <span className="font-semibold text-white">RM {summary.serviceFee.toFixed(2)}</span>
+                    </div>
+                  )}
                   <div className="flex justify-between text-sm font-bold text-white pt-2">
                     <span>Total</span>
                     <span className="text-base">RM {summary.total.toFixed(2)}</span>
