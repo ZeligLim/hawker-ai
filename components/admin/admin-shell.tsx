@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/components/auth-provider';
 import {
+  UserRound,
   LayoutDashboard,
   Percent,
   Building2,
@@ -41,6 +42,12 @@ const navItems = [
     icon: Building2,
     exact: false,
   },
+  {
+    href: '/admin/profile',
+    label: 'Profile',
+    icon: UserRound,
+    exact: false,
+  },
 ];
 
 export function AdminShell({ children }: AdminShellProps) {
@@ -53,31 +60,6 @@ export function AdminShell({ children }: AdminShellProps) {
 
   return (
     <div className="min-h-screen bg-[#f5f5f7] text-[#1d1d1f] flex flex-col md:flex-row antialiased">
-      {/* Mobile Top Header */}
-      <header className="md:hidden flex items-center justify-between px-4 py-3 bg-white/90 backdrop-blur-md border-b border-black/[0.08] sticky top-0 z-30 shadow-xs">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-xl bg-[#1d1d1f] flex items-center justify-center text-white shadow-xs">
-            <ShieldCheck className="w-4 h-4" />
-          </div>
-          <div className="flex items-center gap-1.5">
-            <span className="font-semibold text-sm tracking-tight text-[#1d1d1f]">Hawker Admin</span>
-            <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-black/5 text-[#6e6e73] border border-black/[0.06]">
-              {roleLabel}
-            </span>
-          </div>
-        </div>
-        <button
-          type="button"
-          onClick={() => setIsSignOutDialogOpen(true)}
-          className="p-2 rounded-xl bg-red-50 text-red-600 hover:bg-red-100 transition"
-          aria-label="Sign Out"
-        >
-          <LogOut className="w-5 h-5" />
-        </button>
-      </header>
-
-
-
       {/* Desktop Sidebar Navigation Shell */}
       <aside
         className="hidden md:flex sticky top-0 bottom-0 left-0 z-50 w-64 lg:w-72 bg-[#fbfbfd]/90 backdrop-blur-xl border-r border-black/[0.08] flex-col"

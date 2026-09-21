@@ -48,7 +48,7 @@ export function ClientBottomNav({
         className={`grid ${gridColsClass} gap-1 rounded-full p-1.5 backdrop-blur-xl ${containerTheme}`}
       >
         {items.map(({ href, label, icon: Icon }) => {
-          const isHome = href === '/home' || href === '/owner';
+          const isHome = href === '/home' || href === '/owner' || href === '/admin';
           const active = isHome
             ? pathname === href
             : pathname === href || pathname.startsWith(`${href}/`);
