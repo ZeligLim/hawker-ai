@@ -2,11 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { generateObject } from 'ai';
 import { z } from 'zod';
 import { getOpenRouterClient, isOpenRouterConfigured } from '@/lib/ai/provider';
-import { supabase } from '@/lib/supabase/client'; // wait, for route we should use server client, but I will just mock it or rely on client sending token if needed? Wait, the user has API routes using `supabase` client.
+import { createRequestSupabaseClient } from '@/lib/supabase/server'; // wait, for route we should use server client, but I will just mock it or rely on client sending token if needed? Wait, the user has API routes using `supabase` client.
 
 export const maxDuration = 60; // 60 seconds max
 
 export async function POST(req: NextRequest) {
+  const supabase = createRequestSupabaseClient(req);
+  if (!supabase) return NextResponse.json({ error: 'Supabase is not configured.' }, { status: 500 });
   if (!isOpenRouterConfigured) {
     return NextResponse.json({ error: 'AI provider is not configured.' }, { status: 500 });
   }

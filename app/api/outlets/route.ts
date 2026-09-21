@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase/client';
+import { createRequestSupabaseClient } from '@/lib/supabase/server';
 import { resolveEffectiveStallStatus } from '@/lib/schedule/operating-hours';
 
 export async function GET(request: NextRequest) {
-  if (!supabase) {
-    return NextResponse.json({ outlets: [] });
-  }
+  const supabase = createRequestSupabaseClient(request);
+  if (!supabase) return NextResponse.json({ outlets: [] });
+
 
   const { searchParams } = new URL(request.url);
   const slug = searchParams.get('slug') || searchParams.get('centre');
