@@ -3,1078 +3,1078 @@
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import {
-  AlertCircle,
-  BarChart3,
-  Building2,
-  Check,
-  CheckCircle2,
-  Clock,
-  Copy,
-  LoaderCircle,
-  Mail,
-  Pencil,
-  Plus,
-  Power,
-  Receipt,
-  Send,
-  ShieldAlert,
-  ShieldCheck,
-  Store,
-  Trash2,
-  X,
+ AlertCircle,
+ BarChart3,
+ Building2,
+ Check,
+ CheckCircle2,
+ Clock,
+ Copy,
+ LoaderCircle,
+ Mail,
+ Pencil,
+ Plus,
+ Power,
+ Receipt,
+ Send,
+ ShieldAlert,
+ ShieldCheck,
+ Store,
+ Trash2,
+ X,
 } from 'lucide-react';
 import { authenticatedFetch } from '@/lib/supabase/client';
 import { OperatingScheduleModal } from '@/components/operating-schedule-modal';
 import type { OperatingSchedule } from '@/lib/schedule/operating-hours';
 
 type BoothMember = {
-  userId: string;
-  email: string;
-  role: string;
-  createdAt?: string;
+ userId: string;
+ email: string;
+ role: string;
+ createdAt?: string;
 };
 
 type BoothInvitation = {
-  id: string;
-  email: string;
-  expiresAt: string;
-  createdAt?: string;
+ id: string;
+ email: string;
+ expiresAt: string;
+ createdAt?: string;
 };
 
 type Booth = {
-  id: string;
-  name: string;
-  status: 'Active' | 'Needs update';
-  isOpen?: boolean;
-  isActive?: boolean;
-  schedule?: OperatingSchedule | null;
-  restaurantId?: string;
-  manager?: string;
-  members?: BoothMember[];
-  invitations?: BoothInvitation[];
+ id: string;
+ name: string;
+ status: 'Active' | 'Needs update';
+ isOpen?: boolean;
+ isActive?: boolean;
+ schedule?: OperatingSchedule | null;
+ restaurantId?: string;
+ manager?: string;
+ members?: BoothMember[];
+ invitations?: BoothInvitation[];
 };
 
 type ShopMembership = {
-  id: string;
-  name: string;
-  role: string;
-  isActive?: boolean;
-  schedule?: OperatingSchedule | null;
-  booths: Array<{
-    id: string;
-    name: string;
-    isOpen?: boolean;
-    isActive?: boolean;
-    schedule?: OperatingSchedule | null;
-    members?: BoothMember[];
-    invitations?: BoothInvitation[];
-  }>;
+ id: string;
+ name: string;
+ role: string;
+ isActive?: boolean;
+ schedule?: OperatingSchedule | null;
+ booths: Array<{
+ id: string;
+ name: string;
+ isOpen?: boolean;
+ isActive?: boolean;
+ schedule?: OperatingSchedule | null;
+ members?: BoothMember[];
+ invitations?: BoothInvitation[];
+ }>;
 };
 
 export default function ShopOwnerBoothsPage() {
-  const [shops, setShops] = useState<ShopMembership[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [editing, setEditing] = useState<Booth | null>(null);
-  const [isAddSlotOpen, setIsAddSlotOpen] = useState(false);
-  const [isCreatingSlot, setIsCreatingSlot] = useState(false);
-  const [newSlot, setNewSlot] = useState({ slotName: '', restaurantId: '', vendorEmail: '' });
-
-  // Per-booth email input state
-  const [emailInputs, setEmailInputs] = useState<Record<string, string>>({});
-  const [sendingState, setSendingState] = useState<Record<string, boolean>>({});
-  const [removingState, setRemovingState] = useState<Record<string, boolean>>({});
-  const [feedbacks, setFeedbacks] = useState<
-    Record<string, { type: 'success' | 'error'; message: string; link?: string; delivered?: boolean }>
-  >({});
-  const [copiedLinks, setCopiedLinks] = useState<Record<string, boolean>>({});
-
-  // Booth deletion state
-  const [boothToDelete, setBoothToDelete] = useState<Booth | null>(null);
-  const [isDeletingBooth, setIsDeletingBooth] = useState(false);
-  const [deleteError, setDeleteError] = useState('');
-
-  // Rent Billing state
-  const [rentModalBooth, setRentModalBooth] = useState<Booth | null>(null);
-  const [rentAmount, setRentAmount] = useState('');
-  const [rentDescription, setRentDescription] = useState('Monthly Rent');
-  const [isBillingRent, setIsBillingRent] = useState(false);
-  const [rentFeedback, setRentFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
-
-  const loadShops = useCallback(async () => {
-    try {
-      const response = await authenticatedFetch('/api/owner/shops');
-      const payload = (await response.json()) as { shops?: ShopMembership[] };
-      setShops(payload.shops ?? []);
-      const defaultRestaurantId = payload.shops?.[0]?.id ?? '';
-      setNewSlot((current) => ({
-        ...current,
-        restaurantId: current.restaurantId || defaultRestaurantId,
-      }));
-    } catch {
-      setShops([]);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    const timeoutId = window.setTimeout(() => {
-      void loadShops();
-    }, 0);
-
-    return () => window.clearTimeout(timeoutId);
-  }, [loadShops]);
-
-  const [scheduleModal, setScheduleModal] = useState<{
-    isOpen: boolean;
-    targetType: 'shop' | 'booth';
-    targetId: string;
-    title: string;
-    description: string;
-    initialSchedule?: OperatingSchedule | null;
-  }>({
-    isOpen: false,
-    targetType: 'shop',
-    targetId: '',
-    title: '',
-    description: '',
-  });
-
-  const boothList: Booth[] = shops.flatMap((shop) =>
-    shop.booths.map((booth) => ({
-      id: booth.id,
-      name: booth.name,
-      status: 'Active' as const,
-      isOpen: booth.isOpen !== false,
-      isActive: booth.isActive !== false,
-      schedule: booth.schedule,
-      restaurantId: shop.id,
-      manager: shop.role,
-      members: booth.members ?? [],
-      invitations: booth.invitations ?? [],
-    })),
-  );
-
-
-  // Master Override Layer: Venue Owner toggles booth Active / Inactive
-  const handleToggleBoothActive = async (boothId: string, currentIsActive: boolean) => {
-    const nextActive = !currentIsActive;
-    setShops((prev) =>
-      prev.map((s) => ({
-        ...s,
-        booths: s.booths.map((b) => (b.id === boothId ? { ...b, isActive: nextActive } : b)),
-      }))
-    );
-
-    try {
-      const res = await authenticatedFetch(`/api/owner/booths/${boothId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ is_active: nextActive }),
-      });
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error ?? 'Failed to update booth master active status');
-      }
-      await loadShops();
-    } catch (err) {
-      alert(err instanceof Error ? err.message : 'Failed to update booth master active status');
-      setShops((prev) =>
-        prev.map((s) => ({
-          ...s,
-          booths: s.booths.map((b) => (b.id === boothId ? { ...b, isActive: currentIsActive } : b)),
-        }))
-      );
-    }
-  };
-
-  const handleToggleShopActive = async (shopId: string, currentIsActive: boolean) => {
-    const nextActive = !currentIsActive;
-    setShops((prev) =>
-      prev.map((s) => (s.id === shopId ? { ...s, isActive: nextActive } : s))
-    );
-
-    try {
-      const res = await authenticatedFetch(`/api/owner/shops/${shopId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ is_active: nextActive }),
-      });
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error ?? 'Failed to update shop status');
-      }
-      await loadShops();
-    } catch (err) {
-      alert(err instanceof Error ? err.message : 'Failed to update shop status');
-      setShops((prev) =>
-        prev.map((s) => (s.id === shopId ? { ...s, isActive: currentIsActive } : s))
-      );
-    }
-  };
-
-  const handleSaveSchedule = async (schedule: OperatingSchedule) => {
-    if (scheduleModal.targetType === 'shop') {
-      const res = await authenticatedFetch(`/api/owner/shops/${scheduleModal.targetId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ schedule }),
-      });
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error ?? 'Failed to update shop operating hours schedule');
-      }
-    } else {
-      const res = await authenticatedFetch(`/api/owner/booths/${scheduleModal.targetId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ schedule }),
-      });
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error ?? 'Failed to update booth operating hours schedule');
-      }
-    }
-    await loadShops();
-  };
-
-  const handleOpenAddSlot = () => {
-    setNewSlot({
-      slotName: `Slot #${String(boothList.length + 1).padStart(2, '0')}`,
-      restaurantId: shops[0]?.id ?? '',
-      vendorEmail: '',
-    });
-    setIsAddSlotOpen(true);
-  };
-
-  const handleSendSetupLink = async (boothId: string, directEmail?: string) => {
-    const targetEmail = (directEmail ?? emailInputs[boothId] ?? '').trim().toLowerCase();
-
-    if (!targetEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(targetEmail)) {
-      setFeedbacks((prev) => ({
-        ...prev,
-        [boothId]: { type: 'error', message: 'Please enter a valid email address.' },
-      }));
-      return;
-    }
-
-    setSendingState((prev) => ({ ...prev, [boothId]: true }));
-    setFeedbacks((prev) => {
-      const next = { ...prev };
-      delete next[boothId];
-      return next;
-    });
-
-    try {
-      const response = await authenticatedFetch(`/api/owner/booths/${boothId}/invite`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: targetEmail }),
-      });
-
-      const payload = (await response.json()) as {
-        token?: string;
-        setupLink?: string;
-        error?: string;
-        message?: string;
-        delivered?: boolean;
-        provider?: string;
-      };
-
-      if (!response.ok) {
-        throw new Error(payload.error ?? 'Failed to send setup link.');
-      }
-
-      setEmailInputs((prev) => ({ ...prev, [boothId]: '' }));
-      setFeedbacks((prev) => ({
-        ...prev,
-        [boothId]: {
-          type: 'success',
-          message: payload.message ?? `Setup link sent to ${targetEmail}`,
-          link: payload.setupLink,
-          delivered: payload.delivered,
-        },
-      }));
-
-      await loadShops();
-    } catch (error) {
-      setFeedbacks((prev) => ({
-        ...prev,
-        [boothId]: {
-          type: 'error',
-          message: error instanceof Error ? error.message : 'Unable to send setup link.',
-        },
-      }));
-    } finally {
-      setSendingState((prev) => ({ ...prev, [boothId]: false }));
-    }
-  };
-
-  const handleRemoveAccess = async (boothId: string, email: string) => {
-    const key = `${boothId}-${email}`;
-    setRemovingState((prev) => ({ ...prev, [key]: true }));
-
-    try {
-      const response = await authenticatedFetch(`/api/owner/booths/${boothId}/members`, {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
-      });
-
-      const payload = (await response.json()) as { error?: string; message?: string };
-      if (!response.ok) {
-        throw new Error(payload.error ?? 'Unable to remove email.');
-      }
-
-      setFeedbacks((prev) => ({
-        ...prev,
-        [boothId]: {
-          type: 'success',
-          message: `Removed ${email}. They have lost control of the store.`,
-        },
-      }));
-
-      await loadShops();
-    } catch (error) {
-      setFeedbacks((prev) => ({
-        ...prev,
-        [boothId]: {
-          type: 'error',
-          message: error instanceof Error ? error.message : 'Failed to remove access.',
-        },
-      }));
-    } finally {
-      setRemovingState((prev) => ({ ...prev, [key]: false }));
-    }
-  };
-
-  const copyLink = (linkUrl: string, key: string) => {
-    navigator.clipboard?.writeText(linkUrl);
-    setCopiedLinks((prev) => ({ ...prev, [key]: true }));
-    setTimeout(() => {
-      setCopiedLinks((prev) => ({ ...prev, [key]: false }));
-    }, 2000);
-  };
-
-  const handleCreateSlot = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (!newSlot.slotName.trim() || !newSlot.restaurantId) return;
-
-    setIsCreatingSlot(true);
-    try {
-      // 1. Provision the booth slot
-      const boothRes = await authenticatedFetch('/api/owner/booths', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: newSlot.slotName.trim(),
-          restaurantId: newSlot.restaurantId,
-        }),
-      });
-
-      const boothData = await boothRes.json();
-      if (!boothRes.ok || !boothData.booth?.id) {
-        throw new Error(boothData.error ?? 'Unable to create booth slot.');
-      }
-
-      const createdBoothId = boothData.booth.id;
-
-      // 2. If vendor email was provided, send setup link immediately
-      if (newSlot.vendorEmail.trim()) {
-        await handleSendSetupLink(createdBoothId, newSlot.vendorEmail.trim());
-      }
-
-      setIsAddSlotOpen(false);
-      await loadShops();
-    } catch (error) {
-      alert(error instanceof Error ? error.message : 'Failed to create slot');
-    } finally {
-      setIsCreatingSlot(false);
-    }
-  };
-
-  const handleSaveBooth = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (!editing) return;
-
-    try {
-      const response = await authenticatedFetch(`/api/owner/booths/${editing.id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: editing.name }),
-      });
-
-      const payload = (await response.json()) as { error?: string };
-      if (!response.ok) {
-        throw new Error(payload.error ?? 'Unable to update booth.');
-      }
-
-      setEditing(null);
-      await loadShops();
-    } catch (error) {
-      alert(error instanceof Error ? error.message : 'Failed to update booth');
-    }
-  };
-
-  const handleBillRent = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!rentModalBooth || !rentAmount) return;
-    
-    setIsBillingRent(true);
-    setRentFeedback(null);
-    try {
-      const response = await authenticatedFetch('/api/owner/rent', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          boothId: rentModalBooth.id,
-          amount: parseFloat(rentAmount),
-          description: rentDescription,
-        }),
-      });
-      
-      const payload = await response.json();
-      if (!response.ok) {
-        throw new Error(payload.error ?? 'Failed to issue rent bill.');
-      }
-      
-      setRentFeedback({ type: 'success', message: 'Rent bill issued successfully.' });
-      setTimeout(() => {
-        setRentModalBooth(null);
-        setRentFeedback(null);
-        setRentAmount('');
-        setRentDescription('Monthly Rent');
-      }, 1500);
-    } catch (error) {
-      setRentFeedback({ type: 'error', message: error instanceof Error ? error.message : 'Failed to bill rent.' });
-    } finally {
-      setIsBillingRent(false);
-    }
-  };
-
-  const handleDeleteBooth = async (boothId: string) => {
-    setIsDeletingBooth(true);
-    setDeleteError('');
-    try {
-      const response = await authenticatedFetch(`/api/owner/booths/${boothId}`, {
-        method: 'DELETE',
-      });
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.error ?? 'Failed to delete booth slot.');
-      }
-      setBoothToDelete(null);
-      await loadShops();
-    } catch (err) {
-      setDeleteError(err instanceof Error ? err.message : 'Unable to delete booth.');
-    } finally {
-      setIsDeletingBooth(false);
-    }
-  };
-
-  return (
-    <main className="min-h-screen bg-[#f5f5f7] px-4 pb-32 pt-5 sm:px-6 text-[#1d1d1f]">
-      <div className="mx-auto max-w-7xl">
-        <header className="flex flex-col sm:flex-row sm:items-center sm:justify-end gap-4">
-          <div className="flex items-center gap-2 shrink-0">
-            
-            
-            
-          </div>
-        </header>
-
-        <section className="mt-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5 items-start">
-          {loading ? (
-            <div className="col-span-full flex items-center justify-center p-12 text-[#6e6e73] text-sm">
-              <LoaderCircle className="h-4 w-4 animate-spin mr-2 text-[#111827]" /> Loading booths…
-            </div>
-          ) : boothList.length === 0 ? (
-            <div className="col-span-full rounded-[24px] bg-white p-8 text-center shadow-[0_12px_26px_rgba(15,23,42,0.04)] /[0.04]">
-              <Store className="h-10 w-10 text-[#86868b] mx-auto mb-3" />
-              <p className="text-base font-semibold text-[#1d1d1f] truncate">No booth slots created yet</p>
-              <p className="mt-1 text-xs text-[#6e6e73] max-w-sm mx-auto truncate">
-                Add your first booth slot and send a setup link to a vendor email.
-              </p>
-              <button
-                type="button"
-                onClick={handleOpenAddSlot}
-                className="mt-4 inline-flex h-9 items-center gap-2 rounded-full bg-[#111827] px-4 text-xs font-semibold text-white hover:bg-black transition-all shadow-xs"
-              >
-                <Plus className="h-3.5 w-3.5" /> Add Booth Slot
-              </button>
-            </div>
-          ) : (
-            boothList.map((booth) => {
-              const feedback = feedbacks[booth.id];
-              const isSending = sendingState[booth.id];
-              const origin = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000';
-
-              const activeMembers = booth.members ?? [];
-              const pendingInvites = booth.invitations ?? [];
-              const hasAuthorizedUsers = activeMembers.length > 0 || pendingInvites.length > 0;
-
-              return (
-                <article
-                  key={booth.id}
-                  className="flex flex-col justify-between rounded-[24px] bg-white p-4 sm:p-5 shadow-[0_12px_26px_rgba(15,23,42,0.04)] /[0.04] transition-all hover:shadow-[0_16px_32px_rgba(15,23,42,0.06)]"
-                >
-                  {/* Booth Slot Header */}
-                  <div className="flex items-center justify-between gap-2.5">
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-black/5 text-[#1d1d1f] shrink-0">
-                        <Store className="h-5 w-5" />
-                      </div>
-                      <div className="min-w-0">
-                        <p className="text-sm sm:text-base font-semibold text-[#1d1d1f] truncate">{booth.name}</p>
-                        <p className="text-[11px] text-[#6e6e73] truncate">
-                          Role: {booth.manager ?? 'Shop owner'}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-1.5 shrink-0 flex-wrap justify-end">
-                      {/* Active / Inactive Toggle */}
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (booth.isActive !== false) {
-                            if (window.confirm('Setting the stall to inactive will take effect at 3:00 AM the next morning. Continue?')) {
-                              handleToggleBoothActive(booth.id, false);
-                            }
-                          } else {
-                            handleToggleBoothActive(booth.id, true);
-                          }
-                        }}
-                        title={
-                          booth.isActive !== false
-                            ? 'Set Inactive (Takes effect at 3:00 AM)'
-                            : 'Set Active'
-                        }
-                        className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-semibold transition-all ${
-                          booth.isActive !== false
-                            ? 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
-                            : 'bg-black text-white'
-                        }`}
-                      >
-                        <ShieldAlert className="w-3 h-3" />
-                        <span>{booth.isActive !== false ? 'Active' : 'Inactive'}</span>
-                      </button>
-
-                      
-
-                      
-
-                      
-
-                      <button
-                        type="button"
-                        onClick={() => setRentModalBooth(booth)}
-                        className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#f5f5f7] text-[#1d1d1f] hover:bg-black/5 transition-all shadow-xs shrink-0"
-                        aria-label="Charge Rent"
-                        title="Issue Rent Bill"
-                      >
-                        <Receipt className="h-3.5 w-3.5 text-[#1d1d1f]" />
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => setEditing(booth)}
-                        className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#f5f5f7] text-[#1d1d1f] hover:bg-black/5 transition-all shadow-xs shrink-0" aria-label="Edit Slot"
-                        title="Edit slot identifier"
-                      >
-                        <Pencil className="h-3.5 w-3.5 text-[#1d1d1f]" />
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setBoothToDelete(booth);
-                          setDeleteError('');
-                        }}
-                        className="flex h-8 w-8 items-center justify-center rounded-xl bg-red-50/80 text-red-600 hover:bg-red-100 transition-all shadow-xs shrink-0"
-                        aria-label="Delete Booth Slot"
-                        title={`Delete ${booth.name}`}
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Master Inactive Alert Banner if disabled by venue owner */}
-                  {booth.isActive === false && (
-                    <div className="mt-3 flex items-center gap-2 p-2.5 rounded-xl bg-red-50 text-red-700 text-xs">
-                      <AlertCircle className="w-4 h-4 shrink-0 text-red-600" />
-                      <span className="leading-tight font-medium">
-                        Master Override: This booth is marked Inactive by venue operator. It is strictly offline to customers regardless of operational open state.
-                      </span>
-                    </div>
-                  )}
-
-                  {/* Send Setup Link Section */}
-                  <div className="mt-4 flex flex-col gap-2">
-                    <div className="flex items-center gap-2">
-                      <div className="relative flex-1 min-w-0">
-                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#86868b]" />
-                        <input
-                          type="email"
-                          value={emailInputs[booth.id] ?? ''}
-                          onChange={(e) =>
-                            setEmailInputs((prev) => ({ ...prev, [booth.id]: e.target.value }))
-                          }
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
-                              e.preventDefault();
-                              void handleSendSetupLink(booth.id);
-                            }
-                          }}
-                          placeholder="vendor@email.com"
-                          className="h-11 w-full rounded-full bg-[#f5f5f7] shadow-sm py-2 pl-9 pr-4 text-sm text-[#1d1d1f] placeholder:text-[#86868b] outline-none transition-colors hover:bg-neutral-200 focus:bg-neutral-200"
-                        />
-                      </div>
-                      <button
-                        type="button"
-                        disabled={isSending}
-                        onClick={() => void handleSendSetupLink(booth.id)}
-                        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#111827] text-white transition-colors hover:bg-black disabled:opacity-50 shadow-xs"
-                        aria-label="Send setup link"
-                        title="Send setup link"
-                      >
-                        {isSending ? (
-                          <LoaderCircle className="h-4 w-4 animate-spin" />
-                        ) : (
-                          <Send className="h-4 w-4 -ml-0.5" />
-                        )}
-                      </button>
-                    </div>
-
-                    {feedback && (
-                      <div
-                        className={`mt-2.5 flex flex-col gap-1.5 rounded-xl p-2.5 text-xs ${
-                          feedback.type === 'success'
-                            ? 'bg-[#30d158]/10 text-[#166534]  -[#30d158]/20'
-                            : 'bg-red-50 text-red-700  '
-                        }`}
-                      >
-                        <div className="flex items-center gap-2 min-w-0 flex-1">
-                          {feedback.delivered ? (
-                            <CheckCircle2 className="h-4 w-4 shrink-0 text-[#30d158]" />
-                          ) : feedback.type === 'success' ? (
-                            <Mail className="h-4 w-4 shrink-0 text-[#111827]" />
-                          ) : null}
-                          <span className="font-medium leading-snug truncate">{feedback.message}</span>
-                        </div>
-                        {feedback.link && (
-                          <button
-                            type="button"
-                            onClick={() => copyLink(feedback.link!, `feedback-${booth.id}`)}
-                            className="inline-flex items-center gap-1 font-semibold text-[#1d1d1f] hover:underline shrink-0 text-xs"
-                          >
-                            {copiedLinks[`feedback-${booth.id}`] ? (
-                              <>
-                                <Check className="h-3 w-3" /> Link Copied
-                              </>
-                            ) : (
-                              <>
-                                <Copy className="h-3 w-3" /> Copy Setup Link
-                              </>
-                            )}
-                          </button>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                  {/* Authorized Emails List */}
-                  <div className="mt-2 flex flex-col gap-1.5">
-                    {!hasAuthorizedUsers ? null : (
-                      <div className="space-y-1.5 mt-2">
-                        {/* Active members */}
-                        {activeMembers.map((member) => {
-                          const removeKey = `${booth.id}-${member.email}`;
-                          const isRemoving = removingState[removeKey];
-
-                          return (
-                            <div
-                              key={member.userId || member.email}
-                              className="flex items-center justify-between gap-2 rounded-xl bg-[#f5f5f7]/60 px-3 py-1.5 text-xs /[0.03]"
-                            >
-                              <div className="flex items-center gap-2 min-w-0">
-                                <span className="h-2 w-2 rounded-full bg-[#30d158] shrink-0" />
-                                <span className="font-medium text-[#1d1d1f] truncate">
-                                  {member.email || `User ID: ${member.userId.slice(0, 8)}…`}
-                                </span>
-                                <span className="rounded-full bg-[#30d158]/15 px-2 py-0.5 text-[10px] font-semibold text-[#166534] shrink-0">
-                                  Active {member.role === 'owner' ? 'Manager' : member.role}
-                                </span>
-                              </div>
-
-                              <button
-                                type="button"
-                                disabled={isRemoving}
-                                onClick={() => void handleRemoveAccess(booth.id, member.email)}
-                                title="Revoke access"
-                                aria-label="Revoke access"
-                                className="flex h-7 w-7 items-center justify-center rounded-lg bg-red-50/80 text-red-600 hover:bg-red-100 transition-all shrink-0 disabled:opacity-50 shadow-xs"
-                              >
-                                {isRemoving ? (
-                                  <LoaderCircle className="h-3.5 w-3.5 animate-spin" />
-                                ) : (
-                                  <Trash2 className="h-3.5 w-3.5" />
-                                )}
-                              </button>
-                            </div>
-                          );
-                        })}
-
-                        {/* Pending invitations */}
-                        {pendingInvites.map((invite) => {
-                          const removeKey = `${booth.id}-${invite.email}`;
-                          const isRemoving = removingState[removeKey];
-                          const linkKey = `invite-${invite.id}`;
-                          const isCopied = copiedLinks[linkKey];
-
-                          return (
-                            <div
-                              key={invite.id}
-                              className="flex items-center justify-between gap-2 rounded-xl bg-[#f5f5f7]/60 px-3 py-1.5 text-xs /[0.03]"
-                            >
-                              <div className="flex items-center gap-2 min-w-0">
-                                <span className="h-2 w-2 rounded-full bg-amber-500 shrink-0" />
-                                <span className="font-medium text-[#1d1d1f] truncate">
-                                  {invite.email}
-                                </span>
-                                <span className="rounded-full bg-amber-500/15 px-2 py-0.5 text-[10px] font-semibold text-amber-700 shrink-0">
-                                  Pending
-                                </span>
-                              </div>
-
-                              <div className="flex items-center gap-1 shrink-0">
-                                <button
-                                  type="button"
-                                  onClick={() =>
-                                    copyLink(
-                                      `${origin}/booths/join?token=${encodeURIComponent(invite.id)}`,
-                                      linkKey,
-                                    )
-                                  }
-                                  title="Copy invitation link"
-                                  aria-label="Copy invitation link"
-                                  className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#e5e5ea] text-[#1d1d1f] hover:bg-[#d1d1d6] transition-all shadow-xs shrink-0" >
-                                  {isCopied ? (
-                                    <Check className="h-3.5 w-3.5 text-emerald-600" />
-                                  ) : (
-                                    <Copy className="h-3.5 w-3.5" />
-                                  )}
-                                </button>
-                                <button
-                                  type="button"
-                                  disabled={isRemoving}
-                                  onClick={() => void handleRemoveAccess(booth.id, invite.email)}
-                                  title="Cancel invitation"
-                                  aria-label="Cancel invitation"
-                                  className="flex h-7 w-7 items-center justify-center rounded-lg bg-red-50/80 text-red-600 hover:bg-red-100 transition-all shrink-0 disabled:opacity-50 shadow-xs"
-                                >
-                                  {isRemoving ? (
-                                    <LoaderCircle className="h-3.5 w-3.5 animate-spin" />
-                                  ) : (
-                                    <X className="h-3.5 w-3.5" />
-                                  )}
-                                </button>
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    )}
-                  </div>
-                </article>
-              );
-            })
-          )}
-        </section>
-      </div>
-
-      {/* ADD BOOTH SLOT MODAL */}
-      {isAddSlotOpen ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-xs">
-          <div className="w-full max-w-md rounded-[28px] bg-white p-4 sm:p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Store className="h-5 w-5 text-[#111827]" />
-                <h2 className="text-xl font-semibold tracking-tight text-[#1d1d1f]">Add Booth Slot</h2>
-              </div>
-              <button
-                type="button"
-                aria-label="Close dialog"
-                onClick={() => setIsAddSlotOpen(false)}
-                className="p-1 rounded-full text-[#6e6e73] hover:text-[#1d1d1f]"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-
-            <form onSubmit={handleCreateSlot} className="mt-4 space-y-4">
-              {shops.length > 1 && (
-                <label className="block text-xs font-semibold text-[#1d1d1f]">
-                  Food Hall / Venue
-                  <select
-                    value={newSlot.restaurantId}
-                    onChange={(event) =>
-                      setNewSlot({ ...newSlot, restaurantId: event.target.value })
-                    }
-                    className="mt-1.5 w-full rounded-2xl bg-white shadow-sm px-3.5 py-2.5 text-sm outline-none focus:"
-                  >
-                    {shops.map((shop) => (
-                      <option key={shop.id} value={shop.id}>
-                        {shop.name}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-              )}
-
-              <label className="block text-xs font-semibold text-[#1d1d1f]">
-                Booth Slot Identifier
-                <input
-                  value={newSlot.slotName}
-                  onChange={(event) => setNewSlot({ ...newSlot, slotName: event.target.value })}
-                  placeholder="e.g. Slot #02, Counter 2"
-                  className="mt-1.5 w-full rounded-2xl bg-white shadow-sm px-3.5 py-2.5 text-sm outline-none focus:"
-                  required
-                />
-              </label>
-
-              <label className="block text-xs font-semibold text-[#1d1d1f]">
-                Vendor Email (Optional)
-                <input
-                  type="email"
-                  value={newSlot.vendorEmail}
-                  onChange={(event) =>
-                    setNewSlot({ ...newSlot, vendorEmail: event.target.value })
-                  }
-                  placeholder="vendor@stall.com"
-                  className="mt-1.5 w-full rounded-2xl bg-white shadow-sm px-3.5 py-2.5 text-sm outline-none focus:"
-                />
-                <span className="mt-1 block text-[11px] text-[#86868b]">
-                  If provided, a setup link will be automatically sent to this email upon creation.
-                </span>
-              </label>
-
-              <button
-                type="submit"
-                disabled={isCreatingSlot}
-                className="mt-3 flex w-full items-center justify-center gap-2 rounded-full bg-[#111827] px-4 py-3 text-xs font-semibold text-white hover:bg-black transition-all disabled:opacity-70"
-              >
-                {isCreatingSlot ? (
-                  <>
-                    <LoaderCircle className="h-4 w-4 animate-spin" /> Provisioning Slot...
-                  </>
-                ) : (
-                  <>
-                    <Plus className="h-4 w-4" /> Create Booth Slot
-                  </>
-                )}
-              </button>
-            </form>
-          </div>
-        </div>
-      ) : null}
-
-      {/* RENT BILLING MODAL */}
-      {rentModalBooth ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-xs">
-          <form
-            onSubmit={handleBillRent}
-            className="w-full max-w-md rounded-[28px] bg-white p-4 sm:p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto"
-          >
-            <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold text-[#1d1d1f]">Issue Rent Bill</h2>
-              <button
-                type="button"
-                aria-label="Close rent dialog"
-                onClick={() => setRentModalBooth(null)}
-              >
-                <X className="h-5 w-5 text-[#6e6e73]" />
-              </button>
-            </div>
-
-            <p className="text-sm text-[#6e6e73]">
-              Billing <strong className="text-[#1d1d1f] font-semibold">{rentModalBooth.name}</strong>. They will receive an invoice payable via Airwallex.
-            </p>
-
-            {rentFeedback && (
-              <div className={`rounded-xl p-3 text-xs ${rentFeedback.type === 'success' ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700'}`}>
-                {rentFeedback.message}
-              </div>
-            )}
-
-            <label className="block text-xs font-semibold text-[#1d1d1f]">
-              Amount (RM)
-              <input
-                type="number"
-                step="0.01"
-                min="0.01"
-                value={rentAmount}
-                onChange={(event) => setRentAmount(event.target.value)}
-                placeholder="e.g. 500.00"
-                className="mt-1.5 w-full rounded-2xl bg-[#f5f5f7] px-3.5 py-2.5 text-sm outline-none focus:ring-2 focus:ring-[#111827]"
-                required
-              />
-            </label>
-
-            <label className="block text-xs font-semibold text-[#1d1d1f]">
-              Description
-              <input
-                value={rentDescription}
-                onChange={(event) => setRentDescription(event.target.value)}
-                placeholder="e.g. November 2026 Rent"
-                className="mt-1.5 w-full rounded-2xl bg-[#f5f5f7] px-3.5 py-2.5 text-sm outline-none focus:ring-2 focus:ring-[#111827]"
-                required
-              />
-            </label>
-
-            <button
-              type="submit"
-              disabled={isBillingRent}
-              className="mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-[#111827] px-4 py-3 text-xs font-semibold text-white hover:bg-black transition-all disabled:opacity-50"
-            >
-              {isBillingRent ? (
-                <>
-                  <LoaderCircle className="h-4 w-4 animate-spin" /> Issuing...
-                </>
-              ) : (
-                'Issue Rent Bill'
-              )}
-            </button>
-          </form>
-        </div>
-      ) : null}
-
-      {/* EDIT BOOTH SLOT MODAL */}
-      {editing ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-xs">
-          <form
-            onSubmit={handleSaveBooth}
-            className="w-full max-w-md rounded-[28px] bg-white p-4 sm:p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto"
-          >
-            <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold text-[#1d1d1f]">Edit Booth Slot</h2>
-              <button
-                type="button"
-                aria-label="Close edit dialog"
-                onClick={() => setEditing(null)}
-              >
-                <X className="h-5 w-5 text-[#6e6e73]" />
-              </button>
-            </div>
-
-            <label className="block text-xs font-semibold text-[#1d1d1f]">
-              Booth Slot Identifier
-              <input
-                value={editing.name}
-                onChange={(event) => setEditing({ ...editing, name: event.target.value })}
-                className="mt-1.5 w-full rounded-2xl bg-white shadow-sm px-3.5 py-2.5 text-sm outline-none focus:"
-              />
-            </label>
-
-            <button
-              type="submit"
-              className="mt-4 w-full rounded-full bg-[#111827] px-4 py-3 text-xs font-semibold text-white hover:bg-black transition-all"
-            >
-              Save Slot Changes
-            </button>
-          </form>
-        </div>
-      ) : null}
-
-      {/* DELETE BOOTH SLOT CONFIRMATION MODAL */}
-      {boothToDelete ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-xs">
-          <div className="w-full max-w-md rounded-[28px] bg-white p-4 sm:p-6 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-red-50 text-red-600">
-                  <Trash2 className="h-5 w-5" />
-                </div>
-                <div>
-                  <h2 className="text-lg font-semibold text-[#1d1d1f]">Delete Booth Slot</h2>
-                  <p className="text-[11px] text-[#6e6e73]">Permanently remove stall allocation</p>
-                </div>
-              </div>
-              <button
-                type="button"
-                aria-label="Close delete dialog"
-                onClick={() => {
-                  setBoothToDelete(null);
-                  setDeleteError('');
-                }}
-                className="p-1 rounded-full text-[#6e6e73] hover:text-[#1d1d1f]"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-
-            <p className="text-xs sm:text-sm text-[#6e6e73] leading-relaxed">
-              Are you sure you want to delete <strong className="text-[#1d1d1f] font-semibold">{boothToDelete.name}</strong>?
-              This will remove vendor access immediately. The stall data will be kept as recently deleted for one year for recovery purposes.
-            </p>
-
-            {deleteError && (
-              <div className="rounded-xl bg-red-50 p-3 text-xs text-red-700">
-                {deleteError}
-              </div>
-            )}
-
-            <div className="flex items-center gap-2.5 pt-2">
-              <button
-                type="button"
-                disabled={isDeletingBooth}
-                onClick={() => {
-                  setBoothToDelete(null);
-                  setDeleteError('');
-                }}
-                className="flex-1 rounded-full py-2.5 text-xs font-semibold text-[#1d1d1f] hover:bg-black/5 transition-all"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                disabled={isDeletingBooth}
-                onClick={() => void handleDeleteBooth(boothToDelete.id)}
-                className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-full bg-red-600 hover:bg-red-700 py-2.5 text-xs font-semibold text-white shadow-sm transition-all disabled:opacity-50"
-              >
-                {isDeletingBooth ? (
-                  <>
-                    <LoaderCircle className="h-3.5 w-3.5 animate-spin" />
-                    <span>Deleting…</span>
-                  </>
-                ) : (
-                  <>
-                    <Trash2 className="h-3.5 w-3.5" />
-                    <span>Delete Slot</span>
-                  </>
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-      ) : null}
-
-      <OperatingScheduleModal
-        isOpen={scheduleModal.isOpen}
-        onClose={() => setScheduleModal((prev) => ({ ...prev, isOpen: false }))}
-        title={scheduleModal.title}
-        description={scheduleModal.description}
-        initialSchedule={scheduleModal.initialSchedule}
-        onSave={handleSaveSchedule}
-      />
-      <button
-        type="button"
-        onClick={handleOpenAddSlot}
-        className="fixed bottom-24 sm:bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-[#111827] text-white shadow-lg hover:bg-black transition-all"
-        aria-label="Add Booth Slot"
-        title="Add Booth Slot"
-      >
-        <Plus className="h-6 w-6" />
-      </button>
-    </main>
-  );
+ const [shops, setShops] = useState<ShopMembership[]>([]);
+ const [loading, setLoading] = useState(true);
+ const [editing, setEditing] = useState<Booth | null>(null);
+ const [isAddSlotOpen, setIsAddSlotOpen] = useState(false);
+ const [isCreatingSlot, setIsCreatingSlot] = useState(false);
+ const [newSlot, setNewSlot] = useState({ slotName: '', restaurantId: '', vendorEmail: '' });
+
+ // Per-booth email input state
+ const [emailInputs, setEmailInputs] = useState<Record<string, string>>({});
+ const [sendingState, setSendingState] = useState<Record<string, boolean>>({});
+ const [removingState, setRemovingState] = useState<Record<string, boolean>>({});
+ const [feedbacks, setFeedbacks] = useState<
+ Record<string, { type: 'success' | 'error'; message: string; link?: string; delivered?: boolean }>
+ >({});
+ const [copiedLinks, setCopiedLinks] = useState<Record<string, boolean>>({});
+
+ // Booth deletion state
+ const [boothToDelete, setBoothToDelete] = useState<Booth | null>(null);
+ const [isDeletingBooth, setIsDeletingBooth] = useState(false);
+ const [deleteError, setDeleteError] = useState('');
+
+ // Rent Billing state
+ const [rentModalBooth, setRentModalBooth] = useState<Booth | null>(null);
+ const [rentAmount, setRentAmount] = useState('');
+ const [rentDescription, setRentDescription] = useState('Monthly Rent');
+ const [isBillingRent, setIsBillingRent] = useState(false);
+ const [rentFeedback, setRentFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+
+ const loadShops = useCallback(async () => {
+ try {
+ const response = await authenticatedFetch('/api/owner/shops');
+ const payload = (await response.json()) as { shops?: ShopMembership[] };
+ setShops(payload.shops ?? []);
+ const defaultRestaurantId = payload.shops?.[0]?.id ?? '';
+ setNewSlot((current) => ({
+ ...current,
+ restaurantId: current.restaurantId || defaultRestaurantId,
+ }));
+ } catch {
+ setShops([]);
+ } finally {
+ setLoading(false);
+ }
+ }, []);
+
+ useEffect(() => {
+ const timeoutId = window.setTimeout(() => {
+ void loadShops();
+ }, 0);
+
+ return () => window.clearTimeout(timeoutId);
+ }, [loadShops]);
+
+ const [scheduleModal, setScheduleModal] = useState<{
+ isOpen: boolean;
+ targetType: 'shop' | 'booth';
+ targetId: string;
+ title: string;
+ description: string;
+ initialSchedule?: OperatingSchedule | null;
+ }>({
+ isOpen: false,
+ targetType: 'shop',
+ targetId: '',
+ title: '',
+ description: '',
+ });
+
+ const boothList: Booth[] = shops.flatMap((shop) =>
+ shop.booths.map((booth) => ({
+ id: booth.id,
+ name: booth.name,
+ status: 'Active' as const,
+ isOpen: booth.isOpen !== false,
+ isActive: booth.isActive !== false,
+ schedule: booth.schedule,
+ restaurantId: shop.id,
+ manager: shop.role,
+ members: booth.members ?? [],
+ invitations: booth.invitations ?? [],
+ })),
+ );
+
+
+ // Master Override Layer: Venue Owner toggles booth Active / Inactive
+ const handleToggleBoothActive = async (boothId: string, currentIsActive: boolean) => {
+ const nextActive = !currentIsActive;
+ setShops((prev) =>
+ prev.map((s) => ({
+ ...s,
+ booths: s.booths.map((b) => (b.id === boothId ? { ...b, isActive: nextActive } : b)),
+ }))
+ );
+
+ try {
+ const res = await authenticatedFetch(`/api/owner/booths/${boothId}`, {
+ method: 'PATCH',
+ headers: { 'Content-Type': 'application/json' },
+ body: JSON.stringify({ is_active: nextActive }),
+ });
+ if (!res.ok) {
+ const data = await res.json();
+ throw new Error(data.error ?? 'Failed to update booth master active status');
+ }
+ await loadShops();
+ } catch (err) {
+ alert(err instanceof Error ? err.message : 'Failed to update booth master active status');
+ setShops((prev) =>
+ prev.map((s) => ({
+ ...s,
+ booths: s.booths.map((b) => (b.id === boothId ? { ...b, isActive: currentIsActive } : b)),
+ }))
+ );
+ }
+ };
+
+ const handleToggleShopActive = async (shopId: string, currentIsActive: boolean) => {
+ const nextActive = !currentIsActive;
+ setShops((prev) =>
+ prev.map((s) => (s.id === shopId ? { ...s, isActive: nextActive } : s))
+ );
+
+ try {
+ const res = await authenticatedFetch(`/api/owner/shops/${shopId}`, {
+ method: 'PATCH',
+ headers: { 'Content-Type': 'application/json' },
+ body: JSON.stringify({ is_active: nextActive }),
+ });
+ if (!res.ok) {
+ const data = await res.json();
+ throw new Error(data.error ?? 'Failed to update shop status');
+ }
+ await loadShops();
+ } catch (err) {
+ alert(err instanceof Error ? err.message : 'Failed to update shop status');
+ setShops((prev) =>
+ prev.map((s) => (s.id === shopId ? { ...s, isActive: currentIsActive } : s))
+ );
+ }
+ };
+
+ const handleSaveSchedule = async (schedule: OperatingSchedule) => {
+ if (scheduleModal.targetType === 'shop') {
+ const res = await authenticatedFetch(`/api/owner/shops/${scheduleModal.targetId}`, {
+ method: 'PATCH',
+ headers: { 'Content-Type': 'application/json' },
+ body: JSON.stringify({ schedule }),
+ });
+ if (!res.ok) {
+ const data = await res.json();
+ throw new Error(data.error ?? 'Failed to update shop operating hours schedule');
+ }
+ } else {
+ const res = await authenticatedFetch(`/api/owner/booths/${scheduleModal.targetId}`, {
+ method: 'PATCH',
+ headers: { 'Content-Type': 'application/json' },
+ body: JSON.stringify({ schedule }),
+ });
+ if (!res.ok) {
+ const data = await res.json();
+ throw new Error(data.error ?? 'Failed to update booth operating hours schedule');
+ }
+ }
+ await loadShops();
+ };
+
+ const handleOpenAddSlot = () => {
+ setNewSlot({
+ slotName: `Slot #${String(boothList.length + 1).padStart(2, '0')}`,
+ restaurantId: shops[0]?.id ?? '',
+ vendorEmail: '',
+ });
+ setIsAddSlotOpen(true);
+ };
+
+ const handleSendSetupLink = async (boothId: string, directEmail?: string) => {
+ const targetEmail = (directEmail ?? emailInputs[boothId] ?? '').trim().toLowerCase();
+
+ if (!targetEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(targetEmail)) {
+ setFeedbacks((prev) => ({
+ ...prev,
+ [boothId]: { type: 'error', message: 'Please enter a valid email address.' },
+ }));
+ return;
+ }
+
+ setSendingState((prev) => ({ ...prev, [boothId]: true }));
+ setFeedbacks((prev) => {
+ const next = { ...prev };
+ delete next[boothId];
+ return next;
+ });
+
+ try {
+ const response = await authenticatedFetch(`/api/owner/booths/${boothId}/invite`, {
+ method: 'POST',
+ headers: { 'Content-Type': 'application/json' },
+ body: JSON.stringify({ email: targetEmail }),
+ });
+
+ const payload = (await response.json()) as {
+ token?: string;
+ setupLink?: string;
+ error?: string;
+ message?: string;
+ delivered?: boolean;
+ provider?: string;
+ };
+
+ if (!response.ok) {
+ throw new Error(payload.error ?? 'Failed to send setup link.');
+ }
+
+ setEmailInputs((prev) => ({ ...prev, [boothId]: '' }));
+ setFeedbacks((prev) => ({
+ ...prev,
+ [boothId]: {
+ type: 'success',
+ message: payload.message ?? `Setup link sent to ${targetEmail}`,
+ link: payload.setupLink,
+ delivered: payload.delivered,
+ },
+ }));
+
+ await loadShops();
+ } catch (error) {
+ setFeedbacks((prev) => ({
+ ...prev,
+ [boothId]: {
+ type: 'error',
+ message: error instanceof Error ? error.message : 'Unable to send setup link.',
+ },
+ }));
+ } finally {
+ setSendingState((prev) => ({ ...prev, [boothId]: false }));
+ }
+ };
+
+ const handleRemoveAccess = async (boothId: string, email: string) => {
+ const key = `${boothId}-${email}`;
+ setRemovingState((prev) => ({ ...prev, [key]: true }));
+
+ try {
+ const response = await authenticatedFetch(`/api/owner/booths/${boothId}/members`, {
+ method: 'DELETE',
+ headers: { 'Content-Type': 'application/json' },
+ body: JSON.stringify({ email }),
+ });
+
+ const payload = (await response.json()) as { error?: string; message?: string };
+ if (!response.ok) {
+ throw new Error(payload.error ?? 'Unable to remove email.');
+ }
+
+ setFeedbacks((prev) => ({
+ ...prev,
+ [boothId]: {
+ type: 'success',
+ message: `Removed ${email}. They have lost control of the store.`,
+ },
+ }));
+
+ await loadShops();
+ } catch (error) {
+ setFeedbacks((prev) => ({
+ ...prev,
+ [boothId]: {
+ type: 'error',
+ message: error instanceof Error ? error.message : 'Failed to remove access.',
+ },
+ }));
+ } finally {
+ setRemovingState((prev) => ({ ...prev, [key]: false }));
+ }
+ };
+
+ const copyLink = (linkUrl: string, key: string) => {
+ navigator.clipboard?.writeText(linkUrl);
+ setCopiedLinks((prev) => ({ ...prev, [key]: true }));
+ setTimeout(() => {
+ setCopiedLinks((prev) => ({ ...prev, [key]: false }));
+ }, 2000);
+ };
+
+ const handleCreateSlot = async (event: React.FormEvent<HTMLFormElement>) => {
+ event.preventDefault();
+ if (!newSlot.slotName.trim() || !newSlot.restaurantId) return;
+
+ setIsCreatingSlot(true);
+ try {
+ // 1. Provision the booth slot
+ const boothRes = await authenticatedFetch('/api/owner/booths', {
+ method: 'POST',
+ headers: { 'Content-Type': 'application/json' },
+ body: JSON.stringify({
+ name: newSlot.slotName.trim(),
+ restaurantId: newSlot.restaurantId,
+ }),
+ });
+
+ const boothData = await boothRes.json();
+ if (!boothRes.ok || !boothData.booth?.id) {
+ throw new Error(boothData.error ?? 'Unable to create booth slot.');
+ }
+
+ const createdBoothId = boothData.booth.id;
+
+ // 2. If vendor email was provided, send setup link immediately
+ if (newSlot.vendorEmail.trim()) {
+ await handleSendSetupLink(createdBoothId, newSlot.vendorEmail.trim());
+ }
+
+ setIsAddSlotOpen(false);
+ await loadShops();
+ } catch (error) {
+ alert(error instanceof Error ? error.message : 'Failed to create slot');
+ } finally {
+ setIsCreatingSlot(false);
+ }
+ };
+
+ const handleSaveBooth = async (event: React.FormEvent<HTMLFormElement>) => {
+ event.preventDefault();
+ if (!editing) return;
+
+ try {
+ const response = await authenticatedFetch(`/api/owner/booths/${editing.id}`, {
+ method: 'PATCH',
+ headers: { 'Content-Type': 'application/json' },
+ body: JSON.stringify({ name: editing.name }),
+ });
+
+ const payload = (await response.json()) as { error?: string };
+ if (!response.ok) {
+ throw new Error(payload.error ?? 'Unable to update booth.');
+ }
+
+ setEditing(null);
+ await loadShops();
+ } catch (error) {
+ alert(error instanceof Error ? error.message : 'Failed to update booth');
+ }
+ };
+
+ const handleBillRent = async (e: React.FormEvent) => {
+ e.preventDefault();
+ if (!rentModalBooth || !rentAmount) return;
+ 
+ setIsBillingRent(true);
+ setRentFeedback(null);
+ try {
+ const response = await authenticatedFetch('/api/owner/rent', {
+ method: 'POST',
+ headers: { 'Content-Type': 'application/json' },
+ body: JSON.stringify({
+ boothId: rentModalBooth.id,
+ amount: parseFloat(rentAmount),
+ description: rentDescription,
+ }),
+ });
+ 
+ const payload = await response.json();
+ if (!response.ok) {
+ throw new Error(payload.error ?? 'Failed to issue rent bill.');
+ }
+ 
+ setRentFeedback({ type: 'success', message: 'Rent bill issued successfully.' });
+ setTimeout(() => {
+ setRentModalBooth(null);
+ setRentFeedback(null);
+ setRentAmount('');
+ setRentDescription('Monthly Rent');
+ }, 1500);
+ } catch (error) {
+ setRentFeedback({ type: 'error', message: error instanceof Error ? error.message : 'Failed to bill rent.' });
+ } finally {
+ setIsBillingRent(false);
+ }
+ };
+
+ const handleDeleteBooth = async (boothId: string) => {
+ setIsDeletingBooth(true);
+ setDeleteError('');
+ try {
+ const response = await authenticatedFetch(`/api/owner/booths/${boothId}`, {
+ method: 'DELETE',
+ });
+ const data = await response.json();
+ if (!response.ok) {
+ throw new Error(data.error ?? 'Failed to delete booth slot.');
+ }
+ setBoothToDelete(null);
+ await loadShops();
+ } catch (err) {
+ setDeleteError(err instanceof Error ? err.message : 'Unable to delete booth.');
+ } finally {
+ setIsDeletingBooth(false);
+ }
+ };
+
+ return (
+ <main className="min-h-screen bg-[#f5f5f7] px-4 pb-32 pt-5 sm:px-6 text-[#1d1d1f]">
+ <div className="mx-auto max-w-7xl">
+ <header className="flex flex-col sm:flex-row sm:items-center sm:justify-end gap-4">
+ <div className="flex items-center gap-2 shrink-0">
+ 
+ 
+ 
+ </div>
+ </header>
+
+ <section className="mt-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5 items-start">
+ {loading ? (
+ <div className="col-span-full flex items-center justify-center p-12 text-[#6e6e73] text-sm">
+ <LoaderCircle className="h-4 w-4 mr-2 text-[#111827]" /> Loading booths…
+ </div>
+ ) : boothList.length === 0 ? (
+ <div className="col-span-full rounded-[24px] bg-white p-8 text-center shadow-[0_12px_26px_rgba(15,23,42,0.04)] /[0.04]">
+ <Store className="h-10 w-10 text-[#86868b] mx-auto mb-3" />
+ <p className="text-base font-semibold text-[#1d1d1f] truncate">No booth slots created yet</p>
+ <p className="mt-1 text-xs text-[#6e6e73] max-w-sm mx-auto truncate">
+ Add your first booth slot and send a setup link to a vendor email.
+ </p>
+ <button
+ type="button"
+ onClick={handleOpenAddSlot}
+ className="mt-4 inline-flex h-9 items-center gap-2 rounded-full bg-[#111827] px-4 text-xs font-semibold text-white hover:bg-black shadow-xs"
+ >
+ <Plus className="h-3.5 w-3.5" /> Add Booth Slot
+ </button>
+ </div>
+ ) : (
+ boothList.map((booth) => {
+ const feedback = feedbacks[booth.id];
+ const isSending = sendingState[booth.id];
+ const origin = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000';
+
+ const activeMembers = booth.members ?? [];
+ const pendingInvites = booth.invitations ?? [];
+ const hasAuthorizedUsers = activeMembers.length > 0 || pendingInvites.length > 0;
+
+ return (
+ <article
+ key={booth.id}
+ className="flex flex-col justify-between rounded-[24px] bg-white p-4 sm:p-5 shadow-[0_12px_26px_rgba(15,23,42,0.04)] /[0.04] hover:shadow-[0_16px_32px_rgba(15,23,42,0.06)]"
+ >
+ {/* Booth Slot Header */}
+ <div className="flex items-center justify-between gap-2.5">
+ <div className="flex items-center gap-2.5 min-w-0">
+ <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-black/5 text-[#1d1d1f] shrink-0">
+ <Store className="h-5 w-5" />
+ </div>
+ <div className="min-w-0">
+ <p className="text-sm sm:text-base font-semibold text-[#1d1d1f] truncate">{booth.name}</p>
+ <p className="text-[11px] text-[#6e6e73] truncate">
+ Role: {booth.manager ?? 'Shop owner'}
+ </p>
+ </div>
+ </div>
+ <div className="flex items-center gap-1.5 shrink-0 flex-wrap justify-end">
+ {/* Active / Inactive Toggle */}
+ <button
+ type="button"
+ onClick={() => {
+ if (booth.isActive !== false) {
+ if (window.confirm('Setting the stall to inactive will take effect at 3:00 AM the next morning. Continue?')) {
+ handleToggleBoothActive(booth.id, false);
+ }
+ } else {
+ handleToggleBoothActive(booth.id, true);
+ }
+ }}
+ title={
+ booth.isActive !== false
+ ? 'Set Inactive (Takes effect at 3:00 AM)'
+ : 'Set Active'
+ }
+ className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-semibold ${
+ booth.isActive !== false
+ ? 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
+ : 'bg-black text-white'
+ }`}
+ >
+ <ShieldAlert className="w-3 h-3" />
+ <span>{booth.isActive !== false ? 'Active' : 'Inactive'}</span>
+ </button>
+
+ 
+
+ 
+
+ 
+
+ <button
+ type="button"
+ onClick={() => setRentModalBooth(booth)}
+ className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#f5f5f7] text-[#1d1d1f] hover:bg-black/5 shadow-xs shrink-0"
+ aria-label="Charge Rent"
+ title="Issue Rent Bill"
+ >
+ <Receipt className="h-3.5 w-3.5 text-[#1d1d1f]" />
+ </button>
+
+ <button
+ type="button"
+ onClick={() => setEditing(booth)}
+ className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#f5f5f7] text-[#1d1d1f] hover:bg-black/5 shadow-xs shrink-0" aria-label="Edit Slot"
+ title="Edit slot identifier"
+ >
+ <Pencil className="h-3.5 w-3.5 text-[#1d1d1f]" />
+ </button>
+
+ <button
+ type="button"
+ onClick={() => {
+ setBoothToDelete(booth);
+ setDeleteError('');
+ }}
+ className="flex h-8 w-8 items-center justify-center rounded-xl bg-red-50/80 text-red-600 hover:bg-red-100 shadow-xs shrink-0"
+ aria-label="Delete Booth Slot"
+ title={`Delete ${booth.name}`}
+ >
+ <Trash2 className="h-3.5 w-3.5" />
+ </button>
+ </div>
+ </div>
+
+ {/* Master Inactive Alert Banner if disabled by venue owner */}
+ {booth.isActive === false && (
+ <div className="mt-3 flex items-center gap-2 p-2.5 rounded-xl bg-red-50 text-red-700 text-xs">
+ <AlertCircle className="w-4 h-4 shrink-0 text-red-600" />
+ <span className="leading-tight font-medium">
+ Master Override: This booth is marked Inactive by venue operator. It is strictly offline to customers regardless of operational open state.
+ </span>
+ </div>
+ )}
+
+ {/* Send Setup Link Section */}
+ <div className="mt-4 flex flex-col gap-2">
+ <div className="flex items-center gap-2">
+ <div className="relative flex-1 min-w-0">
+ <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#86868b]" />
+ <input
+ type="email"
+ value={emailInputs[booth.id] ?? ''}
+ onChange={(e) =>
+ setEmailInputs((prev) => ({ ...prev, [booth.id]: e.target.value }))
+ }
+ onKeyDown={(e) => {
+ if (e.key === 'Enter') {
+ e.preventDefault();
+ void handleSendSetupLink(booth.id);
+ }
+ }}
+ placeholder="vendor@email.com"
+ className="h-11 w-full rounded-full bg-[#f5f5f7] shadow-sm py-2 pl-9 pr-4 text-sm text-[#1d1d1f] placeholder:text-[#86868b] outline-none hover:bg-neutral-200 focus:bg-neutral-200"
+ />
+ </div>
+ <button
+ type="button"
+ disabled={isSending}
+ onClick={() => void handleSendSetupLink(booth.id)}
+ className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#111827] text-white hover:bg-black disabled:opacity-50 shadow-xs"
+ aria-label="Send setup link"
+ title="Send setup link"
+ >
+ {isSending ? (
+ <LoaderCircle className="h-4 w-4 " />
+ ) : (
+ <Send className="h-4 w-4 -ml-0.5" />
+ )}
+ </button>
+ </div>
+
+ {feedback && (
+ <div
+ className={`mt-2.5 flex flex-col gap-1.5 rounded-xl p-2.5 text-xs ${
+ feedback.type === 'success'
+ ? 'bg-[#30d158]/10 text-[#166534] -[#30d158]/20'
+ : 'bg-red-50 text-red-700 '
+ }`}
+ >
+ <div className="flex items-center gap-2 min-w-0 flex-1">
+ {feedback.delivered ? (
+ <CheckCircle2 className="h-4 w-4 shrink-0 text-[#30d158]" />
+ ) : feedback.type === 'success' ? (
+ <Mail className="h-4 w-4 shrink-0 text-[#111827]" />
+ ) : null}
+ <span className="font-medium leading-snug truncate">{feedback.message}</span>
+ </div>
+ {feedback.link && (
+ <button
+ type="button"
+ onClick={() => copyLink(feedback.link!, `feedback-${booth.id}`)}
+ className="inline-flex items-center gap-1 font-semibold text-[#1d1d1f] hover:underline shrink-0 text-xs"
+ >
+ {copiedLinks[`feedback-${booth.id}`] ? (
+ <>
+ <Check className="h-3 w-3" /> Link Copied
+ </>
+ ) : (
+ <>
+ <Copy className="h-3 w-3" /> Copy Setup Link
+ </>
+ )}
+ </button>
+ )}
+ </div>
+ )}
+ </div>
+ {/* Authorized Emails List */}
+ <div className="mt-2 flex flex-col gap-1.5">
+ {!hasAuthorizedUsers ? null : (
+ <div className="space-y-1.5 mt-2">
+ {/* Active members */}
+ {activeMembers.map((member) => {
+ const removeKey = `${booth.id}-${member.email}`;
+ const isRemoving = removingState[removeKey];
+
+ return (
+ <div
+ key={member.userId || member.email}
+ className="flex items-center justify-between gap-2 rounded-xl bg-[#f5f5f7]/60 px-3 py-1.5 text-xs /[0.03]"
+ >
+ <div className="flex items-center gap-2 min-w-0">
+ <span className="h-2 w-2 rounded-full bg-[#30d158] shrink-0" />
+ <span className="font-medium text-[#1d1d1f] truncate">
+ {member.email || `User ID: ${member.userId.slice(0, 8)}…`}
+ </span>
+ <span className="rounded-full bg-[#30d158]/15 px-2 py-0.5 text-[10px] font-semibold text-[#166534] shrink-0">
+ Active {member.role === 'owner' ? 'Manager' : member.role}
+ </span>
+ </div>
+
+ <button
+ type="button"
+ disabled={isRemoving}
+ onClick={() => void handleRemoveAccess(booth.id, member.email)}
+ title="Revoke access"
+ aria-label="Revoke access"
+ className="flex h-7 w-7 items-center justify-center rounded-lg bg-red-50/80 text-red-600 hover:bg-red-100 shrink-0 disabled:opacity-50 shadow-xs"
+ >
+ {isRemoving ? (
+ <LoaderCircle className="h-3.5 w-3.5 " />
+ ) : (
+ <Trash2 className="h-3.5 w-3.5" />
+ )}
+ </button>
+ </div>
+ );
+ })}
+
+ {/* Pending invitations */}
+ {pendingInvites.map((invite) => {
+ const removeKey = `${booth.id}-${invite.email}`;
+ const isRemoving = removingState[removeKey];
+ const linkKey = `invite-${invite.id}`;
+ const isCopied = copiedLinks[linkKey];
+
+ return (
+ <div
+ key={invite.id}
+ className="flex items-center justify-between gap-2 rounded-xl bg-[#f5f5f7]/60 px-3 py-1.5 text-xs /[0.03]"
+ >
+ <div className="flex items-center gap-2 min-w-0">
+ <span className="h-2 w-2 rounded-full bg-amber-500 shrink-0" />
+ <span className="font-medium text-[#1d1d1f] truncate">
+ {invite.email}
+ </span>
+ <span className="rounded-full bg-amber-500/15 px-2 py-0.5 text-[10px] font-semibold text-amber-700 shrink-0">
+ Pending
+ </span>
+ </div>
+
+ <div className="flex items-center gap-1 shrink-0">
+ <button
+ type="button"
+ onClick={() =>
+ copyLink(
+ `${origin}/booths/join?token=${encodeURIComponent(invite.id)}`,
+ linkKey,
+ )
+ }
+ title="Copy invitation link"
+ aria-label="Copy invitation link"
+ className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#e5e5ea] text-[#1d1d1f] hover:bg-[#d1d1d6] shadow-xs shrink-0" >
+ {isCopied ? (
+ <Check className="h-3.5 w-3.5 text-emerald-600" />
+ ) : (
+ <Copy className="h-3.5 w-3.5" />
+ )}
+ </button>
+ <button
+ type="button"
+ disabled={isRemoving}
+ onClick={() => void handleRemoveAccess(booth.id, invite.email)}
+ title="Cancel invitation"
+ aria-label="Cancel invitation"
+ className="flex h-7 w-7 items-center justify-center rounded-lg bg-red-50/80 text-red-600 hover:bg-red-100 shrink-0 disabled:opacity-50 shadow-xs"
+ >
+ {isRemoving ? (
+ <LoaderCircle className="h-3.5 w-3.5 " />
+ ) : (
+ <X className="h-3.5 w-3.5" />
+ )}
+ </button>
+ </div>
+ </div>
+ );
+ })}
+ </div>
+ )}
+ </div>
+ </article>
+ );
+ })
+ )}
+ </section>
+ </div>
+
+ {/* ADD BOOTH SLOT MODAL */}
+ {isAddSlotOpen ? (
+ <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-xs">
+ <div className="w-full max-w-md rounded-[28px] bg-white p-4 sm:p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+ <div className="flex items-center justify-between">
+ <div className="flex items-center gap-2">
+ <Store className="h-5 w-5 text-[#111827]" />
+ <h2 className="text-xl font-semibold tracking-tight text-[#1d1d1f]">Add Booth Slot</h2>
+ </div>
+ <button
+ type="button"
+ aria-label="Close dialog"
+ onClick={() => setIsAddSlotOpen(false)}
+ className="p-1 rounded-full text-[#6e6e73] hover:text-[#1d1d1f]"
+ >
+ <X className="h-5 w-5" />
+ </button>
+ </div>
+
+ <form onSubmit={handleCreateSlot} className="mt-4 space-y-4">
+ {shops.length > 1 && (
+ <label className="block text-xs font-semibold text-[#1d1d1f]">
+ Food Hall / Venue
+ <select
+ value={newSlot.restaurantId}
+ onChange={(event) =>
+ setNewSlot({ ...newSlot, restaurantId: event.target.value })
+ }
+ className="mt-1.5 w-full rounded-2xl bg-white shadow-sm px-3.5 py-2.5 text-sm outline-none focus:"
+ >
+ {shops.map((shop) => (
+ <option key={shop.id} value={shop.id}>
+ {shop.name}
+ </option>
+ ))}
+ </select>
+ </label>
+ )}
+
+ <label className="block text-xs font-semibold text-[#1d1d1f]">
+ Booth Slot Identifier
+ <input
+ value={newSlot.slotName}
+ onChange={(event) => setNewSlot({ ...newSlot, slotName: event.target.value })}
+ placeholder="e.g. Slot #02, Counter 2"
+ className="mt-1.5 w-full rounded-2xl bg-white shadow-sm px-3.5 py-2.5 text-sm outline-none focus:"
+ required
+ />
+ </label>
+
+ <label className="block text-xs font-semibold text-[#1d1d1f]">
+ Vendor Email (Optional)
+ <input
+ type="email"
+ value={newSlot.vendorEmail}
+ onChange={(event) =>
+ setNewSlot({ ...newSlot, vendorEmail: event.target.value })
+ }
+ placeholder="vendor@stall.com"
+ className="mt-1.5 w-full rounded-2xl bg-white shadow-sm px-3.5 py-2.5 text-sm outline-none focus:"
+ />
+ <span className="mt-1 block text-[11px] text-[#86868b]">
+ If provided, a setup link will be automatically sent to this email upon creation.
+ </span>
+ </label>
+
+ <button
+ type="submit"
+ disabled={isCreatingSlot}
+ className="mt-3 flex w-full items-center justify-center gap-2 rounded-full bg-[#111827] px-4 py-3 text-xs font-semibold text-white hover:bg-black disabled:opacity-70"
+ >
+ {isCreatingSlot ? (
+ <>
+ <LoaderCircle className="h-4 w-4 " /> Provisioning Slot...
+ </>
+ ) : (
+ <>
+ <Plus className="h-4 w-4" /> Create Booth Slot
+ </>
+ )}
+ </button>
+ </form>
+ </div>
+ </div>
+ ) : null}
+
+ {/* RENT BILLING MODAL */}
+ {rentModalBooth ? (
+ <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-xs">
+ <form
+ onSubmit={handleBillRent}
+ className="w-full max-w-md rounded-[28px] bg-white p-4 sm:p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto"
+ >
+ <div className="flex items-center justify-between">
+ <h2 className="text-xl font-semibold text-[#1d1d1f]">Issue Rent Bill</h2>
+ <button
+ type="button"
+ aria-label="Close rent dialog"
+ onClick={() => setRentModalBooth(null)}
+ >
+ <X className="h-5 w-5 text-[#6e6e73]" />
+ </button>
+ </div>
+
+ <p className="text-sm text-[#6e6e73]">
+ Billing <strong className="text-[#1d1d1f] font-semibold">{rentModalBooth.name}</strong>. They will receive an invoice payable via Airwallex.
+ </p>
+
+ {rentFeedback && (
+ <div className={`rounded-xl p-3 text-xs ${rentFeedback.type === 'success' ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700'}`}>
+ {rentFeedback.message}
+ </div>
+ )}
+
+ <label className="block text-xs font-semibold text-[#1d1d1f]">
+ Amount (RM)
+ <input
+ type="number"
+ step="0.01"
+ min="0.01"
+ value={rentAmount}
+ onChange={(event) => setRentAmount(event.target.value)}
+ placeholder="e.g. 500.00"
+ className="mt-1.5 w-full rounded-2xl bg-[#f5f5f7] px-3.5 py-2.5 text-sm outline-none focus: focus:]"
+ required
+ />
+ </label>
+
+ <label className="block text-xs font-semibold text-[#1d1d1f]">
+ Description
+ <input
+ value={rentDescription}
+ onChange={(event) => setRentDescription(event.target.value)}
+ placeholder="e.g. November 2026 Rent"
+ className="mt-1.5 w-full rounded-2xl bg-[#f5f5f7] px-3.5 py-2.5 text-sm outline-none focus: focus:]"
+ required
+ />
+ </label>
+
+ <button
+ type="submit"
+ disabled={isBillingRent}
+ className="mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-[#111827] px-4 py-3 text-xs font-semibold text-white hover:bg-black disabled:opacity-50"
+ >
+ {isBillingRent ? (
+ <>
+ <LoaderCircle className="h-4 w-4 " /> Issuing...
+ </>
+ ) : (
+ 'Issue Rent Bill'
+ )}
+ </button>
+ </form>
+ </div>
+ ) : null}
+
+ {/* EDIT BOOTH SLOT MODAL */}
+ {editing ? (
+ <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-xs">
+ <form
+ onSubmit={handleSaveBooth}
+ className="w-full max-w-md rounded-[28px] bg-white p-4 sm:p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto"
+ >
+ <div className="flex items-center justify-between">
+ <h2 className="text-xl font-semibold text-[#1d1d1f]">Edit Booth Slot</h2>
+ <button
+ type="button"
+ aria-label="Close edit dialog"
+ onClick={() => setEditing(null)}
+ >
+ <X className="h-5 w-5 text-[#6e6e73]" />
+ </button>
+ </div>
+
+ <label className="block text-xs font-semibold text-[#1d1d1f]">
+ Booth Slot Identifier
+ <input
+ value={editing.name}
+ onChange={(event) => setEditing({ ...editing, name: event.target.value })}
+ className="mt-1.5 w-full rounded-2xl bg-white shadow-sm px-3.5 py-2.5 text-sm outline-none focus:"
+ />
+ </label>
+
+ <button
+ type="submit"
+ className="mt-4 w-full rounded-full bg-[#111827] px-4 py-3 text-xs font-semibold text-white hover:bg-black "
+ >
+ Save Slot Changes
+ </button>
+ </form>
+ </div>
+ ) : null}
+
+ {/* DELETE BOOTH SLOT CONFIRMATION MODAL */}
+ {boothToDelete ? (
+ <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-xs">
+ <div className="w-full max-w-md rounded-[28px] bg-white p-4 sm:p-6 shadow-2xl space-y-4">
+ <div className="flex items-center justify-between">
+ <div className="flex items-center gap-2.5">
+ <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-red-50 text-red-600">
+ <Trash2 className="h-5 w-5" />
+ </div>
+ <div>
+ <h2 className="text-lg font-semibold text-[#1d1d1f]">Delete Booth Slot</h2>
+ <p className="text-[11px] text-[#6e6e73]">Permanently remove stall allocation</p>
+ </div>
+ </div>
+ <button
+ type="button"
+ aria-label="Close delete dialog"
+ onClick={() => {
+ setBoothToDelete(null);
+ setDeleteError('');
+ }}
+ className="p-1 rounded-full text-[#6e6e73] hover:text-[#1d1d1f]"
+ >
+ <X className="h-5 w-5" />
+ </button>
+ </div>
+
+ <p className="text-xs sm:text-sm text-[#6e6e73] leading-relaxed">
+ Are you sure you want to delete <strong className="text-[#1d1d1f] font-semibold">{boothToDelete.name}</strong>?
+ This will remove vendor access immediately. The stall data will be kept as recently deleted for one year for recovery purposes.
+ </p>
+
+ {deleteError && (
+ <div className="rounded-xl bg-red-50 p-3 text-xs text-red-700">
+ {deleteError}
+ </div>
+ )}
+
+ <div className="flex items-center gap-2.5 pt-2">
+ <button
+ type="button"
+ disabled={isDeletingBooth}
+ onClick={() => {
+ setBoothToDelete(null);
+ setDeleteError('');
+ }}
+ className="flex-1 rounded-full py-2.5 text-xs font-semibold text-[#1d1d1f] hover:bg-black/5 "
+ >
+ Cancel
+ </button>
+ <button
+ type="button"
+ disabled={isDeletingBooth}
+ onClick={() => void handleDeleteBooth(boothToDelete.id)}
+ className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-full bg-red-600 hover:bg-red-700 py-2.5 text-xs font-semibold text-white shadow-sm disabled:opacity-50"
+ >
+ {isDeletingBooth ? (
+ <>
+ <LoaderCircle className="h-3.5 w-3.5 " />
+ <span>Deleting…</span>
+ </>
+ ) : (
+ <>
+ <Trash2 className="h-3.5 w-3.5" />
+ <span>Delete Slot</span>
+ </>
+ )}
+ </button>
+ </div>
+ </div>
+ </div>
+ ) : null}
+
+ <OperatingScheduleModal
+ isOpen={scheduleModal.isOpen}
+ onClose={() => setScheduleModal((prev) => ({ ...prev, isOpen: false }))}
+ title={scheduleModal.title}
+ description={scheduleModal.description}
+ initialSchedule={scheduleModal.initialSchedule}
+ onSave={handleSaveSchedule}
+ />
+ <button
+ type="button"
+ onClick={handleOpenAddSlot}
+ className="fixed bottom-24 sm:bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-[#111827] text-white shadow-lg hover:bg-black "
+ aria-label="Add Booth Slot"
+ title="Add Booth Slot"
+ >
+ <Plus className="h-6 w-6" />
+ </button>
+ </main>
+ );
 }

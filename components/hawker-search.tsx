@@ -10,313 +10,313 @@ import { addItemToCart, buildCartSummary, removeCartItem, updateCartItemQuantity
 import { useCartAdd } from '@/components/use-cart-add';
 
 const quickIdeas = [
-  'I want a halal meal under RM15',
-  'Give me a vegetarian dish with medium spice',
-  'Something filling with more protein',
-  'Best spicy noodles under RM12',
+ 'I want a halal meal under RM15',
+ 'Give me a vegetarian dish with medium spice',
+ 'Something filling with more protein',
+ 'Best spicy noodles under RM12',
 ];
 
 const spiceLabels: Record<number, string> = {
-  0: 'Mild',
-  1: 'Low heat',
-  2: 'Warm',
-  3: 'Medium',
-  4: 'Spicy',
-  5: 'Very spicy',
+ 0: 'Mild',
+ 1: 'Low heat',
+ 2: 'Warm',
+ 3: 'Medium',
+ 4: 'Spicy',
+ 5: 'Very spicy',
 };
 
 const getAllergyDisclaimer = (query: string) => {
-  const text = query.toLowerCase();
-  const mentionsAllergy = /allergy|allergic|nuts|shellfish|seafood|peanut|sesame|gluten|dairy|soy|halal/.test(text);
+ const text = query.toLowerCase();
+ const mentionsAllergy = /allergy|allergic|nuts|shellfish|seafood|peanut|sesame|gluten|dairy|soy|halal/.test(text);
 
-  if (!mentionsAllergy) return null;
-  return 'Caution: I cannot guarantee allergy safety without exact ingredient data for this stall. Please verify ingredients directly with the vendor before eating.';
+ if (!mentionsAllergy) return null;
+ return 'Caution: I cannot guarantee allergy safety without exact ingredient data for this stall. Please verify ingredients directly with the vendor before eating.';
 };
 
 const getFollowUpHint = (query: string) => {
-  const lower = query.toLowerCase();
-  if (lower.includes('more protein')) return 'Follow-up context: you are comparing protein density.';
-  if (lower.includes('halal')) return 'Follow-up context: halal preference remains active.';
-  if (lower.includes('vegetarian')) return 'Follow-up context: vegetarian-only filter remains active.';
-  return 'Conversation context: your last search is still active.';
+ const lower = query.toLowerCase();
+ if (lower.includes('more protein')) return 'Follow-up context: you are comparing protein density.';
+ if (lower.includes('halal')) return 'Follow-up context: halal preference remains active.';
+ if (lower.includes('vegetarian')) return 'Follow-up context: vegetarian-only filter remains active.';
+ return 'Conversation context: your last search is still active.';
 };
 
 export function HawkerSearch({ initialQuery = 'I want a vegetarian meal under RM15 with medium spice and halal-friendly options.' }: { initialQuery?: string }) {
-  const router = useRouter();
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
-  const [query, setQuery] = useState(initialQuery);
-  const [maxPrice, setMaxPrice] = useState('15');
-  const [vegetarian, setVegetarian] = useState('true');
-  const [halal, setHalal] = useState('true');
-  const [spiceLevel, setSpiceLevel] = useState('3');
-  const [limit, setLimit] = useState('5');
-  const [results, setResults] = useState<SearchResult[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const { cartItems, setCartItems, addDish, CartWarningModal } = useCartAdd();
-  const [checkoutMessage, setCheckoutMessage] = useState<string | null>(null);
+ const router = useRouter();
+ const [theme, setTheme] = useState<'light' | 'dark'>('light');
+ const [query, setQuery] = useState(initialQuery);
+ const [maxPrice, setMaxPrice] = useState('15');
+ const [vegetarian, setVegetarian] = useState('true');
+ const [halal, setHalal] = useState('true');
+ const [spiceLevel, setSpiceLevel] = useState('3');
+ const [limit, setLimit] = useState('5');
+ const [results, setResults] = useState<SearchResult[]>([]);
+ const [loading, setLoading] = useState(false);
+ const [error, setError] = useState<string | null>(null);
+ const { cartItems, setCartItems, addDish, CartWarningModal } = useCartAdd();
+ const [checkoutMessage, setCheckoutMessage] = useState<string | null>(null);
 
-  const isDark = theme === 'dark';
-  const shellBg = isDark ? 'bg-[#0a0a0d] text-[#f5f5f7]' : 'bg-[#f5f5f7] text-[#1d1d1f]';
-  const cardBg = isDark ? 'bg-[#111214]' : 'bg-white';
-  const mutedText = isDark ? 'text-[#a1a1aa]' : 'text-[#6e6e73]';
-  const chipBg = isDark ? 'bg-[#1a1b1e] text-[#f5f5f7]' : 'bg-[#f7f7f7] text-[#1d1d1f]';
-  const border = isDark ? 'border-[#2a2b2f]' : 'border-[#e5e7eb]';
-  const inputBg = isDark ? 'bg-[#15171c] text-[#f5f5f7]' : 'bg-white text-[#1d1d1f]';
+ const isDark = theme === 'dark';
+ const shellBg = isDark ? 'bg-[#0a0a0d] text-[#f5f5f7]' : 'bg-[#f5f5f7] text-[#1d1d1f]';
+ const cardBg = isDark ? 'bg-[#111214]' : 'bg-white';
+ const mutedText = isDark ? 'text-[#a1a1aa]' : 'text-[#6e6e73]';
+ const chipBg = isDark ? 'bg-[#1a1b1e] text-[#f5f5f7]' : 'bg-[#f7f7f7] text-[#1d1d1f]';
+ const borderClass = isDark ? 'border-none' : 'border-none';
+ const inputBg = isDark ? 'bg-[#15171c] text-[#f5f5f7]' : 'bg-white text-[#1d1d1f]';
 
-  const allergyDisclaimer = useMemo(() => getAllergyDisclaimer(query), [query]);
-  const followUpHint = useMemo(() => getFollowUpHint(query), [query]);
-  const cartSummary = useMemo(() => buildCartSummary(cartItems), [cartItems]);
-  const resultsHref = {
-    pathname: '/results',
-    query: {
-      query,
-      maxPrice: maxPrice || '',
-      vegetarian,
-      halal,
-      spiceLevel: spiceLevel || '',
-      limit: limit || '5',
-    },
-  };
+ const allergyDisclaimer = useMemo(() => getAllergyDisclaimer(query), [query]);
+ const followUpHint = useMemo(() => getFollowUpHint(query), [query]);
+ const cartSummary = useMemo(() => buildCartSummary(cartItems), [cartItems]);
+ const resultsHref = {
+ pathname: '/results',
+ query: {
+ query,
+ maxPrice: maxPrice || '',
+ vegetarian,
+ halal,
+ spiceLevel: spiceLevel || '',
+ limit: limit || '5',
+ },
+ };
 
-  const handleAddToCart = (dish: SearchResult) => {
-    const stallId = `${dish.restaurantName}:${dish.stallName}`.replace(/[^a-z0-9]+/gi, '-').toLowerCase();
-    setCheckoutMessage(null);
-    addDish({
-      dishId: dish.id,
-      name: dish.name,
-      restaurantName: dish.restaurantName,
-      stallName: dish.stallName,
-      stallId,
-      price: dish.price,
-      quantity: 1,
-    });
-  };
+ const handleAddToCart = (dish: SearchResult) => {
+ const stallId = `${dish.restaurantName}:${dish.stallName}`.replace(/[^a-z0-9]+/gi, '-').toLowerCase();
+ setCheckoutMessage(null);
+ addDish({
+ dishId: dish.id,
+ name: dish.name,
+ restaurantName: dish.restaurantName,
+ stallName: dish.stallName,
+ stallId,
+ price: dish.price,
+ quantity: 1,
+ });
+ };
 
-  const handleCheckout = () => {
-    if (cartItems.length === 0) return;
-    router.push('/orders' as any);
-  };
+ const handleCheckout = () => {
+ if (cartItems.length === 0) return;
+ router.push('/orders' as any);
+ };
 
-  const handleUpdateQuantity = (itemId: string, quantity: number) => {
-    setCartItems((currentItems) => updateCartItemQuantity(currentItems, itemId, quantity));
-  };
+ const handleUpdateQuantity = (itemId: string, quantity: number) => {
+ setCartItems((currentItems) => updateCartItemQuantity(currentItems, itemId, quantity));
+ };
 
-  const handleRemoveItem = (itemId: string) => {
-    setCartItems((currentItems) => removeCartItem(currentItems, itemId));
-  };
+ const handleRemoveItem = (itemId: string) => {
+ setCartItems((currentItems) => removeCartItem(currentItems, itemId));
+ };
 
-  const handleSearch = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setLoading(true);
-    setError(null);
+ const handleSearch = async (event: React.FormEvent<HTMLFormElement>) => {
+ event.preventDefault();
+ setLoading(true);
+ setError(null);
 
-    try {
-      const response = await fetch('/api/search', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          query,
-          maxPrice: maxPrice ? Number(maxPrice) : undefined,
-          vegetarian: vegetarian === 'true' ? true : vegetarian === 'false' ? false : undefined,
-          halal: halal === 'true' ? true : halal === 'false' ? false : undefined,
-          spiceLevel: spiceLevel ? Number(spiceLevel) : undefined,
-          limit: limit ? Number(limit) : 5,
-        }),
-      });
+ try {
+ const response = await fetch('/api/search', {
+ method: 'POST',
+ headers: { 'Content-Type': 'application/json' },
+ body: JSON.stringify({
+ query,
+ maxPrice: maxPrice ? Number(maxPrice) : undefined,
+ vegetarian: vegetarian === 'true' ? true : vegetarian === 'false' ? false : undefined,
+ halal: halal === 'true' ? true : halal === 'false' ? false : undefined,
+ spiceLevel: spiceLevel ? Number(spiceLevel) : undefined,
+ limit: limit ? Number(limit) : 5,
+ }),
+ });
 
-      const payload = await response.json();
-      if (!response.ok) throw new Error(payload?.error ?? 'Search failed');
+ const payload = await response.json();
+ if (!response.ok) throw new Error(payload?.error ?? 'Search failed');
 
-      const nextResults = payload.results ?? [];
-      setResults(nextResults);
-      router.push(resultsHref as any);
-    } catch (searchError) {
-      setResults([]);
-      setError(searchError instanceof Error ? searchError.message : 'Unknown search error');
-    } finally {
-      setLoading(false);
-    }
-  };
+ const nextResults = payload.results ?? [];
+ setResults(nextResults);
+ router.push(resultsHref as any);
+ } catch (searchError) {
+ setResults([]);
+ setError(searchError instanceof Error ? searchError.message : 'Unknown search error');
+ } finally {
+ setLoading(false);
+ }
+ };
 
-  return (
-    <div className={`${shellBg} min-h-screen transition-colors duration-200`}>
-      <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6 lg:px-8">
-        <div className={`rounded-[32px] border ${border} bg-white/10 p-4 shadow-[0_20px_80px_rgba(15,23,42,0.08)] backdrop-blur-xl sm:p-6 lg:p-8`}>
-          <header className="mb-6 flex items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <div className={`flex h-10 w-10 items-center justify-center rounded-full ${isDark ? 'bg-[#f5f5f7] text-[#111214]' : 'bg-[#111827] text-white'}`}>
-                H
-              </div>
-              <div>
-                <p className={`text-xs font-semibold ${mutedText}`}>Hawker menu intelligence</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => setTheme((current) => (current === 'light' ? 'dark' : 'light'))}
-                className={`flex h-11 items-center rounded-full px-4 text-xs font-semibold transition-all active:scale-[0.98] ${isDark ? 'bg-[#1c1c1e] text-[#f5f5f7] hover:bg-[#2c2c2e]' : 'bg-[#f2f2f7] text-[#1d1d1f] hover:bg-[#e5e5ea]'}`}
-              >
-                {isDark ? 'Light mode' : 'Dark mode'}
-              </button>
-              <Link href={resultsHref as any} className="hidden h-11 items-center rounded-full bg-[#007aff] hover:bg-[#0071e3] px-4 text-xs font-semibold text-white transition-all shadow-xs active:scale-[0.98] sm:inline-flex">
-                Browse results
-              </Link>
-            </div>
-          </header>
+ return (
+ <div className={`${shellBg} min-h-screen `}>
+ <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6 lg:px-8">
+ <div className={`rounded-[32px]  bg-white/10 p-4 shadow-[0_20px_80px_rgba(15,23,42,0.08)] backdrop-blur-xl sm:p-6 lg:p-8`}>
+ <header className="mb-6 flex items-center justify-between gap-3">
+ <div className="flex items-center gap-3">
+ <div className={`flex h-10 w-10 items-center justify-center rounded-full ${isDark ? 'bg-[#f5f5f7] text-[#111214]' : 'bg-[#111827] text-white'}`}>
+ H
+ </div>
+ <div>
+ <p className={`text-xs font-semibold ${mutedText}`}>Hawker menu intelligence</p>
+ </div>
+ </div>
+ <div className="flex items-center gap-2">
+ <button
+ type="button"
+ onClick={() => setTheme((current) => (current === 'light' ? 'dark' : 'light'))}
+ className={`flex h-11 items-center rounded-full px-4 text-xs font-semibold active:scale-[0.98] ${isDark ? 'bg-[#1c1c1e] text-[#f5f5f7] hover:bg-[#2c2c2e]' : 'bg-[#f2f2f7] text-[#1d1d1f] hover:bg-[#e5e5ea]'}`}
+ >
+ {isDark ? 'Light mode' : 'Dark mode'}
+ </button>
+ <Link href={resultsHref as any} className="hidden h-11 items-center rounded-full bg-[#007aff] hover:bg-[#0071e3] px-4 text-xs font-semibold text-white shadow-xs active:scale-[0.98] sm:inline-flex">
+ Browse results
+ </Link>
+ </div>
+ </header>
 
-          <section className={`rounded-[30px] border ${border} px-4 py-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)] sm:px-6 sm:py-7 ${isDark ? 'bg-[radial-gradient(circle_at_top,_#111214_0%,_#0d0d10_55%,_#0b0b0d_100%)]' : 'bg-[radial-gradient(circle_at_top,_#ffffff_0%,_#f5f5f7_55%,_#f0f0f2_100%)]'}`}>
-            <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-              <div>
-                <p className={`text-xs font-semibold ${mutedText}`}>Find your next craving</p>
-                <h1 className={`mt-2 text-3xl font-semibold tracking-[-0.06em] sm:text-5xl ${isDark ? 'text-[#f5f5f7]' : 'text-[#1d1d1f]'}`}>
-                  Discover hawker food that fits your mood.
-                </h1>
-              </div>
-            </div>
+ <section className={`rounded-[30px]  px-4 py-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)] sm:px-6 sm:py-7 ${isDark ? 'bg-[radial-gradient(circle_at_top,_#111214_0%,_#0d0d10_55%,_#0b0b0d_100%)]' : 'bg-[radial-gradient(circle_at_top,_#ffffff_0%,_#f5f5f7_55%,_#f0f0f2_100%)]'}`}>
+ <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+ <div>
+ <p className={`text-xs font-semibold ${mutedText}`}>Find your next craving</p>
+ <h1 className={`mt-2 text-3xl font-semibold tracking-[-0.06em] sm:text-5xl ${isDark ? 'text-[#f5f5f7]' : 'text-[#1d1d1f]'}`}>
+ Discover hawker food that fits your mood.
+ </h1>
+ </div>
+ </div>
 
-            <form onSubmit={handleSearch} className="space-y-5">
-              <label className="block">
-                <span className={`mb-2 block text-sm font-medium ${isDark ? 'text-[#d4d4d8]' : 'text-[#3c3c43]'}`}>What are you craving?</span>
-                <textarea
-                  value={query}
-                  onChange={(event) => setQuery(event.target.value)}
-                  rows={3}
-                  className={`w-full resize-none rounded-[22px] border ${border} ${inputBg} px-4 py-3 text-base outline-none transition focus:border-[#8c8c93] ${isDark ? 'shadow-[0_10px_30px_rgba(12,12,15,0.6)]' : 'shadow-[0_10px_30px_rgba(15,23,42,0.04)]'}`}
-                  placeholder="I want a vegetarian meal under RM15 with medium spice and halal-friendly options."
-                />
-              </label>
+ <form onSubmit={handleSearch} className="space-y-5">
+ <label className="block">
+ <span className={`mb-2 block text-sm font-medium ${isDark ? 'text-[#d4d4d8]' : 'text-[#3c3c43]'}`}>What are you craving?</span>
+ <textarea
+ value={query}
+ onChange={(event) => setQuery(event.target.value)}
+ rows={3}
+ className={`w-full resize-none rounded-[22px]  ${inputBg} px-4 py-3 text-base outline-none focus:] ${isDark ? 'shadow-[0_10px_30px_rgba(12,12,15,0.6)]' : 'shadow-[0_10px_30px_rgba(15,23,42,0.04)]'}`}
+ placeholder="I want a vegetarian meal under RM15 with medium spice and halal-friendly options."
+ />
+ </label>
 
-              <div className="flex flex-wrap gap-2">
-                {quickIdeas.map((idea) => (
-                  <button
-                    key={idea}
-                    type="button"
-                    onClick={() => setQuery(idea)}
-                    className={`rounded-full px-3.5 py-1.5 text-xs font-medium transition-all ${isDark ? 'bg-[#1c1c1e] text-[#f5f5f7] hover:bg-[#2c2c2e]' : 'bg-[#f2f2f7] text-[#1d1d1f] hover:bg-[#e5e5ea]'}`}
-                  >
-                    {idea}
-                  </button>
-                ))}
-              </div>
+ <div className="flex flex-wrap gap-2">
+ {quickIdeas.map((idea) => (
+ <button
+ key={idea}
+ type="button"
+ onClick={() => setQuery(idea)}
+ className={`rounded-full px-3.5 py-1.5 text-xs font-medium ${isDark ? 'bg-[#1c1c1e] text-[#f5f5f7] hover:bg-[#2c2c2e]' : 'bg-[#f2f2f7] text-[#1d1d1f] hover:bg-[#e5e5ea]'}`}
+ >
+ {idea}
+ </button>
+ ))}
+ </div>
 
-              <div className={`flex flex-col gap-3 rounded-[22px] border ${border} p-3 sm:flex-row sm:items-center sm:justify-between ${isDark ? 'bg-[#101113]' : 'bg-white/80'}`}>
-                <div className="flex flex-wrap items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setVegetarian((current) => (current === 'true' ? '' : 'true'))}
-                    className={`rounded-full px-4 py-2 text-xs font-semibold transition-all ${
-                      vegetarian === 'true'
-                        ? 'bg-[#007aff] text-white shadow-xs'
-                        : isDark
-                          ? 'bg-[#1c1c1e] text-[#8e8e93] hover:text-white'
-                          : 'bg-[#f2f2f7] text-[#8e8e93] hover:text-[#1d1d1f]'
-                    }`}
-                  >
-                    Vegetarian
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setHalal((current) => (current === 'true' ? '' : 'true'))}
-                    className={`rounded-full px-4 py-2 text-xs font-semibold transition-all ${
-                      halal === 'true'
-                        ? 'bg-[#007aff] text-white shadow-xs'
-                        : isDark
-                          ? 'bg-[#1c1c1e] text-[#8e8e93] hover:text-white'
-                          : 'bg-[#f2f2f7] text-[#8e8e93] hover:text-[#1d1d1f]'
-                    }`}
-                  >
-                    Halal
-                  </button>
-                  <label className={`inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-xs font-semibold ${isDark ? 'bg-[#1c1c1e] text-[#f5f5f7]' : 'bg-[#f2f2f7] text-[#3c3c43]'}`}>
-                    <span>Budget</span>
-                    <input
-                      type="number"
-                      min="0"
-                      value={maxPrice}
-                      onChange={(event) => setMaxPrice(event.target.value)}
-                      className={`w-16 bg-transparent text-right outline-none font-normal ${isDark ? 'text-[#f5f5f7]' : 'text-[#1d1d1f]'}`}
-                    />
-                  </label>
-                  <label className={`inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-xs font-semibold ${isDark ? 'bg-[#1c1c1e] text-[#f5f5f7]' : 'bg-[#f2f2f7] text-[#3c3c43]'}`}>
-                    <span>Heat</span>
-                    <select value={spiceLevel} onChange={(event) => setSpiceLevel(event.target.value)} className={`bg-transparent outline-none font-normal ${isDark ? 'text-[#f5f5f7]' : 'text-[#1d1d1f]'}`}>
-                      <option value="">Any</option>
-                      {[0, 1, 2, 3, 4, 5].map((level) => (
-                        <option key={level} value={String(level)}>
-                          {spiceLabels[level as keyof typeof spiceLabels]}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                </div>
+ <div className={`flex flex-col gap-3 rounded-[22px]  p-3 sm:flex-row sm:items-center sm:justify-between ${isDark ? 'bg-[#101113]' : 'bg-white/80'}`}>
+ <div className="flex flex-wrap items-center gap-2">
+ <button
+ type="button"
+ onClick={() => setVegetarian((current) => (current === 'true' ? '' : 'true'))}
+ className={`rounded-full px-4 py-2 text-xs font-semibold ${
+ vegetarian === 'true'
+ ? 'bg-[#007aff] text-white shadow-xs'
+ : isDark
+ ? 'bg-[#1c1c1e] text-[#8e8e93] hover:text-white'
+ : 'bg-[#f2f2f7] text-[#8e8e93] hover:text-[#1d1d1f]'
+ }`}
+ >
+ Vegetarian
+ </button>
+ <button
+ type="button"
+ onClick={() => setHalal((current) => (current === 'true' ? '' : 'true'))}
+ className={`rounded-full px-4 py-2 text-xs font-semibold ${
+ halal === 'true'
+ ? 'bg-[#007aff] text-white shadow-xs'
+ : isDark
+ ? 'bg-[#1c1c1e] text-[#8e8e93] hover:text-white'
+ : 'bg-[#f2f2f7] text-[#8e8e93] hover:text-[#1d1d1f]'
+ }`}
+ >
+ Halal
+ </button>
+ <label className={`inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-xs font-semibold ${isDark ? 'bg-[#1c1c1e] text-[#f5f5f7]' : 'bg-[#f2f2f7] text-[#3c3c43]'}`}>
+ <span>Budget</span>
+ <input
+ type="number"
+ min="0"
+ value={maxPrice}
+ onChange={(event) => setMaxPrice(event.target.value)}
+ className={`w-16 bg-transparent text-right outline-none font-normal ${isDark ? 'text-[#f5f5f7]' : 'text-[#1d1d1f]'}`}
+ />
+ </label>
+ <label className={`inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-xs font-semibold ${isDark ? 'bg-[#1c1c1e] text-[#f5f5f7]' : 'bg-[#f2f2f7] text-[#3c3c43]'}`}>
+ <span>Heat</span>
+ <select value={spiceLevel} onChange={(event) => setSpiceLevel(event.target.value)} className={`bg-transparent outline-none font-normal ${isDark ? 'text-[#f5f5f7]' : 'text-[#1d1d1f]'}`}>
+ <option value="">Any</option>
+ {[0, 1, 2, 3, 4, 5].map((level) => (
+ <option key={level} value={String(level)}>
+ {spiceLabels[level as keyof typeof spiceLabels]}
+ </option>
+ ))}
+ </select>
+ </label>
+ </div>
 
-                <div className="flex items-center gap-2">
-                  <label className={`inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-xs font-semibold ${isDark ? 'bg-[#1c1c1e] text-[#f5f5f7]' : 'bg-[#f2f2f7] text-[#3c3c43]'}`}>
-                    <span>Results</span>
-                    <input type="number" min="1" max="20" value={limit} onChange={(event) => setLimit(event.target.value)} className={`w-12 bg-transparent text-right outline-none font-normal ${isDark ? 'text-[#f5f5f7]' : 'text-[#1d1d1f]'}`} />
-                  </label>
-                  <button type="submit" disabled={loading} className="flex h-11 items-center justify-center rounded-full bg-[#007aff] hover:bg-[#0071e3] px-6 text-sm font-semibold text-white shadow-xs transition-all active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60">
-                    {loading ? 'Searching…' : 'Search'}
-                  </button>
-                </div>
-              </div>
-            </form>
+ <div className="flex items-center gap-2">
+ <label className={`inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-xs font-semibold ${isDark ? 'bg-[#1c1c1e] text-[#f5f5f7]' : 'bg-[#f2f2f7] text-[#3c3c43]'}`}>
+ <span>Results</span>
+ <input type="number" min="1" max="20" value={limit} onChange={(event) => setLimit(event.target.value)} className={`w-12 bg-transparent text-right outline-none font-normal ${isDark ? 'text-[#f5f5f7]' : 'text-[#1d1d1f]'}`} />
+ </label>
+ <button type="submit" disabled={loading} className="flex h-11 items-center justify-center rounded-full bg-[#007aff] hover:bg-[#0071e3] px-6 text-sm font-semibold text-white shadow-xs active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60">
+ {loading ? 'Searching…' : 'Search'}
+ </button>
+ </div>
+ </div>
+ </form>
 
-            {(allergyDisclaimer || followUpHint) && (
-              <div className={`mt-5 rounded-[20px] border p-3 text-sm ${isDark ? 'border-[#f5d57b]/40 bg-[#2b2416] text-[#f7d98f]' : 'border-[#f5d57b] bg-[#fff6d6] text-[#5c4b1d]'}`}>
-                {allergyDisclaimer && <p className="mb-1 font-medium">{allergyDisclaimer}</p>}
-                <p>{followUpHint}</p>
-              </div>
-            )}
+ {(allergyDisclaimer || followUpHint) && (
+ <div className={`mt-5 rounded-[20px] p-3 text-sm ${isDark ? ' bg-[#2b2416] text-[#f7d98f]' : '] bg-[#fff6d6] text-[#5c4b1d]'}`}>
+ {allergyDisclaimer && <p className="mb-1 font-medium">{allergyDisclaimer}</p>}
+ <p>{followUpHint}</p>
+ </div>
+ )}
 
-            {error && (
-              <div className={`mt-5 rounded-[20px] border p-3 text-sm ${isDark ? 'border-[#fca5a5]/30 bg-[#2b1017] text-[#fecaca]' : 'border-[#fecaca] bg-[#fff1f2] text-[#9f1239]'}`}>
-                {error}
-              </div>
-            )}
-          </section>
+ {error && (
+ <div className={`mt-5 rounded-[20px] p-3 text-sm ${isDark ? ' bg-[#2b1017] text-[#fecaca]' : '] bg-[#fff1f2] text-[#9f1239]'}`}>
+ {error}
+ </div>
+ )}
+ </section>
 
-          {results.length > 0 && (
-            <section className="mt-8">
-              <div className="mb-4 flex items-center justify-between gap-3">
-                <h2 className={`text-xl font-semibold tracking-[-0.04em] ${isDark ? 'text-[#f5f5f7]' : 'text-[#1d1d1f]'}`}>Top matches</h2>
-                <Link href={resultsHref as any} className={`text-sm font-medium underline underline-offset-4 ${isDark ? 'text-[#f5f5f7]' : 'text-[#1d1d1f]'}`}>
-                  View all
-                </Link>
-              </div>
+ {results.length > 0 && (
+ <section className="mt-8">
+ <div className="mb-4 flex items-center justify-between gap-3">
+ <h2 className={`text-xl font-semibold tracking-[-0.04em] ${isDark ? 'text-[#f5f5f7]' : 'text-[#1d1d1f]'}`}>Top matches</h2>
+ <Link href={resultsHref as any} className={`text-sm font-medium underline underline-offset-4 ${isDark ? 'text-[#f5f5f7]' : 'text-[#1d1d1f]'}`}>
+ View all
+ </Link>
+ </div>
 
-              <div className="grid gap-4 lg:grid-cols-[1.5fr_0.85fr]">
-                <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                  {results.slice(0, 3).map((dish) => (
-                    <ResultCard key={dish.id} dish={dish} onAddToCart={handleAddToCart} />
-                  ))}
-                </div>
+ <div className="grid gap-4 lg:grid-cols-[1.5fr_0.85fr]">
+ <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+ {results.slice(0, 3).map((dish) => (
+ <ResultCard key={dish.id} dish={dish} onAddToCart={handleAddToCart} />
+ ))}
+ </div>
 
-                <div className="lg:pt-1">
-                  <CartSummary
-                    items={cartItems}
-                    subtotal={cartSummary.subtotal}
-                    serviceFee={cartSummary.serviceFee}
-                    total={cartSummary.total}
-                    onUpdateQuantity={handleUpdateQuantity}
-                    onRemoveItem={handleRemoveItem}
-                    onCheckout={handleCheckout}
-                  />
-                </div>
-              </div>
+ <div className="lg:pt-1">
+ <CartSummary
+ items={cartItems}
+ subtotal={cartSummary.subtotal}
+ serviceFee={cartSummary.serviceFee}
+ total={cartSummary.total}
+ onUpdateQuantity={handleUpdateQuantity}
+ onRemoveItem={handleRemoveItem}
+ onCheckout={handleCheckout}
+ />
+ </div>
+ </div>
 
-              {checkoutMessage && (
-                <div className="mt-5 rounded-[22px] border border-[#bbf7d0] bg-[#ecfdf5] p-3 text-sm font-medium text-[#166534]">
-                  {checkoutMessage}
-                </div>
-              )}
-            </section>
-          )}
-        </div>
-      </div>
-      <CartWarningModal />
-    </div>
-  );
+ {checkoutMessage && (
+ <div className="mt-5 rounded-[22px] ] bg-[#ecfdf5] p-3 text-sm font-medium text-[#166534]">
+ {checkoutMessage}
+ </div>
+ )}
+ </section>
+ )}
+ </div>
+ </div>
+ <CartWarningModal />
+ </div>
+ );
 }

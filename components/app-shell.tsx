@@ -17,24 +17,24 @@ import { OwnerShell } from '@/components/owner/owner-shell';
  * 4. Hawker Shop Owner App: Venue overview, booth management, analytics, fee settings
  */
 export function AppShell({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
-  const client = PermissionEngine.getClientForPath(pathname);
+ const pathname = usePathname();
+ const client = PermissionEngine.getClientForPath(pathname);
 
-  // 1. Marketing, Auth & SaaS Superadmin routes (Render their own self-contained layout)
-  if (client === 'website' || client === 'admin') {
-    return <>{children}</>;
-  }
+ // 1. Marketing, Auth & SaaS Superadmin routes (Render their own self-contained layout)
+ if (client === 'website' || client === 'admin') {
+ return <>{children}</>;
+ }
 
-  // 2. Hawker Stall Worker App
-  if (client === 'stall') {
-    return <StallShell>{children}</StallShell>;
-  }
+ // 2. Hawker Stall Worker App
+ if (client === 'stall') {
+ return <StallShell>{children}</StallShell>;
+ }
 
-  // 3. Hawker Shop Owner App
-  if (client === 'owner') {
-    return <OwnerShell>{children}</OwnerShell>;
-  }
+ // 3. Hawker Shop Owner App
+ if (client === 'owner') {
+ return <OwnerShell>{children}</OwnerShell>;
+ }
 
-  // 4. Customer App (Default)
-  return <CustomerShell>{children}</CustomerShell>;
+ // 4. Customer App (Default)
+ return <CustomerShell>{children}</CustomerShell>;
 }
