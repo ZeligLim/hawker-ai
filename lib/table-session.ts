@@ -77,11 +77,13 @@ export function setCurrentTableSession(
   };
 
   window.localStorage.setItem(TABLE_SESSION_STORAGE_KEY, JSON.stringify(next));
+  window.dispatchEvent(new Event('hawker-session-changed'));
 }
 
 export function clearTableSession() {
   if (typeof window === 'undefined') return;
   window.localStorage.removeItem(TABLE_SESSION_STORAGE_KEY);
+  window.dispatchEvent(new Event('hawker-session-changed'));
 }
 
 export function formatTableLabel(tableNumber: string) {

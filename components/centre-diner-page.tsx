@@ -225,6 +225,7 @@ export function CentreDinerPage({ centre }: { centre: HawkerCentreSummary }) {
       centreId: centre.id,
       centreSlug: centre.slug,
       centreName: centre.name,
+      aiEnabled: centre.aiEnabled ?? true,
     });
     setTableSession({
       tableNumber: cleaned,
