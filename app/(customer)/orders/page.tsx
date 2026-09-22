@@ -12,6 +12,7 @@ import { getDishCustomization } from '@/lib/order/customizations';
 import { supabase } from '@/lib/supabase/client';
 import { CustomerReceipt, type ReceiptData } from '@/components/customer-receipt';
 import { getCurrentTableSession } from '@/lib/table-session';
+import { saveActiveOrder, getActiveOrder, clearActiveOrder } from '@/lib/active-order';
 
 export default function OrdersPage() {
  const { cartItems, setCartItems } = useCartItems();
@@ -22,6 +23,14 @@ export default function OrdersPage() {
  const [airwallexElement, setAirwallexElement] = useState<any>(null);
  const [checkoutError, setCheckoutError] = useState('');
  const [placedReceipt, setPlacedReceipt] = useState<ReceiptData | null>(null);
+
+  useEffect(() => {
+    const active = getActiveOrder(getCurrentTableSession().tableId ?? null);
+    if (active) {
+      setPlacedReceipt(active);
+      setCheckoutState('success');
+    }
+  }, []);
  const [feeConfig, setFeeConfig] = useState<any>(undefined);
  const [isFeeConfigLoading, setIsFeeConfigLoading] = useState(true);
 
@@ -230,7 +239,7 @@ export default function OrdersPage() {
  </span>
  </div>
 
- <CustomerReceipt initialData={placedReceipt} onBack={() => setPlacedReceipt(null)} />
+ <CustomerReceipt initialData={placedReceipt} onClearActive={() => { clearActiveOrder(); setPlacedReceipt(null); setCheckoutState('idle'); }} />
 
  <div className="mt-6 flex justify-center gap-3">
  <Link

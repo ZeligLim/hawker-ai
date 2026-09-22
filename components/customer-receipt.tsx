@@ -34,9 +34,11 @@ export type ReceiptData = {
 export function CustomerReceipt({
  initialData,
  onBack,
+  onClearActive,
 }: {
  initialData: ReceiptData;
  onBack?: () => void;
+  onClearActive?: () => void;
 }) {
  const [data, setData] = useState<ReceiptData>(initialData);
  const [liveBanner, setLiveBanner] = useState<string | null>(null);
@@ -112,7 +114,19 @@ export function CustomerReceipt({
 
  return (
  <div className="w-full max-w-lg mx-auto bg-white rounded-3xl shadow-lg overflow-hidden text-black">
- {/* Real-time alert banner if item was sold out */}
+ {/* Mark as Received Button */}
+        {onClearActive && (orderStatus === 'served' || orderStatus === 'ready') ? (
+          <div className="bg-[#f5f5f7] p-3 flex justify-center">
+            <button
+              onClick={onClearActive}
+              className="w-full max-w-[200px] h-11 rounded-full bg-emerald-500 text-white font-semibold text-sm hover:bg-emerald-600 transition-colors"
+            >
+              Food Received
+            </button>
+          </div>
+        ) : null}
+
+        {/* Real-time alert banner if item was sold out */}
  {liveBanner ? (
  <div className="bg-rose-100 px-4 py-3 flex items-start gap-2.5 text-xs text-rose-900">
  <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
