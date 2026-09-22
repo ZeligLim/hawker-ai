@@ -98,6 +98,15 @@ export function CustomerReceipt({
  };
  }, [data.id]);
 
+ useEffect(() => {
+ if (orderStatus === 'served' || orderStatus === 'ready') return;
+ let active = true;
+ fetch(`/api/orders/${data.id}/eta`).then(res => res.json()).then(resData => {
+ if (active && resData.eta) setEta(`ETA ${resData.eta}`);
+ }).catch(() => {});
+ return () => { active = false; };
+ }, [data.id, orderStatus]);
+
  const adjustedTotal = Math.max(0, data.total - (data.refundAmount || 0));
  const hasRefund = (data.refundAmount || 0) > 0 || data.paymentStatus.includes('REFUNDED');
 
