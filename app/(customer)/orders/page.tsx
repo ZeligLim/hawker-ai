@@ -179,7 +179,7 @@ export default function OrdersPage() {
  const result = await response.json();
  setCartItems([]);
  setPlacedReceipt({
- id: result.order.id,
+ id: result.orderId || (result.order && result.order.id),
  venueName: cartItems[0]?.restaurantName ?? 'Hawker Centre',
  createdAt: new Date().toISOString(),
  subtotal: summary.subtotal,

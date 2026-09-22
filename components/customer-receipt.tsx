@@ -41,6 +41,7 @@ export function CustomerReceipt({
  const [data, setData] = useState<ReceiptData>(initialData);
  const [liveBanner, setLiveBanner] = useState<string | null>(null);
  const [orderStatus, setOrderStatus] = useState<string>('preparing');
+  const [eta, setEta] = useState<string>('Calculating...');
 
  useEffect(() => {
  if (!supabase || !data.id) return;
@@ -127,7 +128,7 @@ export function CustomerReceipt({
  </span>
  </div>
  {orderStatus !== 'served' && orderStatus !== 'ready' && (
- <span className="text-xs font-medium text-neutral-300">ETA 10-15 mins</span>
+ <span className="text-xs font-medium text-neutral-300">{eta}</span>
  )}
  </div>
 
