@@ -160,6 +160,7 @@ export default function OrdersPage() {
  items: cartItems.map((item) => ({
  dishId: item.dishId,
  stallId: item.stallId,
+ name: item.name,
  quantity: item.quantity,
  price: item.price,
  notes: item.notes,
