@@ -21,7 +21,7 @@ export async function POST(
  const { id: routeId } = await context.params;
  const parsed = RefundSchema.safeParse(await request.json().catch(() => ({})));
  if (!parsed.success) {
- return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
+ return NextResponse.json({ error: parsed.error.issues[0].message || 'Invalid request payload.' }, { status: 400 });
  }
 
  const { item_ids, reason, cancel_entire_order } = parsed.data;

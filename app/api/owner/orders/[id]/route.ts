@@ -8,7 +8,7 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ i
  const { id } = await context.params;
 
  const parsed = UpdateMerchantOrderSchema.safeParse(await request.json().catch(() => null));
- if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
+ if (!parsed.success) return NextResponse.json({ error: parsed.error.issues[0].message || 'Invalid request payload.' }, { status: 400 });
 
  const { data: merchantOrder } = await auth.client
  .from('merchant_orders')

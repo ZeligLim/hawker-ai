@@ -8,7 +8,7 @@ export async function POST(request: NextRequest) {
  // Allow guests to start table sessions
 
  const parsed = CreateTableSessionSchema.safeParse(await request.json().catch(() => null));
- if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
+ if (!parsed.success) return NextResponse.json({ error: parsed.error.issues[0].message || 'Invalid request payload.' }, { status: 400 });
 
  let table = null;
 

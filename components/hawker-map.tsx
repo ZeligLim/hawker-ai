@@ -85,8 +85,7 @@ export function HawkerMap({
  const endTileY = Math.floor((centerProj.y + dimensions.height / 2) / 256);
 
  const tiles = [];
- const isRetina = typeof window !== 'undefined' && (window.devicePixelRatio || 1) > 1;
- const scale = isRetina ? 2 : 1;
+ const scale = 2; // Fixed to 2 to prevent SSR hydration mismatch. Most modern devices are high-DPI.
 
  for (let x = startTileX; x <= endTileX; x++) {
  for (let y = startTileY; y <= endTileY; y++) {
