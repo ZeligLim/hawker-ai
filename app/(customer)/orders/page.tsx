@@ -28,9 +28,14 @@ export default function OrdersPage() {
     const active = getActiveOrder(getCurrentTableSession().tableId ?? null);
     if (active) {
       setPlacedReceipt(active);
-      setCheckoutState('success');
     }
   }, []);
+
+  useEffect(() => {
+    if (cartItems.length > 0 && checkoutState === 'success') {
+      setCheckoutState('idle');
+    }
+  }, [cartItems.length, checkoutState]);
  const [feeConfig, setFeeConfig] = useState<any>(undefined);
  const [isFeeConfigLoading, setIsFeeConfigLoading] = useState(true);
 
@@ -232,31 +237,6 @@ export default function OrdersPage() {
  }
  }, [checkoutState, airwallexElement, submitFinalOrder]);
 
- if (placedReceipt) {
- return (
- <main className="min-h-screen bg-[#f5f5f7] px-4 pb-28 pt-8 text-black">
- <div className="mx-auto max-w-[480px]">
- <div className="mb-6 text-center">
- <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-emerald-100 text-emerald-800 text-xs font-semibold">
- ✓ Order placed successfully
- </span>
- </div>
-
- <CustomerReceipt initialData={placedReceipt} onClearActive={() => { clearActiveOrder(); setPlacedReceipt(null); setCheckoutState('idle'); }} />
-
- <div className="mt-6 flex justify-center gap-3">
- <Link
- href="/home"
- className="inline-flex h-11 items-center justify-center rounded-full bg-black hover:bg-neutral-800 px-6 text-sm font-semibold text-white shadow-xs "
- >
- Order more items
- </Link>
- </div>
- </div>
- </main>
- );
- }
-
  return (
  <main className="min-h-screen bg-[#f5f5f7] px-4 pb-32 pt-5 text-black sm:px-6">
  <div className="mx-auto w-full max-w-md sm:max-w-xl md:max-w-3xl lg:max-w-5xl">
@@ -441,6 +421,12 @@ export default function OrdersPage() {
  </p>
  )}
  </section>
+
+ {placedReceipt && (
+ <div className="mt-6 mb-8">
+ <CustomerReceipt initialData={placedReceipt} onClearActive={() => { clearActiveOrder(); setPlacedReceipt(null); setCheckoutState('idle'); }} />
+ </div>
+ )}
  </div>
  </div>
 
