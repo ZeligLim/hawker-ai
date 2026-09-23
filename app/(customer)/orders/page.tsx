@@ -424,7 +424,7 @@ export default function OrdersPage() {
 
  {placedReceipt && (
  <div className="mt-6 mb-8">
- <CustomerReceipt initialData={placedReceipt} onClearActive={() => { clearActiveOrder(); setPlacedReceipt(null); setCheckoutState('idle'); }} />
+ <CustomerReceipt simplified initialData={placedReceipt} onClearActive={() => { clearActiveOrder(); setPlacedReceipt(null); setCheckoutState('idle'); }} />
  </div>
  )}
  </div>

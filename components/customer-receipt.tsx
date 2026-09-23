@@ -32,13 +32,15 @@ export type ReceiptData = {
 };
 
 export function CustomerReceipt({
- initialData,
- onBack,
+  initialData,
+  onBack,
   onClearActive,
+  simplified = false,
 }: {
- initialData: ReceiptData;
- onBack?: () => void;
+  initialData: ReceiptData;
+  onBack?: () => void;
   onClearActive?: () => void;
+  simplified?: boolean;
 }) {
  const [data, setData] = useState<ReceiptData>(initialData);
  const [liveBanner, setLiveBanner] = useState<string | null>(null);
