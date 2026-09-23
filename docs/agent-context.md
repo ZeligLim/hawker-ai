@@ -618,3 +618,7 @@ Phase 20: Dedicated SaaS Superadmin Dashboard Route Group & Standalone Monetizat
 ## Next Task
 - End-to-end user checkout and verify realtime multi-stall kitchen routing and sold-out refund synchronization.
 
+- **Phase 26: Bug fixes for global background and active order persistence**:
+  - Ensured all customer-facing wrapper shells and isolated sub-pages adhere correctly to the global pure `#f5f5f7` grey background by swapping stray `bg-white` definitions on `min-h-screen` containers to `bg-[#f5f5f7]`.
+  - Resolved "order not showing after checkout" by explicitly persisting `saveActiveOrder` into local storage upon checkout success, allowing `OrdersPage` to read it on remount and display the customer receipt dynamically.
+
