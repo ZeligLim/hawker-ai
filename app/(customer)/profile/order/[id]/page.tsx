@@ -87,7 +87,7 @@ export default function OrderDetailPage() {
 
  if (isLoading) {
  return (
- <main className="min-h-screen bg-white px-4 pb-28 pt-8 text-black">
+ <main className="min-h-screen bg-[#f5f5f7] px-4 pb-28 pt-8 text-black">
  <div className="mx-auto max-w-[480px]">
  <div className="rounded-3xl bg-neutral-50 p-6 shadow-sm">
  <p className="text-sm text-neutral-500">Loading your order receipt…</p>
@@ -99,7 +99,7 @@ export default function OrderDetailPage() {
 
  if (!receipt) {
  return (
- <main className="min-h-screen bg-white px-4 pb-28 pt-8 text-black">
+ <main className="min-h-screen bg-[#f5f5f7] px-4 pb-28 pt-8 text-black">
  <div className="mx-auto max-w-[480px]">
  <div className="rounded-3xl bg-neutral-50 p-6 shadow-sm">
  <p className="text-sm font-semibold text-black">Order not found or access expired.</p>
@@ -116,7 +116,7 @@ export default function OrderDetailPage() {
  }
 
  return (
- <main className="min-h-screen bg-white px-4 pb-28 pt-6 text-black">
+ <main className="min-h-screen bg-[#f5f5f7] px-4 pb-28 pt-6 text-black">
  <div className="mx-auto max-w-[480px]">
  <CustomerReceipt initialData={receipt} onBack={() => router.push('/profile')} />
  </div>

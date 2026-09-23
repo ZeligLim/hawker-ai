@@ -184,10 +184,10 @@ export default function OrdersPage() {
  setCheckoutState('idle');
  return;
  }
-
- const result = await response.json();
- setCartItems([]);
- setPlacedReceipt({
+    const result = await response.json();
+    setCartItems([]);
+    
+    const receiptData: ReceiptData = {
  id: result.orderId || (result.order && result.order.id),
  venueName: cartItems[0]?.restaurantName ?? 'Hawker Centre',
  createdAt: new Date().toISOString(),
@@ -203,7 +203,10 @@ export default function OrdersPage() {
  price: item.price,
  customizations: item.customizations,
  })),
- });
+ };
+ 
+ setPlacedReceipt(receiptData);
+ saveActiveOrder(receiptData, getCurrentTableSession().tableId ?? null);
  setCheckoutState('success');
  }, [cartItems, summary, setCartItems]);
 
@@ -231,7 +234,7 @@ export default function OrdersPage() {
 
  if (placedReceipt) {
  return (
- <main className="min-h-screen bg-white px-4 pb-28 pt-8 text-black">
+ <main className="min-h-screen bg-[#f5f5f7] px-4 pb-28 pt-8 text-black">
  <div className="mx-auto max-w-[480px]">
  <div className="mb-6 text-center">
  <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-emerald-100 text-emerald-800 text-xs font-semibold">

@@ -39,7 +39,7 @@ export function CustomerShell({ children }: { children: React.ReactNode }) {
  }, [pathname]); // also re-check on pathname change just in case
 
  return (
- <div className={`relative ${isHomePage ? 'h-screen w-screen overflow-hidden' : 'min-h-screen'} bg-white text-black`}>
+ <div className={`relative ${isHomePage ? 'h-screen w-screen overflow-hidden' : 'min-h-screen'} bg-[#f5f5f7] text-black`}>
  <main className={isHomePage ? 'h-full w-full overflow-hidden' : 'pb-24'}>{children}</main>
 
  <ClientBottomNav
