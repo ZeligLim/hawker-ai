@@ -622,3 +622,8 @@ Phase 20: Dedicated SaaS Superadmin Dashboard Route Group & Standalone Monetizat
   - Ensured all customer-facing wrapper shells and isolated sub-pages adhere correctly to the global pure `#f5f5f7` grey background by swapping stray `bg-white` definitions on `min-h-screen` containers to `bg-[#f5f5f7]`.
   - Resolved "order not showing after checkout" by explicitly persisting `saveActiveOrder` into local storage upon checkout success, allowing `OrdersPage` to read it on remount and display the customer receipt dynamically.
 
+- **Phase 27: Profile pagination and receipt simplification**:
+  - Limited the Profile tab's "Previous orders" to initially show only the 3 most recent orders, adding a "See older orders" button to reveal the rest.
+  - Implemented a `simplified` prop on `CustomerReceipt` which hides the financial breakdown and payment status badges.
+  - Applied the `simplified` widget exclusively in the active `Orders` tab (just showing food, customizations, and ETA), while keeping the full financial receipt layout intact for the historic `Profile` order history view.
+
