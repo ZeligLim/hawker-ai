@@ -180,6 +180,8 @@ export default function ProfilePage() {
  return [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 3);
  }, [orders]);
 
+  const [showAllOrders, setShowAllOrders] = useState(false);
+
  const orderLinks = useMemo(
  () =>
  orders.map((order, index) => ({
@@ -365,7 +367,7 @@ export default function ProfilePage() {
  </div>
  ) : (
  <div className="space-y-2.5">
- {orderLinks.map(({ id, order }) => {
+ {(showAllOrders ? orderLinks : orderLinks.slice(0, 3)).map(({ id, order }) => {
  const orderHref = `/profile/order/${encodeURIComponent(id)}` as any;
 
  return (
