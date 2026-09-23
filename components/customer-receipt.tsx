@@ -246,6 +246,8 @@ export function CustomerReceipt({
  </div>
  </div>
 
+        {!simplified && (
+          <>
  {/* Financial Breakdown */}
  <div className="pt-3 space-y-2 bg-neutral-50 p-4 rounded-2xl">
  <div className="flex items-center justify-between text-xs text-neutral-600">
@@ -309,6 +311,8 @@ export function CustomerReceipt({
  </div>
  </div>
  </div>
+ </>
+ )}
  </div>
  </div>
  );
