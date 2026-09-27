@@ -16,6 +16,15 @@ export function LocationAutocomplete({ address, onAddressChange, onLocationSelec
   const [isLocating, setIsLocating] = useState(false);
   const [localAddress, setLocalAddress] = useState(address);
 
+  // Use refs for callbacks to avoid stale closures in the Google Maps event listener
+  const onAddressChangeRef = useRef(onAddressChange);
+  const onLocationSelectRef = useRef(onLocationSelect);
+
+  useEffect(() => {
+    onAddressChangeRef.current = onAddressChange;
+    onLocationSelectRef.current = onLocationSelect;
+  }, [onAddressChange, onLocationSelect]);
+
   // Sync prop changes that didn't originate from this component
   useEffect(() => {
     if (address !== localAddress) {
@@ -34,13 +43,17 @@ export function LocationAutocomplete({ address, onAddressChange, onLocationSelec
 
         autocompleteRef.current.addListener('place_changed', () => {
           const place = autocompleteRef.current?.getPlace();
-          if (place?.geometry?.location) {
+          
+          if (place && place.geometry && place.geometry.location) {
             const lat = place.geometry.location.lat();
             const lng = place.geometry.location.lng();
-            const formattedAddress = place.formatted_address || place.name || '';
+            
+            // Prefer formatted_address, fallback to name, then input value
+            const formattedAddress = place.formatted_address || place.name || inputRef.current?.value || '';
+            
             setLocalAddress(formattedAddress);
-            onAddressChange(formattedAddress);
-            onLocationSelect(lat, lng);
+            onAddressChangeRef.current(formattedAddress);
+            onLocationSelectRef.current(lat, lng);
           }
         });
       }
@@ -57,7 +70,7 @@ export function LocationAutocomplete({ address, onAddressChange, onLocationSelec
     }, 500);
 
     return () => clearInterval(interval);
-  }, [onAddressChange, onLocationSelect]);
+  }, []); // Empty dependency array, we use refs for callbacks
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setLocalAddress(e.target.value);
@@ -111,7 +124,7 @@ export function LocationAutocomplete({ address, onAddressChange, onLocationSelec
             value={localAddress}
             onChange={handleInputChange}
             placeholder="Search for an address..."
-            className="w-full rounded-[14px] bg-[#f5f5f7] px-3 py-2.5 outline-none pr-12"
+            className="w-full rounded-[14px] bg-[#f5f5f7] px-3 py-2.5 outline-none pr-12 pac-target-input"
           />
           <button
             type="button"
