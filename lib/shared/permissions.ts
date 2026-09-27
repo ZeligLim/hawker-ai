@@ -101,7 +101,7 @@ export class PermissionEngine {
       pathname === '/pricing' ||
       pathname === '/plans' ||
       pathname === '/subscribe' ||
-      pathname === '/apply' ||
+      pathname === '/shop-owner/profile' ||
       pathname.startsWith('/auth')
     ) {
       return 'website';
@@ -175,7 +175,7 @@ export class PermissionEngine {
       if (!auth.isShopOwner) {
         return {
           allowed: false,
-          redirectUrl: '/apply',
+          redirectUrl: '/shop-owner/profile',
           reason: 'Access denied: You do not own a hawker shop or venue',
         };
       }

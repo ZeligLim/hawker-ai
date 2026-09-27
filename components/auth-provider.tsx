@@ -72,7 +72,7 @@ const publicRoutes = [
  '/plans',
  '/pricing',
  '/subscribe',
- '/apply',
+ '/shop-owner/profile',
  '/home',
  '/menu',
  '/shop',
@@ -303,7 +303,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
  // Role-based route protection
  if (effectiveStatus === 'authenticated' && user && !roles.isLoading) {
  if (pathname.startsWith('/shop-owner') && !roles.hasShopOwner) {
- router.replace('/apply');
+ router.replace('/shop-owner/profile');
  return;
  }
  if ((pathname.startsWith('/owner') || pathname.startsWith('/stall')) && !roles.hasBooth && !roles.hasShopOwner) {

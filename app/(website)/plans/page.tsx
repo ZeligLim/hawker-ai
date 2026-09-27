@@ -222,7 +222,7 @@ export default function PlansPage() {
  </div>
 
  <Link
- href={'/apply' as any}
+ href={'/shop-owner/profile' as any}
  className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-3.5 rounded-full text-sm font-semibold bg-[#0071e3] text-white hover:bg-[#0077ed] shadow-lg hover:shadow-xl shrink-0"
  >
  Start Free
@@ -350,7 +350,7 @@ export default function PlansPage() {
 
  <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
  <Link
- href={'/apply' as any}
+ href={'/shop-owner/profile' as any}
  className="w-full sm:w-auto px-8 py-3.5 rounded-full text-sm font-semibold bg-[#0071e3] text-white hover:bg-[#0077ed] shadow-lg"
  >
  Get Started for Free

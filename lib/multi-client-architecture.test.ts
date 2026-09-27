@@ -67,7 +67,7 @@ test('1. Client Path Resolution: identifies the correct client experience', () =
   assert.equal(PermissionEngine.getClientForPath('/'), 'website');
   assert.equal(PermissionEngine.getClientForPath('/pricing'), 'website');
   assert.equal(PermissionEngine.getClientForPath('/plans'), 'website');
-  assert.equal(PermissionEngine.getClientForPath('/apply'), 'website');
+  assert.equal(PermissionEngine.getClientForPath('/shop-owner/profile'), 'website');
   assert.equal(PermissionEngine.getClientForPath('/auth'), 'website');
   assert.equal(PermissionEngine.getClientForPath('/customer'), 'website');
 
@@ -110,7 +110,7 @@ test('2. Customer Client Boundaries: unauthenticated or diner access', () => {
   assert.equal(PermissionEngine.canAccessOwner(mockDinerAuth), false);
   const dinerToOwner = PermissionEngine.isRouteAllowed('/shop-owner/booths', mockDinerAuth);
   assert.equal(dinerToOwner.allowed, false);
-  assert.equal(dinerToOwner.redirectUrl, '/apply');
+  assert.equal(dinerToOwner.redirectUrl, '/shop-owner/profile');
 });
 
 test('3. Stall Worker Isolation: worker can manage own stall, but NOT other stalls or owner analytics', () => {

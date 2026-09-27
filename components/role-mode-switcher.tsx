@@ -28,7 +28,7 @@ export function RoleModeSwitcher({ currentMode }: RoleModeSwitcherProps) {
  </p>
  <div className="mt-3.5 pt-3 .06] flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
  <Link
- href="/apply"
+ href="/shop-owner/profile"
  className="inline-flex items-center gap-1 font-semibold text-[#0071e3] hover:underline"
  >
  Start Free: Register Your Shop &rsaquo;

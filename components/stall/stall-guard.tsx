@@ -71,7 +71,7 @@ export function StallGuard({ children }: { children: React.ReactNode }) {
  <ArrowLeft className="h-4 w-4" /> Return to Customer App
  </Link>
  <Link
- href={'/apply' as any}
+ href={'/shop-owner/profile' as any}
  className="w-full rounded-2xl bg-[#f5f5f7] py-3 text-sm font-medium text-[#1d1d1f] hover:bg-[#e8e8ed] "
  >
  Register as Shop Owner

@@ -9,7 +9,7 @@ import {
 
 test('sanitizeRedirectPath allows safe relative paths and blocks open redirects & auth loops', () => {
   // Safe relative paths
-  assert.equal(sanitizeRedirectPath('/apply'), '/apply');
+  assert.equal(sanitizeRedirectPath('/shop-owner/profile'), '/shop-owner/profile');
   assert.equal(sanitizeRedirectPath('/shop-owner/booths'), '/shop-owner/booths');
   assert.equal(sanitizeRedirectPath('/home'), '/home');
 
@@ -47,17 +47,17 @@ test('resolveSignOutDestination always defaults to landing page (/) and prevents
   assert.equal(resolveSignOutDestination('/auth/callback'), '/');
 });
 
-test('resolveAuthRedirect prioritizes explicit /apply redirect', () => {
-  const result = resolveAuthRedirect('/apply');
-  assert.equal(result, '/apply');
+test('resolveAuthRedirect prioritizes explicit /shop-owner/profile redirect', () => {
+  const result = resolveAuthRedirect('/shop-owner/profile');
+  assert.equal(result, '/shop-owner/profile');
 });
 
-test('resolveUserDestination directs explicit /apply to /apply for onboarding', async () => {
+test('resolveUserDestination directs explicit /shop-owner/profile to /shop-owner/profile for onboarding', async () => {
   const mockUser = { id: 'usr-123', email: 'hawker@example.com' } as any;
 
-  // When explicit /apply is provided, user is directed to /apply
-  const destination = await resolveUserDestination(null, mockUser, '/apply');
-  assert.equal(destination, '/apply');
+  // When explicit /shop-owner/profile is provided, user is directed to /shop-owner/profile
+  const destination = await resolveUserDestination(null, mockUser, '/shop-owner/profile');
+  assert.equal(destination, '/shop-owner/profile');
 });
 
 test('resolveUserDestination directs existing shop owner to /shop-owner/booths by default', async () => {
@@ -152,7 +152,7 @@ test('Customer intent route classification: guest mode applies strictly within c
   assert.equal(isCustomerRoute(null), false);
   assert.equal(isCustomerRoute(''), false);
   assert.equal(isCustomerRoute('/'), false);
-  assert.equal(isCustomerRoute('/apply'), false);
+  assert.equal(isCustomerRoute('/shop-owner/profile'), false);
   assert.equal(isCustomerRoute('/owner'), false);
   assert.equal(isCustomerRoute('/owner/orders'), false);
   assert.equal(isCustomerRoute('/shop-owner/booths'), false);

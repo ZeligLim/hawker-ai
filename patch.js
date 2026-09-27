@@ -2,7 +2,7 @@ const fs = require('fs');
 const file = 'app/(customer)/profile/page.tsx';
 let content = fs.readFileSync(file, 'utf8');
 
-const search = `  const orderLinks = useMemo(
+const s1 = `  const orderLinks = useMemo(
     () =>
       orders.map((order, index) => ({
         id: \`\${order.id}-\${index}\`,
@@ -11,7 +11,7 @@ const search = `  const orderLinks = useMemo(
     [orders],
   );`;
 
-const replace = `  const [showAllOrders, setShowAllOrders] = useState(false);
+const r1 = `  const [showAllOrders, setShowAllOrders] = useState(false);
 
   const orderLinks = useMemo(
     () =>
@@ -22,9 +22,9 @@ const replace = `  const [showAllOrders, setShowAllOrders] = useState(false);
     [orders],
   );`;
 
-content = content.replace(search, replace);
+content = content.replace(s1, r1);
 
-const search2 = `            {orderLinks.map(({ id, order }) => {
+const s2 = `            {orderLinks.map(({ id, order }) => {
               const orderHref = \`/profile/order/\${encodeURIComponent(id)}\` as any;
 
               return (
@@ -45,7 +45,7 @@ const search2 = `            {orderLinks.map(({ id, order }) => {
         )}
       </section>`;
 
-const replace2 = `            {(showAllOrders ? orderLinks : orderLinks.slice(0, 3)).map(({ id, order }) => {
+const r2 = `            {(showAllOrders ? orderLinks : orderLinks.slice(0, 3)).map(({ id, order }) => {
               const orderHref = \`/profile/order/\${encodeURIComponent(id)}\` as any;
 
               return (
@@ -75,7 +75,7 @@ const replace2 = `            {(showAllOrders ? orderLinks : orderLinks.slice(0,
         )}
       </section>`;
 
-content = content.replace(search2, replace2);
-fs.writeFileSync(file, content);
-console.log("Patched profile");
+content = content.replace(s2, r2);
 
+fs.writeFileSync(file, content);
+console.log("Successfully replaced both manually");
