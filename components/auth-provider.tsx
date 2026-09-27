@@ -29,7 +29,7 @@ export type UserRoles = {
  isSaasOwner: boolean;
  platformRole: 'superadmin' | 'saas_owner' | 'support' | null;
  isLoading: boolean;
- shops: Array<{ id: string; name: string; role: string; isActive?: boolean; schedule?: any }>;
+ shops: Array<{ id: string; name: string; role: string; isActive?: boolean; schedule?: any; phone?: string; address?: string; lat?: number; lng?: number }>;
  booths: Array<{
  id: string;
  name: string;

@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
  try {
  const { data: restMemberships } = await auth.client
  .from('restaurant_memberships')
- .select('restaurant_id, role, restaurants(id, name, is_active, schedule)')
+ .select('restaurant_id, role, restaurants(id, name, is_active, schedule, phone, address, lat, lng)')
  .eq('user_id', auth.user.id);
 
  if (restMemberships) {
@@ -31,6 +31,10 @@ export async function GET(request: NextRequest) {
  name: m.restaurants?.name || 'Food Hall',
  isActive: m.restaurants?.is_active ?? true,
  schedule: m.restaurants?.schedule,
+ phone: m.restaurants?.phone,
+ address: m.restaurants?.address,
+ lat: m.restaurants?.lat,
+ lng: m.restaurants?.lng,
  role: m.role || 'owner',
  }));
  }
