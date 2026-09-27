@@ -4,7 +4,8 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import {
- ArrowRight,
+ ArrowLeft,
+  ArrowRight,
  Building2,
  CheckCircle2,
  Info,
@@ -174,26 +175,12 @@ export default function ApplyPage() {
  </Link>
 
  <div className="flex items-center gap-3 text-xs font-medium">
- {isAuthenticated ? (
- <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white shadow-sm">
- <div className="w-2 h-2 rounded-full bg-[#30d158]" />
- <span className="text-[#1d1d1f] font-semibold truncate max-w-[140px] sm:max-w-none">
- {displayName}
- </span>
- </div>
- ) : (
- <Link
- href="/auth?redirect=/apply"
- className="text-[#0071e3] hover:underline px-2 py-1 font-semibold"
- >
- Sign In
- </Link>
- )}
  <Link
  href="/"
- className="px-3.5 py-1.5 rounded-full bg-white hover:bg-black/[0.04] text-[#1d1d1f] text-xs font-semibold"
+ className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white hover:bg-black/[0.04] text-[#1d1d1f] text-xs font-semibold"
  >
- Exit
+ <ArrowLeft className="w-3.5 h-3.5" />
+ Back
  </Link>
  </div>
  </div>
@@ -301,43 +288,6 @@ export default function ApplyPage() {
  ) : (
  /* State 5: Onboarding Application Form for Hawker Shop Owners */
  <div className="space-y-6">
- {/* Header info */}
- <div>
- <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#0071e3]/10 text-[#0071e3] text-xs font-semibold mb-2">
- <Building2 className="w-3.5 h-3.5" />
- Hawker Shop Onboarding
- </div>
- <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#1d1d1f]">
- Register Your Hawker Centre & Food Hall
- </h1>
- <p className="text-sm text-[#6e6e73] mt-1">
- Set up your physical food court or hawker venue. Once registered, generate table QR codes and invite your stall vendors via email.
- </p>
- </div>
-
- {/* User Account Separation Banner */}
- <div className="flex items-center justify-between p-4 rounded-2xl bg-white .08] shadow-sm">
- <div className="flex items-center gap-3">
- <div className="w-10 h-10 rounded-full bg-[#1d1d1f] text-white flex items-center justify-center font-bold text-sm">
- {displayName[0]?.toUpperCase() || 'U'}
- </div>
- <div>
- <div className="flex items-center gap-2">
- <p className="text-xs font-semibold text-[#1d1d1f]">{displayName}</p>
- <span className="text-[10px] px-2 py-0.5 rounded-full bg-black/5 text-[#6e6e73] font-medium">
- Personal Account
- </span>
- </div>
- <p className="text-[11px] text-[#6e6e73]">{userEmail}</p>
- </div>
- </div>
-
- <div className="text-right text-[11px] text-[#6e6e73] hidden sm:block">
- <span>Will become</span>
- <p className="font-semibold text-[#1d1d1f]">Shop Owner (Operator)</p>
- </div>
- </div>
-
  {/* Error banner if any */}
  {errorMessage && (
  <div className="p-4 rounded-2xl bg-red-50 text-xs font-medium text-[#ff3b30]">
@@ -358,13 +308,11 @@ export default function ApplyPage() {
 
  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
  <div className="space-y-1.5 sm:col-span-2">
- <label className="text-xs font-semibold text-[#1d1d1f]">
- Hawker Centre / Food Hall Name <span className="text-[#ff3b30]">*</span>
- </label>
+ 
  <input
  type="text"
  required
- placeholder="e.g. Lot 10 Hutong Food Hall"
+ placeholder="Hawker Centre / Food Hall Name *"
  value={venueName}
  onChange={(e) => setVenueName(e.target.value)}
  className="w-full px-4 py-2.5 rounded-xl bg-white text-sm text-[#1d1d1f] placeholder:text-[#86868b] focus:] focus: focus: focus:outline-none "
@@ -418,13 +366,11 @@ export default function ApplyPage() {
 
  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
  <div className="space-y-1.5">
- <label className="text-xs font-semibold text-[#1d1d1f]">
- City / Region <span className="text-[#ff3b30]">*</span>
- </label>
+ 
  <input
  type="text"
  required
- placeholder="e.g. Kuala Lumpur"
+ placeholder="City / Region *"
  value={city}
  onChange={(e) => setCity(e.target.value)}
  className="w-full px-4 py-2.5 rounded-xl bg-white text-sm text-[#1d1d1f] placeholder:text-[#86868b] focus:] focus: focus: focus:outline-none "
@@ -432,13 +378,11 @@ export default function ApplyPage() {
  </div>
 
  <div className="space-y-1.5">
- <label className="text-xs font-semibold text-[#1d1d1f]">
- Operator Contact / WhatsApp <span className="text-[#ff3b30]">*</span>
- </label>
+ 
  <input
  type="tel"
  required
- placeholder="e.g. +60 12-345 6789"
+ placeholder="Operator Contact / WhatsApp *"
  value={phone}
  onChange={(e) => setPhone(e.target.value)}
  className="w-full px-4 py-2.5 rounded-xl bg-white text-sm text-[#1d1d1f] placeholder:text-[#86868b] focus:] focus: focus: focus:outline-none "
@@ -446,61 +390,18 @@ export default function ApplyPage() {
  </div>
 
  <div className="space-y-1.5 sm:col-span-2">
- <label className="text-xs font-semibold text-[#1d1d1f]">
- Full Street Address <span className="text-[#ff3b30]">*</span>
- </label>
+ 
  <input
  type="text"
  required
- placeholder="e.g. 50 Jalan Sultan, City Centre"
+ placeholder="Full Street Address (Use Google Maps to find location address) *"
  value={address}
  onChange={(e) => setAddress(e.target.value)}
  className="w-full px-4 py-2.5 rounded-xl bg-white text-sm text-[#1d1d1f] placeholder:text-[#86868b] focus:] focus: focus: focus:outline-none "
  />
  </div>
 
- <div className="space-y-1.5 sm:col-span-2">
- <label className="text-xs font-semibold text-[#1d1d1f]">
- Estimated Seating / Table Capacity
- </label>
- <input
- type="text"
- placeholder="e.g. 40 tables (approx. 160 diners)"
- value={tableCount}
- onChange={(e) => setTableCount(e.target.value)}
- className="w-full px-4 py-2.5 rounded-xl bg-white text-sm text-[#1d1d1f] placeholder:text-[#86868b] focus:] focus: focus: focus:outline-none "
- />
- </div>
- </div>
- </div>
-
- {/* Section 3: Status & Review */}
- <div className="space-y-4 pt-2">
- <div className="flex items-center gap-2 pb-2 .06]">
- <ShieldCheck className="w-4 h-4 text-[#0071e3]" />
- <h2 className="text-sm font-semibold text-[#1d1d1f]">
- 3. Activation & stall policy
- </h2>
- </div>
-
- <div className="p-4 rounded-2xl bg-[#0071e3]/5 flex items-start gap-3">
- <Mail className="w-5 h-5 text-[#0071e3] shrink-0 mt-0.5" />
- <div className="text-xs space-y-1">
- <p className="font-semibold text-[#1d1d1f]">Stalls Are Email-Invite Only</p>
- <p className="text-[#6e6e73]">
- Individual hawker stalls cannot register independently on the website. Once your venue is registered, you will generate secure 1-click invitation tokens (<code className="text-[#1d1d1f]">/booths/join?token=...</code>) in your Shop Dashboard to email to each vendor.
- </p>
- </div>
- </div>
-
- <div className="p-4 rounded-2xl bg-[#f5f5f7] .04] flex items-start gap-3">
- <Info className="w-5 h-5 text-[#0071e3] shrink-0 mt-0.5" />
- <div className="text-xs space-y-1">
- <p className="font-semibold text-[#1d1d1f]">Instant Venue Provisioning</p>
- <p className="text-[#6e6e73]">
- Submitting this form immediately provisions your food hall workspace (<code className="text-[#1d1d1f]">restaurants</code>) and assigns your personal user account as the verified <strong className="text-[#1d1d1f]">Shop Owner</strong>.
- </p>
- </div>
+ 
  </div>
  </div>
 
@@ -513,7 +414,7 @@ export default function ApplyPage() {
  >
  {submitting ? (
  <>
- <LoaderCircle className="w-4 h-4 " />
+ <LoaderCircle className="w-4 h-4 animate-spin" />
  Registering Hawker Shop...
  </>
  ) : (
