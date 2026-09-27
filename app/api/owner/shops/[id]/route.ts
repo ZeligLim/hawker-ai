@@ -218,3 +218,30 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
  status: 'updated',
  });
 }
+
+
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const auth = await requireRequestUser(request);
+  const { id } = await params;
+
+  if (!auth.client || !auth.user) {
+    return NextResponse.json({ error: auth.error }, { status: 401 });
+  }
+
+  const { membership, isPlatformAdmin, error } = await getShopAccess(auth, id);
+  if (error || !membership || (!isPlatformAdmin && membership.role !== 'owner')) {
+    return NextResponse.json({ error: error || 'Only owners can delete this shop.' }, { status: 403 });
+  }
+
+  const db = isPlatformAdmin ? (createAdminClient() ?? auth.client) : auth.client;
+  const { error: deleteError } = await db
+    .from('restaurants')
+    .delete()
+    .eq('id', id);
+
+  if (deleteError) {
+    return NextResponse.json({ error: deleteError.message }, { status: 500 });
+  }
+
+  return NextResponse.json({ success: true });
+}

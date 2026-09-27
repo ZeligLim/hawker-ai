@@ -34,6 +34,47 @@ export default function ShopOwnerProfilePage() {
  const [saving, setSaving] = useState(false);
  const [saveSuccess, setSaveSuccess] = useState(false);
  const [creating, setCreating] = useState(false);
+
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState<'shop' | 'account' | null>(null);
+
+  const handleDeleteShop = async () => {
+    if (!shop?.id) return;
+    setIsDeleting(true);
+    try {
+      const response = await authenticatedFetch(`/api/owner/shops/${shop.id}`, { method: 'DELETE' });
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to delete shop');
+      }
+      window.location.href = '/profile';
+    } catch (e: any) {
+      alert(e.message || 'Failed to delete shop');
+      setIsDeleting(false);
+      setShowDeleteConfirm(null);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    setIsDeleting(true);
+    try {
+      const response = await authenticatedFetch('/api/user/delete', { method: 'DELETE' });
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to delete account');
+      }
+      if (typeof window !== 'undefined') {
+        window.localStorage.clear();
+        window.sessionStorage.clear();
+      }
+      window.location.href = '/';
+    } catch (e: any) {
+      alert(e.message || 'Failed to delete account');
+      setIsDeleting(false);
+      setShowDeleteConfirm(null);
+    }
+  };
+
  const [draft, setDraft] = useState({ name: "", address: "", slug: "", phone: "", lat: 0, lng: 0 });
  const [createForm, setCreateForm] = useState({ name: '', address: '', phone: '', lat: 0, lng: 0 });
 
@@ -334,9 +375,52 @@ export default function ShopOwnerProfilePage() {
  </div>
  </section>
 
- <div className="mt-6">
- <RoleModeSwitcher currentMode="shop_owner" />
- </div>
+ 
+        <section className="mt-6 rounded-[26px] bg-white p-5 sm:p-6 shadow-xs">
+          <h3 className="text-sm font-semibold text-[#1d1d1f] mb-3">Danger Zone</h3>
+          
+          <div className="flex flex-col gap-3">
+            {showDeleteConfirm === 'shop' ? (
+              <div className="rounded-[16px] bg-[#fff1f2] p-4">
+                <p className="text-sm text-[#9f1239] font-medium">Are you sure you want to delete this hawker centre? This cannot be undone.</p>
+                <div className="mt-3 flex gap-2">
+                  <button type="button" onClick={handleDeleteShop} disabled={isDeleting} className="flex-1 rounded-full bg-[#9f1239] px-3 py-2.5 text-xs font-semibold text-white">
+                    {isDeleting ? 'Deleting...' : 'Yes, Delete Centre'}
+                  </button>
+                  <button type="button" onClick={() => setShowDeleteConfirm(null)} disabled={isDeleting} className="flex-1 rounded-full bg-white px-3 py-2.5 text-xs font-medium text-[#1d1d1f] shadow-sm">
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <button type="button" onClick={() => setShowDeleteConfirm('shop')} className="w-full rounded-[16px] bg-[#fff1f2] px-4 py-3 text-sm font-medium text-[#9f1239] text-left transition-colors">
+                Delete hawker centre
+              </button>
+            )}
+
+            {showDeleteConfirm === 'account' ? (
+              <div className="rounded-[16px] bg-[#fff1f2] p-4">
+                <p className="text-sm text-[#9f1239] font-medium">Are you sure you want to completely delete your account? This action cannot be undone.</p>
+                <div className="mt-3 flex gap-2">
+                  <button type="button" onClick={handleDeleteAccount} disabled={isDeleting} className="flex-1 rounded-full bg-[#9f1239] px-3 py-2.5 text-xs font-semibold text-white">
+                    {isDeleting ? 'Deleting...' : 'Yes, Delete Account'}
+                  </button>
+                  <button type="button" onClick={() => setShowDeleteConfirm(null)} disabled={isDeleting} className="flex-1 rounded-full bg-white px-3 py-2.5 text-xs font-medium text-[#1d1d1f] shadow-sm">
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <button type="button" onClick={() => setShowDeleteConfirm('account')} className="w-full rounded-[16px] bg-[#fff1f2] px-4 py-3 text-sm font-medium text-[#9f1239] text-left transition-colors">
+                Delete account
+              </button>
+            )}
+          </div>
+        </section>
+
+        <div className="mt-6">
+          <RoleModeSwitcher currentMode="shop_owner" />
+        </div>
 
  
 
