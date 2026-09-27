@@ -61,19 +61,21 @@ article {
   border: none !important;
 }
 
+.pac-item:hover,
+.pac-item-selected {
+  background-color: #f5f5f7 !important;
+  border-radius: 10px !important;
+}
+
 .pac-item {
   padding: 10px 16px !important;
+  margin: 2px 6px !important;
   cursor: pointer;
   border-top: none !important;
 }
 
-.pac-item:hover {
-  background-color: #f5f5f7 !important;
-}
-
 .pac-icon {
-  margin-top: 2px !important;
-  opacity: 0.5;
+  display: none !important;
 }
 
 .pac-item-query {
