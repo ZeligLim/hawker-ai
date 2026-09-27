@@ -139,7 +139,7 @@ export function MarketingNav({ currentPath = '/' }: MarketingNavProps) {
  {/* Only show 'Start Free' if shop onboarding is NOT completed */}
  {!roles.hasShopOwner && (
  <Link
- href={'/apply' as any}
+ href={'/shop-owner/profile' as any}
  className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#0071e3] bg-[#0071e3]/10 hover:bg-[#0071e3]/15 px-3.5 py-1.5 rounded-full "
  >
  <PlusCircle className="w-3.5 h-3.5" />
@@ -331,7 +331,7 @@ export function MarketingNav({ currentPath = '/' }: MarketingNavProps) {
  Sign In
  </Link>
  <Link
- href={'/apply' as any}
+ href={'/shop-owner/profile' as any}
  className="text-xs font-semibold text-white bg-[#0071e3] hover:bg-[#0077ed] px-3.5 py-1.5 rounded-full shadow-[0_1px_2px_rgba(0,0,0,0.08)] hover:shadow"
  >
  Start Free
@@ -461,11 +461,11 @@ export function MarketingNav({ currentPath = '/' }: MarketingNavProps) {
  {/* 'Start Free' only if shop onboarding NOT completed */}
  {!roles.hasShopOwner && (
  <Link
- href={'/apply' as any}
+ href={'/shop-owner/profile' as any}
  onClick={() => setMobileMenuOpen(false)}
  className="w-full text-center py-2.5 rounded-full text-sm font-semibold text-white bg-[#0071e3]"
  >
- Start Free (Register Shop)
+ Open Settings
  </Link>
  )}
 
@@ -489,7 +489,7 @@ export function MarketingNav({ currentPath = '/' }: MarketingNavProps) {
  ) : (
  <>
  <Link
- href={'/apply' as any}
+ href={'/shop-owner/profile' as any}
  onClick={() => setMobileMenuOpen(false)}
  className="w-full text-center py-2.5 rounded-full text-sm font-semibold text-white bg-[#0071e3]"
  >

@@ -44,7 +44,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
  const db = isPlatformAdmin ? (createAdminClient() ?? auth.client) : auth.client;
  const { data: restaurant, error: restaurantError } = await db
  .from('restaurants')
- .select('id, name, slug, address, lat, lng, is_active, schedule, status, fee_payer, platform_fee_fixed, platform_fee_percent, ai_enabled, created_at')
+ .select('id, name, slug, address, phone, lat, lng, is_active, schedule, status, fee_payer, platform_fee_fixed, platform_fee_percent, ai_enabled, created_at')
  .eq('id', id)
  .maybeSingle();
 
@@ -114,6 +114,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
  name?: string;
  slug?: string;
  address?: string;
+ phone?: string;
  lat?: number;
  lng?: number;
  schedule?: any;
@@ -149,7 +150,11 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
  }
 
  if (typeof body.address === 'string') {
- update.address = body.address.trim() || 'Address not set';
+ update.address = body.address.trim() || "Address not set";
+ }
+
+ if (typeof body.phone === "string") {
+ update.phone = body.phone.trim();
  }
 
  if (typeof body.lat === 'number') update.lat = body.lat;
@@ -183,7 +188,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
  .from('restaurants')
  .update(update)
  .eq('id', id)
- .select('id, name, slug, address, lat, lng, is_active, schedule, status, fee_payer, platform_fee_fixed, platform_fee_percent, ai_enabled, created_at')
+ .select('id, name, slug, address, phone, lat, lng, is_active, schedule, status, fee_payer, platform_fee_fixed, platform_fee_percent, ai_enabled, created_at')
  .maybeSingle();
 
  if (updateError || !restaurant) {

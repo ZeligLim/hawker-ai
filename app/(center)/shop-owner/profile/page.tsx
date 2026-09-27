@@ -13,6 +13,9 @@ type Shop = {
  id: string;
  name: string;
  slug: string | null;
+ phone?: string | null;
+ lat?: number;
+ lng?: number;
  address: string | null;
  role: string;
  booths: Array<{ id: string; name: string }>;
@@ -29,11 +32,7 @@ export default function ShopOwnerProfilePage() {
  const [saving, setSaving] = useState(false);
  const [saveSuccess, setSaveSuccess] = useState(false);
  const [creating, setCreating] = useState(false);
- const [draft, setDraft] = useState({
- name: '',
- address: '',
- slug: '',
- });
+ const [draft, setDraft] = useState({ name: "", address: "", slug: "", phone: "", lat: 0, lng: 0 });
  const [createForm, setCreateForm] = useState({ name: '', address: '' });
 
  const [scheduleModal, setScheduleModal] = useState<{
@@ -96,7 +95,7 @@ export default function ShopOwnerProfilePage() {
  setDraft({
  name: nextShop.name,
  address: nextShop.address ?? '',
- slug: nextShop.slug ?? '',
+ slug: nextShop.slug ?? "", phone: (nextShop as any).phone ?? "", lat: (nextShop as any).lat ?? 0, lng: (nextShop as any).lng ?? 0,
  });
  }
  } catch {
@@ -126,7 +125,7 @@ export default function ShopOwnerProfilePage() {
  body: JSON.stringify({
  name: draft.name,
  address: draft.address,
- slug: draft.slug,
+ slug: draft.slug, phone: draft.phone, lat: draft.lat, lng: draft.lng,
  }),
  });
 

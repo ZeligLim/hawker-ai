@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
  const adminClient = createAdminClient() ?? auth.client;
  const { data: allRestaurants, error: allRestError } = await adminClient
  .from('restaurants')
- .select('id, name, slug, address, is_active, schedule, status, fee_payer, platform_fee_fixed, platform_fee_percent, ai_enabled, created_at')
+ .select('id, name, slug, address, phone, lat, lng, is_active, schedule, status, fee_payer, platform_fee_fixed, platform_fee_percent, ai_enabled, created_at')
  .order('name');
 
  if (allRestError) {
@@ -169,6 +169,9 @@ export async function GET(request: NextRequest) {
  name: restaurant?.name ?? 'Unknown shop',
  slug: restaurant?.slug ?? null,
  address: restaurant?.address ?? null,
+      phone: restaurant?.phone ?? null,
+      lat: restaurant?.lat ?? 0,
+      lng: restaurant?.lng ?? 0,
  createdAt: restaurant?.created_at ?? null,
  role: membership.role,
  isActive,
@@ -204,7 +207,7 @@ export async function POST(request: NextRequest) {
  // Prevent multiple active shop ownerships for single user in MVP
  const { data: existingMemberships } = await auth.client
  .from('restaurant_memberships')
- .select('restaurant_id, role, restaurants(name, slug, address, created_at)')
+ .select('restaurant_id, role, restaurants(name, slug, address, phone, lat, lng, created_at)')
  .eq('user_id', auth.user.id)
  .eq('role', 'owner')
  .limit(1);
@@ -280,7 +283,7 @@ export async function POST(request: NextRequest) {
  lat: typeof body?.lat === 'number' ? body.lat : 0,
  lng: typeof body?.lng === 'number' ? body.lng : 0,
  })
- .select('id, name, slug, address, lat, lng, created_at')
+ .select('id, name, slug, address, phone, lat, lng, created_at')
  .single();
 
  if (insertRestaurantError || !restaurant) {

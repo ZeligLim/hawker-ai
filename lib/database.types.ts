@@ -634,6 +634,7 @@ export type Database = {
           lat: number
           lng: number
           name: string
+          phone: string | null
           platform_fee_fixed: number
           platform_fee_percent: number
           rating: number
@@ -652,6 +653,7 @@ export type Database = {
           lat: number
           lng: number
           name: string
+          phone?: string | null
           platform_fee_fixed?: number
           platform_fee_percent?: number
           rating?: number
@@ -670,6 +672,7 @@ export type Database = {
           lat?: number
           lng?: number
           name?: string
+          phone?: string | null
           platform_fee_fixed?: number
           platform_fee_percent?: number
           rating?: number

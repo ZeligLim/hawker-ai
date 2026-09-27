@@ -168,7 +168,7 @@ export default function LandingPage() {
  </Link>
  ) : (
  <Link
- href={'/apply' as any}
+ href={'/shop-owner/profile' as any}
  className="w-full sm:w-auto h-11 px-6 rounded-full text-sm font-semibold bg-[#007aff] text-white hover:bg-[#0071e3] shadow-xs flex items-center justify-center gap-2 active:scale-[0.98]"
  >
  Start Free as Operator <ArrowRight className="w-4 h-4" />
@@ -998,7 +998,7 @@ export default function LandingPage() {
  </Link>
  ) : (
  <Link
- href={'/apply' as any}
+ href={'/shop-owner/profile' as any}
  className="w-full h-12 inline-flex items-center justify-center rounded-full text-sm font-semibold bg-[#1d1d1f] text-white hover:bg-black "
  >
  Start Free as Shop Owner
@@ -1168,7 +1168,7 @@ export default function LandingPage() {
  </Link>
  ) : (
  <Link
- href={'/apply' as any}
+ href={'/shop-owner/profile' as any}
  className="w-full sm:w-auto h-11 px-6 rounded-full text-xs font-bold bg-[#0071e3] text-white hover:bg-[#0077ed] shadow-md flex items-center justify-center gap-1.5"
  >
  Start Free for RM 0 <ArrowRight className="w-3.5 h-3.5" />
@@ -1318,7 +1318,7 @@ export default function LandingPage() {
  </Link>
  ) : (
  <Link
- href={'/apply' as any}
+ href={'/shop-owner/profile' as any}
  className="w-full sm:w-auto h-12 px-7 rounded-full text-sm font-bold bg-[#0071e3] text-white hover:bg-[#0077ed] shadow-md flex items-center justify-center"
  >
  Start Free
@@ -1358,7 +1358,7 @@ export default function LandingPage() {
  Shop Dashboard
  </Link>
  ) : (
- <Link href={'/apply' as any} className="hover:text-[#1d1d1f]">
+ <Link href={'/shop-owner/profile' as any} className="hover:text-[#1d1d1f]">
  Start Free (Shop Owner)
  </Link>
  )}
