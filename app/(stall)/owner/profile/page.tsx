@@ -135,8 +135,7 @@ export default function OwnerProfilePage() {
  </section>
 
  <section className="mt-6 rounded-[26px] bg-white p-5 sm:p-6 shadow-xs">
- <h3 className="text-sm font-semibold text-[#1d1d1f] mb-3">Stall Operations</h3>
- <div className="flex flex-col sm:flex-row gap-3">
+  <div className="flex flex-col sm:flex-row gap-3">
  <button
  type="button"
  onClick={() => setIsScheduleOpen(true)}
@@ -200,10 +199,14 @@ export default function OwnerProfilePage() {
 
  {currentBooth?.id && <RentInvoices boothId={currentBooth.id} />}
 
+        <div className="mt-6">
+          <RoleModeSwitcher currentMode="booth" />
+        </div>
+
+
  
         <section className="mt-6 rounded-[26px] bg-white p-5 sm:p-6 shadow-xs">
-          <h3 className="text-sm font-semibold text-[#1d1d1f] mb-3">Danger Zone</h3>
-          
+                    
           <div className="flex flex-col gap-3">
             {showDeleteConfirm === 'stall' ? (
               <div className="rounded-[16px] bg-[#fff1f2] p-4">
@@ -242,10 +245,6 @@ export default function OwnerProfilePage() {
             )}
           </div>
         </section>
-
-        <div className="mt-6">
-          <RoleModeSwitcher currentMode="booth" />
-        </div>
 
  <OperatingScheduleModal
  isOpen={isScheduleOpen}

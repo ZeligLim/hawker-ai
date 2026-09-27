@@ -110,7 +110,6 @@ export default function ProfileSettingsPage() {
 
  </form>
           <div className="mt-5 pt-5">
-            <h2 className="text-sm font-semibold text-[#1d1d1f]">Danger Zone</h2>
             
             {showDeleteConfirm ? (
               <div className="mt-3 rounded-[16px] bg-[#fff1f2] p-4">
