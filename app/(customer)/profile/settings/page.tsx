@@ -108,6 +108,7 @@ export default function ProfileSettingsPage() {
  {isSaving ? <LoaderCircle className="h-4 w-4 " /> : 'Save settings'}
  </button>
 
+ </form>
           <div className="mt-5 pt-5">
             <h2 className="text-sm font-semibold text-[#1d1d1f]">Danger Zone</h2>
             
@@ -144,7 +145,7 @@ export default function ProfileSettingsPage() {
             )}
           </div>
 
- </form>
+
  </section>
  </div>
  </main>
