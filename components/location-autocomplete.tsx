@@ -115,28 +115,38 @@ export function LocationAutocomplete({ address, onAddressChange, onLocationSelec
   };
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
       <label className="block text-sm font-medium">
         Address
-        <div className="relative mt-2 flex items-center">
+        <div className="relative mt-2">
           <input
             ref={inputRef}
             value={localAddress}
             onChange={handleInputChange}
             placeholder="Search for an address..."
-            className="w-full rounded-[14px] bg-[#f5f5f7] px-3 py-2.5 outline-none pr-12 pac-target-input"
+            className="w-full rounded-[14px] bg-[#f5f5f7] px-3 py-3 outline-none pac-target-input"
           />
-          <button
-            type="button"
-            onClick={handleGetCurrentLocation}
-            disabled={isLocating}
-            className="absolute right-2 p-1.5 rounded-full text-[#6e6e73] hover:text-[#1d1d1f] hover:bg-black/5"
-            title="Use current location"
-          >
-            {isLocating ? <Loader2 className="h-4 w-4 animate-spin" /> : <MapPin className="h-4 w-4" />}
-          </button>
         </div>
       </label>
+      
+      <button
+        type="button"
+        onClick={handleGetCurrentLocation}
+        disabled={isLocating}
+        className="flex w-full items-center justify-center gap-2 rounded-full bg-[#111827] px-4 py-3 text-sm font-semibold text-white transition-colors disabled:opacity-50"
+      >
+        {isLocating ? (
+          <>
+            <Loader2 className="h-4 w-4 animate-spin" />
+            Locating...
+          </>
+        ) : (
+          <>
+            <MapPin className="h-4 w-4" />
+            Use current location
+          </>
+        )}
+      </button>
     </div>
   );
 }
