@@ -33,7 +33,7 @@ export default function ShopOwnerProfilePage() {
  const [saveSuccess, setSaveSuccess] = useState(false);
  const [creating, setCreating] = useState(false);
  const [draft, setDraft] = useState({ name: "", address: "", slug: "", phone: "", lat: 0, lng: 0 });
- const [createForm, setCreateForm] = useState({ name: '', address: '' });
+ const [createForm, setCreateForm] = useState({ name: '', address: '', phone: '', lat: 0, lng: 0 });
 
  const [scheduleModal, setScheduleModal] = useState<{
  isOpen: boolean;
@@ -162,7 +162,7 @@ export default function ShopOwnerProfilePage() {
  }
 
  setShop({ ...payload.shop, role: 'owner', booths: [] });
- setCreateForm({ name: '', address: '' });
+ setCreateForm({ name: '', address: '', phone: '', lat: 0, lng: 0 });
  setCreating(false);
  void loadShop();
  } catch (error) {
@@ -192,6 +192,20 @@ export default function ShopOwnerProfilePage() {
  Address
  <input value={createForm.address} onChange={(event) => setCreateForm({ ...createForm, address: event.target.value })} className="mt-2 w-full rounded-[14px] bg-[#f5f5f7] px-3 py-2.5 outline-none" />
  </label>
+ <label className="block text-sm font-medium">
+ Phone
+ <input value={createForm.phone} onChange={(event) => setCreateForm({ ...createForm, phone: event.target.value })} className="mt-2 w-full rounded-[14px] bg-[#f5f5f7] px-3 py-2.5 outline-none" />
+ </label>
+ <div className="flex gap-4">
+ <label className="block text-sm font-medium w-full">
+ Latitude
+ <input type="number" step="any" value={createForm.lat} onChange={(event) => setCreateForm({ ...createForm, lat: parseFloat(event.target.value) || 0 })} className="mt-2 w-full rounded-[14px] bg-[#f5f5f7] px-3 py-2.5 outline-none" />
+ </label>
+ <label className="block text-sm font-medium w-full">
+ Longitude
+ <input type="number" step="any" value={createForm.lng} onChange={(event) => setCreateForm({ ...createForm, lng: parseFloat(event.target.value) || 0 })} className="mt-2 w-full rounded-[14px] bg-[#f5f5f7] px-3 py-2.5 outline-none" />
+ </label>
+ </div>
  </div>
  <button type="button" onClick={() => void handleCreate()} className="mt-5 inline-flex items-center gap-2 rounded-full bg-[#111827] px-4 py-3 text-sm font-semibold text-white">
  Create shop
