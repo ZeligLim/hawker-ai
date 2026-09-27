@@ -101,7 +101,6 @@ export class PermissionEngine {
       pathname === '/pricing' ||
       pathname === '/plans' ||
       pathname === '/subscribe' ||
-      pathname === '/shop-owner/profile' ||
       pathname.startsWith('/auth')
     ) {
       return 'website';
