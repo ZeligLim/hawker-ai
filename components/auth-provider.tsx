@@ -350,11 +350,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
  const redirectUrl = `${getAppUrl()}/auth/callback?redirect=${encodeURIComponent(redirectTarget)}`;
 
  const { error } = await client.auth.signInWithOAuth({
- provider: 'google',
- options: {
- redirectTo: redirectUrl,
- },
- });
+      provider: 'google',
+      options: {
+        redirectTo: redirectUrl,
+        queryParams: {
+          prompt: 'select_account',
+        },
+      },
+    });
 
  if (error) {
  throw new Error(getFriendlyAuthError(error));
