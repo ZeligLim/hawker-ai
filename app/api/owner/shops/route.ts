@@ -237,9 +237,9 @@ export async function POST(request: NextRequest) {
  .replace(/[^a-z0-9]+/g, '-')
  .replace(/^-+|-+$/g, '') || 'shop';
 
- const boothCount = typeof body?.boothCount === 'number' && body.boothCount > 0
+ const boothCount = typeof body?.boothCount === 'number' && body.boothCount >= 0
  ? Math.min(body.boothCount, 20)
- : 3; // Default 3 initial empty booth slots for the food hall
+ : 0; // Do not preset any stalls
 
  const shopStatus = typeof body?.status === 'string' ? body.status : 'approved';
 
