@@ -243,9 +243,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
  useEffect(() => {
  let active = true;
  const timeoutId = window.setTimeout(() => {
- if (active && status === 'authenticated' && user) {
- void refreshRoles();
- }
+ if (active) {
+        if (status === 'authenticated' && user) {
+          void refreshRoles();
+        } else if (status === 'unauthenticated') {
+          void refreshRoles();
+        }
+      }
  }, 0);
  return () => {
  active = false;

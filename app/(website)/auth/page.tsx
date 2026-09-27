@@ -136,14 +136,13 @@ function AuthForm() {
  <div className="rounded-[32px] bg-white p-5 shadow-[0_18px_40px_rgba(15,23,42,0.08)]">
  <div className="text-center">
  <h1 className="text-3xl font-semibold tracking-[-0.06em] text-[#1d1d1f]">Hawker AI</h1>
- <p className="mt-2 text-sm text-[#6e6e73]">Discover hawker favourites with a faster table-side order flow.</p>
  </div>
 
  <button
  type="button"
  onClick={() => void handleGoogleSignIn()}
  disabled={isGoogleLoading || isSubmitting}
- className="mt-6 flex w-full items-center justify-center gap-2 rounded-full ] bg-white px-4 py-3 text-sm font-medium text-[#1d1d1f] shadow-[0_8px_18px_rgba(15,23,42,0.03)] disabled:cursor-not-allowed disabled:opacity-60"
+ className="mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-[#f5f5f7] px-4 py-3 text-sm font-medium text-[#1d1d1f] disabled:cursor-not-allowed disabled:opacity-60"
  >
  {isGoogleLoading ? <LoaderCircle className="h-4 w-4 " /> : <GoogleIcon />}
  Continue with Google

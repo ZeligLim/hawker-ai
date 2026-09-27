@@ -196,6 +196,9 @@ export default function ShopOwnerProfilePage() {
         body: JSON.stringify({
           name: createForm.name,
           address: createForm.address,
+          phone: createForm.phone,
+          lat: createForm.lat,
+          lng: createForm.lng,
         }),
       });
 

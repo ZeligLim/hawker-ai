@@ -251,7 +251,8 @@ export async function POST(request: NextRequest) {
  p_address: address,
  p_lat: typeof body?.lat === 'number' ? body.lat : 0,
  p_lng: typeof body?.lng === 'number' ? body.lng : 0,
- p_booth_count: boothCount,
+        p_phone: typeof body?.phone === 'string' ? body.phone.trim() : null,
+        p_booth_count: boothCount,
  p_status: shopStatus,
  });
 
@@ -280,8 +281,9 @@ export async function POST(request: NextRequest) {
  name,
  slug,
  address,
- lat: typeof body?.lat === 'number' ? body.lat : 0,
- lng: typeof body?.lng === 'number' ? body.lng : 0,
+      phone: typeof body?.phone === 'string' ? body.phone.trim() : null,
+      lat: typeof body?.lat === 'number' ? body.lat : 0,
+      lng: typeof body?.lng === 'number' ? body.lng : 0,
  })
  .select('id, name, slug, address, phone, lat, lng, created_at')
  .single();

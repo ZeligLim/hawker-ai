@@ -11,6 +11,12 @@ export function OwnerGuard({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
 
+  React.useEffect(() => {
+    if (status === 'authenticated' && !roles.isLoading && !roles.hasShopOwner && pathname !== '/shop-owner/profile') {
+      router.push('/shop-owner/profile');
+    }
+  }, [status, roles.isLoading, roles.hasShopOwner, pathname, router]);
+
  // If still resolving authentication or roles, render lightweight loading state
  if (status === 'loading' || roles.isLoading) {
  return (
@@ -55,14 +61,9 @@ export function OwnerGuard({ children }: { children: React.ReactNode }) {
  }
 
  // Authenticated, but not registered as a shop owner
- if (!roles.hasShopOwner) {
-   if (pathname !== '/shop-owner/profile') {
-     if (typeof window !== 'undefined') {
-       router.push('/shop-owner/profile');
-     }
-     return null;
-   }
-   return <>{children}</>;
+
+ if (!roles.hasShopOwner && pathname !== '/shop-owner/profile') {
+   return null;
  }
 
  return <>{children}</>;
