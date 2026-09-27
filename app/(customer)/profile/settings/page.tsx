@@ -91,10 +91,7 @@ export default function ProfileSettingsPage() {
  <h1 className="text-3xl font-semibold tracking-[-0.06em]">Settings</h1>
  <p className="mt-2 text-sm text-[#6e6e73]">Update your account details.</p>
  <form onSubmit={(event) => void handleSubmit(event)} className="mt-5">
- <label className="block text-sm font-medium">
- Name
- <input value={name} onChange={(event) => setName(event.target.value)} className="mt-2 w-full rounded-[14px] bg-[#f5f5f7] px-3 py-3 text-sm outline-none focus: focus:]" />
- </label>
+ <input value={name} onChange={(event) => setName(event.target.value)} placeholder="Name" className="mt-2 w-full rounded-[14px] bg-[#f5f5f7] px-3 py-3 text-sm outline-none focus: focus:]" />
  <Link href={'/profile/settings/password' as any} className="mt-4 flex items-center justify-between rounded-[16px] bg-[#f5f5f7] px-3 py-3 text-sm font-medium text-[#1d1d1f]">
  <span>Change password</span>
  <span aria-hidden="true">→</span>

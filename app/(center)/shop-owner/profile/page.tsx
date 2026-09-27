@@ -230,19 +230,13 @@ export default function ShopOwnerProfilePage() {
        <div className="mx-auto max-w-[760px]">
  <section className="mt-6 rounded-[26px] bg-white p-5 shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
  <div className="mt-4 space-y-3">
- <label className="block text-sm font-medium">
- Shop name
- <input value={createForm.name} onChange={(event) => setCreateForm({ ...createForm, name: event.target.value })} className="mt-2 w-full rounded-[14px] bg-[#f5f5f7] px-3 py-2.5 outline-none" />
- </label>
+ <input value={createForm.name} onChange={(event) => setCreateForm({ ...createForm, name: event.target.value })} placeholder="Shop name" className="mt-2 w-full rounded-[14px] bg-[#f5f5f7] px-3 py-2.5 outline-none" />
  <LocationAutocomplete
  address={createForm.address}
  onAddressChange={(addr) => setCreateForm({ ...createForm, address: addr })}
  onLocationSelect={(lat, lng) => setCreateForm({ ...createForm, lat, lng })}
  />
- <label className="block text-sm font-medium">
- Phone
- <input value={createForm.phone} onChange={(event) => setCreateForm({ ...createForm, phone: event.target.value })} className="mt-2 w-full rounded-[14px] bg-[#f5f5f7] px-3 py-2.5 outline-none" />
- </label>
+ <input value={createForm.phone} onChange={(event) => setCreateForm({ ...createForm, phone: event.target.value })} placeholder="Phone" className="mt-2 w-full rounded-[14px] bg-[#f5f5f7] px-3 py-2.5 outline-none" />
  </div>
  <button type="button" onClick={() => void handleCreate()} className="mt-5 inline-flex items-center gap-2 rounded-full bg-[#111827] px-4 py-3 text-sm font-semibold text-white">
  Create
@@ -300,23 +294,14 @@ export default function ShopOwnerProfilePage() {
  {isEditing && (
  <div className="mt-5 pt-5 slide-in-from-top-2">
  <div className="space-y-3">
- <label className="block text-sm font-medium">
- Shop name
- <input value={draft.name} onChange={(event) => setDraft({ ...draft, name: event.target.value })} className="mt-2 w-full rounded-[14px] bg-[#f5f5f7] px-3 py-2.5 outline-none" />
- </label>
- <label className="block text-sm font-medium">
- Shop slug (URL identifier)
- <input value={draft.slug} onChange={(event) => setDraft({ ...draft, slug: event.target.value })} className="mt-2 w-full rounded-[14px] bg-[#f5f5f7] px-3 py-2.5 outline-none font-mono text-sm" />
- </label>
+ <input value={draft.name} onChange={(event) => setDraft({ ...draft, name: event.target.value })} placeholder="Shop name" className="mt-2 w-full rounded-[14px] bg-[#f5f5f7] px-3 py-2.5 outline-none" />
+ <input value={draft.slug} onChange={(event) => setDraft({ ...draft, slug: event.target.value })} placeholder="Shop slug (URL identifier)" className="mt-2 w-full rounded-[14px] bg-[#f5f5f7] px-3 py-2.5 outline-none font-mono text-sm" />
  <LocationAutocomplete
  address={draft.address}
  onAddressChange={(addr) => setDraft({ ...draft, address: addr })}
  onLocationSelect={(lat, lng) => setDraft({ ...draft, lat, lng })}
  />
- <label className="block text-sm font-medium">
- Phone
- <input value={draft.phone} onChange={(event) => setDraft({ ...draft, phone: event.target.value })} className="mt-2 w-full rounded-[14px] bg-[#f5f5f7] px-3 py-2.5 outline-none" />
- </label>
+ <input value={draft.phone} onChange={(event) => setDraft({ ...draft, phone: event.target.value })} placeholder="Phone" className="mt-2 w-full rounded-[14px] bg-[#f5f5f7] px-3 py-2.5 outline-none" />
  </div>
 
  <div className="mt-5 flex items-center gap-3">

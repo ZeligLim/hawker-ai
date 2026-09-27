@@ -116,9 +116,7 @@ export function LocationAutocomplete({ address, onAddressChange, onLocationSelec
 
   return (
     <div className="space-y-3">
-      <label className="block text-sm font-medium">
-        Address
-        <div className="relative mt-2">
+      <div className="relative">
           <input
             ref={inputRef}
             value={localAddress}
@@ -127,7 +125,6 @@ export function LocationAutocomplete({ address, onAddressChange, onLocationSelec
             className="w-full rounded-[14px] bg-[#f5f5f7] px-3 py-3 outline-none pac-target-input"
           />
         </div>
-      </label>
       
       <button
         type="button"
