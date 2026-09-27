@@ -65,7 +65,7 @@ export async function GET(request: NextRequest) {
 
  const { data: memberships, error: membershipsError } = await auth.client
  .from('restaurant_memberships')
- .select('restaurant_id, role, restaurants(id, name, slug, address, is_active, schedule, status, fee_payer, platform_fee_fixed, platform_fee_percent, ai_enabled, created_at)')
+ .select('restaurant_id, role, restaurants(id, name, slug, address, phone, lat, lng, is_active, schedule, status, fee_payer, platform_fee_fixed, platform_fee_percent, ai_enabled, created_at)')
  .eq('user_id', auth.user.id)
  .order('created_at', { ascending: false });
 
