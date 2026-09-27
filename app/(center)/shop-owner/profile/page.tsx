@@ -8,6 +8,8 @@ import { useCallback, useEffect, useState } from 'react';
 import { RoleModeSwitcher } from '@/components/role-mode-switcher';
 import { useAuth } from '@/components/auth-provider';
 import { authenticatedFetch } from '@/lib/supabase/client';
+import Script from 'next/script';
+import { LocationAutocomplete } from '@/components/location-autocomplete';
 
 type Shop = {
  id: string;
@@ -173,12 +175,14 @@ export default function ShopOwnerProfilePage() {
  };
 
  if (loading) {
- return <main className="min-h-screen bg-[#f5f5f7] px-4 pb-32 pt-5 text-[#1d1d1f]"><div className="mx-auto max-w-[760px]"><p className="text-sm text-[#6e6e73]">Loading shop information…</p></div></main>;
+ return <main className="min-h-screen bg-[#f5f5f7] px-4 pb-32 pt-5 text-[#1d1d1f]">
+      <Script src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`} strategy="lazyOnload" /><div className="mx-auto max-w-[760px]"><p className="text-sm text-[#6e6e73]">Loading shop information…</p></div></main>;
  }
 
  if (!shop) {
  return (
  <main className="min-h-screen bg-[#f5f5f7] px-4 pb-32 pt-5 text-[#1d1d1f]">
+      <Script src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`} strategy="lazyOnload" />
  <div className="mx-auto max-w-[760px]">
  <header><h1 className="text-3xl font-semibold tracking-[-0.06em]">Shop information</h1></header>
  <section className="mt-6 rounded-[26px] bg-white p-5 shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
@@ -188,24 +192,15 @@ export default function ShopOwnerProfilePage() {
  Shop name
  <input value={createForm.name} onChange={(event) => setCreateForm({ ...createForm, name: event.target.value })} className="mt-2 w-full rounded-[14px] bg-[#f5f5f7] px-3 py-2.5 outline-none" />
  </label>
- <label className="block text-sm font-medium">
- Address
- <input value={createForm.address} onChange={(event) => setCreateForm({ ...createForm, address: event.target.value })} className="mt-2 w-full rounded-[14px] bg-[#f5f5f7] px-3 py-2.5 outline-none" />
- </label>
+ <LocationAutocomplete
+ address={createForm.address}
+ onAddressChange={(addr) => setCreateForm({ ...createForm, address: addr })}
+ onLocationSelect={(lat, lng) => setCreateForm({ ...createForm, lat, lng })}
+ />
  <label className="block text-sm font-medium">
  Phone
  <input value={createForm.phone} onChange={(event) => setCreateForm({ ...createForm, phone: event.target.value })} className="mt-2 w-full rounded-[14px] bg-[#f5f5f7] px-3 py-2.5 outline-none" />
  </label>
- <div className="flex gap-4">
- <label className="block text-sm font-medium w-full">
- Latitude
- <input type="number" step="any" value={createForm.lat} onChange={(event) => setCreateForm({ ...createForm, lat: parseFloat(event.target.value) || 0 })} className="mt-2 w-full rounded-[14px] bg-[#f5f5f7] px-3 py-2.5 outline-none" />
- </label>
- <label className="block text-sm font-medium w-full">
- Longitude
- <input type="number" step="any" value={createForm.lng} onChange={(event) => setCreateForm({ ...createForm, lng: parseFloat(event.target.value) || 0 })} className="mt-2 w-full rounded-[14px] bg-[#f5f5f7] px-3 py-2.5 outline-none" />
- </label>
- </div>
  </div>
  <button type="button" onClick={() => void handleCreate()} className="mt-5 inline-flex items-center gap-2 rounded-full bg-[#111827] px-4 py-3 text-sm font-semibold text-white">
  Create shop
@@ -218,6 +213,7 @@ export default function ShopOwnerProfilePage() {
 
  return (
  <main className="min-h-screen bg-[#f5f5f7] px-4 pb-32 pt-5 sm:px-6 text-[#1d1d1f]">
+      <Script src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`} strategy="lazyOnload" />
  <div className="mx-auto max-w-3xl space-y-6">
  
 
@@ -269,9 +265,14 @@ export default function ShopOwnerProfilePage() {
  Shop slug (URL identifier)
  <input value={draft.slug} onChange={(event) => setDraft({ ...draft, slug: event.target.value })} className="mt-2 w-full rounded-[14px] bg-[#f5f5f7] px-3 py-2.5 outline-none font-mono text-sm" />
  </label>
+ <LocationAutocomplete
+ address={draft.address}
+ onAddressChange={(addr) => setDraft({ ...draft, address: addr })}
+ onLocationSelect={(lat, lng) => setDraft({ ...draft, lat, lng })}
+ />
  <label className="block text-sm font-medium">
- Address
- <input value={draft.address} onChange={(event) => setDraft({ ...draft, address: event.target.value })} className="mt-2 w-full rounded-[14px] bg-[#f5f5f7] px-3 py-2.5 outline-none" />
+ Phone
+ <input value={draft.phone} onChange={(event) => setDraft({ ...draft, phone: event.target.value })} className="mt-2 w-full rounded-[14px] bg-[#f5f5f7] px-3 py-2.5 outline-none" />
  </label>
  </div>
 
