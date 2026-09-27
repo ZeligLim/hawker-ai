@@ -186,7 +186,6 @@ export default function ShopOwnerProfilePage() {
  <div className="mx-auto max-w-[760px]">
  <header><h1 className="text-3xl font-semibold tracking-[-0.06em]">Shop information</h1></header>
  <section className="mt-6 rounded-[26px] bg-white p-5 shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
- <p className="text-sm text-[#6e6e73]">You have not created a shop yet.</p>
  <div className="mt-4 space-y-3">
  <label className="block text-sm font-medium">
  Shop name
@@ -203,7 +202,7 @@ export default function ShopOwnerProfilePage() {
  </label>
  </div>
  <button type="button" onClick={() => void handleCreate()} className="mt-5 inline-flex items-center gap-2 rounded-full bg-[#111827] px-4 py-3 text-sm font-semibold text-white">
- Create shop
+ Create
  </button>
  </section>
  </div>
