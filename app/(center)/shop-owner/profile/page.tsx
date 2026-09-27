@@ -228,7 +228,6 @@ export default function ShopOwnerProfilePage() {
       <Script src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`} strategy="lazyOnload" />
       <Script src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`} strategy="lazyOnload" />
        <div className="mx-auto max-w-[760px]">
- <header><h1 className="text-3xl font-semibold tracking-[-0.06em]">Shop information</h1></header>
  <section className="mt-6 rounded-[26px] bg-white p-5 shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
  <div className="mt-4 space-y-3">
  <label className="block text-sm font-medium">
