@@ -627,3 +627,15 @@ Phase 20: Dedicated SaaS Superadmin Dashboard Route Group & Standalone Monetizat
   - Implemented a `simplified` prop on `CustomerReceipt` which hides the financial breakdown and payment status badges.
   - Applied the `simplified` widget exclusively in the active `Orders` tab (just showing food, customizations, and ETA), while keeping the full financial receipt layout intact for the historic `Profile` order history view.
 
+
+- **Phase 28: Provider-Agnostic Payment Gateway**:
+  - Uninstalled `@airwallex/node-sdk` and `@airwallex/components-sdk`.
+  - Added a generic payment provider interface in `lib/payment/provider.ts` and `index.ts`.
+  - Implemented `MockPaymentProvider` for local checkout simulation and structured the placeholder `TngPaymentProvider` for future credentials.
+  - Replaced the embedded Airwallex UI with a simple "Pay with TNG" button in `app/(customer)/orders/page.tsx` that routes to `/api/payment`.
+  - Shifted all cart price calculations to the backend `/api/payment` verifying against actual `dishes.price`.
+  - Overhauled payment UI to use a simulated "MOCK PAYMENT — DEVELOPMENT ONLY" page at `/mock-payment`.
+  - Updated DB Schema via `033_update_payment_status.sql` allowing payment statuses `PENDING`, `PROCESSING`, `PAID`, `CANCELLED`, `FAILED`.
+
+## Next Task
+- Prepare for production deployment and environment variable audits.

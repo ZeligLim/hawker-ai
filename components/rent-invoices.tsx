@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { authenticatedFetch } from '@/lib/supabase/client';
 import { LoaderCircle, FileText, CheckCircle2 } from 'lucide-react';
-import { init as initAirwallex, createElement as createAirwallexElement } from '@airwallex/components-sdk';
 
 type RentInvoice = {
  id: string;
@@ -18,8 +17,7 @@ export function RentInvoices({ boothId }: { boothId: string }) {
  const [invoices, setInvoices] = useState<RentInvoice[]>([]);
  const [loading, setLoading] = useState(true);
  const [payingInvoice, setPayingInvoice] = useState<RentInvoice | null>(null);
- const [airwallexElement, setAirwallexElement] = useState<any>(null);
- const [paymentStatus, setPaymentStatus] = useState<'idle' | 'generating' | 'ready' | 'success' | 'error'>('idle');
+  const [paymentStatus, setPaymentStatus] = useState<'idle' | 'generating' | 'ready' | 'success' | 'error'>('idle');
 
  useEffect(() => {
  async function loadInvoices() {
@@ -36,56 +34,18 @@ export function RentInvoices({ boothId }: { boothId: string }) {
  loadInvoices();
  }, [boothId]);
 
- useEffect(() => {
- if (paymentStatus === 'ready' && airwallexElement) {
- const timer = setTimeout(() => {
- const container = document.getElementById('airwallex-rent-drop-in');
- if (container) {
- airwallexElement.mount('airwallex-rent-drop-in');
- airwallexElement.on('onSuccess', async (event: any) => {
- // Mock success
- if (!payingInvoice) return;
- await authenticatedFetch(`/api/owner/rent/${payingInvoice.id}/pay`, { method: 'POST' });
- setPaymentStatus('success');
- setInvoices(prev => prev.map(inv => inv.id === payingInvoice.id ? { ...inv, status: 'paid' } : inv));
- });
- }
- }, 100);
- return () => clearTimeout(timer);
- }
- }, [paymentStatus, airwallexElement, payingInvoice]);
-
- const handlePay = async (invoice: RentInvoice) => {
- setPayingInvoice(invoice);
- setPaymentStatus('generating');
- try {
- const res = await fetch('/api/payment-intent', {
- method: 'POST',
- headers: { 'Content-Type': 'application/json' },
- body: JSON.stringify({ amount: invoice.amount, merchantOrderId: `rent_${invoice.id}` })
- });
- const data = await res.json();
  
- if (!data.id) throw new Error('Failed to create payment intent');
-
- await initAirwallex({
- env: 'demo',
- intent_id: data.id,
- client_secret: data.client_secret,
- });
-
- const element = await createAirwallexElement('dropIn', {
- intent_id: data.id,
- client_secret: data.client_secret,
- currency: 'MYR'
- });
-
- setAirwallexElement(element);
- setPaymentStatus('ready');
- } catch (err) {
- setPaymentStatus('error');
- }
- };
+ const handlePay = async (invoice: RentInvoice) => {
+    setPayingInvoice(invoice);
+    setPaymentStatus('generating');
+    try {
+      await authenticatedFetch(`/api/owner/rent/${invoice.id}/pay`, { method: 'POST' });
+      setPaymentStatus('success');
+      setInvoices(prev => prev.map(inv => inv.id === invoice.id ? { ...inv, status: 'paid' } : inv));
+    } catch (err) {
+      setPaymentStatus('error');
+    }
+  };
 
  if (loading) return <div className="p-4 flex justify-center"><LoaderCircle className="h-5 w-5 " /></div>;
 
@@ -129,13 +89,7 @@ export function RentInvoices({ boothId }: { boothId: string }) {
  ))}
  </div>
 
- {paymentStatus === 'ready' && payingInvoice && (
- <div className="mt-4 p-4 rounded-[18px] bg-white ">
- <h4 className="text-sm font-semibold mb-3 text-center">Pay RM {payingInvoice.amount.toFixed(2)}</h4>
- <div id="airwallex-rent-drop-in" className="min-h-[300px] w-full" />
- </div>
- )}
-
+ 
  {paymentStatus === 'success' && (
  <div className="mt-4 p-4 rounded-[18px] bg-emerald-50 text-emerald-700 text-sm font-semibold flex items-center justify-center gap-2">
  <CheckCircle2 className="h-4 w-4" />
