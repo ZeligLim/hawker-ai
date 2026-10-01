@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireRequestUser } from '@/lib/supabase/server';
-import { getPlatformRole } from '@/lib/auth-rbac';
 import { OwnerDishPatchSchema } from '@/lib/owner/schema';
 
 export async function PATCH(request: NextRequest, context: { params: Promise<{ id: string }> }) {
@@ -23,10 +22,7 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ i
  .eq('food_outlet_id', dish.food_outlet_id)
  .maybeSingle();
 
- const { isPlatformAdmin } = await getPlatformRole(auth.client, auth.user.id, auth.user.email);
-  if (isPlatformAdmin) {
-   isAuthorized = true;
- } else if (membership) {
+ if (membership) {
  isAuthorized = true;
  } else {
  const { data: outlet } = await auth.client

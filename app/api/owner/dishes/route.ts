@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireRequestUser } from '@/lib/supabase/server';
-import { getPlatformRole } from '@/lib/auth-rbac';
 import { OwnerDishSchema } from '@/lib/owner/schema';
 
 export async function GET(request: NextRequest) {
@@ -45,25 +44,21 @@ export async function GET(request: NextRequest) {
  }
 
  let allOutletIds = Array.from(new Set([...directOutletIds, ...shopOutletIds]));
-  
-  const { isPlatformAdmin } = await getPlatformRole(auth.client, auth.user.id, auth.user.email);
-  if (isPlatformAdmin) {
-    const { data: allOutlets } = await auth.client.from('food_outlets').select('id');
-    allOutletIds = allOutlets?.map((o: any) => o.id) ?? [];
-  }
 
-  // If user has no booth or shop memberships, deny access
-  if (allOutletIds.length === 0) {
-    const { data: isSuperadmin } = await auth.client.rpc('is_platform_admin');
-    if (isSuperadmin) {
-      const { data: allOutlets } = await auth.client.from('food_outlets').select('id');
-      allOutletIds = allOutlets?.map((o: any) => o.id) ?? [];
-    }
-  }
+ // Filter by requested foodOutletId if provided
+ const url = new URL(request.url);
+ const requestedOutletId = url.searchParams.get('foodOutletId');
+ if (requestedOutletId) {
+   allOutletIds = allOutletIds.filter(id => id === requestedOutletId);
+ } else if (allOutletIds.length > 0) {
+   // If no specific booth is selected, default to the first authorized booth
+   // to prevent leaking menu items across multiple owned stalls.
+   allOutletIds = [allOutletIds[0]];
+ }
 
  // If user has no booth or shop memberships, deny access
  if (allOutletIds.length === 0) {
- return NextResponse.json({ error: 'Forbidden: Stall worker authorization required.' }, { status: 403 });
+ return NextResponse.json({ error: 'Forbidden: Stall worker authorization required or stall not found.' }, { status: 403 });
  }
 
  // Determine if AI is enabled for the parent restaurant

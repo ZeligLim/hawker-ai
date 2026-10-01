@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { Edit3, Plus, UtensilsCrossed, Camera } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { useAuth } from '@/components/auth-provider';
 import { supabase } from '@/lib/supabase/client';
 
 type OwnerDish = {
@@ -23,6 +24,15 @@ type OwnerDish = {
 };
 
 export default function OwnerMenuPage() {
+ const { roles } = useAuth();
+ const [selectedBoothId, setSelectedBoothId] = useState<string | null>(null);
+
+ useEffect(() => {
+  if (roles.booths && roles.booths.length > 0 && !selectedBoothId) {
+   setSelectedBoothId(roles.booths[0].id);
+  }
+ }, [roles.booths, selectedBoothId]);
+
  const [dishes, setDishes] = useState<OwnerDish[]>([]);
  const [foodOutletIds, setFoodOutletIds] = useState<string[]>([]);
  const [isLoading, setIsLoading] = useState(true);
@@ -42,7 +52,8 @@ export default function OwnerMenuPage() {
  }
 
  try {
- const response = await fetch('/api/owner/dishes', {
+ const fetchUrl = selectedBoothId ? `/api/owner/dishes?foodOutletId=${selectedBoothId}` : '/api/owner/dishes';
+ const response = await fetch(fetchUrl, {
  headers: { Authorization: `Bearer ${token}` },
  });
 
@@ -94,7 +105,7 @@ export default function OwnerMenuPage() {
  return () => {
  active = false;
  };
- }, []);
+ }, [selectedBoothId]);
 
  const toggleAvailability = async (id: string) => {
  const next = dishes.map((dish) => (dish.id === id ? { ...dish, available: !dish.available } : dish));
@@ -122,6 +133,25 @@ export default function OwnerMenuPage() {
  </div>
  ) : null}
 
+ 
+ {/* Booth Selector */}
+ {roles.booths && roles.booths.length > 1 && (
+ <div className="mb-4 flex justify-end">
+ <select
+ value={selectedBoothId || ''}
+ onChange={(e) => setSelectedBoothId(e.target.value)}
+ className="inline-flex h-9 items-center justify-center rounded-full bg-white px-3 text-xs font-semibold text-[#1d1d1f] shadow-xs outline-none cursor-pointer"
+ aria-label="Select booth"
+ >
+ {roles.booths.map((b) => (
+ <option key={b.id} value={b.id}>
+ {b.name}
+ </option>
+ ))}
+ </select>
+ </div>
+ )}
+
  <section className="mt-6">
  {isLoading ? (
  <div className="rounded-[24px] bg-white p-8 text-center text-xs sm:text-sm text-[#6e6e73] truncate">Loading menu...</div>
@@ -138,7 +168,7 @@ export default function OwnerMenuPage() {
  </p>
  <div className="mt-5 flex flex-wrap justify-center gap-3">
  <Link
- href={'/owner/menu/new' as any}
+ href={`/owner/menu/new${selectedBoothId ? `?boothId=${selectedBoothId}` : ''}` as any}
  className="inline-flex h-9 items-center rounded-full bg-[#111827] px-4 text-xs font-semibold text-white hover:bg-black shadow-xs"
  >
  Add your first dish
@@ -220,7 +250,7 @@ export default function OwnerMenuPage() {
  </div>
  )}
  <Link
- href={'/owner/menu/new' as any}
+ href={`/owner/menu/new${selectedBoothId ? `?boothId=${selectedBoothId}` : ''}` as any}
  className="fixed bottom-40 sm:bottom-24 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-[#111827] text-white shadow-lg hover:bg-black "
  aria-label="Add dish"
  title="Add dish"

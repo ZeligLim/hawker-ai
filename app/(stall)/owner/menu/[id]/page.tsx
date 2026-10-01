@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { ArrowLeft, ImagePlus, LoaderCircle, Plus, Trash2 } from 'lucide-react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase/client';
 
@@ -28,6 +28,8 @@ function loadCustomizations(dish: Dish | null) {
 export default function OwnerDishEditorPage() {
  const params = useParams<{ id: string }>();
  const router = useRouter();
+ const searchParams = useSearchParams();
+ const preselectedBoothId = searchParams.get('boothId');
  const isNew = params.id === 'new';
  const [dish, setDish] = useState<Dish | null>(() => isNew ? {
  id: `dish-${Date.now()}`, name: '', category: 'Main course', price: 0, available: true,
@@ -69,8 +71,8 @@ export default function OwnerDishEditorPage() {
  setVegetarian(loaded.vegetarian ?? false);
  setDescription(loaded.description ?? '');
  setTags(loaded.tags?.join(', ') ?? '');
- } else if (isNew && payload.foodOutletIds?.[0]) {
- setDish((current) => current ? { ...current, foodOutletId: payload.foodOutletIds?.[0] } : current);
+ } else if (isNew && (preselectedBoothId || payload.foodOutletIds?.[0])) {
+ setDish((current) => current ? { ...current, foodOutletId: preselectedBoothId || payload.foodOutletIds?.[0] } : current);
  }
  };
  void loadDish();
