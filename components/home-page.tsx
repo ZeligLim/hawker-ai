@@ -15,6 +15,7 @@ import {
 import { HawkerSearchBar } from '@/components/hawker-search-bar';
 import { HawkerMap } from '@/components/hawker-map';
 import type { HawkerCentreSummary } from '@/lib/hawker-centres/service';
+import { useCartItems } from '@/lib/order/cart';
 
 function calculateDistanceKm(lat1: number, lon1: number, lat2: number, lon2: number): number {
  const R = 6371;
@@ -32,6 +33,25 @@ function calculateDistanceKm(lat1: number, lon1: number, lat2: number, lon2: num
 
 export function HomePage() {
  const router = useRouter();
+  const { cartItems, setCartItems } = useCartItems();
+  const [pendingNavCentre, setPendingNavCentre] = useState<HawkerCentreSummary | null>(null);
+
+  const handleNavigate = (centre: HawkerCentreSummary, e: React.MouseEvent) => {
+    e.preventDefault();
+    if (cartItems.length > 0 && cartItems[0].restaurantId !== centre.id) {
+      setPendingNavCentre(centre);
+    } else {
+      router.push(`/stall?centre=${encodeURIComponent(centre.slug)}`);
+    }
+  };
+
+  const confirmNavigation = () => {
+    if (pendingNavCentre) {
+      setCartItems([]);
+      router.push(`/stall?centre=${encodeURIComponent(pendingNavCentre.slug)}`);
+      setPendingNavCentre(null);
+    }
+  };
 
  // Search, filter, ranking states
  const [searchQuery, setSearchQuery] = useState('');
@@ -329,6 +349,7 @@ export function HomePage() {
  <div className="mt-4">
  <Link
  href={`/stall?centre=${encodeURIComponent(selectedCentre.slug)}` as any}
+                onClick={(e) => handleNavigate(selectedCentre, e)}
  className="flex h-11 w-full items-center justify-center gap-2 rounded-full bg-black hover:bg-neutral-800 text-white text-xs font-semibold shadow-xs "
  >
  <span>View Stalls</span>
@@ -384,8 +405,9 @@ export function HomePage() {
  ) : (
  filteredCentres.map((centre) => (
  <Link
- key={centre.id}
- href={`/stall?centre=${encodeURIComponent(centre.slug)}` as any}
+                  key={centre.id}
+                  href={`/stall?centre=${encodeURIComponent(centre.slug)}` as any}
+                  onClick={(e) => handleNavigate(centre, e)}
  className="block w-full rounded-2xl bg-white p-4 text-left shadow-sm hover:bg-neutral-50 "
  >
  <div className="flex items-start justify-between gap-3">
@@ -426,6 +448,34 @@ export function HomePage() {
  </div>
  </div>
  )}
- </div>
- );
+      {pendingNavCentre && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 px-4" role="presentation">
+          <div role="dialog" aria-modal="true" className="w-full max-w-[360px] rounded-3xl bg-white p-6 shadow-2xl text-black">
+            <h2 className="text-xl font-bold text-black">Start new order?</h2>
+            <p className="mt-2 text-sm text-neutral-500">
+              You already have unpaid items from <strong className="text-black">{cartItems[0]?.restaurantName}</strong> in your cart. 
+              Viewing <strong className="text-black">{pendingNavCentre.name}</strong> will clear those items.
+            </p>
+            <div className="mt-5 flex gap-2">
+              <button
+                type="button"
+                onClick={() => setPendingNavCentre(null)}
+                className="flex-1 h-11 rounded-full bg-neutral-100 text-sm font-semibold text-black hover:bg-neutral-200"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={confirmNavigation}
+                className="flex-1 h-11 rounded-full bg-black hover:bg-neutral-800 text-sm font-semibold text-white shadow-xs"
+              >
+                Clear & Continue
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
+

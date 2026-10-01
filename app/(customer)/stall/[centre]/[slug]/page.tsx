@@ -5,7 +5,7 @@ import { supabase } from '@/lib/supabase/client';
 
 export const dynamic = 'force-dynamic';
 
-async function fetchShopBySlug(slug: string): Promise<ShopData | null> {
+async function fetchShopBySlug(centre: string, slug: string): Promise<ShopData | null> {
  if (!supabase) return null;
 
  // Step 1: fetch outlets + restaurants (typed relation)
@@ -14,11 +14,11 @@ async function fetchShopBySlug(slug: string): Promise<ShopData | null> {
  .select('id, name, restaurant_id, is_open, restaurants ( id, name, slug, address, is_active )');
 
  const matched = outlets?.find((o) => {
- const rest = o.restaurants as { slug?: string; name?: string; is_active?: boolean } | null;
- const restSlug = rest?.slug;
- const outletSlug = o.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
- return restSlug === slug || outletSlug === slug || o.id === slug;
- });
+    const rest = o.restaurants as { slug?: string; name?: string; is_active?: boolean } | null;
+    const restSlug = rest?.slug;
+    const outletSlug = o.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    return (restSlug === centre || o.restaurant_id === centre) && (outletSlug === slug || o.id === slug);
+  });
 
  if (!matched) return null;
 
@@ -54,18 +54,18 @@ async function fetchShopBySlug(slug: string): Promise<ShopData | null> {
  };
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
- const { slug } = await params;
- const shop = await fetchShopBySlug(slug);
+export async function generateMetadata({ params }: { params: Promise<{ centre: string, slug: string }> }): Promise<Metadata> {
+ const { centre, slug } = await params;
+  const shop = await fetchShopBySlug(centre, slug);
 
  return {
  title: shop ? `${shop.name} | Hawker Menu Intelligence` : 'Shop | Hawker Menu Intelligence',
  };
 }
 
-export default async function ShopDetailPage({ params }: { params: Promise<{ slug: string }> }) {
- const { slug } = await params;
- const shop = await fetchShopBySlug(slug);
+export default async function ShopDetailPage({ params }: { params: Promise<{ centre: string, slug: string }> }) {
+ const { centre, slug } = await params;
+  const shop = await fetchShopBySlug(centre, slug);
 
  if (!shop) {
  return (
@@ -73,7 +73,7 @@ export default async function ShopDetailPage({ params }: { params: Promise<{ slu
  <div className="mx-auto max-w-[430px] rounded-[26px] bg-white p-5 shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
  <h1 className="text-3xl font-semibold tracking-[-0.06em]">Not found</h1>
  <p className="mt-2 text-sm text-[#6e6e73]">This stall or shop could not be found in our database.</p>
- <Link href="/shop" className="mt-5 inline-flex rounded-full bg-[#111827] px-4 py-2.5 text-sm font-medium text-white">
+ <Link href={`/stall?centre=` as any} className="mt-5 inline-flex rounded-full bg-[#111827] px-4 py-2.5 text-sm font-medium text-white">
  Back to shops
  </Link>
  </div>

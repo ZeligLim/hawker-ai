@@ -48,10 +48,11 @@ export function ClientBottomNav({
  className={`grid ${gridColsClass} gap-1 rounded-full p-1.5 backdrop-blur-xl ${containerTheme}`}
  >
  {items.map(({ href, label, icon: Icon }) => {
- const isHome = href === '/home' || href === '/owner' || href === '/admin';
- const active = isHome
- ? pathname === href
- : pathname === href || pathname.startsWith(`${href}/`);
+  const basePath = href.split('?')[0];
+          const isHome = basePath === '/home' || basePath === '/owner' || basePath === '/admin';
+          const active = isHome
+            ? pathname === basePath
+            : pathname === basePath || pathname.startsWith(basePath + '/');
 
  return (
  <Link

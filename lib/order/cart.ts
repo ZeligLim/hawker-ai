@@ -46,6 +46,7 @@ export type CartItem = {
   id: string;
   dishId: string;
   name: string;
+  restaurantId: string;
   restaurantName: string;
   stallName: string;
   stallId: string;
@@ -99,7 +100,7 @@ export function addItemToCart(
 
   // Ensure cart isolation per hawker centre (restaurant)
   const differentCentreIndex = items.findIndex(
-    (item) => item.restaurantName !== normalizedDish.restaurantName
+    (item) => item.restaurantId !== normalizedDish.restaurantId
   );
 
   let activeItems = items;

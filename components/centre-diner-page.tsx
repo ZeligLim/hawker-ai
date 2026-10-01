@@ -22,7 +22,8 @@ type FeaturedDish = {
  id: string;
  stallId?: string;
  name: string;
- restaurantName: string;
+ restaurantId?: string;
+  restaurantName: string;
  stallName: string;
  price: number;
  isVegetarian: boolean;
@@ -30,7 +31,8 @@ type FeaturedDish = {
  spiceLevel: number;
  proteinGrams: number;
  imageUrl?: string | null;
- customizations?: any[];
+  customizations?: any[];
+  isAvailable?: boolean;
 };
 
 const quickFilters = [
@@ -123,7 +125,7 @@ export function CentreDinerPage({ centre }: { centre: HawkerCentreSummary }) {
  });
 
  for (const dish of dishList) {
- if (dish.is_available === false) continue;
+ 
  loaded.push({
  id: dish.id,
  stallId: outlet.id,
@@ -136,6 +138,7 @@ export function CentreDinerPage({ centre }: { centre: HawkerCentreSummary }) {
  spiceLevel: Number(dish.spice_level ?? 0),
  proteinGrams: Number(dish.protein_grams ?? 0),
  imageUrl: dish.image_url,
+          isAvailable: dish.is_available,
  customizations: dish.customizations || undefined,
  });
  }
@@ -248,7 +251,8 @@ export function CentreDinerPage({ centre }: { centre: HawkerCentreSummary }) {
  addToCartWithWarning({
  dishId: dish.id,
  name: dish.name,
- restaurantName: dish.restaurantName,
+ restaurantId: dish.restaurantId ?? '',
+        restaurantName: dish.restaurantName,
  stallName: dish.stallName,
  stallId,
  price: dish.price,
@@ -263,7 +267,8 @@ export function CentreDinerPage({ centre }: { centre: HawkerCentreSummary }) {
  addToCartWithWarning({
  dishId: dish.id,
  name: dish.name,
- restaurantName: dish.restaurantName,
+ restaurantId: dish.restaurantId ?? '',
+        restaurantName: dish.restaurantName,
  stallName: dish.stallName,
  stallId,
  price: dish.price,
@@ -286,7 +291,8 @@ export function CentreDinerPage({ centre }: { centre: HawkerCentreSummary }) {
  customizationKey: selection.options.map((option) => option.id).sort().join('|'),
  customizations: selection.options.map((option) => option.label),
  name: dish.name,
- restaurantName: dish.restaurantName,
+ restaurantId: dish.restaurantId ?? '',
+        restaurantName: dish.restaurantName,
  stallName: dish.stallName,
  stallId,
  price: selection.price,

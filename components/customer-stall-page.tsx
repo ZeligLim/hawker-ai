@@ -111,10 +111,12 @@ function CustomerStallContent() {
  try {
  setIsLoading(true);
  const centreQuery = activeCentre?.slug
- ? `?centre=${encodeURIComponent(activeCentre.slug)}`
- : tableSession?.centreSlug
- ? `?centre=${encodeURIComponent(tableSession.centreSlug)}`
- : '';
+          ? `?centre=${encodeURIComponent(activeCentre.slug)}`
+          : rawCentreParam
+          ? `?centre=${encodeURIComponent(rawCentreParam)}`
+          : tableSession?.centreSlug
+          ? `?centre=${encodeURIComponent(tableSession.centreSlug)}`
+          : '';
 
  const res = await fetch(`/api/outlets${centreQuery}`);
  if (!res.ok) return;
@@ -319,7 +321,7 @@ function CustomerStallContent() {
  return (
  <Link
  key={stall.id}
- href={`/shop/${stall.slug}` as any}
+ href={`/stall/${activeCentre?.slug || rawCentreParam || tableSession?.centreSlug || 'centre'}/${stall.slug}` as any}
  className="block group"
  >
  <article className="rounded-3xl bg-white p-4 shadow-sm hover:bg-neutral-50 ">

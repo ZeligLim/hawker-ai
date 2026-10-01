@@ -469,7 +469,7 @@ export default function CustomerLandingPage() {
  </div>
 
  <Link
- href={`/shop/${hall.slug}`}
+ href={`/stall/${hall.id || 'centre'}/${hall.slug}` as any}
  className="w-full inline-flex items-center justify-center py-2.5 rounded-full bg-white hover:bg-black/[0.02] text-xs font-semibold text-[#1d1d1f] shadow-xs"
  >
  View Food Centre ({hall.stallsCount} {hall.stallsCount === 1 ? 'Stall' : 'Stalls'})

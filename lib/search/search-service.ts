@@ -161,6 +161,7 @@ export class SearchService {
           id: dish.id,
           stallId: dish.food_outlet_id,
           name: dish.name,
+          restaurantId: outlet?.restaurant_id ?? '',
           restaurantName: restaurant?.name ?? 'Unknown restaurant',
           stallName: outlet?.name ?? 'Unknown stall',
           price: Number(dish.price),

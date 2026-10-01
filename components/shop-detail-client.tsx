@@ -36,6 +36,7 @@ export function ShopDetailClient({ shop, slug }: { shop: ShopData; slug: string 
 
  addDish({
  dishId: targetDishId,
+      restaurantId: shop.restaurantId || shop.id || '',
  name: dish.name,
  restaurantName: shop.restaurantName ?? shop.name,
  stallName: shop.name,
@@ -69,6 +70,7 @@ export function ShopDetailClient({ shop, slug }: { shop: ShopData; slug: string 
 
  addDish({
  dishId: targetDishId,
+      restaurantId: shop.restaurantId || shop.id || '',
  customizationKey: selection.options.map((option) => option.id).sort().join('|'),
  customizations: selection.options.map((option) => option.label),
  name: dish.name,

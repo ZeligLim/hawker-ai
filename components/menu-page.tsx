@@ -33,7 +33,8 @@ const categories = [
 type MenuItem = {
  id: string;
  foodOutletId: string;
- restaurantName: string;
+ restaurantId?: string;
+  restaurantName: string;
  stallName: string;
  name: string;
  price: number;
@@ -41,7 +42,8 @@ type MenuItem = {
  spiceLevel?: number;
  category: 'main-course' | 'drinks' | 'desserts';
  imageUrl?: string | null;
- customizations?: any[];
+  customizations?: any[];
+  isAvailable?: boolean;
 };
 
 function categorizeDish(name: string, tags: string[] = []): 'main-course' | 'drinks' | 'desserts' {
@@ -83,7 +85,7 @@ function MenuContent() {
  setCentreName(outlet.restaurants.name);
  }
  for (const dish of outlet.dishes ?? []) {
- if (dish.is_available === false) continue;
+ 
  loaded.push({
  id: dish.id,
  foodOutletId: outlet.id,
@@ -95,6 +97,7 @@ function MenuContent() {
  spiceLevel: Number(dish.spice_level ?? 0),
  category: categorizeDish(dish.name, dish.tags),
  imageUrl: dish.image_url ?? null,
+          isAvailable: dish.is_available,
  customizations: dish.customizations ?? [],
  });
  }
@@ -132,7 +135,8 @@ function MenuContent() {
  addDish({
  dishId: item.id,
  name: item.name,
- restaurantName: item.restaurantName,
+ restaurantId: item.restaurantId ?? '',
+            restaurantName: item.restaurantName,
  stallName: item.stallName,
  stallId: item.foodOutletId,
  price: item.price,
@@ -164,7 +168,8 @@ function MenuContent() {
  customizationKey: selection.options.map((option) => option.id).sort().join('|'),
  customizations: selection.options.map((option) => option.label),
  name: item.name,
- restaurantName: item.restaurantName,
+ restaurantId: item.restaurantId ?? '',
+            restaurantName: item.restaurantName,
  stallName: item.stallName,
  stallId: item.foodOutletId,
  price: selection.price,
@@ -255,6 +260,7 @@ function MenuContent() {
  isVegetarian={item.vegetarian}
  spiceLevel={item.spiceLevel}
  imageUrl={item.imageUrl}
+                isAvailable={item.isAvailable}
  quantity={quantity}
  onAdd={() => addMenuItem(item)}
  onUpdateQuantity={(delta) =>

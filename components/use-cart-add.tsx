@@ -6,7 +6,7 @@ export function useCartAdd() {
  const [pendingDish, setPendingDish] = useState<Omit<CartItem, 'id' | 'quantity'> & { quantity?: number } | null>(null);
 
  const addDish = (dish: Omit<CartItem, 'id' | 'quantity'> & { quantity?: number }) => {
- const isDifferentCentre = cartItems.length > 0 && cartItems[0].restaurantName !== dish.restaurantName;
+ const isDifferentCentre = cartItems.length > 0 && cartItems[0].restaurantId !== dish.restaurantId;
  
  if (isDifferentCentre) {
  setPendingDish(dish);

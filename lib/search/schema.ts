@@ -38,6 +38,7 @@ export const SearchResultSchema = z.object({
   id: z.string(),
   stallId: z.string().optional(),
   name: z.string(),
+  restaurantId: z.string().optional(),
   restaurantName: z.string(),
   stallName: z.string(),
   price: z.number(),

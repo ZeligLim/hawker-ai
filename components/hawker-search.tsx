@@ -85,7 +85,8 @@ export function HawkerSearch({ initialQuery = 'I want a vegetarian meal under RM
  addDish({
  dishId: dish.id,
  name: dish.name,
- restaurantName: dish.restaurantName,
+ restaurantId: dish.restaurantId ?? '',
+      restaurantName: dish.restaurantName,
  stallName: dish.stallName,
  stallId,
  price: dish.price,

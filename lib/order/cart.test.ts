@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 
 import { addItemToCart, buildCartSummary, updateCartItemQuantity } from './cart.ts';
 
-const dishOne = {
+const dishOne = { restaurantId: 'r1',
   dishId: 'dish-1',
   name: 'Chicken Rice',
   restaurantName: 'Setia Hawker Centre',
@@ -12,7 +12,7 @@ const dishOne = {
   price: 8,
 };
 
-const dishTwo = {
+const dishTwo = { restaurantId: 'r2',
   dishId: 'dish-2',
   name: 'Cendol',
   restaurantName: 'Setia Hawker Centre',

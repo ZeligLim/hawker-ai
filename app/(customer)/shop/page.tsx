@@ -49,7 +49,7 @@ export default async function ShopPage() {
  const slug = shop.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 
  return (
- <Link key={shop.name} href={`/shop/${slug}`} className="block">
+ <Link key={shop.name} href={`/stall/${'centre'}/${slug}` as any} className="block">
  <article className="rounded-[22px] bg-white p-3 shadow-[0_8px_18px_rgba(15,23,42,0.02)]">
  <div className="flex items-start justify-between gap-3">
  <div className="flex min-w-0 items-start gap-3">
