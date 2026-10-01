@@ -34,6 +34,7 @@ export default function OwnerDishEditorPage() {
  const [dish, setDish] = useState<Dish | null>(() => isNew ? {
  id: `dish-${Date.now()}`, name: '', category: 'Main course', price: 0, available: true,
  } : null);
+ const [isLoading, setIsLoading] = useState(!isNew);
  const [customizations, setCustomizations] = useState<{ label: string; price: number }[]>(() => loadCustomizations(dish));
  const [spiceLevels, setSpiceLevels] = useState(() => dish?.spiceLevels ?? 0);
  const [vegetarian, setVegetarian] = useState(() => dish?.vegetarian ?? false);
@@ -48,10 +49,17 @@ export default function OwnerDishEditorPage() {
  if (!params.id || !client) return;
  let active = true;
  const loadDish = async () => {
+ setIsLoading(true);
  const token = (await client.auth.getSession()).data.session?.access_token;
- if (!token) return;
+ if (!token) {
+   if (active) setIsLoading(false);
+   return;
+ }
  const response = await fetch('/api/owner/dishes', { headers: { Authorization: `Bearer ${token}` } });
- if (!response.ok) return;
+ if (!response.ok) {
+   if (active) setIsLoading(false);
+   return;
+ }
  const payload = await response.json() as { dishes?: Array<Record<string, unknown>>; foodOutletIds?: string[] };
  if (!active) return;
  const remote = payload.dishes?.find((item) => String(item.id) === params.id);
@@ -74,13 +82,22 @@ export default function OwnerDishEditorPage() {
  } else if (isNew && (preselectedBoothId || payload.foodOutletIds?.[0])) {
  setDish((current) => current ? { ...current, foodOutletId: preselectedBoothId || payload.foodOutletIds?.[0] } : current);
  }
+ setIsLoading(false);
  };
  void loadDish();
  return () => { active = false; };
- }, [isNew, params.id]);
+ }, [isNew, params.id, preselectedBoothId]);
+
+ if (isLoading) {
+ return (
+ <main className="min-h-screen bg-[#f5f5f7] px-4 py-6 sm:px-6 flex items-center justify-center">
+ <LoaderCircle className="h-6 w-6 animate-spin text-[#86868b]" />
+ </main>
+ );
+ }
 
  if (!dish) {
- return <main className="min-h-screen bg-[#f5f5f7] p-5 text-[#1d1d1f]"><Link href="/owner/menu">Dish not found</Link></main>;
+ return <main className="min-h-screen bg-[#f5f5f7] p-5 text-[#1d1d1f] text-center pt-20"><p className="mb-4 font-medium">Dish not found</p><Link href="/owner/menu" className="inline-flex h-9 items-center justify-center rounded-full bg-[#111827] px-4 text-xs font-semibold text-white hover:bg-black shadow-xs">Back to menu</Link></main>;
  }
 
  const updateDish = (changes: Partial<Dish>) => setDish((current) => current ? { ...current, ...changes } : current);
