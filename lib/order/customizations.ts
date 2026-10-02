@@ -23,17 +23,9 @@ export type CustomizationSource =
       spice_level?: number;
     };
 
-const SPICE_OPTIONS: CustomizationOption[] = [
-  { id: 'spice-0', label: 'Level 0 · Mild / No chili', price: 0 },
-  { id: 'spice-1', label: 'Level 1 · Light spice', price: 0 },
-  { id: 'spice-2', label: 'Level 2 · Medium spice', price: 0 },
-  { id: 'spice-3', label: 'Level 3 · Extra hot', price: 0.5 },
-];
-
 export function getDishCustomization(source: CustomizationSource | null | undefined): DishCustomization | null {
   if (!source) return null;
 
-  let isSpicy = false;
   let parsedOptions: CustomizationOption[] = [];
   let dishName = '';
 
@@ -42,8 +34,6 @@ export function getDishCustomization(source: CustomizationSource | null | undefi
     const rawCustoms = source.customizations;
     const spice = Number(source.spiceLevel ?? source.spice_level ?? 0);
     dishName = (source.name ?? '').trim();
-
-    isSpicy = spice > 0 || /curry|laksa|sambal|chili|chilli|spicy|pedas|tomyum|tom yum|mala|nasi lemak|mee goreng|pan mee|kway teow|char kway|rendang|hot/i.test(dishName);
 
     if (Array.isArray(rawCustoms) && rawCustoms.length > 0) {
       parsedOptions = rawCustoms
@@ -71,8 +61,7 @@ export function getDishCustomization(source: CustomizationSource | null | undefi
   } else {
     // Case 2: String dish name passed (legacy fallback)
     dishName = source.toLowerCase().trim();
-    isSpicy = /curry|laksa|sambal|chili|chilli|spicy|pedas|tomyum|tom yum|mala|nasi lemak|mee goreng|pan mee|kway teow|char kway|rendang|hot/i.test(dishName);
-  }
+    }
 
   // Fallback to legacy extras if no parsedOptions found
   if (parsedOptions.length === 0 && (dishName.includes('chicken rice') || dishName.includes('rice') || dishName.includes('noodle'))) {
@@ -83,7 +72,7 @@ export function getDishCustomization(source: CustomizationSource | null | undefi
   }
 
   // Return null if neither spicy nor has options
-  if (!isSpicy && parsedOptions.length === 0) {
+  if (parsedOptions.length === 0) {
     return null;
   }
 
@@ -95,9 +84,7 @@ export function getDishCustomization(source: CustomizationSource | null | undefi
     result.multiSelect = true;
   }
   
-  if (isSpicy) {
-    result.spiceOptions = SPICE_OPTIONS;
-  }
+  
 
   return result;
 }
