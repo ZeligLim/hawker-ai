@@ -94,7 +94,7 @@ export function CentreDinerPage({ centre }: { centre: HawkerCentreSummary }) {
  setHasCheckedSession(true);
  }, 0);
  return () => clearTimeout(timer);
- }, [centre]);
+ }, [centre.slug]);
 
  // Load stalls and dishes for this specific hawker centre
  useEffect(() => {
@@ -158,7 +158,7 @@ export function CentreDinerPage({ centre }: { centre: HawkerCentreSummary }) {
  return () => {
  active = false;
  };
- }, [centre]);
+ }, [centre.slug]);
 
  // Filter dishes by search term or selected stall
  const displayedDishes = useMemo(() => {

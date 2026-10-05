@@ -51,6 +51,7 @@ function CustomerStallContent() {
  const [filterMode, setFilterMode] = useState<'all' | 'open' | 'fast'>('all');
  const [stalls, setStalls] = useState<StallDirectoryItem[]>([]);
  const [isLoading, setIsLoading] = useState(true);
+  const targetCentreSlug = activeCentre?.slug || rawCentreParam || tableSession?.centreSlug || '';
 
  const { cartItems } = useCartItems();
 
@@ -110,13 +111,7 @@ function CustomerStallContent() {
  const fetchOutlets = async () => {
  try {
  setIsLoading(true);
- const centreQuery = activeCentre?.slug
-          ? `?centre=${encodeURIComponent(activeCentre.slug)}`
-          : rawCentreParam
-          ? `?centre=${encodeURIComponent(rawCentreParam)}`
-          : tableSession?.centreSlug
-          ? `?centre=${encodeURIComponent(tableSession.centreSlug)}`
-          : '';
+ const centreQuery = targetCentreSlug ? `?centre=${encodeURIComponent(targetCentreSlug)}` : '';
 
  const res = await fetch(`/api/outlets${centreQuery}`);
  if (!res.ok) return;
@@ -178,7 +173,7 @@ function CustomerStallContent() {
  return () => {
  active = false;
  };
- }, [activeCentre, tableSession?.centreSlug]);
+ }, [targetCentreSlug]);
 
  const handleClearTable = () => {
  clearTableSession();
