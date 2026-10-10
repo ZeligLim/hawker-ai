@@ -34,5 +34,18 @@
 - Triggered Next.js production build (`next build`) to guarantee absolute zero regressions.
 - Removed vestigial Git artifact files (`.orig` and `.rej`).
 
+## Phase 6: Automated Testing & Security Audit
+- Setup native Node test runner execution via `tsx` to support Next.js path aliases (`@/*`).
+- Verified strict tenant isolation boundaries on menu and order services (preventing unauthorized cross-stall modifications or reads).
+- Handled UI linting issues causing hydration warnings (e.g. `set-state-in-effect`).
+
+## Phase 7: Marketplace Payment Testing & Security Fixes
+- Conducted payment readiness assessment exposing vulnerabilities in webhook validation and input calculation limits.
+- **Fixed Negative Quantity Vulnerability**: Bound order items to positive constraints inside `order-service.ts` before cart insertion.
+- **Fixed Multi-Stall Commission Bug**: Refactored `createOrder` in `order-service.ts` to calculate `platform_fee` dynamically *per stall* rather than erroneously assigning a global payout to every `merchant_orders` row.
+- **Consolidated Checkout Architecture**: Removed duplicate, hardcoded database logic in `api/payment/route.ts`. The route now properly delegates all checkout verification to `order-service.ts`.
+- **Fortified Webhooks**: Added strict SHA-256 HMAC cryptographic signature validation (`x-mock-signature`) to `mock-provider.ts` to prevent blind forgery of `PAID` statuses.
+- **Pilot Readiness**: The single-stall application pilot architecture is safe and technically sound with the new boundaries implemented.
+
 ## Next Task
-- Project refactoring complete. Maintain this modular structure moving forward. All feature additions should follow the new strict frontend/backend service extraction strategy.
+- Await next specification from user (or advance to formal deployment preparation and live provider integration).

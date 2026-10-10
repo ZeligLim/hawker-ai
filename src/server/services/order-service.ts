@@ -1,65 +1,160 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 export async function createOrder(client: SupabaseClient<any>, input: any) {
-  // 1. Fetch fee settings for the outlets involved in this order
-  const stallIds = Array.from(new Set(input.items.map((item: any) => item.stallId)));
-  let feePayer: 'CUSTOMER' | 'MERCHANT' = 'CUSTOMER';
-  let feeFixed = 0.50;
-  let feePercent = 0.0000;
+  if (!input.items || !Array.isArray(input.items) || input.items.length === 0) {
+    throw new Error('Cart is empty');
+  }
 
-  try {
-    const { data: outlets } = await client
-      .from('food_outlets')
-      .select('id, fee_payer, platform_fee_fixed, platform_fee_percent, restaurant_id, restaurants(fee_payer, platform_fee_fixed, platform_fee_percent)')
-      .in('id', stallIds);
+  // 1. Validate quantity and fetch dishes
+  const dishIds = input.items.map((i: any) => i.dishId || i.id);
+  const { data: dishes, error: dishesError } = await client
+    .from('dishes')
+    .select('id, price, food_outlet_id, name, customizations')
+    .in('id', dishIds);
 
-    if (outlets && outlets.length > 0) {
-      const firstOutlet: any = outlets[0];
-      const rest = Array.isArray(firstOutlet.restaurants) ? firstOutlet.restaurants[0] : firstOutlet.restaurants;
-      feePayer = (rest?.fee_payer ?? firstOutlet.fee_payer ?? 'CUSTOMER') as 'CUSTOMER' | 'MERCHANT';
-      feeFixed = Number(rest?.platform_fee_fixed ?? firstOutlet.platform_fee_fixed ?? 0.50);
-      feePercent = Number(rest?.platform_fee_percent ?? firstOutlet.platform_fee_percent ?? 0.0000);
+  if (dishesError || !dishes || dishes.length === 0) {
+    throw new Error('Failed to fetch dish prices');
+  }
+  const dishMap = new Map(dishes.map((d: any) => [d.id, d]));
+
+  // 2. Fetch fee settings for the outlets
+  const stallIds = Array.from(new Set(dishes.map((d: any) => d.food_outlet_id)));
+  const { data: outlets, error: outletsError } = await client
+    .from('food_outlets')
+    .select('id, fee_payer, platform_fee_fixed, platform_fee_percent, restaurant_id, restaurants(fee_payer, platform_fee_fixed, platform_fee_percent)')
+    .in('id', stallIds);
+
+  if (outletsError || !outlets || outlets.length === 0) {
+    throw new Error('Failed to fetch outlet monetization settings');
+  }
+
+  const outletSettings = new Map(outlets.map((o: any) => {
+    const rest = Array.isArray(o.restaurants) ? o.restaurants[0] : o.restaurants;
+    return [o.id, {
+      feePayer: (rest?.fee_payer ?? o.fee_payer ?? 'CUSTOMER') as 'CUSTOMER' | 'MERCHANT',
+      feeFixedSen: Math.round(Number(rest?.platform_fee_fixed ?? o.platform_fee_fixed ?? 0.50) * 100),
+      feePercent: Number(rest?.platform_fee_percent ?? o.platform_fee_percent ?? 0.0000)
+    }];
+  }));
+
+  let totalOrderSubtotalSen = 0;
+
+  // Track per-stall groups
+  const merchantGroups = new Map<string, {
+    stallId: string;
+    subtotalSen: number;
+    items: any[];
+  }>();
+
+  for (const item of input.items) {
+    // Validate quantity
+    const quantity = Number(item.quantity);
+    if (!quantity || !Number.isInteger(quantity) || quantity <= 0 || quantity > 100) {
+      throw new Error(`Invalid quantity for item ${item.dishId}`);
     }
-  } catch {
-    // Graceful fallback
+
+    const dishId = item.dishId || item.id;
+    const dish = dishMap.get(dishId);
+    if (!dish) {
+      throw new Error(`Dish not found: ${dishId}`);
+    }
+
+    // Base price in sen
+    let itemPriceSen = Math.round(Number(dish.price) * 100);
+
+    // Add customizations cost (matching string labels to db)
+    if (item.customizations && Array.isArray(item.customizations)) {
+      const dbCusts = Array.isArray(dish.customizations) ? dish.customizations : [];
+      const dbCustMap = new Map<string, any>(dbCusts.map((c: any) => [c.label, c]));
+
+      for (const customLabel of item.customizations) {
+        if (typeof customLabel === 'string') {
+          const matched = dbCustMap.get(customLabel);
+          if (matched && typeof matched.price === 'number') {
+            itemPriceSen += Math.round(matched.price * 100);
+          }
+        }
+      }
+    }
+
+    const lineSubtotalSen = itemPriceSen * quantity;
+    totalOrderSubtotalSen += lineSubtotalSen;
+
+    let group = merchantGroups.get(dish.food_outlet_id);
+    if (!group) {
+      group = { stallId: dish.food_outlet_id, subtotalSen: 0, items: [] };
+      merchantGroups.set(dish.food_outlet_id, group);
+    }
+    group.subtotalSen += lineSubtotalSen;
+    
+    // Create safe item payload for RPC
+    group.items.push({
+      dishId: dishId,
+      stallId: dish.food_outlet_id,
+      name: dish.name, // Trusted name
+      price: itemPriceSen / 100, // Trusted price
+      quantity: quantity,
+      customizations: item.customizations || [],
+      notes: item.notes || item.specialInstructions || null
+    });
   }
 
-  // 2. Perform authoritative server-side calculation
-  const subtotalAmount = Number(
-    input.items.reduce((sum: number, item: any) => sum + item.price * item.quantity, 0).toFixed(2)
-  );
-  const platformFeeAmount = Number((feeFixed + subtotalAmount * feePercent).toFixed(2));
+  let finalTotalSen = 0;
+  let finalMerchantPayoutTotalSen = 0;
+  let totalServiceFeeSen = 0;
 
-  let totalAmount: number;
-  let merchantPayoutAmount: number;
+  const merchantPayouts = new Map<string, number>();
+  const validatedRpcItems: any[] = [];
 
-  if (feePayer === 'CUSTOMER') {
-    totalAmount = Number((subtotalAmount + platformFeeAmount).toFixed(2));
-    merchantPayoutAmount = subtotalAmount;
-  } else {
-    totalAmount = subtotalAmount;
-    merchantPayoutAmount = Math.max(0, Number((subtotalAmount - platformFeeAmount).toFixed(2)));
+  for (const group of merchantGroups.values()) {
+    const settings = outletSettings.get(group.stallId);
+    if (!settings) throw new Error(`Missing fee settings for stall ${group.stallId}`);
+
+    const platformFeeSen = settings.feeFixedSen + Math.round(group.subtotalSen * settings.feePercent);
+    
+    let totalSen = 0;
+    let payoutSen = 0;
+
+    if (settings.feePayer === 'CUSTOMER') {
+      totalSen = group.subtotalSen + platformFeeSen;
+      payoutSen = group.subtotalSen;
+    } else {
+      totalSen = group.subtotalSen;
+      payoutSen = Math.max(0, group.subtotalSen - platformFeeSen);
+    }
+
+    finalTotalSen += totalSen;
+    finalMerchantPayoutTotalSen += payoutSen;
+    totalServiceFeeSen += platformFeeSen;
+
+    merchantPayouts.set(group.stallId, payoutSen);
+    
+    for (const i of group.items) {
+      validatedRpcItems.push(i);
+    }
   }
 
-  const paymentIntentId =
-    input.paymentIntentId ??
-    input.paymentReference ??
-    `pi_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+  const paymentIntentId = input.paymentIntentId ?? input.paymentReference ?? `pi_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
 
-  // 3. Execute order creation RPC with full monetization parameters
+  // 3. Execute order creation RPC with verified data
   let orderId: string | null = null;
+  const subtotalAmount = totalOrderSubtotalSen / 100;
+  const platformFeeAmount = totalServiceFeeSen / 100;
+  const totalAmount = finalTotalSen / 100;
+  const merchantPayoutAmount = finalMerchantPayoutTotalSen / 100;
+
   const rpcFullArgs = {
     p_table_session_id: input.tableSessionId || (null as unknown as string),
     p_subtotal: subtotalAmount,
     p_service_fee: platformFeeAmount,
     p_total: totalAmount,
     p_payment_reference: paymentIntentId,
-    p_items: input.items,
+    p_items: validatedRpcItems,
     p_subtotal_amount: subtotalAmount,
     p_platform_fee_amount: platformFeeAmount,
     p_total_amount: totalAmount,
     p_merchant_payout_amount: merchantPayoutAmount,
-    p_payment_status: 'PAID',
+    p_payment_status: 'PENDING',
     p_payment_intent_id: paymentIntentId,
   };
 
@@ -74,40 +169,39 @@ export async function createOrder(client: SupabaseClient<any>, input: any) {
       p_service_fee: platformFeeAmount,
       p_total: totalAmount,
       p_payment_reference: paymentIntentId,
-      p_items: input.items,
+      p_items: validatedRpcItems,
     };
     const { data: legData, error: legError } = await client.rpc('create_order_with_items', legacyArgs);
     if (legError) {
       throw new Error(legError.message);
     }
     orderId = legData as string;
+    
+    // Update global order stats if using legacy rpc
+    if (orderId) {
+      await client.from('orders').update({
+        subtotal_amount: subtotalAmount,
+        platform_fee_amount: platformFeeAmount,
+        total_amount: totalAmount,
+        merchant_payout_amount: merchantPayoutAmount,
+        payment_status: 'PENDING',
+        payment_intent_id: paymentIntentId,
+      }).eq('id', orderId);
+    }
   }
 
+  // 4. Update PER-STALL payouts
   if (orderId) {
-    try {
-      await client
-        .from('orders')
-        .update({
-          subtotal_amount: subtotalAmount,
-          platform_fee_amount: platformFeeAmount,
-          total_amount: totalAmount,
-          merchant_payout_amount: merchantPayoutAmount,
-          payment_status: 'PAID',
-          refund_amount: 0.00,
-          payment_intent_id: paymentIntentId,
-        })
-        .eq('id', orderId);
-
+    for (const [stallId, payoutSen] of merchantPayouts.entries()) {
       await client
         .from('merchant_orders')
         .update({
-          merchant_payout_amount: merchantPayoutAmount,
-          payment_status: 'PAID',
+          merchant_payout_amount: payoutSen / 100,
+          payment_status: 'PENDING',
           refund_amount: 0.00,
         })
-        .eq('order_id', orderId);
-    } catch {
-      // Ignore
+        .eq('order_id', orderId)
+        .eq('food_outlet_id', stallId);
     }
   }
 
@@ -117,7 +211,7 @@ export async function createOrder(client: SupabaseClient<any>, input: any) {
     platformFeeAmount,
     totalAmount,
     merchantPayoutAmount,
-    feePayer,
+    feePayer: 'CUSTOMER',
     paymentIntentId,
   };
 }

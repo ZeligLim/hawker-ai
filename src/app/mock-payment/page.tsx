@@ -23,16 +23,30 @@ function MockPaymentContent() {
     setLoading(true);
     setError('');
     try {
-      // Simulate calling the webhook
-      const res = await fetch('/api/payment/webhook', {
+      // Simulate Stripe server signing the webhook payload
+      const payloadString = JSON.stringify({
+        provider: 'mock',
+        paymentId,
+        orderId,
+        status,
+      });
+      
+      const signRes = await fetch('/api/payment/mock-sign', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          provider: 'mock',
-          paymentId,
-          orderId,
-          status,
-        })
+        body: payloadString
+      });
+      if (!signRes.ok) throw new Error('Mock signing failed');
+      const { signature } = await signRes.json();
+
+      // Send the signed webhook
+      const res = await fetch('/api/payment/webhook', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-mock-signature': signature 
+        },
+        body: payloadString
       });
       
       if (!res.ok) throw new Error('Webhook failed');

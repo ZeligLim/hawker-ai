@@ -1,18 +1,22 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { MockPaymentProvider } from './mock-provider.ts';
+import crypto from 'crypto';
 
 test('MockPaymentProvider - handles valid webhook and marks as PAID', async () => {
   const provider = new MockPaymentProvider();
   
-  const req = new Request('http://localhost', {
-    method: 'POST',
-    body: JSON.stringify({
+  const body = JSON.stringify({
       provider: 'mock',
       paymentId: 'pi_abc123',
       orderId: 'ord_xyz',
       status: 'PAID'
-    })
+    });
+  const signature = crypto.createHmac('sha256', process.env.MOCK_WEBHOOK_SECRET || 'test-secret').update(body).digest('hex');
+  const req = new Request('http://localhost', {
+    method: 'POST',
+    headers: { 'x-mock-signature': signature },
+    body
   });
 
   const result = await provider.handleWebhook(req);
@@ -25,14 +29,17 @@ test('MockPaymentProvider - handles valid webhook and marks as PAID', async () =
 test('MockPaymentProvider - rejects webhook for mismatched provider', async () => {
   const provider = new MockPaymentProvider();
   
-  const req = new Request('http://localhost', {
-    method: 'POST',
-    body: JSON.stringify({
+  const body = JSON.stringify({
       provider: 'stripe',
       paymentId: 'pi_abc123',
       orderId: 'ord_xyz',
       status: 'PAID'
-    })
+    });
+  const signature = crypto.createHmac('sha256', process.env.MOCK_WEBHOOK_SECRET || 'test-secret').update(body).digest('hex');
+  const req = new Request('http://localhost', {
+    method: 'POST',
+    headers: { 'x-mock-signature': signature },
+    body
   });
 
   const result = await provider.handleWebhook(req);

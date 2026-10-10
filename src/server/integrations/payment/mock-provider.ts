@@ -1,4 +1,5 @@
 import { PaymentProvider, PaymentCreateRequest, PaymentCreateResponse, PaymentStatusResponse, PaymentStatus } from './provider';
+import crypto from 'crypto';
 
 export class MockPaymentProvider implements PaymentProvider {
   async createPayment(request: PaymentCreateRequest): Promise<PaymentCreateResponse> {
@@ -13,7 +14,6 @@ export class MockPaymentProvider implements PaymentProvider {
   }
 
   async getPaymentStatus(paymentId: string): Promise<PaymentStatusResponse> {
-    // For mock, status is checked via DB instead of querying an external service
     return {
       paymentId,
       status: 'PENDING'
@@ -22,7 +22,19 @@ export class MockPaymentProvider implements PaymentProvider {
 
   async handleWebhook(request: Request): Promise<{ status: PaymentStatus, orderId: string, paymentId: string } | null> {
     try {
-      const payload = await request.json();
+      const signature = request.headers.get('x-mock-signature');
+      const body = await request.text();
+      
+      const expectedSig = crypto.createHmac('sha256', process.env.MOCK_WEBHOOK_SECRET || 'test-secret')
+        .update(body)
+        .digest('hex');
+        
+      if (!signature || signature !== expectedSig) {
+        console.error('Mock webhook signature mismatch');
+        return null;
+      }
+      
+      const payload = JSON.parse(body);
       if (payload.provider === 'mock' && payload.paymentId && payload.orderId && payload.status) {
         return {
           status: payload.status as PaymentStatus,
