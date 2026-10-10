@@ -121,6 +121,10 @@ export async function GET(request: NextRequest) {
 
     if (matchedOutlets.length > 0) {
       results = matchedOutlets;
+    } else if (results.length > 0) {
+      // If the slug/subdomain didn't match anything (e.g. local IP address), fallback to active centre
+      const activeCentreId = results.find((o: any) => o.restaurants?.is_active !== false)?.restaurant_id || results[0].restaurant_id;
+      results = results.filter((o: any) => o.restaurant_id === activeCentreId);
     }
   } else if (results.length > 0 && !targetRestaurantId) {
     // If no centre parameter or subdomain is specified, isolate to the first/active hawker centre
