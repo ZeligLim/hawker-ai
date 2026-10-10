@@ -80,6 +80,7 @@ export default function OrdersPage() {
   useEffect(() => {
     const active = getActiveOrder(getCurrentTableSession().tableId ?? null);
     if (active) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setPlacedReceipt(active);
     }
   }, []);

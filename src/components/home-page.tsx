@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
  ArrowRight,
- MapPin,
  QrCode,
  Snowflake,
  Star,
@@ -13,7 +12,6 @@ import {
  X,
 } from 'lucide-react';
 import { HawkerSearchBar } from '@/components/hawker-search-bar';
-import { HawkerMap } from '@/components/hawker-map';
 import type { HawkerCentreSummary } from '@/shared/types/hawker-centre';
 import { useCartItems } from '@/lib/order/cart';
 
@@ -57,12 +55,10 @@ export function HomePage() {
  const [searchQuery, setSearchQuery] = useState('');
  const [airconOnly, setAirconOnly] = useState(false);
  const [rankingMode, setRankingMode] = useState<'distance' | 'rating'>('distance');
- const [viewMode, setViewMode] = useState<'map' | 'list'>('map');
-
+ 
  // Centres and selected centre
  const [centres, setCentres] = useState<HawkerCentreSummary[]>([]);
- const [selectedCentreId, setSelectedCentreId] = useState<string | null>(null);
-
+ 
  // User location: defaults to Kuala Lumpur Chinatown
  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number }>({
  lat: 3.1440,
@@ -202,17 +198,10 @@ export function HomePage() {
  }, [rankedCentres, airconOnly, searchQuery]);
 
  // Find the currently selected centre
- const selectedCentre = useMemo(
- () => filteredCentres.find((c) => c.id === selectedCentreId) ?? null,
- [filteredCentres, selectedCentreId]
- );
-
- const handleSelectCentre = useCallback((c: HawkerCentreSummary) => {
- setSelectedCentreId(c.id);
- }, []);
-
+ 
+ 
  return (
- <div className={`fixed inset-0 w-screen h-screen overflow-hidden text-black ${viewMode === 'list' ? 'bg-[#f5f5f7]' : 'bg-white'}`}>
+ <div className="fixed inset-0 w-screen h-screen overflow-hidden text-black bg-[#f5f5f7]">
  {/* 1. Prominent Top Section: Search Bar & View Mode / Filter Switchers (No Resume Button, 0 Borders) */}
  <div className="fixed top-3.5 inset-x-3.5 sm:inset-x-4 max-w-lg mx-auto z-40 flex flex-col gap-2 pointer-events-auto">
  <HawkerSearchBar
@@ -232,33 +221,6 @@ export function HomePage() {
  {/* View Switcher Segmented Control & Quick Actions */}
  <div className="flex items-center justify-between gap-2">
  {/* Map vs List View Segmented Pill (Standard Apple touch target, pure white & black, 0 ) */}
- <div className="flex items-center bg-white p-1 rounded-full shadow-md">
- <button
- type="button"
- onClick={() => setViewMode('map')}
- className={`flex h-9 items-center gap-1.5 rounded-full px-4 text-xs font-semibold ${
- viewMode === 'map'
- ? 'bg-black text-white shadow-xs'
- : 'bg-transparent text-black hover:bg-neutral-100'
- }`}
- >
- <MapPin className="h-3.5 w-3.5" />
- <span>Map</span>
- </button>
- <button
- type="button"
- onClick={() => setViewMode('list')}
- className={`flex h-9 items-center gap-1.5 rounded-full px-4 text-xs font-semibold ${
- viewMode === 'list'
- ? 'bg-black text-white shadow-xs'
- : 'bg-transparent text-black hover:bg-neutral-100'
- }`}
- >
- <Store className="h-3.5 w-3.5" />
- <span>List</span>
- </button>
- </div>
-
  <div className="flex items-center gap-2">
  {/* Quick Aircon Filter Pill (Pure White inactive, Pure Black active, h-11, 0 ) */}
  <button
@@ -287,81 +249,8 @@ export function HomePage() {
  </div>
  </div>
 
- {/* 2. Main Content: Map View or List View */}
- {viewMode === 'map' ? (
- <>
- {/* Interactive Standard OpenStreetMap (0 borders, 0 watermarks) */}
- <HawkerMap
- fullScreen={true}
- userLocation={userLocation}
- centres={filteredCentres}
- selectedCentreId={selectedCentreId}
- onSelectCentre={handleSelectCentre}
- />
-
- {/* Floating Selected Shop Card (Only shown when a shop is selected) */}
- {selectedCentre && (
- <div className="fixed bottom-20 inset-x-3.5 sm:inset-x-4 max-w-md mx-auto z-40 pointer-events-auto">
- <div className="rounded-3xl bg-white p-4 sm:p-5 shadow-2xl text-black">
- <div className="flex items-start justify-between gap-3">
- <div className="min-w-0 flex-1">
- <div className="flex items-center gap-2">
- <h3 className="text-base font-bold text-black truncate">{selectedCentre.name}</h3>
- {selectedCentre.hasAircon && (
- <span className="inline-flex items-center gap-1 rounded-full bg-black/5 px-2 py-0.5 text-[10px] font-semibold text-black shrink-0">
- <Snowflake className="h-3 w-3" />
- <span>Aircon</span>
- </span>
- )}
- </div>
- <p className="mt-1 text-xs text-neutral-500 line-clamp-1">{selectedCentre.address}</p>
-
- <div className="mt-2.5 flex items-center gap-2 text-xs text-neutral-600">
- <span className="flex items-center gap-0.5 font-bold text-black">
- <Star className="h-3.5 w-3.5 fill-black text-black" />
- <span>{selectedCentre.rating.toFixed(1)}</span>
- </span>
- <span>•</span>
- <span>{selectedCentre.stallsCount} stalls</span>
- {selectedCentre.distanceKm !== null && (
- <>
- <span>•</span>
- <span className="font-semibold text-black">{selectedCentre.distanceKm} km</span>
- {selectedCentre.walkMins !== null && (
- <span className="text-neutral-400">({selectedCentre.walkMins}m walk)</span>
- )}
- </>
- )}
- </div>
- </div>
-
- {/* Dismiss Selection */}
- <button
- type="button"
- onClick={() => setSelectedCentreId(null)}
- className="flex h-8 w-8 items-center justify-center rounded-full text-neutral-400 hover:text-black hover:bg-neutral-100 shrink-0"
- aria-label="Close card"
- >
- <X className="h-4 w-4" />
- </button>
- </div>
-
- <div className="mt-4">
- <Link
- href={`/stall?centre=${encodeURIComponent(selectedCentre.slug)}` as any}
-                onClick={(e) => handleNavigate(selectedCentre, e)}
- className="flex h-11 w-full items-center justify-center gap-2 rounded-full bg-black hover:bg-neutral-800 text-white text-xs font-semibold shadow-xs "
- >
- <span>View Stalls</span>
- <ArrowRight className="h-3.5 w-3.5" />
- </Link>
- </div>
- </div>
- </div>
- )}
- </>
- ) : (
- /* Full-Screen List View (Only shown when toggled to List view) */
+ {/* 2. Main Content */}
+ {/* Full-Screen List View */}
  <div className="h-full w-full overflow-y-auto pt-32 pb-28 px-4 max-w-lg mx-auto">
  {/* List View Subheader: Count & Distance/Rating Sort Controls */}
  <div className="mb-4 flex items-center justify-between gap-3 px-1">
@@ -447,7 +336,6 @@ export function HomePage() {
  )}
  </div>
  </div>
- )}
       {pendingNavCentre && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 px-4" role="presentation">
           <div role="dialog" aria-modal="true" className="w-full max-w-[360px] rounded-3xl bg-white p-6 shadow-2xl text-black">
