@@ -72,7 +72,7 @@ test('1. Client Path Resolution: identifies the correct client experience', () =
   assert.equal(PermissionEngine.getClientForPath('/customer'), 'website');
 
   // Customer App
-  assert.equal(PermissionEngine.getClientForPath('/home'), 'customer');
+  assert.equal(PermissionEngine.getClientForPath('/stall'), 'customer');
   assert.equal(PermissionEngine.getClientForPath('/stall'), 'customer');
   assert.equal(PermissionEngine.getClientForPath('/menu'), 'customer');
   assert.equal(PermissionEngine.getClientForPath('/orders'), 'customer');

@@ -125,7 +125,7 @@ export function AdminShell({ children }: AdminShellProps) {
  </p>
  <div className="space-y-1">
  <Link
- href={'/home' as any}
+ href={'/stall' as any}
  className="flex items-center justify-between px-3.5 py-2 rounded-xl text-xs font-medium text-[#6e6e73] hover:text-[#1d1d1f] hover:bg-black/[0.04] "
  >
  <div className="flex items-center gap-2.5">

@@ -11,7 +11,7 @@ test('sanitizeRedirectPath allows safe relative paths and blocks open redirects 
   // Safe relative paths
   assert.equal(sanitizeRedirectPath('/shop-owner/profile'), '/shop-owner/profile');
   assert.equal(sanitizeRedirectPath('/shop-owner/booths'), '/shop-owner/booths');
-  assert.equal(sanitizeRedirectPath('/home'), '/home');
+  assert.equal(sanitizeRedirectPath('/stall'), '/stall');
 
   // Blocks open-redirect attacks
   assert.equal(sanitizeRedirectPath('https://evil.com'), null);
@@ -20,7 +20,7 @@ test('sanitizeRedirectPath allows safe relative paths and blocks open redirects 
 
   // Blocks auth loops
   assert.equal(sanitizeRedirectPath('/auth'), null);
-  assert.equal(sanitizeRedirectPath('/auth?redirect=/home'), null);
+  assert.equal(sanitizeRedirectPath('/auth?redirect=/stall'), null);
   assert.equal(sanitizeRedirectPath('/auth/signin'), null);
 
   // Handles null / empty
@@ -109,7 +109,7 @@ test('resolveUserDestination directs stall merchant to /owner by default', async
   assert.equal(destination, '/owner');
 });
 
-test('resolveUserDestination directs regular diner to /home by default', async () => {
+test('resolveUserDestination directs regular diner to /stall by default', async () => {
   const mockUser = { id: 'usr-diner-101', email: 'diner@example.com' } as any;
 
   const mockClient = {
@@ -123,14 +123,14 @@ test('resolveUserDestination directs regular diner to /home by default', async (
   } as any;
 
   const destination = await resolveUserDestination(mockClient, mockUser, null);
-  assert.equal(destination, '/home');
+  assert.equal(destination, '/stall');
 });
 
 test('Customer intent route classification: guest mode applies strictly within customer app routes', () => {
   const isCustomerRoute = (redirectParam?: string | null): boolean => {
     return Boolean(
       redirectParam &&
-        (redirectParam.startsWith('/home') ||
+        (redirectParam.startsWith('/stall') ||
           redirectParam.startsWith('/menu') ||
           redirectParam.startsWith('/orders') ||
           redirectParam.startsWith('/scan') ||
@@ -141,7 +141,7 @@ test('Customer intent route classification: guest mode applies strictly within c
   };
 
   // Customer app routes allow guest mode
-  assert.equal(isCustomerRoute('/home'), true);
+  assert.equal(isCustomerRoute('/stall'), true);
   assert.equal(isCustomerRoute('/menu'), true);
   assert.equal(isCustomerRoute('/orders'), true);
   assert.equal(isCustomerRoute('/scan'), true);

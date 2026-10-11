@@ -283,7 +283,7 @@ export function MarketingNav({ currentPath = '/' }: MarketingNavProps) {
  </Link>
  )}
  <Link
- href="/home"
+ href="/stall"
  onClick={() => setAccountDropdownOpen(false)}
  className="flex items-center gap-2.5 px-4 py-2 hover:bg-black/[0.04] "
  >

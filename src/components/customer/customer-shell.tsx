@@ -19,7 +19,7 @@ function CustomerShellContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const centreParam = searchParams.get('centre') || searchParams.get('slug');
-  const isHomePage = pathname === '/home';
+  const isHomePage = pathname === '/stall';
   const [session, setSession] = useState<CurrentTableSession | null>(null);
 
   useEffect(() => {
@@ -37,7 +37,6 @@ function CustomerShellContent({ children }: { children: React.ReactNode }) {
   const suffix = activeCentreSlug ? `?centre=${encodeURIComponent(activeCentreSlug)}` : '';
 
   const customerNavItems = [
-    { href: '/home', label: 'Home', icon: House },
     { href: `/stall${suffix}`, label: 'Stall', icon: Store },
     { href: `/menu${suffix}`, label: 'Menu', icon: UtensilsCrossed },
     { href: '/orders', label: 'Orders', icon: ClipboardList },

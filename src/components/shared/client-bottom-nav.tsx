@@ -49,7 +49,7 @@ export function ClientBottomNav({
  >
  {items.map(({ href, label, icon: Icon }) => {
   const basePath = href.split('?')[0];
-          const isHome = basePath === '/home' || basePath === '/owner' || basePath === '/admin';
+          const isHome = basePath === '/stall' || basePath === '/owner' || basePath === '/admin';
           const active = isHome
             ? pathname === basePath
             : pathname === basePath || pathname.startsWith(basePath + '/');

@@ -32,7 +32,7 @@ function AuthForm() {
  // It does NOT apply when signing in from the public landing page or merchant onboarding.
  const isCustomerIntent = Boolean(
  redirectParam &&
- (redirectParam.startsWith('/home') ||
+ (redirectParam.startsWith('/stall') ||
  redirectParam.startsWith('/menu') ||
  redirectParam.startsWith('/orders') ||
  redirectParam.startsWith('/scan') ||

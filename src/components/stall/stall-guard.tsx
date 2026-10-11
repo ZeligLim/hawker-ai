@@ -40,7 +40,7 @@ export function StallGuard({ children }: { children: React.ReactNode }) {
  Sign In to Stall App
  </Link>
  <Link
- href={'/home' as any}
+ href={'/stall' as any}
  className="w-full rounded-2xl bg-[#f5f5f7] py-3 text-sm font-medium text-[#1d1d1f] hover:bg-[#e8e8ed] "
  >
  Back to Customer App
@@ -65,7 +65,7 @@ export function StallGuard({ children }: { children: React.ReactNode }) {
  </p>
  <div className="mt-6 flex flex-col gap-3">
  <Link
- href={'/home' as any}
+ href={'/stall' as any}
  className="flex items-center justify-center gap-2 w-full rounded-2xl bg-[#1d1d1f] py-3 text-sm font-semibold text-white shadow-sm hover:bg-black "
  >
  <ArrowLeft className="h-4 w-4" /> Return to Customer App

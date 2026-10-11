@@ -73,7 +73,7 @@ const publicRoutes = [
  '/pricing',
  '/subscribe',
  '/shop-owner/profile',
- '/home',
+ '/stall',
  '/menu',
  '/shop',
  '/results',
@@ -265,7 +265,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
  if (typeof window !== 'undefined') {
  window.localStorage.setItem('hawker-user-mode', 'customer');
  window.localStorage.setItem('hawker-shop-owner-mode', 'false');
- router.push('/home');
+ router.push('/stall');
  }
  } else if (mode === 'booth') {
  if (roles.hasBooth && typeof window !== 'undefined') {

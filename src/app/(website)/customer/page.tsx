@@ -421,7 +421,7 @@ export default function CustomerLandingPage() {
  </div>
 
  <Link
- href="/home"
+ href="/stall"
  className="inline-flex items-center gap-1 text-xs font-semibold text-[#0071e3] hover:underline"
  >
  Browse all stalls & dishes <ArrowRight className="w-3.5 h-3.5" />
@@ -568,7 +568,7 @@ export default function CustomerLandingPage() {
  <span>• Digital Food Court Table Ordering</span>
  </div>
  <div className="flex items-center gap-4 text-[#86868b]">
- <Link href="/home" className="hover:text-[#1d1d1f]">Dishes</Link>
+ <Link href="/stall" className="hover:text-[#1d1d1f]">Dishes</Link>
  <span>&bull;</span>
  <Link href="/scan" className="hover:text-[#1d1d1f]">Scan QR</Link>
  <span>&bull;</span>

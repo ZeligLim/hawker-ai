@@ -60,7 +60,7 @@ export function clearAuthRedirect(): void {
  * stored mode (shop owner, booth owner, or customer).
  */
 export function resolveDefaultAppRoute(): string {
-  if (typeof window === 'undefined') return '/home';
+  if (typeof window === 'undefined') return '/stall';
 
   try {
     const isShopOwner = window.localStorage.getItem('hawker-shop-owner-mode') === 'true';
@@ -73,7 +73,7 @@ export function resolveDefaultAppRoute(): string {
   }
 
   // Default for customer experience
-  return '/home';
+  return '/stall';
 }
 
 /**

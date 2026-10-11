@@ -1380,7 +1380,7 @@ export default function LandingPage() {
  <div>
  <p className="font-bold text-[#1d1d1f] mb-2.5">Diners</p>
  <ul className="space-y-2 text-[11px] sm:text-xs">
- <li><Link href="/home" className="hover:text-[#1d1d1f]">Diner Web App</Link></li>
+ <li><Link href="/stall" className="hover:text-[#1d1d1f]">Diner Web App</Link></li>
  <li><Link href="/scan" className="hover:text-[#1d1d1f]">Scan Table QR</Link></li>
  <li><Link href="/menu" className="hover:text-[#1d1d1f]">Browse Menus</Link></li>
  </ul>
