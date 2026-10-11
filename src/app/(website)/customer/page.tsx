@@ -17,6 +17,7 @@ import {
  X,
  Store,
 } from 'lucide-react';
+import { PageLoader } from '@/components/page-loader';
 import { useAuth } from '@/components/auth-provider';
 import type { HawkerCentreSummary } from '@/shared/types/hawker-centre';
 
@@ -429,9 +430,7 @@ export default function CustomerLandingPage() {
  </div>
 
  {loadingHalls ? (
- <div className="rounded-2xl .06] bg-[#f5f5f7] p-12 text-center text-xs sm:text-sm text-[#6e6e73]">
- Loading active hawker centres…
- </div>
+ <PageLoader text="Loading active hawker centres…" fullHeight={false} />
  ) : foodHalls.length > 0 ? (
  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
  {foodHalls.map((hall) => (

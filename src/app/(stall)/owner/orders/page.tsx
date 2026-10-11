@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { Check, Clock3, PackageCheck, AlertCircle, RefreshCw, XCircle, ChevronRight, CheckCircle2, LoaderCircle } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
+import { PageLoader } from '@/components/page-loader';
 import { supabase } from '@/lib/supabase/client';
 
 type OrderStatus = 'New' | 'Preparing' | 'Ready' | 'Completed';
@@ -267,9 +268,7 @@ export default function OwnerOrdersPage() {
  {/* Tickets Section */}
  <section className="mt-6">
  {loading ? (
- <div className="rounded-[24px] bg-white p-8 text-center text-xs text-[#6e6e73] shadow-sm">
- Loading kitchen tickets…
- </div>
+ <PageLoader text="Loading kitchen tickets…" fullHeight={false} />
  ) : visibleOrders.length === 0 ? (
  <div className="rounded-[24px] bg-white p-10 text-center shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
  <PackageCheck className="mx-auto h-8 w-8 text-[#86868b]" />

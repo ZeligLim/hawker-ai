@@ -15,6 +15,7 @@ import {
  ChevronRight,
  Sliders,
 } from 'lucide-react';
+import { PageLoader } from '@/components/page-loader';
 import { authenticatedFetch } from '@/lib/supabase/client';
 
 type Shop = {
@@ -226,10 +227,7 @@ export default function AdminDashboardPage() {
  )}
 
  {loading ? (
- <div className="p-12 text-center text-[#86868b] flex flex-col items-center justify-center gap-3">
- <div className="h-5 w-5 rounded-full ] " />
- <p className="text-xs font-medium">Loading venues and fee policies…</p>
- </div>
+ <PageLoader text="Loading venues and fee policies…" fullHeight={false} />
  ) : shops.length === 0 ? (
  <div className="p-12 text-center text-[#86868b]">
  <p className="text-xs sm:text-sm">No food halls found on the platform.</p>

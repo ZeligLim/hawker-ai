@@ -16,6 +16,7 @@ import {
  RefreshCw,
  ShieldCheck,
 } from 'lucide-react';
+import { PageLoader } from '@/components/page-loader';
 import { authenticatedFetch } from '@/lib/supabase/client';
 
 type ShopDetail = {
@@ -154,10 +155,7 @@ export default function AdminShopDetailPage({ params }: { params: Promise<{ id: 
 
  if (loading) {
  return (
- <div className="rounded-3xl bg-white p-16 text-center text-[#86868b] .08] shadow-xs flex flex-col items-center justify-center gap-3">
- <div className="h-5 w-5 rounded-full ] " />
- <p className="text-xs sm:text-sm font-medium">Loading venue details and fee configuration…</p>
- </div>
+ <PageLoader text="Loading venue details and fee configuration…" fullHeight={false} />
  );
  }
 

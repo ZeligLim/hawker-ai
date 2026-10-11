@@ -14,6 +14,7 @@ import {
  Store,
  Users,
 } from 'lucide-react';
+import { PageLoader } from '@/components/page-loader';
 import { authenticatedFetch } from '@/lib/supabase/client';
 
 type BoothMember = {
@@ -225,10 +226,7 @@ export default function ShopOwnerDashboard() {
  </div>
 
  {loading ? (
- <div className="flex items-center justify-center p-10 text-xs text-[#86868b]">
- <LoaderCircle className="w-4 h-4 mr-2 text-[#111827]" />
- Loading venues…
- </div>
+ <PageLoader text="Loading venues…" fullHeight={false} />
  ) : shops.length === 0 ? (
  <div className="rounded-2xl bg-[#f5f5f7] p-8 text-center text-xs text-[#6e6e73]">
  <Store className="w-8 h-8 text-[#86868b] mx-auto mb-2 opacity-50" />

@@ -11,6 +11,7 @@ import {
  ExternalLink,
  ShieldCheck,
 } from 'lucide-react';
+import { PageLoader } from '@/components/page-loader';
 import { authenticatedFetch } from '@/lib/supabase/client';
 
 type Shop = {
@@ -97,10 +98,7 @@ export default function AdminShopsListPage() {
  </div>
 
  {loading ? (
- <div className="rounded-3xl bg-white p-16 text-center text-[#86868b] .08] shadow-xs flex flex-col items-center justify-center gap-3">
- <div className="h-5 w-5 rounded-full ] " />
- <p className="text-xs sm:text-sm font-medium">Loading venues…</p>
- </div>
+ <PageLoader text="Loading venues…" fullHeight={false} />
  ) : error ? (
  <div className="rounded-2xl bg-red-50 p-4 text-xs font-medium text-red-700 ">
  {error}

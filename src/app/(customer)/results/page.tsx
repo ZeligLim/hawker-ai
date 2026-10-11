@@ -4,6 +4,7 @@ import { Suspense, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { CartSummary } from '@/components/cart-summary';
+import { PageLoader } from '@/components/page-loader';
 import { ResultCard } from '@/components/result-card';
 import { buildCartSummary, removeCartItem, updateCartItemQuantity } from '@/lib/order/cart';
 import { useCartAdd } from '@/components/use-cart-add';
@@ -155,9 +156,7 @@ function ResultsContent() {
  </div>
 
  {loading && (
- <div className={`mt-6 rounded-[24px] ${isDark ? '] bg-[#111214]' : '] bg-white'} p-6 text-sm ${mutedText}`}>
- Finding hawker matches for you…
- </div>
+ <PageLoader text="Finding hawker matches for you…" fullHeight={false} />
  )}
 
  {error && (

@@ -7,6 +7,7 @@ import type { OperatingSchedule } from '@/lib/schedule/operating-hours';
 import { useCallback, useEffect, useState } from 'react';
 import { RoleModeSwitcher } from '@/components/role-mode-switcher';
 import { useAuth } from '@/components/auth-provider';
+import { PageLoader } from '@/components/page-loader';
 import { authenticatedFetch } from '@/lib/supabase/client';
 import Script from 'next/script';
 import { LocationAutocomplete } from '@/components/location-autocomplete';
@@ -221,8 +222,8 @@ export default function ShopOwnerProfilePage() {
   if (loading) {
     return <main className="min-h-screen bg-[#f5f5f7] px-4 pb-32 pt-5 text-[#1d1d1f]">
       <Script src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`} strategy="lazyOnload" />
-      <Script src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`} strategy="lazyOnload" />
-      <Script src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`} strategy="lazyOnload" /><div className="mx-auto max-w-[760px]"><p className="text-sm text-[#6e6e73]">Loading shop information…</p></div></main>;
+      <PageLoader text="Loading shop information…" />
+    </main>;
   }
 
   if (!shop) {

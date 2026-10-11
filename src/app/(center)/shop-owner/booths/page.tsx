@@ -23,6 +23,7 @@ import {
  Trash2,
  X,
 } from 'lucide-react';
+import { PageLoader } from '@/components/page-loader';
 import { authenticatedFetch } from '@/lib/supabase/client';
 import { OperatingScheduleModal } from '@/components/operating-schedule-modal';
 import type { OperatingSchedule } from '@/lib/schedule/operating-hours';
@@ -485,8 +486,8 @@ export default function ShopOwnerBoothsPage() {
 
  <section className="mt-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5 items-start">
  {loading ? (
- <div className="col-span-full flex items-center justify-center p-12 text-[#6e6e73] text-sm">
- <LoaderCircle className="h-4 w-4 mr-2 text-[#111827]" /> Loading booths…
+ <div className="col-span-full">
+ <PageLoader text="Loading booths…" fullHeight={false} />
  </div>
  ) : boothList.length === 0 ? (
  <div className="col-span-full rounded-[24px] bg-white p-8 text-center shadow-[0_12px_26px_rgba(15,23,42,0.04)] /[0.04]">

@@ -4,6 +4,7 @@ import { ArrowRight, CupSoda, IceCreamCone, MapPin, UtensilsCrossed } from 'luci
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useState } from 'react';
+import { PageLoader } from '@/components/page-loader';
 import { HawkerSearchBar } from '@/components/hawker-search-bar';
 import { CustomizationCard } from '@/components/customization-card';
 import { DishCard } from '@/components/dish-card';
@@ -224,9 +225,7 @@ function MenuContent() {
  </div>
 
  {loading ? (
- <div className="py-16 text-center text-xs sm:text-sm text-[#86868b]">
- Loading menu items...
- </div>
+ <PageLoader text="Loading menu items..." fullHeight={false} />
  ) : (
  <section className="mt-8 space-y-8">
  {categories.map(({ id, label, icon: Icon }) => {

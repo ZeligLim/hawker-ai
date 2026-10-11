@@ -19,6 +19,7 @@ import {
  ArrowLeft,
  Sparkles,
 } from 'lucide-react';
+import { PageLoader } from '@/components/page-loader';
 import { authenticatedFetch } from '@/lib/supabase/client';
 
 type Shop = {
@@ -229,10 +230,7 @@ function AdminMonetizationContent() {
  </div>
 
  {loading && shops.length === 0 ? (
- <div className="rounded-3xl bg-white p-16 text-center text-[#86868b] .08] shadow-xs flex flex-col items-center justify-center gap-3">
- <div className="h-5 w-5 rounded-full ] " />
- <p className="text-xs sm:text-sm font-medium">Loading venues and platform fee models…</p>
- </div>
+ <PageLoader text="Loading venues and platform fee models…" fullHeight={false} />
  ) : shops.length === 0 ? (
  <div className="rounded-3xl bg-white p-12 text-center text-[#86868b] .08] shadow-xs">
  <Building2 className="w-8 h-8 text-[#86868b] mx-auto mb-3" />
