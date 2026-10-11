@@ -49,10 +49,9 @@ export async function GET(request: NextRequest) {
  order_id,
  food_outlet_id,
  status,
+ previous_status,
  subtotal,
  merchant_payout_amount,
- payment_status,
- refund_amount,
  created_at,
  updated_at,
  orders(
@@ -65,10 +64,7 @@ export async function GET(request: NextRequest) {
  unit_price,
  quantity,
  customizations,
- notes,
- is_refunded,
- refund_amount,
- refund_reason
+ notes
  )
  `)
  .in('food_outlet_id', outletIds)

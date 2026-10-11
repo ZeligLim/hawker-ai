@@ -38,19 +38,12 @@ export async function createOrder(client: SupabaseClient<any>, input: any) {
   }));
 
   let totalOrderSubtotalSen = 0;
-
-  // Track per-stall groups
-  const merchantGroups = new Map<string, {
-    stallId: string;
-    subtotalSen: number;
-    items: any[];
-  }>();
+  const merchantGroups = new Map<string, { stallId: string, subtotalSen: number, items: any[] }>();
 
   for (const item of input.items) {
-    // Validate quantity
-    const quantity = Number(item.quantity);
-    if (!quantity || !Number.isInteger(quantity) || quantity <= 0 || quantity > 100) {
-      throw new Error(`Invalid quantity for item ${item.dishId}`);
+    const quantity = parseInt(item.quantity, 10);
+    if (isNaN(quantity) || quantity <= 0) {
+      throw new Error(`Invalid quantity for item ${item.name}`);
     }
 
     const dishId = item.dishId || item.id;
@@ -134,8 +127,6 @@ export async function createOrder(client: SupabaseClient<any>, input: any) {
     }
   }
 
-  const paymentIntentId = input.paymentIntentId ?? input.paymentReference ?? `pi_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
-
   // 3. Execute order creation RPC with verified data
   let orderId: string | null = null;
   const subtotalAmount = totalOrderSubtotalSen / 100;
@@ -148,47 +139,20 @@ export async function createOrder(client: SupabaseClient<any>, input: any) {
     p_subtotal: subtotalAmount,
     p_service_fee: platformFeeAmount,
     p_total: totalAmount,
-    p_payment_reference: paymentIntentId,
     p_items: validatedRpcItems,
     p_subtotal_amount: subtotalAmount,
     p_platform_fee_amount: platformFeeAmount,
     p_total_amount: totalAmount,
     p_merchant_payout_amount: merchantPayoutAmount,
-    p_payment_status: 'PENDING',
-    p_payment_intent_id: paymentIntentId,
   };
 
   const { data: fullData, error: fullError } = await client.rpc('create_order_with_items', rpcFullArgs);
 
-  if (!fullError && fullData) {
-    orderId = fullData as string;
-  } else {
-    const legacyArgs = {
-      p_table_session_id: input.tableSessionId || (null as unknown as string),
-      p_subtotal: subtotalAmount,
-      p_service_fee: platformFeeAmount,
-      p_total: totalAmount,
-      p_payment_reference: paymentIntentId,
-      p_items: validatedRpcItems,
-    };
-    const { data: legData, error: legError } = await client.rpc('create_order_with_items', legacyArgs);
-    if (legError) {
-      throw new Error(legError.message);
-    }
-    orderId = legData as string;
-    
-    // Update global order stats if using legacy rpc
-    if (orderId) {
-      await client.from('orders').update({
-        subtotal_amount: subtotalAmount,
-        platform_fee_amount: platformFeeAmount,
-        total_amount: totalAmount,
-        merchant_payout_amount: merchantPayoutAmount,
-        payment_status: 'PENDING',
-        payment_intent_id: paymentIntentId,
-      }).eq('id', orderId);
-    }
+  if (fullError) {
+    throw new Error(fullError.message);
   }
+  
+  orderId = fullData as string;
 
   // 4. Update PER-STALL payouts
   if (orderId) {
@@ -197,7 +161,6 @@ export async function createOrder(client: SupabaseClient<any>, input: any) {
         .from('merchant_orders')
         .update({
           merchant_payout_amount: payoutSen / 100,
-          payment_status: 'PENDING',
           refund_amount: 0.00,
         })
         .eq('order_id', orderId)
@@ -212,7 +175,6 @@ export async function createOrder(client: SupabaseClient<any>, input: any) {
     totalAmount,
     merchantPayoutAmount,
     feePayer: 'CUSTOMER',
-    paymentIntentId,
   };
 }
 
@@ -231,13 +193,12 @@ export async function getCustomerOrders(client: SupabaseClient<any>, customerId:
       merchant_payout_amount,
       payment_status,
       refund_amount,
-      payment_intent_id,
-      payment_reference,
       created_at,
       merchant_orders(
         id,
         food_outlet_id,
         status,
+        previous_status,
         subtotal,
         merchant_payout_amount,
         payment_status,
@@ -278,6 +239,7 @@ export async function getOrderReceipt(client: SupabaseClient<any>, orderId: stri
       merchant_orders (
         id,
         food_outlet_id,
+        status,
         food_outlets (
           name,
           restaurants ( name )
@@ -327,7 +289,7 @@ export async function getOrderReceipt(client: SupabaseClient<any>, orderId: stri
       subtotal: order.subtotal,
       serviceFee: order.service_fee,
       total: order.total,
-      paymentStatus: order.payment_status,
+      status: order.status,
       refundAmount: 0,
       items
   };

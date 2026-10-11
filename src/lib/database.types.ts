@@ -327,7 +327,7 @@ export type Database = {
           id: string
           merchant_payout_amount: number | null
           order_id: string
-          payment_status: string
+          previous_status?: string | null
           refund_amount: number
           status: string
           subtotal: number
@@ -339,7 +339,7 @@ export type Database = {
           id?: string
           merchant_payout_amount?: number | null
           order_id: string
-          payment_status?: string
+          previous_status?: string | null
           refund_amount?: number
           status?: string
           subtotal: number
@@ -351,7 +351,7 @@ export type Database = {
           id?: string
           merchant_payout_amount?: number | null
           order_id?: string
-          payment_status?: string
+          previous_status?: string | null
           refund_amount?: number
           status?: string
           subtotal?: number
@@ -453,7 +453,7 @@ export type Database = {
           paid_at: string | null
           payment_intent_id: string | null
           payment_reference: string | null
-          payment_status: string
+          previous_status?: string | null
           platform_fee_amount: number | null
           refund_amount: number
           service_fee: number
@@ -473,7 +473,7 @@ export type Database = {
           paid_at?: string | null
           payment_intent_id?: string | null
           payment_reference?: string | null
-          payment_status?: string
+          previous_status?: string | null
           platform_fee_amount?: number | null
           refund_amount?: number
           service_fee?: number
@@ -493,7 +493,7 @@ export type Database = {
           paid_at?: string | null
           payment_intent_id?: string | null
           payment_reference?: string | null
-          payment_status?: string
+          previous_status?: string | null
           platform_fee_amount?: number | null
           refund_amount?: number
           service_fee?: number
@@ -744,7 +744,7 @@ export type Database = {
               p_merchant_payout_amount?: number
               p_payment_intent_id?: string
               p_payment_reference: string
-              p_payment_status?: string
+              p_previous_status?: string | null
               p_platform_fee_amount?: number
               p_service_fee: number
               p_subtotal: number

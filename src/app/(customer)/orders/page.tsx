@@ -180,7 +180,7 @@ setCheckoutState("idle");
   const handleCheckout = async () => {
     if (cartItems.length === 0) return;
     setCheckoutError("");
-    setCheckoutState("generating_intent");
+    setCheckoutState("submitting");
 
     try {
       const session = getCurrentTableSession();
@@ -188,39 +188,16 @@ setCheckoutState("idle");
         throw new Error("No active table session found");
       }
 
-      const payloadItems = cartItems.map(item => ({
-        dishId: item.dishId,
-        name: item.name,
-        quantity: item.quantity,
-        customizations: item.customizations,
-        specialInstructions: item.notes
-      }));
-
-      const res = await fetch("/api/payment", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          items: payloadItems,
-          tableSessionId: session.tableId,
-        }),
-      });
-
-      const data = await res.json();
-      if (!res.ok || !data.redirectUrl) {
-        throw new Error(data.error || "Failed to initialize payment");
-      }
-
-      // Redirect to payment provider
-      window.location.href = data.redirectUrl;
+      await submitFinalOrder();
     } catch (err: any) {
       console.error(err);
-      setCheckoutError(err.message || "Payment service unavailable");
+      setCheckoutError(err.message || "Failed to create order");
       setCheckoutState("idle");
     }
   };
 
   const submitFinalOrder = useCallback(
-    async (paymentIntentId: string) => {
+    async () => {
       setCheckoutState("submitting");
       if (!supabase) {
         setCheckoutError("Supabase is not configured.");
@@ -247,7 +224,6 @@ setCheckoutState("idle");
           platformFeeAmount: summary.serviceFee,
           totalAmount: summary.total,
           merchantPayoutAmount: summary.merchantPayoutAmount,
-          paymentReference: paymentIntentId,
           items: cartItems.map((item) => ({
             dishId: item.dishId,
             stallId: item.stallId,
@@ -278,8 +254,7 @@ setCheckoutState("idle");
         subtotal: summary.subtotal,
         serviceFee: summary.serviceFee,
         total: summary.total,
-        paymentStatus: "PAID",
-        refundAmount: 0,
+        status: "PENDING",
         items: cartItems.map((item) => ({
           id: item.id,
           name: item.name,
@@ -293,7 +268,7 @@ setCheckoutState("idle");
       saveActiveOrder(receiptData, getCurrentTableSession().tableId ?? null);
       setCheckoutState("success");
     },
-    [cartItems, summary, setCartItems],
+    [cartItems, summary, setCartItems, supabase],
   );
 
   

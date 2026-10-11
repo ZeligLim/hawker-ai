@@ -8,5 +8,5 @@ export const CreateTableSessionSchema = z.object({
 });
 
 export const UpdateMerchantOrderSchema = z.object({
-  status: z.enum(['waiting', 'accepted', 'preparing', 'ready', 'served', 'cancelled']),
+  status: z.enum(['PENDING', 'CONFIRMED', 'PREPARING', 'READY', 'COMPLETED', 'CANCELLATION_REQUESTED', 'CANCELLED']),
 });

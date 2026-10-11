@@ -15,13 +15,6 @@ export const CreateOrderSchema = z.object({
   subtotal: z.number().min(0),
   serviceFee: z.number().min(0),
   total: z.number().min(0),
-  paymentReference: z.string().trim().max(200).nullable().default(null),
-  subtotalAmount: z.number().min(0).optional(),
-  platformFeeAmount: z.number().min(0).optional(),
-  totalAmount: z.number().min(0).optional(),
-  merchantPayoutAmount: z.number().min(0).optional(),
-  paymentStatus: z.enum(['PAID', 'PARTIALLY_REFUNDED', 'FULLY_REFUNDED', 'FAILED']).optional(),
-  paymentIntentId: z.string().trim().max(255).optional(),
   items: z.array(CreateOrderItemSchema).min(1).max(100),
 });
 

@@ -43,9 +43,7 @@ function mapOrderToReceipt(payload: any, targetId: string): ReceiptData | null {
     subtotal: Number(direct.subtotal_amount ?? direct.subtotal ?? 0),
     serviceFee: Number(direct.platform_fee_amount ?? direct.service_fee ?? 0.5),
     total: Number(direct.total_amount ?? direct.total ?? 0),
-    paymentStatus: (direct.payment_status ?? "PAID") as any,
-    refundAmount: Number(direct.refund_amount ?? 0),
-    paymentIntentId: direct.payment_intent_id ?? direct.payment_reference,
+    status: direct.status as any,
     createdAt: direct.created_at ?? new Date().toISOString(),
     items: rawItems,
   };

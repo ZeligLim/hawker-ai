@@ -17,7 +17,7 @@ export function RentInvoices({ boothId }: { boothId: string }) {
  const [invoices, setInvoices] = useState<RentInvoice[]>([]);
  const [loading, setLoading] = useState(true);
  const [payingInvoice, setPayingInvoice] = useState<RentInvoice | null>(null);
-  const [paymentStatus, setPaymentStatus] = useState<'idle' | 'generating' | 'ready' | 'success' | 'error'>('idle');
+  const [processingStatus, setProcessingStatus] = useState<'idle' | 'generating' | 'ready' | 'success' | 'error'>('idle');
 
  useEffect(() => {
  async function loadInvoices() {
@@ -37,17 +37,17 @@ export function RentInvoices({ boothId }: { boothId: string }) {
  
  const handlePay = async (invoice: RentInvoice) => {
     setPayingInvoice(invoice);
-    setPaymentStatus('generating');
+    setProcessingStatus('generating');
     try {
       await authenticatedFetch(`/api/owner/rent/${invoice.id}/pay`, { method: 'POST' });
-      setPaymentStatus('success');
+      setProcessingStatus('success');
       setInvoices(prev => prev.map(inv => inv.id === invoice.id ? { ...inv, status: 'paid' } : inv));
     } catch (err) {
-      setPaymentStatus('error');
+      setProcessingStatus('error');
     }
   };
 
- if (loading) return <div className="p-4 flex justify-center"><LoaderCircle className="h-5 w-5 " /></div>;
+ if (loading) return <div className="p-4 flex justify-center"><LoaderCircle className="h-5 w-5 animate-spin" /></div>;
 
  if (invoices.length === 0) return null;
 
@@ -77,11 +77,11 @@ export function RentInvoices({ boothId }: { boothId: string }) {
  ) : (
  <button
  onClick={() => handlePay(inv)}
- disabled={paymentStatus === 'generating' || paymentStatus === 'ready'}
+ disabled={processingStatus === 'generating' || processingStatus === 'ready'}
  className="rounded-full bg-[#111827] px-4 py-2 text-xs font-semibold text-white hover:bg-black shadow-xs disabled:opacity-50 self-start sm:self-auto"
  >
- {payingInvoice?.id === inv.id && paymentStatus === 'generating' ? (
- <span className="flex items-center gap-1"><LoaderCircle className="h-3.5 w-3.5 " /> Processing...</span>
+ {payingInvoice?.id === inv.id && processingStatus === 'generating' ? (
+ <span className="flex items-center gap-1"><LoaderCircle className="h-3.5 w-3.5 animate-spin" /> Processing...</span>
  ) : 'Pay Now'}
  </button>
  )}
@@ -90,7 +90,7 @@ export function RentInvoices({ boothId }: { boothId: string }) {
  </div>
 
  
- {paymentStatus === 'success' && (
+ {processingStatus === 'success' && (
  <div className="mt-4 p-4 rounded-[18px] bg-emerald-50 text-emerald-700 text-sm font-semibold flex items-center justify-center gap-2">
  <CheckCircle2 className="h-4 w-4" />
  Payment Successful!
