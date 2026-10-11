@@ -47,5 +47,17 @@
 - **Fortified Webhooks**: Added strict SHA-256 HMAC cryptographic signature validation (`x-mock-signature`) to `mock-provider.ts` to prevent blind forgery of `PAID` statuses.
 - **Pilot Readiness**: The single-stall application pilot architecture is safe and technically sound with the new boundaries implemented.
 
+## Phase 8: UI Updates
+- Removed the customer `/home` page entirely.
+- Redirected the default authenticated customer route from `/home` to `/stall`.
+- Removed references to the `HomePage` component and the `/home` route in multiple places including navigation, redirects, and guards.
+
+## Phase 9: React Best Practices Optimization & Code Quality Audit
+- Executed full Vercel React Best Practices compliance update (`.agents/skills/vercel-react-best-practices/SKILL.md`).
+- **Eliminated Waterfalls**: Parallelized DB queries via `Promise.all` in `menu-service.ts`, `user-service.ts`, and `analytics-service.ts`.
+- **Bundle Size Optimization**: Enforced `next/dynamic` for heavy client-side AI components (`FloatingAiWidget`).
+- **Render Optmizations**: Removed inline React Component declarations from hook return values (`useCartAdd`) to stop child re-mount thrashing.
+- **Linter Safety**: Stabilized missing `react-hooks/exhaustive-deps` (stale closures) explicitly across `scan/page.tsx`, `orders/page.tsx` with clean `React.useCallback` wrapping.
+
 ## Next Task
-- Await next specification from user (or advance to formal deployment preparation and live provider integration).
+- Run final project review (as outlined in `AGENTS.md`) OR await next product specification from user (Formal deployment preparation / live payment integration).
