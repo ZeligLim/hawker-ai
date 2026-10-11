@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ArrowLeft, ArrowRight, CheckCircle2, QrCode, ScanLine } from 'lucide-react';
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense, useEffect, useState, useCallback } from 'react';
 import { supabase } from '@/lib/supabase/client';
 import { formatTableLabel, parseTableReference, setCurrentTableSession } from '@/lib/table-session';
 
@@ -17,7 +17,7 @@ function ScanTableContent() {
  const [status, setStatus] = useState<'idle' | 'saving' | 'success' | 'error'>('idle');
  const [message, setMessage] = useState('');
 
- const linkTable = async (rawTable: string, rawCentre?: string) => {
+ const linkTable = useCallback(async (rawTable: string, rawCentre?: string) => {
  setStatus('saving');
  setMessage('');
 
@@ -71,7 +71,7 @@ function ScanTableContent() {
  router.push('/stall' as any);
  }, 600);
  }
- };
+ }, [router, supabase]);
 
  // If table was passed directly via QR scan URL e.g. /scan?table=04
  useEffect(() => {

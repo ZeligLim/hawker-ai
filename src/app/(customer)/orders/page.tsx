@@ -83,7 +83,7 @@ export default function OrdersPage() {
       // eslint-disable-next-line react-hooks/set-state-in-effect
 setPlacedReceipt(active);
     }
-  }, []);
+  }, [placedReceipt]);
 
   useEffect(() => {
     if (cartItems.length > 0 && checkoutState === "success") {
@@ -322,7 +322,7 @@ setCheckoutState("idle");
                   Add dishes from the menu to start ordering.
                 </p>
                 <Link
-                  href="/home"
+                  href="/stall"
                   className="mt-4 inline-flex h-11 items-center justify-center rounded-full bg-black hover:bg-neutral-800 px-6 text-sm font-semibold text-white shadow-xs "
                 >
                   Browse dishes
@@ -410,7 +410,7 @@ setCheckoutState("idle");
 
                 <div className="pt-2">
                   <Link
-                    href="/home"
+                    href="/stall"
                     className="inline-flex items-center text-xs font-semibold text-black hover:underline"
                   >
                     + Add more dishes
