@@ -129,6 +129,7 @@ export default function CustomerLandingPage() {
  <span>Scan QR</span>
  </Link>
 
+
  {isAuthenticated ? (
  <Link
  href="/profile"
@@ -157,6 +158,7 @@ export default function CustomerLandingPage() {
  <QrCode className="w-3.5 h-3.5 text-[#0071e3]" />
  <span>Scan</span>
  </Link>
+
  <button
  type="button"
  onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -203,14 +205,7 @@ export default function CustomerLandingPage() {
  </div>
 
  <div className="pt-3 .06] flex flex-col gap-2">
- <Link
- href="/scan"
- onClick={() => setMobileMenuOpen(false)}
- className="flex items-center justify-center gap-2 py-2.5 rounded-full bg-white text-xs font-semibold text-[#1d1d1f]"
- >
- <QrCode className="w-4 h-4 text-[#0071e3]" />
- Scan Table QR
- </Link>
+
  <a
  href="#food-halls"
  onClick={() => setMobileMenuOpen(false)}
@@ -271,13 +266,7 @@ export default function CustomerLandingPage() {
  Explore Hawker Centres
  </a>
 
- <Link
- href="/scan"
- className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-3 rounded-full text-sm font-semibold text-[#1d1d1f] bg-white hover:bg-black/[0.03] shadow-sm"
- >
- <QrCode className="w-4 h-4 mr-2 text-[#0071e3]" />
- Scan Table QR
- </Link>
+
  </div>
 
  {/* Feature Highlights */}
@@ -545,13 +534,7 @@ export default function CustomerLandingPage() {
  <Store className="w-4 h-4 mr-2" />
  Explore Hawker Centres
  </a>
- <Link
- href="/scan"
- className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-3 rounded-full text-xs sm:text-sm font-semibold text-white bg-white/10 hover:bg-white/20 "
- >
- <QrCode className="w-4 h-4 mr-2" />
- Scan Table QR
- </Link>
+
  </div>
  </div>
  </section>
@@ -568,8 +551,7 @@ export default function CustomerLandingPage() {
  </div>
  <div className="flex items-center gap-4 text-[#86868b]">
  <Link href="/stall" className="hover:text-[#1d1d1f]">Dishes</Link>
- <span>&bull;</span>
- <Link href="/scan" className="hover:text-[#1d1d1f]">Scan QR</Link>
+
  <span>&bull;</span>
  <a href="#faq" className="hover:text-[#1d1d1f]">FAQ</a>
  </div>

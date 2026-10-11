@@ -78,12 +78,11 @@ export function CentreDinerPage({ centre }: { centre: HawkerCentreSummary }) {
  const existing = getStoredTableSession();
  if (existing && existing.tableNumber) {
  // Automatically sync the centre ID and AI state when the user visits the centre menu page while having a table
- if (existing.centreId !== centre.id || existing.aiEnabled !== centre.aiEnabled) {
+ if (existing.centreId !== centre.id) {
  setCurrentTableSession(existing.tableNumber, existing.tableId, {
  centreId: centre.id,
  centreSlug: centre.slug,
  centreName: centre.name,
- aiEnabled: centre.aiEnabled ?? true,
  });
  setTableSession(getStoredTableSession());
  } else {
@@ -94,7 +93,7 @@ export function CentreDinerPage({ centre }: { centre: HawkerCentreSummary }) {
  setHasCheckedSession(true);
  }, 0);
  return () => clearTimeout(timer);
- }, [centre.slug]);
+ }, [centre.slug, centre.id, centre.name]);
 
  // Load stalls and dishes for this specific hawker centre
  useEffect(() => {
@@ -158,7 +157,7 @@ export function CentreDinerPage({ centre }: { centre: HawkerCentreSummary }) {
  return () => {
  active = false;
  };
- }, [centre.slug]);
+ }, [centre.slug, centre.name]);
 
  // Filter dishes by search term or selected stall
  const displayedDishes = useMemo(() => {
@@ -228,7 +227,7 @@ export function CentreDinerPage({ centre }: { centre: HawkerCentreSummary }) {
  centreId: centre.id,
  centreSlug: centre.slug,
  centreName: centre.name,
- aiEnabled: centre.aiEnabled ?? true,
+
  });
  setTableSession({
  tableNumber: cleaned,
@@ -308,17 +307,17 @@ export function CentreDinerPage({ centre }: { centre: HawkerCentreSummary }) {
  if (hasCheckedSession && (!tableSession || !tableSession.tableNumber)) {
  return (
  <main className="min-h-[82vh] flex flex-col items-center justify-center px-4">
- <Link
- href={`/scan?centre=${encodeURIComponent(centre.slug)}` as any}
+ <button
+ onClick={() => setIsTableModalOpen(true)}
  className="group flex flex-col items-center justify-center"
- aria-label="Scan QR for table number"
+ aria-label="Enter table number"
  >
  <div className="flex h-32 w-32 sm:h-36 sm:w-36 items-center justify-center rounded-full bg-white shadow-[0_12px_36px_rgba(0,0,0,0.08)] group-hover:scale-105 active:scale-95 ">
  <div className="flex h-24 w-24 sm:h-28 sm:w-28 items-center justify-center rounded-full bg-[#111827] text-white shadow-md group-hover:bg-black ">
- <QrCode className="h-12 w-12 sm:h-14 sm:w-14" strokeWidth={1.8} />
+ <ScanLine className="h-12 w-12 sm:h-14 sm:w-14" strokeWidth={1.8} />
  </div>
  </div>
- </Link>
+ </button>
  </main>
  );
  }

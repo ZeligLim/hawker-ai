@@ -77,7 +77,7 @@ test('1. Client Path Resolution: identifies the correct client experience', () =
   assert.equal(PermissionEngine.getClientForPath('/menu'), 'customer');
   assert.equal(PermissionEngine.getClientForPath('/orders'), 'customer');
   assert.equal(PermissionEngine.getClientForPath('/profile'), 'customer');
-  assert.equal(PermissionEngine.getClientForPath('/scan'), 'customer');
+
   assert.equal(PermissionEngine.getClientForPath('/shop/stall-1'), 'customer');
 
   // Hawker Stall Worker App

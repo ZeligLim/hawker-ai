@@ -13,6 +13,7 @@ import {
  ShieldCheck,
  Store,
  Users,
+ QrCode,
 } from 'lucide-react';
 import { PageLoader } from '@/components/page-loader';
 import { authenticatedFetch } from '@/lib/supabase/client';
@@ -372,6 +373,24 @@ export default function ShopOwnerDashboard() {
  Manage Booths & Invites
  </p>
  <p className="text-[11px] text-[#86868b] truncate">Send setup links to vendors</p>
+ </div>
+ </div>
+ <ChevronRight className="w-4 h-4 text-[#86868b] group-hover:translate-x-0.5 -transform shrink-0" />
+ </Link>
+
+ <Link
+ href={'/shop-owner/tables' as any}
+ className="group flex items-center justify-between rounded-2xl bg-[#f5f5f7] p-3.5 hover:bg-black/5 .02]"
+ >
+ <div className="flex items-center gap-3 min-w-0">
+ <div className="w-8 h-8 rounded-xl bg-[#111827] text-white flex items-center justify-center shadow-xs shrink-0">
+ <QrCode className="w-4 h-4" />
+ </div>
+ <div className="min-w-0">
+ <p className="text-xs font-semibold text-[#1d1d1f] group-hover:text-black truncate">
+ Table QR Codes
+ </p>
+ <p className="text-[11px] text-[#86868b] truncate">Manage tables & print QRs</p>
  </div>
  </div>
  <ChevronRight className="w-4 h-4 text-[#86868b] group-hover:translate-x-0.5 -transform shrink-0" />

@@ -174,12 +174,7 @@ export default function LandingPage() {
  Start Free as Operator <ArrowRight className="w-4 h-4" />
  </Link>
  )}
- <Link
- href="/scan"
- className="w-full sm:w-auto h-11 px-6 rounded-full text-sm font-semibold bg-[#f2f2f7] text-[#1d1d1f] hover:bg-[#e5e5ea] flex items-center justify-center gap-2 active:scale-[0.98]"
- >
- <QrCode className="w-4 h-4 text-[#007aff]" /> Scan Table QR
- </Link>
+
  </div>
 
  {/* Key Value Strip */}
@@ -1381,7 +1376,7 @@ export default function LandingPage() {
  <p className="font-bold text-[#1d1d1f] mb-2.5">Diners</p>
  <ul className="space-y-2 text-[11px] sm:text-xs">
  <li><Link href="/stall" className="hover:text-[#1d1d1f]">Diner Web App</Link></li>
- <li><Link href="/scan" className="hover:text-[#1d1d1f]">Scan Table QR</Link></li>
+
  <li><Link href="/menu" className="hover:text-[#1d1d1f]">Browse Menus</Link></li>
  </ul>
  </div>

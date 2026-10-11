@@ -44,7 +44,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
  const db = isPlatformAdmin ? (createAdminClient() ?? auth.client) : auth.client;
  const { data: restaurant, error: restaurantError } = await db
  .from('restaurants')
- .select('id, name, slug, address, phone, lat, lng, is_active, schedule, status, fee_payer, platform_fee_fixed, platform_fee_percent, ai_enabled, created_at')
+ .select('id, name, slug, address, phone, lat, lng, is_active, schedule, status, fee_payer, platform_fee_fixed, platform_fee_percent, created_at')
  .eq('id', id)
  .maybeSingle();
 
@@ -121,7 +121,6 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
  fee_payer?: 'CUSTOMER' | 'MERCHANT';
  platform_fee_fixed?: number;
  platform_fee_percent?: number;
- ai_enabled?: boolean;
  } = {};
 
  if (typeof body.is_active === 'boolean') {
@@ -174,9 +173,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
  update.platform_fee_percent = Number(body.platform_fee_percent.toFixed(4));
  }
  
- if (typeof body.ai_enabled === 'boolean') {
- update.ai_enabled = body.ai_enabled;
- }
+
  }
 
  if (Object.keys(update).length === 0) {
@@ -188,7 +185,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
  .from('restaurants')
  .update(update)
  .eq('id', id)
- .select('id, name, slug, address, phone, lat, lng, is_active, schedule, status, fee_payer, platform_fee_fixed, platform_fee_percent, ai_enabled, created_at')
+ .select('id, name, slug, address, phone, lat, lng, is_active, schedule, status, fee_payer, platform_fee_fixed, platform_fee_percent, created_at')
  .maybeSingle();
 
  if (updateError || !restaurant) {

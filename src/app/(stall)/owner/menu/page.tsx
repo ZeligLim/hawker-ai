@@ -37,7 +37,7 @@ export default function OwnerMenuPage() {
  const [dishes, setDishes] = useState<OwnerDish[]>([]);
  const [foodOutletIds, setFoodOutletIds] = useState<string[]>([]);
  const [isLoading, setIsLoading] = useState(true);
- const [aiEnabled, setAiEnabled] = useState(true);
+
  const [error, setError] = useState('');
 
  useEffect(() => {
@@ -70,12 +70,10 @@ export default function OwnerMenuPage() {
  const payload = (await response.json()) as {
  dishes?: Array<Record<string, unknown>>;
  foodOutletIds?: string[];
- aiEnabled?: boolean;
  };
 
  if (active) {
  setFoodOutletIds(payload.foodOutletIds ?? []);
- setAiEnabled(payload.aiEnabled ?? true);
  if (Array.isArray(payload.dishes)) {
  setDishes(
  payload.dishes.map((dish) => ({
@@ -238,18 +236,7 @@ export default function OwnerMenuPage() {
  </section>
  </div>
  
- {aiEnabled && (
- <div className="fixed bottom-24 sm:bottom-6 right-6 z-40 flex flex-col gap-3">
- <Link
- href={'/owner/menu/scan' as any}
- className="flex h-14 w-14 items-center justify-center rounded-full bg-white text-[#1d1d1f] shadow-lg hover:bg-neutral-50 "
- aria-label="Scan menu"
- title="Scan physical menu using AI"
- >
- <Camera className="h-6 w-6" />
- </Link>
- </div>
- )}
+
  <Link
  href={`/owner/menu/new${selectedBoothId ? `?boothId=${selectedBoothId}` : ''}` as any}
  className="fixed bottom-40 sm:bottom-24 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-[#111827] text-white shadow-lg hover:bg-black "

@@ -22,7 +22,7 @@ export async function fetchHawkerCentres(options?: {
 
   let query = supabase
     .from('restaurants')
-    .select('id, name, slug, address, lat, lng, is_active, schedule, has_aircon, rating, created_at, ai_enabled')
+    .select('id, name, slug, address, lat, lng, is_active, schedule, has_aircon, rating, created_at')
     .order('name');
 
   if (options?.slug) {
@@ -123,7 +123,7 @@ export async function fetchHawkerCentres(options?: {
       address: r.address || 'Kuala Lumpur, Malaysia',
       lat: r.lat ? Number(r.lat) : null,
       lng: r.lng ? Number(r.lng) : null,
-      aiEnabled: (r as any).ai_enabled ?? true,
+
       isActive: (r as any).is_active ?? true,
       hasAircon: Boolean((r as any).has_aircon),
       stallsCount: venueOutlets.length,

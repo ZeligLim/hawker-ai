@@ -19,12 +19,11 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Forbidden: Stall worker authorization required or stall not found.' }, { status: 403 });
     }
 
-    const { dishes, aiEnabled } = await fetchOwnerDishes(auth.client, allOutletIds);
+    const { dishes } = await fetchOwnerDishes(auth.client, allOutletIds);
 
     return NextResponse.json({
       dishes,
       foodOutletIds: allOutletIds,
-      aiEnabled,
     });
   } catch (err: any) {
     console.error('Owner dishes error:', err);

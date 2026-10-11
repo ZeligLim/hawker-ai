@@ -30,7 +30,7 @@ export function LocationAutocomplete({ address, onAddressChange, onLocationSelec
     if (address !== localAddress) {
     // eslint-disable-next-line react-hooks/set-state-in-effect
 setLocalAddress(address);    }
-  }, [address]);
+  }, [address, localAddress]);
 
   useEffect(() => {
     const initAutocomplete = () => {

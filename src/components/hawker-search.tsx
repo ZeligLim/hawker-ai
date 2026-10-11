@@ -8,6 +8,7 @@ import { ResultCard } from '@/components/result-card';
 import type { SearchResult } from '@/shared/schemas/search';
 import { addItemToCart, buildCartSummary, removeCartItem, updateCartItemQuantity, useCartItems } from '@/lib/order/cart';
 import { useCartAdd } from '@/components/use-cart-add';
+import { ButtonLoader } from '@/components/page-loader';
 
 const quickIdeas = [
  'I want a halal meal under RM15',
@@ -259,7 +260,7 @@ export function HawkerSearch({ initialQuery = 'I want a vegetarian meal under RM
  <input type="number" min="1" max="20" value={limit} onChange={(event) => setLimit(event.target.value)} className={`w-12 bg-transparent text-right outline-none font-normal ${isDark ? 'text-[#f5f5f7]' : 'text-[#1d1d1f]'}`} />
  </label>
  <button type="submit" disabled={loading} className="flex h-11 items-center justify-center rounded-full bg-[#007aff] hover:bg-[#0071e3] px-6 text-sm font-semibold text-white shadow-xs active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60">
- {loading ? 'Searching…' : 'Search'}
+ {loading ? <ButtonLoader text="Searching…" /> : 'Search'}
  </button>
  </div>
  </div>

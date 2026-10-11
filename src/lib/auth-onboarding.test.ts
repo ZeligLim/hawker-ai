@@ -133,7 +133,7 @@ test('Customer intent route classification: guest mode applies strictly within c
         (redirectParam.startsWith('/stall') ||
           redirectParam.startsWith('/menu') ||
           redirectParam.startsWith('/orders') ||
-          redirectParam.startsWith('/scan') ||
+
           redirectParam.startsWith('/shop/') ||
           redirectParam === '/shop' ||
           redirectParam.startsWith('/results'))
@@ -144,7 +144,7 @@ test('Customer intent route classification: guest mode applies strictly within c
   assert.equal(isCustomerRoute('/stall'), true);
   assert.equal(isCustomerRoute('/menu'), true);
   assert.equal(isCustomerRoute('/orders'), true);
-  assert.equal(isCustomerRoute('/scan'), true);
+
   assert.equal(isCustomerRoute('/shop/madam-kwan'), true);
   assert.equal(isCustomerRoute('/results?query=laksa'), true);
 

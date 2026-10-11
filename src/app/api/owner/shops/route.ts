@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
  const adminClient = createAdminClient() ?? auth.client;
  const { data: allRestaurants, error: allRestError } = await adminClient
  .from('restaurants')
- .select('id, name, slug, address, phone, lat, lng, is_active, schedule, status, fee_payer, platform_fee_fixed, platform_fee_percent, ai_enabled, created_at')
+ .select('id, name, slug, address, phone, lat, lng, is_active, schedule, status, fee_payer, platform_fee_fixed, platform_fee_percent, created_at')
  .order('name');
 
  if (allRestError) {
@@ -55,7 +55,7 @@ export async function GET(request: NextRequest) {
  feePayer: (restaurant.fee_payer ?? 'CUSTOMER') as 'CUSTOMER' | 'MERCHANT',
  platformFeeFixed: Number(restaurant.platform_fee_fixed ?? 0.50),
  platformFeePercent: Number(restaurant.platform_fee_percent ?? 0.0000),
- aiEnabled: restaurant.ai_enabled ?? true,
+
  booths: boothsByRestaurant.get(restaurant.id) ?? [],
  };
  });
@@ -65,7 +65,7 @@ export async function GET(request: NextRequest) {
 
  const { data: memberships, error: membershipsError } = await auth.client
  .from('restaurant_memberships')
- .select('restaurant_id, role, restaurants(id, name, slug, address, phone, lat, lng, is_active, schedule, status, fee_payer, platform_fee_fixed, platform_fee_percent, ai_enabled, created_at)')
+ .select('restaurant_id, role, restaurants(id, name, slug, address, phone, lat, lng, is_active, schedule, status, fee_payer, platform_fee_fixed, platform_fee_percent, created_at)')
  .eq('user_id', auth.user.id)
  .order('created_at', { ascending: false });
 
@@ -182,7 +182,7 @@ export async function GET(request: NextRequest) {
  feePayer: (restaurant?.fee_payer ?? 'CUSTOMER') as 'CUSTOMER' | 'MERCHANT',
  platformFeeFixed: Number(restaurant?.platform_fee_fixed ?? 0.50),
  platformFeePercent: Number(restaurant?.platform_fee_percent ?? 0.0000),
- aiEnabled: restaurant?.ai_enabled ?? true,
+
  }
  : {}),
  booths: boothsByRestaurant.get(membership.restaurant_id) ?? [],

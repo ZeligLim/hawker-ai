@@ -22,7 +22,7 @@ export interface HawkerCentreSummary {
   stalls: HawkerCentreStall[];
   specialties: string[];
   hasAircon: boolean;
-  aiEnabled: boolean;
+
   isActive: boolean;
   minPrice: number | null;
   maxPrice: number | null;

@@ -173,7 +173,7 @@ function CustomerStallContent() {
  return () => {
  active = false;
  };
- }, [targetCentreSlug]);
+ }, [targetCentreSlug, activeCentre?.name]);
 
  const handleClearTable = () => {
  clearTableSession();
@@ -223,14 +223,7 @@ function CustomerStallContent() {
  </div>
 
  <div className="flex items-center gap-2 shrink-0">
- <Link
- href={`/scan${centreSlugForScan ? `?centre=${encodeURIComponent(centreSlugForScan)}` : ''}` as any}
- className="flex h-11 w-11 items-center justify-center rounded-full bg-[#f5f5f7] text-[#1d1d1f] hover:bg-neutral-200 "
- title="Scan different table QR"
- aria-label="Scan different table QR"
- >
- <QrCode className="h-5 w-5" />
- </Link>
+
  <button
  type="button"
  onClick={handleClearTable}
@@ -402,17 +395,7 @@ function CustomerStallContent() {
  </div>
  )}
  
- {/* Floating Scan QR Button */}
- {!tableSession?.tableNumber && (
- <Link
- href={`/scan${centreSlugForScan ? `?centre=${encodeURIComponent(centreSlugForScan)}` : ''}` as any}
- className={`fixed right-4 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-black text-white shadow-lg hover:bg-neutral-800 ${totalCartCount > 0 ? 'bottom-36' : 'bottom-20'}`}
- aria-label="Scan table QR"
- title="Scan table QR"
- >
- <QrCode className="h-6 w-6" />
- </Link>
- )}
+
  </main>
  );
 }

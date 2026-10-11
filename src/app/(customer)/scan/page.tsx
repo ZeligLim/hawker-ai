@@ -1,197 +1,197 @@
 'use client';
 
+import { useState, useCallback, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { Scanner } from '@yudiel/react-qr-scanner';
+import { AlertCircle, ArrowLeft, Store, Camera, ScanLine } from 'lucide-react';
+import { PageLoader } from '@/components/page-loader';
+import { setCurrentTableSession } from '@/lib/table-session';
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { ArrowLeft, ArrowRight, CheckCircle2, QrCode, ScanLine } from 'lucide-react';
-import { Suspense, useEffect, useState, useCallback } from 'react';
-import { supabase } from '@/lib/supabase/client';
-import { formatTableLabel, parseTableReference, setCurrentTableSession } from '@/lib/table-session';
 
-function ScanTableContent() {
- const router = useRouter();
- const searchParams = useSearchParams();
- const initialTable = searchParams.get('table') || '';
- const initialCentre = searchParams.get('centre') || searchParams.get('slug') || '';
+export default function CustomerScanPage() {
+  const router = useRouter();
+  const [error, setError] = useState<string | null>(null);
+  const [processing, setProcessing] = useState(false);
+  const [cameraError, setCameraError] = useState(false);
 
- const [input, setInput] = useState(initialTable || '04');
- const [status, setStatus] = useState<'idle' | 'saving' | 'success' | 'error'>('idle');
- const [message, setMessage] = useState('');
+  const handleQrData = useCallback(async (text: string) => {
+    if (processing) return;
+    setProcessing(true);
+    setError(null);
 
- const linkTable = useCallback(async (rawTable: string, rawCentre?: string) => {
- setStatus('saving');
- setMessage('');
+    try {
+      // Validate that it's a URL
+      let url: URL;
+      try {
+        url = new URL(text);
+      } catch {
+        throw new Error('Invalid QR code format. Not a recognized Hawker QR code.');
+      }
 
- const { tableNumber, tableId } = parseTableReference(rawTable);
- const label = formatTableLabel(tableNumber);
+      const tableId = url.searchParams.get('table_id');
+      const outletId = url.searchParams.get('outlet_id'); // This is the restaurant_id
 
- try {
- if (supabase) {
- const { data: sessionData } = await supabase.auth.getSession();
- if (sessionData.session?.access_token) {
- const response = await fetch('/api/table-sessions', {
- method: 'POST',
- headers: {
- 'Content-Type': 'application/json',
- Authorization: `Bearer ${sessionData.session.access_token}`,
- },
- body: JSON.stringify({
- tableId: tableId || undefined,
- tableNumber: tableNumber || undefined,
- }),
- });
+      if (!tableId || !outletId) {
+        throw new Error('This QR code does not contain valid table information.');
+      }
 
- if (response.ok) {
- const payload = (await response.json().catch(() => ({}))) as {
- table?: { id: string; table_number?: string };
- };
- const sessionTable = payload.table?.table_number ?? tableNumber;
- const resolvedTableId = payload.table?.id ?? tableId;
- setCurrentTableSession(sessionTable, resolvedTableId, { centreSlug: rawCentre || undefined });
- setStatus('success');
- setMessage(`Linked to ${formatTableLabel(sessionTable)}. Redirecting to stall...`);
- setTimeout(() => {
- router.push('/stall' as any);
- }, 600);
- return;
- }
- }
- }
+      // Call our backend to create/fetch a table session and get the centre slug
+      const res = await fetch('/api/table-sessions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tableId }),
+      });
 
- setCurrentTableSession(tableNumber, tableId ?? null, { centreSlug: rawCentre || undefined });
- setStatus('success');
- setMessage(`Saved ${label}. Redirecting to stall...`);
- setTimeout(() => {
- router.push('/stall' as any);
- }, 600);
- } catch {
- setCurrentTableSession(tableNumber, tableId ?? null, { centreSlug: rawCentre || undefined });
- setStatus('success');
- setMessage(`Saved ${label}. Proceeding to stall...`);
- setTimeout(() => {
- router.push('/stall' as any);
- }, 600);
- }
- }, [router, supabase]);
+      if (!res.ok) {
+        const errPayload = await res.json().catch(() => ({}));
+        throw new Error(errPayload.error || 'Failed to validate table.');
+      }
 
- // If table was passed directly via QR scan URL e.g. /scan?table=04
- useEffect(() => {
- if (initialTable) {
- const timer = setTimeout(() => {
- void linkTable(initialTable, initialCentre);
- }, 0);
- return () => clearTimeout(timer);
- }
- }, [initialTable, initialCentre, linkTable]);
+      const { table } = await res.json();
+      
+      const centre = Array.isArray(table.restaurants) ? table.restaurants[0] : table.restaurants;
+      
+      if (!centre || !centre.slug) {
+         throw new Error('Associated hawker centre not found.');
+      }
 
- const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
- event.preventDefault();
- void linkTable(input, initialCentre);
- };
+      // Set the session globally
+      setCurrentTableSession(table.table_number, table.id, {
+        centreId: centre.id,
+        centreSlug: centre.slug,
+        centreName: centre.name,
+      });
 
- return (
- <div className="rounded-[28px] bg-white p-5 sm:p-6 shadow-[0_12px_28px_rgba(15,23,42,0.04)] .04]">
- <div className="flex items-center gap-3">
- <Link
- href="/stall"
- className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-full bg-[#f5f5f7] text-[#1d1d1f] hover:bg-black/[0.04] "
- aria-label="Back to stalls"
- >
- <ArrowLeft className="h-5 w-5" />
- </Link>
- <div>
- <p className="text-xs font-semibold text-[#0071e3]">Table link</p>
- <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#1d1d1f]">Scan table QR</h1>
- </div>
- </div>
+      // Redirect to the centre ordering interface
+      router.replace(`/${centre.slug}`);
+    } catch (err: any) {
+      setError(err.message || 'Could not process QR code.');
+      setProcessing(false);
+    }
+  }, [processing, router]);
 
- <div className="mt-5 flex flex-col items-center justify-center rounded-[24px] bg-[#111827] p-6 text-white text-center">
- <div className="flex h-20 w-20 items-center justify-center rounded-[20px] bg-white/10 mb-3">
- <QrCode className="h-10 w-10 text-white" />
- </div>
- <p className="text-sm font-semibold">Scan table QR to order</p>
- <p className="text-xs text-white/70 mt-1 max-w-[240px]">
- Point your phone camera at the QR code sticker on your table.
- </p>
- </div>
+  // We handle incoming URL parameters if they are already present
+  // e.g. /scan?outlet_id=xxx&table_id=yyy (If camera app decoded the standard URL)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const outletId = params.get('outlet_id');
+    const tableId = params.get('table_id');
+    
+    if (outletId && tableId && !processing) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      handleQrData(window.location.href);
+    }
+  }, [handleQrData, processing]);
 
- {/* Quick table picker for testing & manual input */}
- <div className="mt-5">
- <p className="text-xs font-semibold text-[#86868b] mb-2">
- Or select quick table
- </p>
- <div className="grid grid-cols-3 gap-2">
- {['04', '12', '01'].map((tbl) => (
- <button
- key={tbl}
- type="button"
- onClick={() => {
- setInput(tbl);
- void linkTable(tbl, initialCentre);
- }}
- className="h-11 px-3 rounded-full bg-[#f2f2f7] hover:bg-[#e5e5ea] font-semibold text-xs text-[#1d1d1f] active:scale-[0.98]"
- >
- Table {tbl}
- </button>
- ))}
- </div>
- </div>
+  const handleCameraError = (err: unknown) => {
+    console.error('Camera error:', err);
+    setCameraError(true);
+  };
 
- <form onSubmit={handleSubmit} className="mt-5 space-y-4">
- <label className="block text-sm font-medium text-[#1d1d1f]">
- Manual Table Number
- <input
- value={input}
- onChange={(event) => setInput(event.target.value)}
- placeholder="e.g. 04 or 12"
- className="mt-2 w-full rounded-[18px] ] bg-[#f5f5f7] px-3.5 py-3 text-base outline-none placeholder:text-[#8a8a8e] focus:]"
- />
- </label>
+  if (processing) {
+    return <PageLoader text="Connecting to table..." />;
+  }
 
- <button
- type="submit"
- disabled={status === 'saving'}
- className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-full bg-[#007aff] hover:bg-[#0071e3] px-5 text-sm font-semibold text-white disabled:opacity-70 shadow-xs active:scale-[0.98]"
- >
- <ScanLine className="h-4 w-4" />
- {status === 'saving' ? 'Linking table...' : 'Link Table & Order'}
- </button>
- </form>
+  return (
+    <main className="min-h-screen bg-black text-white flex flex-col">
+      <div className="flex items-center justify-between p-4 z-10 relative">
+        <Link 
+          href="/stall" 
+          className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors"
+        >
+          <ArrowLeft className="w-5 h-5 text-white" />
+        </Link>
+        <h1 className="text-sm font-semibold">Scan Table QR</h1>
+        <div className="w-10 h-10" />
+      </div>
 
- {message ? (
- <div
- className={`mt-4 rounded-[18px] p-3 text-sm flex items-center gap-2 ${
- status === 'error' ? 'bg-[#fff1f2] text-[#9f1239]' : 'bg-[#ecfdf5] text-[#166534]'
- }`}
- >
- <CheckCircle2 className="w-4 h-4 shrink-0" />
- <span>{message}</span>
- </div>
- ) : null}
+      <div className="flex-1 flex flex-col items-center justify-center relative">
+        {error && (
+          <div className="absolute top-4 left-4 right-4 z-20 bg-red-500 text-white p-3 rounded-2xl text-xs font-semibold shadow-lg flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 shrink-0" />
+            <p className="flex-1">{error}</p>
+            <button onClick={() => setError(null)} className="p-1">
+              ✕
+            </button>
+          </div>
+        )}
 
- {status === 'success' && (
- <button
- onClick={() => router.push('/home' as any)}
- className="mt-3 flex h-11 w-full items-center justify-center gap-1.5 rounded-full bg-[#34c759] hover:bg-[#2fb34f] px-5 text-sm font-semibold text-white shadow-xs active:scale-[0.98]"
- >
- Go to Menu Now <ArrowRight className="w-4 h-4" />
- </button>
- )}
+        {cameraError ? (
+          <div className="text-center p-8 max-w-sm">
+            <Camera className="w-12 h-12 text-white/50 mx-auto mb-4" />
+            <h2 className="text-lg font-bold mb-2">Camera Access Denied</h2>
+            <p className="text-sm text-white/70 mb-6">
+              We could not access your camera. Please check your browser permissions or manually enter your table number at the food court page.
+            </p>
+            <Link 
+              href="/stall" 
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-white px-6 text-sm font-semibold text-black hover:bg-neutral-200"
+            >
+              <Store className="w-4 h-4" /> Go to Centres
+            </Link>
+          </div>
+        ) : (
+          <div className="w-full max-w-md aspect-[3/4] sm:aspect-square relative overflow-hidden bg-black flex items-center justify-center">
+            <Scanner
+              onScan={(result) => {
+                if (result && result.length > 0) {
+                  handleQrData(result[0].rawValue);
+                }
+              }}
+              onError={handleCameraError}
+              constraints={{ facingMode: 'environment' }}
+              components={{
+                finder: false,
+              }}
+              styles={{
+                container: { width: '100%', height: '100%' },
+                video: { objectFit: 'cover' },
+              }}
+            />
+            
+            {/* Scanning Overlay Overlay */}
+            <div className="absolute inset-0 pointer-events-none flex flex-col">
+              <div className="flex-1 bg-black/40" />
+              <div className="flex">
+                <div className="w-12 sm:w-16 bg-black/40" />
+                <div className="flex-1 aspect-square border-2 border-white/30 rounded-3xl relative">
+                  <div className="absolute -top-1 -left-1 w-6 h-6 border-t-4 border-l-4 border-white rounded-tl-3xl" />
+                  <div className="absolute -top-1 -right-1 w-6 h-6 border-t-4 border-r-4 border-white rounded-tr-3xl" />
+                  <div className="absolute -bottom-1 -left-1 w-6 h-6 border-b-4 border-l-4 border-white rounded-bl-3xl" />
+                  <div className="absolute -bottom-1 -right-1 w-6 h-6 border-b-4 border-r-4 border-white rounded-br-3xl" />
+                  
+                  {/* Scanning Animation Line */}
+                  <div className="absolute top-0 left-0 right-0 h-0.5 bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.8)] animate-[scan_2s_ease-in-out_infinite]" />
+                </div>
+                <div className="w-12 sm:w-16 bg-black/40" />
+              </div>
+              <div className="flex-1 bg-black/40" />
+            </div>
+          </div>
+        )}
 
- <div className="mt-5 rounded-[18px] bg-[#f5f5f7] p-3 text-xs text-[#6e6e73]">
- A table QR code connects your device to your specific table so stall woks know where to send hot food.
- </div>
- </div>
- );
-}
+        <div className="p-8 text-center relative z-10 w-full bg-black/40 backdrop-blur-md pb-safe">
+          <ScanLine className="w-8 h-8 text-white/50 mx-auto mb-3" />
+          <h3 className="font-semibold text-white">Position QR Code</h3>
+          <p className="text-xs text-white/60 mt-1 max-w-[250px] mx-auto">
+            Point your camera at the table QR code to start ordering
+          </p>
+          
+          <Link 
+             href="/stall" 
+             className="mt-6 inline-flex text-xs font-semibold text-white/70 hover:text-white"
+          >
+            Enter table manually instead
+          </Link>
+        </div>
+      </div>
 
-export default function ScanTablePage() {
- return (
- <main className="min-h-screen bg-[#f5f5f7] px-4 pb-32 pt-5 text-[#1d1d1f] sm:px-6">
- <div className="mx-auto w-full max-w-md sm:max-w-lg">
- <Suspense fallback={<div className="p-8 text-center text-sm text-[#86868b]">Loading scanner...</div>}>
- <ScanTableContent />
- </Suspense>
- </div>
- </main>
- );
+      <style jsx global>{`
+        @keyframes scan {
+          0%, 100% { top: 0%; }
+          50% { top: 100%; }
+        }
+      `}</style>
+    </main>
+  );
 }

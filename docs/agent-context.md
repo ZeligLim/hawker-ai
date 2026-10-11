@@ -59,5 +59,11 @@
 - **Render Optmizations**: Removed inline React Component declarations from hook return values (`useCartAdd`) to stop child re-mount thrashing.
 - **Linter Safety**: Stabilized missing `react-hooks/exhaustive-deps` (stale closures) explicitly across `scan/page.tsx`, `orders/page.tsx` with clean `React.useCallback` wrapping.
 
-## Next Task
-- Run final project review (as outlined in `AGENTS.md`) OR await next product specification from user (Formal deployment preparation / live payment integration).
+
+## Phase 10: AI Removal, Loading States & Table QR Generation
+- Wiped out legacy AI Menu Scanner and AI features across the DB schemas, API routes, and components.
+- Standardised UI Loading states (`PageLoader`, `ComponentLoader`, `ButtonLoader`, `SkeletonLoader`) replacing custom inconsistent spinners globally.
+- Created `api/owner/tables` and `/shop-owner/tables` allowing Centre Owners to spawn tables natively linked to `hawker_tables`.
+- Added QR code generation (`qrcode.react`) and Print/Save functionality for Centre Owners.
+- Resurrected the `/(customer)/scan` route using `@yudiel/react-qr-scanner`, parsing `outlet_id` and `table_id`, creating a `table_session`, and pushing the user seamlessly to the menu ordering screen.
+

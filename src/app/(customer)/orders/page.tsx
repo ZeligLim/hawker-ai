@@ -73,7 +73,7 @@ export default function OrdersPage() {
       fetchReceipt();
       return () => { active = false; clearInterval(timer); };
     }
-  }, [returnOrderId, router, setCartItems]);
+  }, [returnOrderId, router, setCartItems, placedReceipt]);
 
   
 

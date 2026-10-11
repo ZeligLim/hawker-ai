@@ -77,7 +77,7 @@ const publicRoutes = [
  '/menu',
  '/shop',
  '/results',
- '/scan',
+
  '/profile',
  '/booths/join',
  '/auth',

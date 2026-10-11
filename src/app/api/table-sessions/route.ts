@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
  if (parsed.data.tableId) {
  const { data, error: tableError } = await auth.client
  .from('hawker_tables')
- .select('id, restaurant_id, table_number')
+ .select('id, restaurant_id, table_number, restaurants(id, name, slug)')
  .eq('id', parsed.data.tableId)
  .maybeSingle();
  if (tableError) return NextResponse.json({ error: tableError.message }, { status: 500 });
@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
  const cleanNumber = parsed.data.tableNumber.replace(/^table\s*/i, '').trim();
  const { data, error: tableError } = await auth.client
  .from('hawker_tables')
- .select('id, restaurant_id, table_number')
+ .select('id, restaurant_id, table_number, restaurants(id, name, slug)')
  .ilike('table_number', cleanNumber)
  .limit(1)
  .maybeSingle();

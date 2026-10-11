@@ -115,7 +115,7 @@ function MenuContent() {
  return () => {
  active = false;
  };
- }, [rawCentre]);
+ }, [rawCentre, centreName]);
 
  const filteredItems = items.filter((item) =>
  searchValue.trim() ? item.name.toLowerCase().includes(searchValue.toLowerCase().trim()) : true,

@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { parseSearchIntent } from '@/lib/ai/intent-parser';
 import { SearchFilters, SearchFiltersSchema } from '@/shared/schemas/search';
 import { SearchService } from '@/lib/search/search-service';
 
@@ -12,15 +11,6 @@ const normalizePayload = (value: unknown): Record<string, unknown> => {
 };
 
 const resolveFilterPayload = async (payload: Record<string, unknown>): Promise<SearchFilters> => {
- const hasStructuredFilters = ['minPrice', 'maxPrice', 'vegetarian', 'halal', 'spiceLevel'].some(
- (key) => payload[key] !== undefined,
- );
-
- if (typeof payload.query === 'string' && payload.query.trim() && !hasStructuredFilters) {
- const parsedIntent = await parseSearchIntent(payload.query);
- return SearchFiltersSchema.parse(parsedIntent);
- }
-
  const parsed = SearchFiltersSchema.safeParse(payload);
  if (!parsed.success) {
  throw new Error(JSON.stringify(parsed.error.flatten().fieldErrors));

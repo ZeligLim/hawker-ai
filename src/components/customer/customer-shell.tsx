@@ -5,12 +5,10 @@ import { usePathname, useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 import { House, Store, UtensilsCrossed, ClipboardList, UserRound } from 'lucide-react';
 import { ClientBottomNav } from '@/components/shared/client-bottom-nav';
+import { ComponentLoader } from '@/components/page-loader';
 import dynamic from 'next/dynamic';
 
-const FloatingAiWidget = dynamic(
-  () => import('@/components/floating-ai-widget').then(m => m.FloatingAiWidget),
-  { ssr: false }
-);
+
 import { getStoredTableSession, type CurrentTableSession } from '@/lib/table-session';
 import { useState, useEffect } from 'react';
 
@@ -51,14 +49,14 @@ function CustomerShellContent({ children }: { children: React.ReactNode }) {
         theme="customer"
         ariaLabel="Customer Navigation"
       />
-      {session?.aiEnabled !== false && <FloatingAiWidget />}
+
     </div>
   );
 }
 
 export function CustomerShell({ children }: { children: React.ReactNode }) {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<ComponentLoader text="Loading..." />}>
       <CustomerShellContent>{children}</CustomerShellContent>
     </Suspense>
   );

@@ -84,27 +84,6 @@ export async function isUserAuthorizedForOutlet(client: SupabaseClient<any>, use
 }
 
 export async function fetchOwnerDishes(client: SupabaseClient<any>, allOutletIds: string[]) {
-  // Determine if AI is enabled for the parent restaurant
-  let aiEnabled = true;
-  if (allOutletIds.length > 0) {
-    try {
-      const { data: outletData } = await client
-        .from('food_outlets')
-        .select('restaurants(ai_enabled)')
-        .in('id', allOutletIds)
-        .limit(1)
-        .maybeSingle();
-
-      const rest = Array.isArray(outletData?.restaurants) ? outletData.restaurants[0] : outletData?.restaurants;
-      if (rest && rest.ai_enabled === false) {
-        aiEnabled = false;
-      }
-    } catch (e) {
-      // Fallback to true
-    }
-  }
-
-  // Query dishes for all authorized outlets
   const { data, error } = await client
     .from('dishes')
     .select('id, food_outlet_id, name, description, price, is_vegetarian, is_halal, spice_level, protein_grams, image_url, is_available, tags, customizations, created_at')
@@ -115,7 +94,7 @@ export async function fetchOwnerDishes(client: SupabaseClient<any>, allOutletIds
     throw new Error(error.message);
   }
 
-  return { dishes: data ?? [], aiEnabled };
+  return { dishes: data ?? [] };
 }
 
 export async function createDish(client: SupabaseClient<any>, input: any) {

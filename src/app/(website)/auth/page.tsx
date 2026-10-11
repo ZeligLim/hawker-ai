@@ -35,7 +35,7 @@ function AuthForm() {
  (redirectParam.startsWith('/stall') ||
  redirectParam.startsWith('/menu') ||
  redirectParam.startsWith('/orders') ||
- redirectParam.startsWith('/scan') ||
+
  redirectParam.startsWith('/shop/') ||
  redirectParam === '/shop' ||
  redirectParam.startsWith('/results'))

@@ -2,6 +2,7 @@
 
 import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
+import { ButtonLoader, ComponentLoader } from '@/components/page-loader';
 
 function MockPaymentContent() {
   const searchParams = useSearchParams();
@@ -91,7 +92,7 @@ function MockPaymentContent() {
               disabled={loading}
               className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3.5 px-4 rounded-xl shadow-sm transition-colors disabled:opacity-50"
             >
-              {loading ? 'Processing...' : 'Approve Payment'}
+              {loading ? <ButtonLoader text="Processing..." /> : 'Approve Payment'}
             </button>
             <div className="grid grid-cols-2 gap-3">
               <button
@@ -118,7 +119,7 @@ function MockPaymentContent() {
 
 export default function MockPaymentPage() {
   return (
-    <Suspense fallback={<div className="p-8 text-center text-gray-500">Loading mock checkout...</div>}>
+    <Suspense fallback={<ComponentLoader text="Loading mock checkout..." />}>
       <MockPaymentContent />
     </Suspense>
   );
