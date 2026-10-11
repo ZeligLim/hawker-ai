@@ -62,7 +62,7 @@ export function HawkerSearch({ initialQuery = 'I want a vegetarian meal under RM
  const cardBg = isDark ? 'bg-[#111214]' : 'bg-white';
  const mutedText = isDark ? 'text-[#a1a1aa]' : 'text-[#6e6e73]';
  const chipBg = isDark ? 'bg-[#1a1b1e] text-[#f5f5f7]' : 'bg-[#f7f7f7] text-[#1d1d1f]';
- const borderClass = isDark ? 'border-none' : 'border-none';
+ 
  const inputBg = isDark ? 'bg-[#15171c] text-[#f5f5f7]' : 'bg-white text-[#1d1d1f]';
 
  const allergyDisclaimer = useMemo(() => getAllergyDisclaimer(query), [query]);

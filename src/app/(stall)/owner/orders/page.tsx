@@ -261,7 +261,7 @@ export default function OwnerOrdersPage() {
  return (
  <article
  key={order.backendId}
- className={`flex flex-col justify-between rounded-[26px] bg-white p-5 shadow-[0_14px_30px_rgba(15,23,42,0.04)] ${isPendingCancel ? 'ring-2 ring-rose-500' : ''}`}
+ className={`flex flex-col justify-between rounded-[26px] bg-white p-5 shadow-[0_14px_30px_rgba(15,23,42,0.04)] ${isPendingCancel ? '' : ''}`}
  >
  {/* Ticket Header: Table & Time */}
  <div className="flex items-start justify-between gap-3 pb-3.5">

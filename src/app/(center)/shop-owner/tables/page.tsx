@@ -257,7 +257,7 @@ export default function TablesManagementPage() {
                   <select
                     value={selectedShopId}
                     onChange={(e) => setSelectedShopId(e.target.value)}
-                    className="w-full rounded-xl bg-[#f5f5f7] px-4 py-3 text-sm font-medium outline-none focus:ring-2 focus:ring-[#007aff]/20"
+                    className="w-full rounded-xl bg-[#f5f5f7] px-4 py-3 text-sm font-medium outline-none"
                   >
                     {shops.map((shop) => (
                       <option key={shop.id} value={shop.id}>
@@ -277,7 +277,7 @@ export default function TablesManagementPage() {
                     value={newTableNumber}
                     onChange={(e) => setNewTableNumber(e.target.value)}
                     placeholder="e.g. 12 or A1"
-                    className="w-full rounded-xl bg-[#f5f5f7] px-4 py-3 text-sm font-medium outline-none focus:ring-2 focus:ring-[#007aff]/20"
+                    className="w-full rounded-xl bg-[#f5f5f7] px-4 py-3 text-sm font-medium outline-none"
                   />
                 </div>
                 
@@ -379,7 +379,7 @@ export default function TablesManagementPage() {
                 {shop.tables.map((table) => {
                   const scanUrl = typeof window !== 'undefined' ? `${window.location.origin}/scan?outlet_id=${shop.id}&table_id=${table.id}` : '';
                   return (
-                    <div key={`print-qr-${table.id}`} style={{ border: '2px solid #eaeaea', padding: '20px', borderRadius: '16px', textAlign: 'center', width: '200px' }}>
+                    <div key={`print-qr-${table.id}`} style={{ padding: '20px', borderRadius: '16px', textAlign: 'center', width: '200px' }}>
                       <h3 style={{ fontSize: '20px', fontWeight: 'bold', margin: '0 0 15px 0' }}>Table {table.table_number}</h3>
                       <QRCodeSVG value={scanUrl} size={160} level="H" />
                       <p style={{ fontSize: '10px', color: '#666', marginTop: '15px', marginBottom: 0 }}>Scan to order</p>

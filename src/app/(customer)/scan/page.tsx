@@ -154,11 +154,11 @@ export default function CustomerScanPage() {
               <div className="flex-1 bg-black/40" />
               <div className="flex">
                 <div className="w-12 sm:w-16 bg-black/40" />
-                <div className="flex-1 aspect-square border-2 border-white/30 rounded-3xl relative">
-                  <div className="absolute -top-1 -left-1 w-6 h-6 border-t-4 border-l-4 border-white rounded-tl-3xl" />
-                  <div className="absolute -top-1 -right-1 w-6 h-6 border-t-4 border-r-4 border-white rounded-tr-3xl" />
-                  <div className="absolute -bottom-1 -left-1 w-6 h-6 border-b-4 border-l-4 border-white rounded-bl-3xl" />
-                  <div className="absolute -bottom-1 -right-1 w-6 h-6 border-b-4 border-r-4 border-white rounded-br-3xl" />
+                <div className="flex-1 aspect-square rounded-3xl relative">
+                  <div className="absolute -top-1 -left-1 w-6 h-6 rounded-tl-3xl" />
+                  <div className="absolute -top-1 -right-1 w-6 h-6 rounded-tr-3xl" />
+                  <div className="absolute -bottom-1 -left-1 w-6 h-6 rounded-bl-3xl" />
+                  <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-br-3xl" />
                   
                   {/* Scanning Animation Line */}
                   <div className="absolute top-0 left-0 right-0 h-0.5 bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.8)] animate-[scan_2s_ease-in-out_infinite]" />
