@@ -89,7 +89,7 @@ export default function CustomerScanPage() {
   };
 
   if (processing) {
-    return <PageLoader text="Connecting to table..." />;
+    return <PageLoader text="Connecting to table" />;
   }
 
   return (

@@ -487,7 +487,7 @@ export default function ShopOwnerBoothsPage() {
  <section className="mt-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5 items-start">
  {loading ? (
  <div className="col-span-full">
- <PageLoader text="Loading booths…" fullHeight={false} />
+ <PageLoader text="Loading booths" fullHeight={false} />
  </div>
  ) : boothList.length === 0 ? (
  <div className="col-span-full rounded-[24px] bg-white p-8 text-center shadow-[0_12px_26px_rgba(15,23,42,0.04)] /[0.04]">
@@ -640,7 +640,7 @@ export default function ShopOwnerBoothsPage() {
  title="Send setup link"
  >
  {isSending ? (
- <LoaderCircle className="h-4 w-4 " />
+ <LoaderCircle className="h-4 w-4 animate-spin" />
  ) : (
  <Send className="h-4 w-4 -ml-0.5" />
  )}
@@ -716,7 +716,7 @@ export default function ShopOwnerBoothsPage() {
  className="flex h-7 w-7 items-center justify-center rounded-lg bg-red-50/80 text-red-600 hover:bg-red-100 shrink-0 disabled:opacity-50 shadow-xs"
  >
  {isRemoving ? (
- <LoaderCircle className="h-3.5 w-3.5 " />
+ <LoaderCircle className="h-3.5 w-3.5 animate-spin" />
  ) : (
  <Trash2 className="h-3.5 w-3.5" />
  )}
@@ -774,7 +774,7 @@ export default function ShopOwnerBoothsPage() {
  className="flex h-7 w-7 items-center justify-center rounded-lg bg-red-50/80 text-red-600 hover:bg-red-100 shrink-0 disabled:opacity-50 shadow-xs"
  >
  {isRemoving ? (
- <LoaderCircle className="h-3.5 w-3.5 " />
+ <LoaderCircle className="h-3.5 w-3.5 animate-spin" />
  ) : (
  <X className="h-3.5 w-3.5" />
  )}
@@ -866,7 +866,7 @@ export default function ShopOwnerBoothsPage() {
  >
  {isCreatingSlot ? (
  <>
- <LoaderCircle className="h-4 w-4 " /> Provisioning Slot...
+ <LoaderCircle className="h-4 w-4 animate-spin" /> Provisioning Slot...
  </>
  ) : (
  <>
@@ -939,7 +939,7 @@ export default function ShopOwnerBoothsPage() {
  >
  {isBillingRent ? (
  <>
- <LoaderCircle className="h-4 w-4 " /> Issuing...
+ <LoaderCircle className="h-4 w-4 animate-spin" /> Issuing...
  </>
  ) : (
  'Issue Rent Bill'
@@ -1044,7 +1044,7 @@ export default function ShopOwnerBoothsPage() {
  >
  {isDeletingBooth ? (
  <>
- <LoaderCircle className="h-3.5 w-3.5 " />
+ <LoaderCircle className="h-3.5 w-3.5 animate-spin" />
  <span>Deleting…</span>
  </>
  ) : (

@@ -31,7 +31,7 @@ export function SaveCancelButtons({
  aria-label={saveLabel}
  title={saveLabel}
  >
- {isSaving ? <LoaderCircle className="h-4 w-4 " /> : <Check className="h-5 w-5" />}
+ {isSaving ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Check className="h-5 w-5" />}
  </button>
  <button
  type="button"

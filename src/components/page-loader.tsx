@@ -1,10 +1,10 @@
 import { LoaderCircle } from 'lucide-react';
 import React from 'react';
 
-export function PageLoader({ text = 'Loading…', fullHeight = true }: { text?: string; fullHeight?: boolean }) {
+export function PageLoader({ text = 'Loading', fullHeight = true }: { text?: string; fullHeight?: boolean }) {
   return (
-    <div className={`flex flex-col items-center justify-center gap-4 text-[#86868b] ${fullHeight ? 'min-h-[50vh] h-full' : 'py-12'}`}>
-      <LoaderCircle className="h-8 w-8 animate-spin motion-reduce:animate-none text-black" />
+    <div className={`flex flex-col items-center justify-center gap-4 text-[#86868b] w-full ${fullHeight ? 'min-h-[60vh] flex-1 h-full' : 'py-12 min-h-[40vh]'}`}>
+      <LoaderCircle className="h-8 w-8 animate-spin text-black" />
       {text && <p className="text-sm font-medium">{text}</p>}
     </div>
   );
@@ -12,17 +12,17 @@ export function PageLoader({ text = 'Loading…', fullHeight = true }: { text?: 
 
 export function ComponentLoader({ text }: { text?: string }) {
   return (
-    <div className="flex w-full items-center justify-center py-6 text-[#86868b]">
-      <LoaderCircle className="h-5 w-5 animate-spin motion-reduce:animate-none text-black mr-2" />
-      {text && <span className="text-sm">{text}</span>}
+    <div className="flex w-full h-full min-h-[120px] flex-col items-center justify-center py-6 text-[#86868b]">
+      <LoaderCircle className="h-6 w-6 animate-spin text-black mb-3" />
+      {text && <span className="text-sm font-medium">{text}</span>}
     </div>
   );
 }
 
-export function ButtonLoader({ text = 'Loading...' }: { text?: string }) {
+export function ButtonLoader({ text = 'Loading' }: { text?: string }) {
   return (
     <span className="flex items-center justify-center gap-2">
-      <LoaderCircle className="h-4 w-4 animate-spin motion-reduce:animate-none" />
+      <LoaderCircle className="h-4 w-4 animate-spin" />
       <span>{text}</span>
     </span>
   );

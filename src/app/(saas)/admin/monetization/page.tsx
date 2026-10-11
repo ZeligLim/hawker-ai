@@ -230,7 +230,7 @@ function AdminMonetizationContent() {
  </div>
 
  {loading && shops.length === 0 ? (
- <PageLoader text="Loading venues and platform fee models…" fullHeight={false} />
+ <PageLoader text="Loading venues and platform fee models" fullHeight={false} />
  ) : shops.length === 0 ? (
  <div className="rounded-3xl bg-white p-12 text-center text-[#86868b] .08] shadow-xs">
  <Building2 className="w-8 h-8 text-[#86868b] mx-auto mb-3" />

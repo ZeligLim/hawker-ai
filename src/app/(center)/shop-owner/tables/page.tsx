@@ -205,7 +205,7 @@ export default function TablesManagementPage() {
   };
 
   if (loading) {
-    return <PageLoader text="Loading your tables…" />;
+    return <PageLoader text="Loading your tables" />;
   }
 
   return (
@@ -286,7 +286,7 @@ export default function TablesManagementPage() {
                   disabled={creating || !newTableNumber.trim()}
                   className="w-full sm:w-auto h-[46px] px-6 rounded-full bg-[#111827] text-white text-sm font-semibold shadow-xs hover:bg-black disabled:opacity-50 flex items-center justify-center gap-2"
                 >
-                  {creating ? <ButtonLoader text="Adding..." /> : <><Plus className="w-4 h-4" /> Add Table</>}
+                  {creating ? <ButtonLoader text="Adding" /> : <><Plus className="w-4 h-4" /> Add Table</>}
                 </button>
               </form>
               

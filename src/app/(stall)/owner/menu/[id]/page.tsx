@@ -264,7 +264,7 @@ export default function OwnerDishEditorPage() {
  </div>
  </section>
  {error ? <p className="text-sm text-[#9f1239]">{error}</p> : null}
- <button type="submit" disabled={isSaving} className="flex w-full items-center justify-center rounded-full bg-[#111827] px-4 py-3 text-sm font-semibold text-white disabled:opacity-60">{isSaving ? <LoaderCircle className="h-4 w-4 " /> : 'Save dish'}</button>
+ <button type="submit" disabled={isSaving} className="flex w-full items-center justify-center rounded-full bg-[#111827] px-4 py-3 text-sm font-semibold text-white disabled:opacity-60">{isSaving ? <LoaderCircle className="h-4 w-4 animate-spin" /> : 'Save dish'}</button>
  </form>
  </div>
  </main>

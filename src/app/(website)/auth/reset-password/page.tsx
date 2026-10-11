@@ -108,7 +108,7 @@ export default function ResetPasswordPage() {
 
  {isChecking ? (
  <div className="mt-6 flex items-center justify-center gap-2 text-sm text-[#6e6e73]">
- <LoaderCircle className="h-4 w-4 " />
+ <LoaderCircle className="h-4 w-4 animate-spin" />
  Verifying your reset link...
  </div>
  ) : isRecoverySession ? (
@@ -162,7 +162,7 @@ export default function ResetPasswordPage() {
  disabled={isSubmitting}
  className="flex w-full items-center justify-center rounded-full bg-[#111827] px-4 py-3 text-sm font-medium text-white shadow-[0_12px_24px_rgba(17,24,39,0.18)] disabled:cursor-not-allowed disabled:opacity-60"
  >
- {isSubmitting ? <LoaderCircle className="h-4 w-4 " /> : 'Update password'}
+ {isSubmitting ? <LoaderCircle className="h-4 w-4 animate-spin" /> : 'Update password'}
  </button>
  </form>
  ) : (

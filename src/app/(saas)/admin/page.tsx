@@ -227,7 +227,7 @@ export default function AdminDashboardPage() {
  )}
 
  {loading ? (
- <PageLoader text="Loading venues and fee policies…" fullHeight={false} />
+ <PageLoader text="Loading venues and fee policies" fullHeight={false} />
  ) : shops.length === 0 ? (
  <div className="p-12 text-center text-[#86868b]">
  <p className="text-xs sm:text-sm">No food halls found on the platform.</p>

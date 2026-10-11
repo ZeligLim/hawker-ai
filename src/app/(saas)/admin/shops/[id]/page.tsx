@@ -155,7 +155,7 @@ export default function AdminShopDetailPage({ params }: { params: Promise<{ id: 
 
  if (loading) {
  return (
- <PageLoader text="Loading venue details and fee configuration…" fullHeight={false} />
+ <PageLoader text="Loading venue details and fee configuration" fullHeight={false} />
  );
  }
 

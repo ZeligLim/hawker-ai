@@ -102,7 +102,7 @@ export default function ProfileSettingsPage() {
  {error ? <p className="mt-3 text-sm text-[#9f1239]">{error}</p> : null}
  {message ? <p className="mt-3 text-sm text-[#166534]">{message}</p> : null}
  <button type="submit" disabled={isSaving} className="mt-5 flex w-full items-center justify-center rounded-full bg-[#111827] px-4 py-3 text-sm font-semibold text-white disabled:opacity-60">
- {isSaving ? <LoaderCircle className="h-4 w-4 " /> : 'Save settings'}
+ {isSaving ? <LoaderCircle className="h-4 w-4 animate-spin" /> : 'Save settings'}
  </button>
 
  </form>

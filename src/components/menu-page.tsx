@@ -225,7 +225,7 @@ function MenuContent() {
  </div>
 
  {loading ? (
- <PageLoader text="Loading menu items..." fullHeight={false} />
+ <PageLoader text="Loading menu items" fullHeight={false} />
  ) : (
  <section className="mt-8 space-y-8">
  {categories.map(({ id, label, icon: Icon }) => {

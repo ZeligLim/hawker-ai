@@ -227,7 +227,7 @@ export default function ShopOwnerDashboard() {
  </div>
 
  {loading ? (
- <PageLoader text="Loading venues…" fullHeight={false} />
+ <PageLoader text="Loading venues" fullHeight={false} />
  ) : shops.length === 0 ? (
  <div className="rounded-2xl bg-[#f5f5f7] p-8 text-center text-xs text-[#6e6e73]">
  <Store className="w-8 h-8 text-[#86868b] mx-auto mb-2 opacity-50" />

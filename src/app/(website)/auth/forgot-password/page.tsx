@@ -89,7 +89,7 @@ export default function ForgotPasswordPage() {
  disabled={isSubmitting}
  className="flex w-full items-center justify-center rounded-full bg-[#111827] px-4 py-3 text-sm font-medium text-white shadow-[0_12px_24px_rgba(17,24,39,0.18)] disabled:cursor-not-allowed disabled:opacity-60"
  >
- {isSubmitting ? <LoaderCircle className="h-4 w-4 " /> : 'Send reset link'}
+ {isSubmitting ? <LoaderCircle className="h-4 w-4 animate-spin" /> : 'Send reset link'}
  </button>
  </form>
 

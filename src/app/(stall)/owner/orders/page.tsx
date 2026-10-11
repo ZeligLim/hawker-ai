@@ -245,7 +245,7 @@ export default function OwnerOrdersPage() {
  {/* Tickets Section */}
  <section className="mt-6">
  {loading ? (
- <PageLoader text="Loading kitchen tickets…" fullHeight={false} />
+ <PageLoader text="Loading kitchen tickets" fullHeight={false} />
  ) : visibleOrders.length === 0 ? (
  <div className="rounded-[24px] bg-white p-10 text-center shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
  <PackageCheck className="mx-auto h-8 w-8 text-[#86868b]" />

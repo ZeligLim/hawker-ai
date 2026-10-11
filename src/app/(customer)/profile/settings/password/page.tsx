@@ -152,7 +152,7 @@ export default function ChangePasswordPage() {
               className="mt-5 flex w-full items-center justify-center rounded-full bg-[#111827] px-4 py-3 text-sm font-semibold text-white disabled:opacity-60"
             >
               {isSaving ? (
-                <LoaderCircle className="h-4 w-4 " />
+                <LoaderCircle className="h-4 w-4 animate-spin" />
               ) : (
                 "Save password"
               )}

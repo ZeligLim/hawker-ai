@@ -704,7 +704,7 @@ function LaunchpadContent() {
  >
  {isSubmitting ? (
  <>
- <LoaderCircle className="w-3.5 h-3.5 " />
+ <LoaderCircle className="w-3.5 h-3.5 animate-spin" />
  Generating Token & Launching...
  </>
  ) : (
@@ -897,7 +897,7 @@ export default function SubscribePage() {
  fallback={
  <div className="min-h-screen bg-[#f5f5f7] flex items-center justify-center text-xs text-[#86868b]">
  <div className="flex items-center gap-2">
- <LoaderCircle className="w-4 h-4 text-[#0071e3]" />
+ <LoaderCircle className="w-4 h-4 text-[#0071e3] animate-spin" />
  <span>Loading Hawker Launchpad...</span>
  </div>
  </div>

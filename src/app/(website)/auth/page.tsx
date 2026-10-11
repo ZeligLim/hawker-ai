@@ -144,7 +144,7 @@ function AuthForm() {
  disabled={isGoogleLoading || isSubmitting}
  className="mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-[#f5f5f7] px-4 py-3 text-sm font-medium text-[#1d1d1f] disabled:cursor-not-allowed disabled:opacity-60"
  >
- {isGoogleLoading ? <LoaderCircle className="h-4 w-4 " /> : <GoogleIcon />}
+ {isGoogleLoading ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <GoogleIcon />}
  Continue with Google
  </button>
 
@@ -225,7 +225,7 @@ function AuthForm() {
  disabled={isSubmitting || isGoogleLoading}
  className="flex w-full items-center justify-center rounded-full bg-[#111827] px-4 py-3 text-sm font-medium text-white shadow-[0_12px_24px_rgba(17,24,39,0.18)] disabled:cursor-not-allowed disabled:opacity-60"
  >
- {isSubmitting ? <LoaderCircle className="h-4 w-4 " /> : mode === 'signin' ? 'Sign In' : 'Sign Up'}
+ {isSubmitting ? <LoaderCircle className="h-4 w-4 animate-spin" /> : mode === 'signin' ? 'Sign In' : 'Sign Up'}
  </button>
  </form>
 
@@ -253,8 +253,8 @@ export default function AuthPage() {
  <div className="mx-auto max-w-[430px]">
  <Suspense fallback={
  <div className="rounded-[32px] bg-white p-8 text-center shadow-[0_18px_40px_rgba(15,23,42,0.08)]">
- <LoaderCircle className="mx-auto h-8 w-8 text-[#1d1d1f]" />
- <p className="mt-4 text-sm text-[#6e6e73]">Loading...</p>
+ <LoaderCircle className="mx-auto h-8 w-8 text-[#1d1d1f] animate-spin" />
+ <p className="mt-4 text-sm text-[#6e6e73]">Loading</p>
  </div>
  }>
  <AuthForm />

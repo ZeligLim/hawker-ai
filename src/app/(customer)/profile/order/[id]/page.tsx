@@ -8,6 +8,7 @@ import {
   type ReceiptData,
 } from "@/components/customer-receipt";
 import { supabase } from "@/lib/supabase/client";
+import { PageLoader } from "@/components/page-loader";
 
 function mapOrderToReceipt(payload: any, targetId: string): ReceiptData | null {
   const orders = Array.isArray(payload?.orders) ? payload.orders : [];
@@ -94,12 +95,8 @@ export default function OrderDetailPage() {
   if (isLoading) {
     return (
       <main className="min-h-screen bg-[#f5f5f7] px-4 pb-28 pt-8 text-black">
-        <div className="mx-auto max-w-[480px]">
-          <div className="rounded-3xl bg-neutral-50 p-6 shadow-sm">
-            <p className="text-sm text-neutral-500">
-              Loading your order receipt…
-            </p>
-          </div>
+        <div className="mx-auto max-w-[480px] w-full mt-10">
+          <PageLoader text="Loading your order receipt" fullHeight={false} />
         </div>
       </main>
     );

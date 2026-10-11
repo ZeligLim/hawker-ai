@@ -56,7 +56,7 @@ function CustomerShellContent({ children }: { children: React.ReactNode }) {
 
 export function CustomerShell({ children }: { children: React.ReactNode }) {
   return (
-    <Suspense fallback={<ComponentLoader text="Loading..." />}>
+    <Suspense fallback={<ComponentLoader text="Loading" />}>
       <CustomerShellContent>{children}</CustomerShellContent>
     </Suspense>
   );

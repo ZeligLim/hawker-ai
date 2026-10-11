@@ -254,7 +254,7 @@ export default function ShopOwnerAnalyticsPage() {
  fallback={
  <main className="min-h-screen bg-[#f5f5f7] px-4 pb-32 pt-5 sm:px-6 text-[#1d1d1f]">
  <div className="mx-auto max-w-7xl flex items-center justify-center min-h-[50vh] text-xs text-[#6e6e73]">
- <LoaderCircle className="h-5 w-5 mr-2 text-[#111827]" />
+ <LoaderCircle className="h-5 w-5 mr-2 text-[#111827] animate-spin" />
  Loading analytics...
  </div>
  </main>

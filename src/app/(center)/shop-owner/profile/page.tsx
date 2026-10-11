@@ -222,7 +222,7 @@ export default function ShopOwnerProfilePage() {
   if (loading) {
     return <main className="min-h-screen bg-[#f5f5f7] px-4 pb-32 pt-5 text-[#1d1d1f]">
       <Script src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`} strategy="lazyOnload" />
-      <PageLoader text="Loading shop information…" />
+      <PageLoader text="Loading shop information" />
     </main>;
   }
 

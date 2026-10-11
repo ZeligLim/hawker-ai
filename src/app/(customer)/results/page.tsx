@@ -156,7 +156,7 @@ function ResultsContent() {
  </div>
 
  {loading && (
- <PageLoader text="Finding hawker matches for you…" fullHeight={false} />
+ <PageLoader text="Finding hawker matches for you" fullHeight={false} />
  )}
 
  {error && (

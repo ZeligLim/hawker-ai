@@ -62,7 +62,7 @@ export default function AuthCallbackPage() {
  <div className="mx-auto flex min-h-[80vh] max-w-[420px] items-center justify-center">
  <div className="w-full rounded-[30px] bg-white p-6 text-center shadow-[0_16px_40px_rgba(15,23,42,0.06)]">
  <div className="flex items-center justify-center">
- <LoaderCircle className="h-8 w-8 text-[#1d1d1f]" />
+ <LoaderCircle className="h-8 w-8 text-[#1d1d1f] animate-spin" />
  </div>
  <p className="mt-4 text-sm text-[#6e6e73]">{message}</p>
  </div>

@@ -115,7 +115,7 @@ function JoinBoothContent() {
  return (
  <main className="min-h-screen bg-[#f5f5f7] px-4 py-12 flex items-center justify-center text-[#1d1d1f]">
  <div className="flex items-center gap-2.5 text-xs text-[#86868b]">
- <LoaderCircle className="w-4 h-4 text-[#0071e3]" />
+ <LoaderCircle className="w-4 h-4 text-[#0071e3] animate-spin" />
  <span>Validating stall credentials…</span>
  </div>
  </main>
@@ -234,7 +234,7 @@ function JoinBoothContent() {
  >
  {isLoading ? (
  <>
- <LoaderCircle className="w-3.5 h-3.5 " />
+ <LoaderCircle className="w-3.5 h-3.5 animate-spin" />
  Validating Token…
  </>
  ) : isSuccess ? (
@@ -271,7 +271,7 @@ export default function JoinBoothPage() {
  fallback={
  <main className="min-h-screen bg-[#f5f5f7] px-4 py-12 flex items-center justify-center text-[#1d1d1f]">
  <div className="flex items-center gap-2.5 text-xs text-[#86868b]">
- <LoaderCircle className="w-4 h-4 text-[#0071e3]" />
+ <LoaderCircle className="w-4 h-4 text-[#0071e3] animate-spin" />
  <span>Loading invitation portal…</span>
  </div>
  </main>

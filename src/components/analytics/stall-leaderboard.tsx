@@ -31,7 +31,7 @@ export function StallLeaderboard({
 
  {loading ? (
  <div className="flex items-center justify-center p-12 text-xs text-[#86868b]">
- <LoaderCircle className="w-4 h-4 mr-2 text-[#111827]" />
+ <LoaderCircle className="w-4 h-4 mr-2 text-[#111827] animate-spin" />
  Loading performance data…
  </div>
  ) : booths.length === 0 ? (
