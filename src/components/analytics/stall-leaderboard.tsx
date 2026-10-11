@@ -26,7 +26,7 @@ export function StallLeaderboard({
  const maxRevenue = booths.length > 0 ? booths[0].periodRevenue : 0;
 
  return (
- <div className="rounded-[26px] bg-white p-5 sm:p-6 shadow-xs">
+ <div className="rounded-[20px] bg-white p-4 sm:p-5">
  
 
  {loading ? (
@@ -56,33 +56,29 @@ export function StallLeaderboard({
  <div
  key={booth.id || booth.name}
  onClick={() => setSelectedBoothId(isSelected ? '' : booth.id)}
- className={`flex flex-col justify-between rounded-2xl cursor-pointer p-3.5 sm:p-4 ${
- isSelected
- ? 'bg-white shadow-md '
- : 'bg-[#f5f5f7]/70 hover:bg-[#f5f5f7] hover:shadow-2xs'
- }`}
+ className={`flex flex-col justify-between rounded-[16px] cursor-pointer p-3 ${ isSelected ? 'bg-white ' : 'bg-[#f5f5f7]/70 hover:bg-[#f5f5f7] ' }`}
  >
  <div>
  <div className="flex items-center justify-between gap-2">
- <h3 className="font-semibold text-[#1d1d1f] text-sm truncate">
+ <h3 className="font-semibold text-[#1d1d1f] text-[13px] leading-tight truncate">
  {booth.name}
  </h3>
  <span
- className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold ${medalClass}`}
+ className={`shrink-0 rounded-full px-1.5 py-0.5 text-[9px] font-bold ${medalClass}`}
  >
  #{index + 1}
  </span>
  </div>
- <p className="mt-1 text-xs text-[#86868b]">
+ <p className="text-[11px] leading-snug text-[#86868b] mt-0.5">
  {booth.periodOrders} orders &bull; RM {stallAvgTicket.toFixed(2)} avg
  </p>
  </div>
 
- <div className="mt-4">
- <p className="text-lg font-bold tracking-tight text-[#1d1d1f]">
+ <div className="mt-2.5 flex flex-col">
+ <p className="text-sm font-bold tracking-tight text-[#1d1d1f] leading-none mb-1.5">
  RM {booth.periodRevenue.toFixed(2)}
  </p>
- <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-black/5">
+ <div className="h-1 w-full overflow-hidden rounded-full bg-black/5">
  <div
  className="h-full bg-emerald-500 ease-out"
  style={{ width: `${relativeWidth}%` }}

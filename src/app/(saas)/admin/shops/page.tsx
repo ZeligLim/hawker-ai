@@ -72,9 +72,9 @@ export default function AdminShopsListPage() {
  return (
  <div className="space-y-6 sm:space-y-8">
  {/* Header */}
- <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 .06] pb-5">
+ <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-5">
  <div>
- <span className="text-xs font-semibold text-[#86868b] bg-black/[0.04] .06] px-2.5 py-0.5 rounded-full">
+ <span className="text-xs font-semibold text-[#86868b] bg-black/[0.04] px-2.5 py-0.5 rounded-full">
  Platform directory
  </span>
  <h1 className="mt-2 text-2xl sm:text-3xl font-semibold text-[#1d1d1f] tracking-[-0.03em]">
@@ -89,7 +89,7 @@ export default function AdminShopsListPage() {
  type="button"
  onClick={() => void handleRefresh()}
  disabled={loading}
- className="inline-flex items-center gap-1.5 rounded-full bg-white px-3.5 py-2 text-xs font-semibold text-[#1d1d1f] hover:bg-black/[0.03] shadow-xs"
+ className="inline-flex items-center gap-1.5 rounded-full bg-white px-3.5 py-2 text-xs font-semibold text-[#1d1d1f] hover:bg-black/[0.03] "
  >
  <RefreshCw className={`w-3.5 h-3.5 text-[#6e6e73] ${loading ? '' : ''}`} />
  Refresh
@@ -104,7 +104,7 @@ export default function AdminShopsListPage() {
  {error}
  </div>
  ) : shops.length === 0 ? (
- <div className="rounded-3xl bg-white p-12 text-center text-[#86868b] .08] shadow-xs">
+ <div className="rounded-3xl bg-white p-12 text-center text-[#86868b] ">
  <Building2 className="w-8 h-8 text-[#86868b] mx-auto mb-3" />
  <p className="text-base font-semibold text-[#1d1d1f]">No Venues Found</p>
  </div>
@@ -123,7 +123,7 @@ export default function AdminShopsListPage() {
  return (
  <div
  key={shop.id}
- className="rounded-3xl bg-white p-6 shadow-sm flex flex-col justify-between gap-5 hover:bg-neutral-50 "
+ className="rounded-3xl bg-white p-6 flex flex-col justify-between gap-5 hover:bg-neutral-50 "
  >
  <div>
  <div className="flex items-start justify-between gap-3">
@@ -132,11 +132,7 @@ export default function AdminShopsListPage() {
  <p className="text-xs text-[#86868b] font-mono mt-0.5">/{shop.slug ?? 'unknown'}</p>
  </div>
  <span
- className={`text-[11px] font-semibold px-2.5 py-0.5 rounded-full shrink-0 ${
- isDiner
- ? 'bg-blue-50 text-blue-700 '
- : 'bg-emerald-50 text-emerald-700 '
- }`}
+ className={`text-[11px] font-semibold px-2.5 py-0.5 rounded-full shrink-0 ${ isDiner ? 'bg-blue-50 text-blue-700 ' : 'bg-emerald-50 text-emerald-700 ' }`}
  >
  {isDiner ? 'Diner Surcharge' : 'Stall Commission'}
  </span>
@@ -158,10 +154,10 @@ export default function AdminShopsListPage() {
  </div>
  </div>
 
- <div className="pt-4 .06] flex items-center gap-2">
+ <div className="pt-4 flex items-center gap-2">
  <Link
  href={`/admin/shops/${shop.id}` as any}
- className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl bg-white px-3 py-2 text-xs font-semibold text-[#1d1d1f] hover:bg-black/[0.03] shadow-xs"
+ className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl bg-white px-3 py-2 text-xs font-semibold text-[#1d1d1f] hover:bg-black/[0.03] "
  >
  <span>Details</span>
  <ChevronRight className="w-3.5 h-3.5 text-[#6e6e73]" />
@@ -169,7 +165,7 @@ export default function AdminShopsListPage() {
 
  <Link
  href={`/admin/monetization?shopId=${shop.id}` as any}
- className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl bg-[#1d1d1f] px-3 py-2 text-xs font-semibold text-white hover:bg-black shadow-xs"
+ className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl bg-[#1d1d1f] px-3 py-2 text-xs font-semibold text-white hover:bg-black "
  >
  <Sliders className="w-3.5 h-3.5" />
  <span>Fees</span>

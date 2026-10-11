@@ -490,7 +490,7 @@ export default function ShopOwnerBoothsPage() {
  <PageLoader text="Loading booths" fullHeight={false} />
  </div>
  ) : boothList.length === 0 ? (
- <div className="col-span-full rounded-[24px] bg-white p-8 text-center shadow-[0_12px_26px_rgba(15,23,42,0.04)] /[0.04]">
+ <div className="col-span-full rounded-[24px] bg-white p-8 text-center ">
  <Store className="h-10 w-10 text-[#86868b] mx-auto mb-3" />
  <p className="text-base font-semibold text-[#1d1d1f] truncate">No booth slots created yet</p>
  <p className="mt-1 text-xs text-[#6e6e73] max-w-sm mx-auto truncate">
@@ -499,7 +499,7 @@ export default function ShopOwnerBoothsPage() {
  <button
  type="button"
  onClick={handleOpenAddSlot}
- className="mt-4 inline-flex h-9 items-center gap-2 rounded-full bg-[#111827] px-4 text-xs font-semibold text-white hover:bg-black shadow-xs"
+ className="mt-4 inline-flex h-9 items-center gap-2 rounded-full bg-[#111827] px-4 text-xs font-semibold text-white hover:bg-black "
  >
  <Plus className="h-3.5 w-3.5" /> Add Booth Slot
  </button>
@@ -517,7 +517,7 @@ export default function ShopOwnerBoothsPage() {
  return (
  <article
  key={booth.id}
- className="flex flex-col justify-between rounded-[24px] bg-white p-4 sm:p-5 shadow-[0_12px_26px_rgba(15,23,42,0.04)] /[0.04] hover:shadow-[0_16px_32px_rgba(15,23,42,0.06)]"
+ className="flex flex-col justify-between rounded-[24px] bg-white p-4 sm:p-5 "
  >
  {/* Booth Slot Header */}
  <div className="flex items-center justify-between gap-2.5">
@@ -550,11 +550,7 @@ export default function ShopOwnerBoothsPage() {
  ? 'Set Inactive (Takes effect at 3:00 AM)'
  : 'Set Active'
  }
- className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-semibold ${
- booth.isActive !== false
- ? 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
- : 'bg-black text-white'
- }`}
+ className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-semibold ${ booth.isActive !== false ? 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200' : 'bg-black text-white' }`}
  >
  <ShieldAlert className="w-3 h-3" />
  <span>{booth.isActive !== false ? 'Active' : 'Inactive'}</span>
@@ -569,7 +565,7 @@ export default function ShopOwnerBoothsPage() {
  <button
  type="button"
  onClick={() => setRentModalBooth(booth)}
- className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#f5f5f7] text-[#1d1d1f] hover:bg-black/5 shadow-xs shrink-0"
+ className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#f5f5f7] text-[#1d1d1f] hover:bg-black/5 shrink-0"
  aria-label="Charge Rent"
  title="Issue Rent Bill"
  >
@@ -579,7 +575,7 @@ export default function ShopOwnerBoothsPage() {
  <button
  type="button"
  onClick={() => setEditing(booth)}
- className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#f5f5f7] text-[#1d1d1f] hover:bg-black/5 shadow-xs shrink-0" aria-label="Edit Slot"
+ className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#f5f5f7] text-[#1d1d1f] hover:bg-black/5 shrink-0" aria-label="Edit Slot"
  title="Edit slot identifier"
  >
  <Pencil className="h-3.5 w-3.5 text-[#1d1d1f]" />
@@ -591,7 +587,7 @@ export default function ShopOwnerBoothsPage() {
  setBoothToDelete(booth);
  setDeleteError('');
  }}
- className="flex h-8 w-8 items-center justify-center rounded-xl bg-red-50/80 text-red-600 hover:bg-red-100 shadow-xs shrink-0"
+ className="flex h-8 w-8 items-center justify-center rounded-xl bg-red-50/80 text-red-600 hover:bg-red-100 shrink-0"
  aria-label="Delete Booth Slot"
  title={`Delete ${booth.name}`}
  >
@@ -628,14 +624,14 @@ export default function ShopOwnerBoothsPage() {
  }
  }}
  placeholder="vendor@email.com"
- className="h-11 w-full rounded-full bg-[#f5f5f7] shadow-sm py-2 pl-9 pr-4 text-sm text-[#1d1d1f] placeholder:text-[#86868b] outline-none hover:bg-neutral-200 focus:bg-neutral-200"
+ className="h-11 w-full rounded-full bg-[#f5f5f7] py-2 pl-9 pr-4 text-sm text-[#1d1d1f] placeholder:text-[#86868b] hover:bg-neutral-200 focus:bg-neutral-200"
  />
  </div>
  <button
  type="button"
  disabled={isSending}
  onClick={() => void handleSendSetupLink(booth.id)}
- className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#111827] text-white hover:bg-black disabled:opacity-50 shadow-xs"
+ className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#111827] text-white hover:bg-black disabled:opacity-50 "
  aria-label="Send setup link"
  title="Send setup link"
  >
@@ -649,11 +645,7 @@ export default function ShopOwnerBoothsPage() {
 
  {feedback && (
  <div
- className={`mt-2.5 flex flex-col gap-1.5 rounded-xl p-2.5 text-xs ${
- feedback.type === 'success'
- ? 'bg-[#30d158]/10 text-[#166534] -[#30d158]/20'
- : 'bg-red-50 text-red-700 '
- }`}
+ className={`mt-2.5 flex flex-col gap-1.5 rounded-xl p-2.5 text-xs ${ feedback.type === 'success' ? 'bg-[#30d158]/10 text-[#166534] -[#30d158]/20' : 'bg-red-50 text-red-700 ' }`}
  >
  <div className="flex items-center gap-2 min-w-0 flex-1">
  {feedback.delivered ? (
@@ -695,7 +687,7 @@ export default function ShopOwnerBoothsPage() {
  return (
  <div
  key={member.userId || member.email}
- className="flex items-center justify-between gap-2 rounded-xl bg-[#f5f5f7]/60 px-3 py-1.5 text-xs /[0.03]"
+ className="flex items-center justify-between gap-2 rounded-xl bg-[#f5f5f7]/60 px-3 py-1.5 text-xs"
  >
  <div className="flex items-center gap-2 min-w-0">
  <span className="h-2 w-2 rounded-full bg-[#30d158] shrink-0" />
@@ -713,7 +705,7 @@ export default function ShopOwnerBoothsPage() {
  onClick={() => void handleRemoveAccess(booth.id, member.email)}
  title="Revoke access"
  aria-label="Revoke access"
- className="flex h-7 w-7 items-center justify-center rounded-lg bg-red-50/80 text-red-600 hover:bg-red-100 shrink-0 disabled:opacity-50 shadow-xs"
+ className="flex h-7 w-7 items-center justify-center rounded-lg bg-red-50/80 text-red-600 hover:bg-red-100 shrink-0 disabled:opacity-50 "
  >
  {isRemoving ? (
  <LoaderCircle className="h-3.5 w-3.5 animate-spin" />
@@ -735,7 +727,7 @@ export default function ShopOwnerBoothsPage() {
  return (
  <div
  key={invite.id}
- className="flex items-center justify-between gap-2 rounded-xl bg-[#f5f5f7]/60 px-3 py-1.5 text-xs /[0.03]"
+ className="flex items-center justify-between gap-2 rounded-xl bg-[#f5f5f7]/60 px-3 py-1.5 text-xs"
  >
  <div className="flex items-center gap-2 min-w-0">
  <span className="h-2 w-2 rounded-full bg-amber-500 shrink-0" />
@@ -758,7 +750,7 @@ export default function ShopOwnerBoothsPage() {
  }
  title="Copy invitation link"
  aria-label="Copy invitation link"
- className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#e5e5ea] text-[#1d1d1f] hover:bg-[#d1d1d6] shadow-xs shrink-0" >
+ className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#e5e5ea] text-[#1d1d1f] hover:bg-[#d1d1d6] shrink-0" >
  {isCopied ? (
  <Check className="h-3.5 w-3.5 text-emerald-600" />
  ) : (
@@ -771,7 +763,7 @@ export default function ShopOwnerBoothsPage() {
  onClick={() => void handleRemoveAccess(booth.id, invite.email)}
  title="Cancel invitation"
  aria-label="Cancel invitation"
- className="flex h-7 w-7 items-center justify-center rounded-lg bg-red-50/80 text-red-600 hover:bg-red-100 shrink-0 disabled:opacity-50 shadow-xs"
+ className="flex h-7 w-7 items-center justify-center rounded-lg bg-red-50/80 text-red-600 hover:bg-red-100 shrink-0 disabled:opacity-50 "
  >
  {isRemoving ? (
  <LoaderCircle className="h-3.5 w-3.5 animate-spin" />
@@ -796,7 +788,7 @@ export default function ShopOwnerBoothsPage() {
  {/* ADD BOOTH SLOT MODAL */}
  {isAddSlotOpen ? (
  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-xs">
- <div className="w-full max-w-md rounded-[28px] bg-white p-4 sm:p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+ <div className="w-full max-w-md rounded-[28px] bg-white p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
  <div className="flex items-center justify-between">
  <div className="flex items-center gap-2">
  <Store className="h-5 w-5 text-[#111827]" />
@@ -821,7 +813,7 @@ export default function ShopOwnerBoothsPage() {
  onChange={(event) =>
  setNewSlot({ ...newSlot, restaurantId: event.target.value })
  }
- className="mt-1.5 w-full rounded-2xl bg-white shadow-sm px-3.5 py-2.5 text-sm outline-none focus:"
+ className="mt-1.5 w-full rounded-2xl bg-white px-3.5 py-2.5 text-sm focus:"
  >
  {shops.map((shop) => (
  <option key={shop.id} value={shop.id}>
@@ -838,7 +830,7 @@ export default function ShopOwnerBoothsPage() {
  value={newSlot.slotName}
  onChange={(event) => setNewSlot({ ...newSlot, slotName: event.target.value })}
  placeholder="e.g. Slot #02, Counter 2"
- className="mt-1.5 w-full rounded-2xl bg-white shadow-sm px-3.5 py-2.5 text-sm outline-none focus:"
+ className="mt-1.5 w-full rounded-2xl bg-white px-3.5 py-2.5 text-sm focus:"
  required
  />
  </label>
@@ -852,7 +844,7 @@ export default function ShopOwnerBoothsPage() {
  setNewSlot({ ...newSlot, vendorEmail: event.target.value })
  }
  placeholder="vendor@stall.com"
- className="mt-1.5 w-full rounded-2xl bg-white shadow-sm px-3.5 py-2.5 text-sm outline-none focus:"
+ className="mt-1.5 w-full rounded-2xl bg-white px-3.5 py-2.5 text-sm focus:"
  />
  <span className="mt-1 block text-[11px] text-[#86868b]">
  If provided, a setup link will be automatically sent to this email upon creation.
@@ -884,7 +876,7 @@ export default function ShopOwnerBoothsPage() {
  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-xs">
  <form
  onSubmit={handleBillRent}
- className="w-full max-w-md rounded-[28px] bg-white p-4 sm:p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto"
+ className="w-full max-w-md rounded-[28px] bg-white p-4 sm:p-6 space-y-4 max-h-[90vh] overflow-y-auto"
  >
  <div className="flex items-center justify-between">
  <h2 className="text-xl font-semibold text-[#1d1d1f]">Issue Rent Bill</h2>
@@ -916,7 +908,7 @@ export default function ShopOwnerBoothsPage() {
  value={rentAmount}
  onChange={(event) => setRentAmount(event.target.value)}
  placeholder="e.g. 500.00"
- className="mt-1.5 w-full rounded-2xl bg-[#f5f5f7] px-3.5 py-2.5 text-sm outline-none focus: focus:]"
+ className="mt-1.5 w-full rounded-2xl bg-[#f5f5f7] px-3.5 py-2.5 text-sm focus: focus:]"
  required
  />
  </label>
@@ -927,7 +919,7 @@ export default function ShopOwnerBoothsPage() {
  value={rentDescription}
  onChange={(event) => setRentDescription(event.target.value)}
  placeholder="e.g. November 2026 Rent"
- className="mt-1.5 w-full rounded-2xl bg-[#f5f5f7] px-3.5 py-2.5 text-sm outline-none focus: focus:]"
+ className="mt-1.5 w-full rounded-2xl bg-[#f5f5f7] px-3.5 py-2.5 text-sm focus: focus:]"
  required
  />
  </label>
@@ -954,7 +946,7 @@ export default function ShopOwnerBoothsPage() {
  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-xs">
  <form
  onSubmit={handleSaveBooth}
- className="w-full max-w-md rounded-[28px] bg-white p-4 sm:p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto"
+ className="w-full max-w-md rounded-[28px] bg-white p-4 sm:p-6 space-y-4 max-h-[90vh] overflow-y-auto"
  >
  <div className="flex items-center justify-between">
  <h2 className="text-xl font-semibold text-[#1d1d1f]">Edit Booth Slot</h2>
@@ -972,7 +964,7 @@ export default function ShopOwnerBoothsPage() {
  <input
  value={editing.name}
  onChange={(event) => setEditing({ ...editing, name: event.target.value })}
- className="mt-1.5 w-full rounded-2xl bg-white shadow-sm px-3.5 py-2.5 text-sm outline-none focus:"
+ className="mt-1.5 w-full rounded-2xl bg-white px-3.5 py-2.5 text-sm focus:"
  />
  </label>
 
@@ -989,7 +981,7 @@ export default function ShopOwnerBoothsPage() {
  {/* DELETE BOOTH SLOT CONFIRMATION MODAL */}
  {boothToDelete ? (
  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-xs">
- <div className="w-full max-w-md rounded-[28px] bg-white p-4 sm:p-6 shadow-2xl space-y-4">
+ <div className="w-full max-w-md rounded-[28px] bg-white p-4 sm:p-6 space-y-4">
  <div className="flex items-center justify-between">
  <div className="flex items-center gap-2.5">
  <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-red-50 text-red-600">
@@ -1040,7 +1032,7 @@ export default function ShopOwnerBoothsPage() {
  type="button"
  disabled={isDeletingBooth}
  onClick={() => void handleDeleteBooth(boothToDelete.id)}
- className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-full bg-red-600 hover:bg-red-700 py-2.5 text-xs font-semibold text-white shadow-sm disabled:opacity-50"
+ className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-full bg-red-600 hover:bg-red-700 py-2.5 text-xs font-semibold text-white disabled:opacity-50"
  >
  {isDeletingBooth ? (
  <>
@@ -1070,7 +1062,7 @@ export default function ShopOwnerBoothsPage() {
  <button
  type="button"
  onClick={handleOpenAddSlot}
- className="fixed bottom-24 sm:bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-[#111827] text-white shadow-lg hover:bg-black "
+ className="fixed bottom-24 sm:bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-[#111827] text-white hover:bg-black "
  aria-label="Add Booth Slot"
  title="Add Booth Slot"
  >

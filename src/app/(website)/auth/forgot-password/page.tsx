@@ -40,7 +40,7 @@ export default function ForgotPasswordPage() {
  return (
  <main className="min-h-screen bg-[#f5f5f7] px-4 py-8 text-[#1d1d1f]">
  <div className="mx-auto max-w-[430px]">
- <div className="rounded-[32px] bg-white p-5 shadow-[0_18px_40px_rgba(15,23,42,0.08)]">
+ <div className="rounded-[32px] bg-white p-5 ">
  <div className="flex items-center justify-center">
  <div className="flex h-14 w-14 items-center justify-center rounded-[18px] bg-[#1d1d1f] text-lg font-semibold text-white">
  H
@@ -67,19 +67,19 @@ export default function ForgotPasswordPage() {
  onChange={(event) => setEmail(event.target.value)}
  placeholder="you@example.com"
  autoComplete="email"
- className="w-full bg-transparent text-sm text-[#1d1d1f] placeholder:text-[#6e6e73] focus:outline-none"
+ className="w-full bg-transparent text-sm text-[#1d1d1f] placeholder:text-[#6e6e73] "
  />
  </div>
  </div>
 
  {error ? (
- <div className="rounded-[18px] ] bg-[#fff1f2] px-3 py-2 text-sm text-[#9f1239]">
+ <div className="rounded-[18px] bg-[#fff1f2] px-3 py-2 text-sm text-[#9f1239]">
  {error}
  </div>
  ) : null}
 
  {success ? (
- <div className="rounded-[18px] ] bg-[#ecfdf5] px-3 py-2 text-sm text-[#166534]">
+ <div className="rounded-[18px] bg-[#ecfdf5] px-3 py-2 text-sm text-[#166534]">
  {success}
  </div>
  ) : null}
@@ -87,7 +87,7 @@ export default function ForgotPasswordPage() {
  <button
  type="submit"
  disabled={isSubmitting}
- className="flex w-full items-center justify-center rounded-full bg-[#111827] px-4 py-3 text-sm font-medium text-white shadow-[0_12px_24px_rgba(17,24,39,0.18)] disabled:cursor-not-allowed disabled:opacity-60"
+ className="flex w-full items-center justify-center rounded-full bg-[#111827] px-4 py-3 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-60"
  >
  {isSubmitting ? <LoaderCircle className="h-4 w-4 animate-spin" /> : 'Send reset link'}
  </button>

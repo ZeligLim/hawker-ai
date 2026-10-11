@@ -17,7 +17,7 @@ export default function AdminProfilePage() {
  <p className="mt-2 text-sm text-[#6e6e73]">Manage your superadmin session.</p>
  </div>
 
- <div className="rounded-3xl bg-white p-6 shadow-sm .04]">
+ <div className="rounded-3xl bg-white p-6 ">
  <div className="flex items-center gap-4">
  <div className="w-16 h-16 rounded-full bg-black/5 flex items-center justify-center text-[#1d1d1f]">
  <User className="w-8 h-8" />
@@ -34,7 +34,7 @@ export default function AdminProfilePage() {
  </div>
  </div>
 
- <div className="rounded-3xl bg-white p-2 shadow-sm .04]">
+ <div className="rounded-3xl bg-white p-2 ">
  <button
  type="button"
  onClick={() => setIsSignOutDialogOpen(true)}
@@ -51,7 +51,7 @@ export default function AdminProfilePage() {
 
  {isSignOutDialogOpen && (
  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 backdrop-blur-xs">
- <div className="w-full max-w-sm rounded-3xl bg-white p-6 text-[#1d1d1f] shadow-2xl .08] ">
+ <div className="w-full max-w-sm rounded-3xl bg-white p-6 text-[#1d1d1f] ">
  <h3 className="text-lg font-semibold tracking-tight text-[#1d1d1f]">Sign out of Superadmin?</h3>
  <p className="mt-2 text-xs text-[#6e6e73] leading-relaxed">
  You will be signed out from your active platform session. You will need to re-authenticate with superadmin credentials to regain access.
@@ -70,7 +70,7 @@ export default function AdminProfilePage() {
  setIsSignOutDialogOpen(false);
  void signOut();
  }}
- className="rounded-full bg-red-600 px-4 py-2 text-xs font-semibold text-white shadow-xs hover:bg-red-700 "
+ className="rounded-full bg-red-600 px-4 py-2 text-xs font-semibold text-white hover:bg-red-700 "
  >
  Sign out
  </button>

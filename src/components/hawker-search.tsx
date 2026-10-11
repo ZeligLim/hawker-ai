@@ -87,7 +87,7 @@ export function HawkerSearch({ initialQuery = 'I want a vegetarian meal under RM
  dishId: dish.id,
  name: dish.name,
  restaurantId: dish.restaurantId ?? '',
-      restaurantName: dish.restaurantName,
+ restaurantName: dish.restaurantName,
  stallName: dish.stallName,
  stallId,
  price: dish.price,
@@ -144,7 +144,7 @@ export function HawkerSearch({ initialQuery = 'I want a vegetarian meal under RM
  return (
  <div className={`${shellBg} min-h-screen `}>
  <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6 lg:px-8">
- <div className={`rounded-[32px]  bg-white/10 p-4 shadow-[0_20px_80px_rgba(15,23,42,0.08)] backdrop-blur-xl sm:p-6 lg:p-8`}>
+ <div className={`rounded-[32px] bg-white/10 p-4 backdrop-blur-xl sm:p-6 lg:p-8`}>
  <header className="mb-6 flex items-center justify-between gap-3">
  <div className="flex items-center gap-3">
  <div className={`flex h-10 w-10 items-center justify-center rounded-full ${isDark ? 'bg-[#f5f5f7] text-[#111214]' : 'bg-[#111827] text-white'}`}>
@@ -162,13 +162,13 @@ export function HawkerSearch({ initialQuery = 'I want a vegetarian meal under RM
  >
  {isDark ? 'Light mode' : 'Dark mode'}
  </button>
- <Link href={resultsHref as any} className="hidden h-11 items-center rounded-full bg-[#007aff] hover:bg-[#0071e3] px-4 text-xs font-semibold text-white shadow-xs active:scale-[0.98] sm:inline-flex">
+ <Link href={resultsHref as any} className="hidden h-11 items-center rounded-full bg-[#007aff] hover:bg-[#0071e3] px-4 text-xs font-semibold text-white active:scale-[0.98] sm:inline-flex">
  Browse results
  </Link>
  </div>
  </header>
 
- <section className={`rounded-[30px]  px-4 py-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)] sm:px-6 sm:py-7 ${isDark ? 'bg-[radial-gradient(circle_at_top,_#111214_0%,_#0d0d10_55%,_#0b0b0d_100%)]' : 'bg-[radial-gradient(circle_at_top,_#ffffff_0%,_#f5f5f7_55%,_#f0f0f2_100%)]'}`}>
+ <section className={`rounded-[30px] px-4 py-5 sm:px-6 sm:py-7 ${isDark ? 'bg-[radial-gradient(circle_at_top,_#111214_0%,_#0d0d10_55%,_#0b0b0d_100%)]' : 'bg-[radial-gradient(circle_at_top,_#ffffff_0%,_#f5f5f7_55%,_#f0f0f2_100%)]'}`}>
  <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
  <div>
  <p className={`text-xs font-semibold ${mutedText}`}>Find your next craving</p>
@@ -185,7 +185,7 @@ export function HawkerSearch({ initialQuery = 'I want a vegetarian meal under RM
  value={query}
  onChange={(event) => setQuery(event.target.value)}
  rows={3}
- className={`w-full resize-none rounded-[22px]  ${inputBg} px-4 py-3 text-base outline-none focus:] ${isDark ? 'shadow-[0_10px_30px_rgba(12,12,15,0.6)]' : 'shadow-[0_10px_30px_rgba(15,23,42,0.04)]'}`}
+ className={`w-full resize-none rounded-[22px] ${inputBg} px-4 py-3 text-base focus:] ${isDark ? '' : ''}`}
  placeholder="I want a vegetarian meal under RM15 with medium spice and halal-friendly options."
  />
  </label>
@@ -203,31 +203,19 @@ export function HawkerSearch({ initialQuery = 'I want a vegetarian meal under RM
  ))}
  </div>
 
- <div className={`flex flex-col gap-3 rounded-[22px]  p-3 sm:flex-row sm:items-center sm:justify-between ${isDark ? 'bg-[#101113]' : 'bg-white/80'}`}>
+ <div className={`flex flex-col gap-3 rounded-[22px] p-3 sm:flex-row sm:items-center sm:justify-between ${isDark ? 'bg-[#101113]' : 'bg-white/80'}`}>
  <div className="flex flex-wrap items-center gap-2">
  <button
  type="button"
  onClick={() => setVegetarian((current) => (current === 'true' ? '' : 'true'))}
- className={`rounded-full px-4 py-2 text-xs font-semibold ${
- vegetarian === 'true'
- ? 'bg-[#007aff] text-white shadow-xs'
- : isDark
- ? 'bg-[#1c1c1e] text-[#8e8e93] hover:text-white'
- : 'bg-[#f2f2f7] text-[#8e8e93] hover:text-[#1d1d1f]'
- }`}
+ className={`rounded-full px-4 py-2 text-xs font-semibold ${ vegetarian === 'true' ? 'bg-[#007aff] text-white ' : isDark ? 'bg-[#1c1c1e] text-[#8e8e93] hover:text-white' : 'bg-[#f2f2f7] text-[#8e8e93] hover:text-[#1d1d1f]' }`}
  >
  Vegetarian
  </button>
  <button
  type="button"
  onClick={() => setHalal((current) => (current === 'true' ? '' : 'true'))}
- className={`rounded-full px-4 py-2 text-xs font-semibold ${
- halal === 'true'
- ? 'bg-[#007aff] text-white shadow-xs'
- : isDark
- ? 'bg-[#1c1c1e] text-[#8e8e93] hover:text-white'
- : 'bg-[#f2f2f7] text-[#8e8e93] hover:text-[#1d1d1f]'
- }`}
+ className={`rounded-full px-4 py-2 text-xs font-semibold ${ halal === 'true' ? 'bg-[#007aff] text-white ' : isDark ? 'bg-[#1c1c1e] text-[#8e8e93] hover:text-white' : 'bg-[#f2f2f7] text-[#8e8e93] hover:text-[#1d1d1f]' }`}
  >
  Halal
  </button>
@@ -238,12 +226,12 @@ export function HawkerSearch({ initialQuery = 'I want a vegetarian meal under RM
  min="0"
  value={maxPrice}
  onChange={(event) => setMaxPrice(event.target.value)}
- className={`w-16 bg-transparent text-right outline-none font-normal ${isDark ? 'text-[#f5f5f7]' : 'text-[#1d1d1f]'}`}
+ className={`w-16 bg-transparent text-right font-normal ${isDark ? 'text-[#f5f5f7]' : 'text-[#1d1d1f]'}`}
  />
  </label>
  <label className={`inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-xs font-semibold ${isDark ? 'bg-[#1c1c1e] text-[#f5f5f7]' : 'bg-[#f2f2f7] text-[#3c3c43]'}`}>
  <span>Heat</span>
- <select value={spiceLevel} onChange={(event) => setSpiceLevel(event.target.value)} className={`bg-transparent outline-none font-normal ${isDark ? 'text-[#f5f5f7]' : 'text-[#1d1d1f]'}`}>
+ <select value={spiceLevel} onChange={(event) => setSpiceLevel(event.target.value)} className={`bg-transparent font-normal ${isDark ? 'text-[#f5f5f7]' : 'text-[#1d1d1f]'}`}>
  <option value="">Any</option>
  {[0, 1, 2, 3, 4, 5].map((level) => (
  <option key={level} value={String(level)}>
@@ -257,9 +245,9 @@ export function HawkerSearch({ initialQuery = 'I want a vegetarian meal under RM
  <div className="flex items-center gap-2">
  <label className={`inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-xs font-semibold ${isDark ? 'bg-[#1c1c1e] text-[#f5f5f7]' : 'bg-[#f2f2f7] text-[#3c3c43]'}`}>
  <span>Results</span>
- <input type="number" min="1" max="20" value={limit} onChange={(event) => setLimit(event.target.value)} className={`w-12 bg-transparent text-right outline-none font-normal ${isDark ? 'text-[#f5f5f7]' : 'text-[#1d1d1f]'}`} />
+ <input type="number" min="1" max="20" value={limit} onChange={(event) => setLimit(event.target.value)} className={`w-12 bg-transparent text-right font-normal ${isDark ? 'text-[#f5f5f7]' : 'text-[#1d1d1f]'}`} />
  </label>
- <button type="submit" disabled={loading} className="flex h-11 items-center justify-center rounded-full bg-[#007aff] hover:bg-[#0071e3] px-6 text-sm font-semibold text-white shadow-xs active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60">
+ <button type="submit" disabled={loading} className="flex h-11 items-center justify-center rounded-full bg-[#007aff] hover:bg-[#0071e3] px-6 text-sm font-semibold text-white active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60">
  {loading ? <ButtonLoader text="Searching" /> : 'Search'}
  </button>
  </div>
@@ -310,7 +298,7 @@ export function HawkerSearch({ initialQuery = 'I want a vegetarian meal under RM
  </div>
 
  {checkoutMessage && (
- <div className="mt-5 rounded-[22px] ] bg-[#ecfdf5] p-3 text-sm font-medium text-[#166534]">
+ <div className="mt-5 rounded-[22px] bg-[#ecfdf5] p-3 text-sm font-medium text-[#166534]">
  {checkoutMessage}
  </div>
  )}

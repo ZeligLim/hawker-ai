@@ -18,7 +18,7 @@ export function RevenueShare({
  booths: any[];
 }) {
  return (
- <div className="rounded-[26px] bg-white p-5 sm:p-6 shadow-xs">
+ <div className="rounded-[26px] bg-white p-5 sm:p-6 ">
  
 
  {totalRevenue === 0 ? (
@@ -51,9 +51,7 @@ export function RevenueShare({
  <div key={booth.id || booth.name} className="flex items-center justify-between text-xs">
  <div className="flex items-center gap-2 min-w-0">
  <span
- className={`h-2.5 w-2.5 rounded-full shrink-0 ${
- colorPalette[idx % colorPalette.length]
- }`}
+ className={`h-2.5 w-2.5 rounded-full shrink-0 ${ colorPalette[idx % colorPalette.length] }`}
  />
  <span className="truncate font-medium text-[#1d1d1f]">{booth.name}</span>
  </div>

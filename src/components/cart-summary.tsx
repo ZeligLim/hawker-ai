@@ -21,7 +21,7 @@ export function CartSummary({
 }) {
  if (items.length === 0) {
  return (
- <aside className="rounded-[30px] ] bg-white p-5 shadow-[0_20px_50px_rgba(15,23,42,0.08)]">
+ <aside className="rounded-[30px] bg-white p-5 ">
  <p className="text-xs font-semibold text-[#86868b]">Your order</p>
  <p className="mt-3 text-base text-[#1d1d1f]">No dishes added yet. Search for something delicious to begin.</p>
  </aside>
@@ -38,7 +38,7 @@ export function CartSummary({
  }, {});
 
  return (
- <aside className="rounded-[30px] ] bg-white p-5 shadow-[0_20px_50px_rgba(15,23,42,0.08)]">
+ <aside className="rounded-[30px] bg-white p-5 ">
  <div className="flex items-center justify-between gap-3">
  <p className="text-xs font-semibold text-[#86868b]">Your order</p>
  <span className="rounded-full bg-[#f5f5f7] px-2 py-1 text-xs font-medium text-[#1d1d1f]">{items.length} items</span>
@@ -68,7 +68,7 @@ export function CartSummary({
  <button
  type="button"
  onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
- className="flex h-7 w-7 items-center justify-center rounded-full bg-[#1d1d1f] hover:bg-black text-base font-semibold text-white shadow-xs active:scale-95 shrink-0"
+ className="flex h-7 w-7 items-center justify-center rounded-full bg-[#1d1d1f] hover:bg-black text-base font-semibold text-white active:scale-95 shrink-0"
  aria-label={`Increase quantity for ${item.name}`}
  >
  +
@@ -81,7 +81,7 @@ export function CartSummary({
  ))}
  </div>
 
- <div className="mt-5 space-y-2 ] pt-4 text-sm text-[#3c3c43]">
+ <div className="mt-5 space-y-2 pt-4 text-sm text-[#3c3c43]">
  <div className="flex items-center justify-between">
  <span>Subtotal</span>
  <span>RM {subtotal.toFixed(2)}</span>
@@ -99,7 +99,7 @@ export function CartSummary({
  <button
  type="button"
  onClick={onCheckout}
- className="mt-5 flex h-11 w-full items-center justify-center rounded-full bg-[#007aff] hover:bg-[#0071e3] px-5 text-sm font-semibold text-white shadow-xs active:scale-[0.98]"
+ className="mt-5 flex h-11 w-full items-center justify-center rounded-full bg-[#007aff] hover:bg-[#0071e3] px-5 text-sm font-semibold text-white active:scale-[0.98]"
  >
  Pay RM {total.toFixed(2)}
  </button>

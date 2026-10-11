@@ -49,111 +49,111 @@ export type MerchantOrderStatus =
  * Separated from Business / Shop entities.
  */
 export interface UserProfile {
-  id: string;
-  email: string | null;
-  displayName: string | null;
-  avatarUrl: string | null;
-  createdAt?: string;
+ id: string;
+ email: string | null;
+ displayName: string | null;
+ avatarUrl: string | null;
+ createdAt?: string;
 }
 
 /**
  * 2. Business Entity: Shop / Hawker Centre / Food Hall
  */
 export interface RestaurantEntity {
-  id: string;
-  name: string;
-  slug: string;
-  address: string;
-  lat: number;
-  lng: number;
-  status?: ShopStatus;
-  feePayer?: 'CUSTOMER' | 'MERCHANT';
-  platformFeeFixed?: number;
-  platformFeePercent?: number;
-  createdAt: string;
+ id: string;
+ name: string;
+ slug: string;
+ address: string;
+ lat: number;
+ lng: number;
+ status?: ShopStatus;
+ feePayer?: 'CUSTOMER' | 'MERCHANT';
+ platformFeeFixed?: number;
+ platformFeePercent?: number;
+ createdAt: string;
 }
 
 /**
  * 3. Business Entity: Stall / Booth within a Shop
  */
 export interface FoodOutletEntity {
-  id: string;
-  restaurantId: string;
-  name: string;
-  handle?: string;
-  feePayer?: 'CUSTOMER' | 'MERCHANT' | null;
-  platformFeeFixed?: number | null;
-  platformFeePercent?: number | null;
-  createdAt: string;
+ id: string;
+ restaurantId: string;
+ name: string;
+ handle?: string;
+ feePayer?: 'CUSTOMER' | 'MERCHANT' | null;
+ platformFeeFixed?: number | null;
+ platformFeePercent?: number | null;
+ createdAt: string;
 }
 
 /**
  * 4. Business Entity: Dish / Menu Item
  */
 export interface DishEntity {
-  id: string;
-  foodOutletId: string;
-  name: string;
-  description: string;
-  price: number;
-  isVegetarian: boolean;
-  isHalal: boolean;
-  spiceLevel: number;
-  proteinGrams: number;
-  imageUrl: string | null;
-  isAvailable: boolean;
-  tags: string[];
-  customizations?: any[];
-  createdAt: string;
+ id: string;
+ foodOutletId: string;
+ name: string;
+ description: string;
+ price: number;
+ isVegetarian: boolean;
+ isHalal: boolean;
+ spiceLevel: number;
+ proteinGrams: number;
+ imageUrl: string | null;
+ isAvailable: boolean;
+ tags: string[];
+ customizations?: any[];
+ createdAt: string;
 }
 
 /**
  * 5. Business Membership: User <-> Shop
  */
 export interface RestaurantMembershipEntity {
-  id: string;
-  userId: string;
-  restaurantId: string;
-  role: 'owner' | 'manager' | 'staff';
-  restaurantName?: string;
-  createdAt: string;
+ id: string;
+ userId: string;
+ restaurantId: string;
+ role: 'owner' | 'manager' | 'staff';
+ restaurantName?: string;
+ createdAt: string;
 }
 
 /**
  * 6. Business Membership: User <-> Stall
  */
 export interface MerchantMembershipEntity {
-  userId: string;
-  foodOutletId: string;
-  role: 'owner' | 'manager' | 'staff';
-  outletName?: string;
-  restaurantId?: string;
-  restaurantName?: string;
-  createdAt: string;
+ userId: string;
+ foodOutletId: string;
+ role: 'owner' | 'manager' | 'staff';
+ outletName?: string;
+ restaurantId?: string;
+ restaurantName?: string;
+ createdAt: string;
 }
 
 /**
  * Composite User Authorization State
  */
 export interface UserAuthorizationState {
-  userId: string;
-  isAuthenticated: boolean;
-  isCustomer: boolean;
-  isStallWorker: boolean;
-  isShopOwner: boolean;
-  stallMemberships: MerchantMembershipEntity[];
-  shopMemberships: RestaurantMembershipEntity[];
+ userId: string;
+ isAuthenticated: boolean;
+ isCustomer: boolean;
+ isStallWorker: boolean;
+ isShopOwner: boolean;
+ stallMemberships: MerchantMembershipEntity[];
+ shopMemberships: RestaurantMembershipEntity[];
 }
 
 /**
  * Client Navigation Boundaries
  */
 export interface ClientNavigationItem {
-  id: string;
-  label: string;
-  href: string;
-  client: ClientAppType;
-  requiresAuth: boolean;
-  requiresStallRole?: boolean;
-  requiresOwnerRole?: boolean;
+ id: string;
+ label: string;
+ href: string;
+ client: ClientAppType;
+ requiresAuth: boolean;
+ requiresStallRole?: boolean;
+ requiresOwnerRole?: boolean;
 }

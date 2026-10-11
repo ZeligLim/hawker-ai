@@ -35,7 +35,7 @@ type MenuItem = {
  id: string;
  foodOutletId: string;
  restaurantId?: string;
-  restaurantName: string;
+ restaurantName: string;
  stallName: string;
  name: string;
  price: number;
@@ -43,8 +43,8 @@ type MenuItem = {
  spiceLevel?: number;
  category: 'main-course' | 'drinks' | 'desserts';
  imageUrl?: string | null;
-  customizations?: any[];
-  isAvailable?: boolean;
+ customizations?: any[];
+ isAvailable?: boolean;
 };
 
 function categorizeDish(name: string, tags: string[] = []): 'main-course' | 'drinks' | 'desserts' {
@@ -98,7 +98,7 @@ function MenuContent() {
  spiceLevel: Number(dish.spice_level ?? 0),
  category: categorizeDish(dish.name, dish.tags),
  imageUrl: dish.image_url ?? null,
-          isAvailable: dish.is_available,
+ isAvailable: dish.is_available,
  customizations: dish.customizations ?? [],
  });
  }
@@ -137,7 +137,7 @@ function MenuContent() {
  dishId: item.id,
  name: item.name,
  restaurantId: item.restaurantId ?? '',
-            restaurantName: item.restaurantName,
+ restaurantName: item.restaurantName,
  stallName: item.stallName,
  stallId: item.foodOutletId,
  price: item.price,
@@ -170,7 +170,7 @@ function MenuContent() {
  customizations: selection.options.map((option) => option.label),
  name: item.name,
  restaurantId: item.restaurantId ?? '',
-            restaurantName: item.restaurantName,
+ restaurantName: item.restaurantName,
  stallName: item.stallName,
  stallId: item.foodOutletId,
  price: selection.price,
@@ -214,7 +214,7 @@ function MenuContent() {
  type="button"
  aria-label={`Browse ${label} category`}
  onClick={() => scrollToCategory(id)}
- className="flex h-11 items-center gap-2 rounded-full bg-white text-black hover:bg-neutral-100 shadow-xs px-4 text-xs font-semibold shrink-0"
+ className="flex h-11 items-center gap-2 rounded-full bg-white text-black hover:bg-neutral-100 px-4 text-xs font-semibold shrink-0"
  >
  <Icon />
  <span>{label}</span>
@@ -235,7 +235,7 @@ function MenuContent() {
  return (
  <section key={id} id={`category-${id}`} className="scroll-mt-24">
  <div className="mb-4 flex items-center gap-2.5">
- <div className="flex h-8 w-8 items-center justify-center rounded-full bg-black text-white shadow-xs">
+ <div className="flex h-8 w-8 items-center justify-center rounded-full bg-black text-white ">
  <Icon />
  </div>
  <h2 className="text-base sm:text-lg font-bold text-[#1d1d1f]">
@@ -259,7 +259,7 @@ function MenuContent() {
  isVegetarian={item.vegetarian}
  spiceLevel={item.spiceLevel}
  imageUrl={item.imageUrl}
-                isAvailable={item.isAvailable}
+ isAvailable={item.isAvailable}
  quantity={quantity}
  onAdd={() => addMenuItem(item)}
  onUpdateQuantity={(delta) =>
@@ -291,7 +291,7 @@ function MenuContent() {
  <div className="fixed bottom-20 left-4 right-4 z-40 mx-auto max-w-md">
  <Link
  href="/orders"
- className="flex h-11 items-center justify-between rounded-full bg-black px-5 text-white shadow-lg hover:bg-neutral-800 "
+ className="flex h-11 items-center justify-between rounded-full bg-black px-5 text-white hover:bg-neutral-800 "
  >
  <div className="flex items-center gap-2">
  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-white/20 text-xs font-bold">

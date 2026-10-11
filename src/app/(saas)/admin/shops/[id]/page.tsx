@@ -168,7 +168,7 @@ export default function AdminShopDetailPage({ params }: { params: Promise<{ id: 
  >
  <ArrowLeft className="w-3.5 h-3.5" /> Back to Venues
  </Link>
- <div className="rounded-3xl bg-red-50 p-8 text-center text-red-700 shadow-xs">
+ <div className="rounded-3xl bg-red-50 p-8 text-center text-red-700 ">
  <AlertCircle className="w-8 h-8 mx-auto mb-2 text-red-600" />
  <h2 className="text-base sm:text-lg font-semibold text-[#1d1d1f]">Venue Not Found</h2>
  <p className="text-xs mt-1 text-[#6e6e73]">{error ?? 'The requested shop does not exist or has been deleted.'}</p>
@@ -180,7 +180,7 @@ export default function AdminShopDetailPage({ params }: { params: Promise<{ id: 
  return (
  <div className="space-y-6 sm:space-y-8">
  {/* Header */}
- <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 .06] pb-5">
+ <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-5">
  <div>
  <Link
  href={'/admin/shops' as any}
@@ -200,7 +200,7 @@ export default function AdminShopDetailPage({ params }: { params: Promise<{ id: 
  type="button"
  onClick={() => void handleRefresh()}
  disabled={loading}
- className="inline-flex items-center gap-1.5 rounded-full bg-white px-3.5 py-2 text-xs font-semibold text-[#1d1d1f] hover:bg-black/[0.03] shadow-xs"
+ className="inline-flex items-center gap-1.5 rounded-full bg-white px-3.5 py-2 text-xs font-semibold text-[#1d1d1f] hover:bg-black/[0.03] "
  >
  <RefreshCw className={`w-3.5 h-3.5 text-[#6e6e73] ${loading ? '' : ''}`} />
  Refresh
@@ -211,8 +211,8 @@ export default function AdminShopDetailPage({ params }: { params: Promise<{ id: 
  <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8">
  {/* Left: Monetization Configurator (7 cols) */}
  <div className="lg:col-span-7 space-y-6">
- <div className="rounded-3xl bg-white p-6 sm:p-7 .08] shadow-xs space-y-6">
- <div className="flex items-center gap-2 .06] pb-4">
+ <div className="rounded-3xl bg-white p-6 sm:p-7 space-y-6">
+ <div className="flex items-center gap-2 pb-4">
  <div className="w-7 h-7 rounded-lg bg-blue-50 text-[#0071e3] flex items-center justify-center">
  <Percent className="h-3.5 w-3.5" />
  </div>
@@ -228,11 +228,7 @@ export default function AdminShopDetailPage({ params }: { params: Promise<{ id: 
  <button
  type="button"
  onClick={() => setFeeMode('percentage')}
- className={`rounded-xl p-3 text-left ${
- feeMode === 'percentage'
- ? 'bg-white text-[#1d1d1f] shadow-xs font-semibold'
- : 'text-[#6e6e73] hover:text-[#1d1d1f] hover:bg-white/40'
- }`}
+ className={`rounded-xl p-3 text-left ${ feeMode === 'percentage' ? 'bg-white text-[#1d1d1f] font-semibold' : 'text-[#6e6e73] hover:text-[#1d1d1f] hover:bg-white/40' }`}
  >
  <div className="flex items-center gap-1.5 text-xs font-semibold">
  <Percent className="h-3.5 w-3.5 text-[#0071e3]" />
@@ -244,11 +240,7 @@ export default function AdminShopDetailPage({ params }: { params: Promise<{ id: 
  <button
  type="button"
  onClick={() => setFeeMode('fixed')}
- className={`rounded-xl p-3 text-left ${
- feeMode === 'fixed'
- ? 'bg-white text-[#1d1d1f] shadow-xs font-semibold'
- : 'text-[#6e6e73] hover:text-[#1d1d1f] hover:bg-white/40'
- }`}
+ className={`rounded-xl p-3 text-left ${ feeMode === 'fixed' ? 'bg-white text-[#1d1d1f] font-semibold' : 'text-[#6e6e73] hover:text-[#1d1d1f] hover:bg-white/40' }`}
  >
  <div className="flex items-center gap-1.5 text-xs font-semibold">
  <DollarSign className="h-3.5 w-3.5 text-emerald-600" />
@@ -260,11 +252,7 @@ export default function AdminShopDetailPage({ params }: { params: Promise<{ id: 
  <button
  type="button"
  onClick={() => setFeeMode('mixed')}
- className={`rounded-xl p-3 text-left ${
- feeMode === 'mixed'
- ? 'bg-white text-[#1d1d1f] shadow-xs font-semibold'
- : 'text-[#6e6e73] hover:text-[#1d1d1f] hover:bg-white/40'
- }`}
+ className={`rounded-xl p-3 text-left ${ feeMode === 'mixed' ? 'bg-white text-[#1d1d1f] font-semibold' : 'text-[#6e6e73] hover:text-[#1d1d1f] hover:bg-white/40' }`}
  >
  <div className="flex items-center gap-1.5 text-xs font-semibold">
  <Sliders className="h-3.5 w-3.5 text-amber-700" />
@@ -290,7 +278,7 @@ export default function AdminShopDetailPage({ params }: { params: Promise<{ id: 
  max="100"
  value={platformFeePercent}
  onChange={(e) => setPlatformFeePercent(Math.max(0, Number(e.target.value)))}
- className="w-full rounded-xl bg-white px-3.5 py-2.5 text-sm font-semibold text-[#1d1d1f] focus:] focus: focus: shadow-xs outline-none "
+ className="w-full rounded-xl bg-white px-3.5 py-2.5 text-sm font-semibold text-[#1d1d1f] focus:] focus: focus: "
  />
  <span className="absolute right-3.5 top-2.5 text-xs font-semibold text-[#86868b]">%</span>
  </div>
@@ -310,7 +298,7 @@ export default function AdminShopDetailPage({ params }: { params: Promise<{ id: 
  min="0"
  value={platformFeeFixed}
  onChange={(e) => setPlatformFeeFixed(Math.max(0, Number(e.target.value)))}
- className="w-full rounded-xl bg-white pl-10 pr-3.5 py-2.5 text-sm font-semibold text-[#1d1d1f] focus:] focus: focus: shadow-xs outline-none "
+ className="w-full rounded-xl bg-white pl-10 pr-3.5 py-2.5 text-sm font-semibold text-[#1d1d1f] focus:] focus: focus: "
  />
  </div>
  </div>
@@ -332,15 +320,11 @@ export default function AdminShopDetailPage({ params }: { params: Promise<{ id: 
  role="switch"
  aria-checked={feePayer === 'MERCHANT'}
  onClick={() => setFeePayer(feePayer === 'CUSTOMER' ? 'MERCHANT' : 'CUSTOMER')}
- className={`relative inline-flex h-8 w-14 flex-shrink-0 cursor-pointer rounded-full focus:outline-none shadow-inner ${
- feePayer === 'MERCHANT' ? 'bg-emerald-600' : 'bg-[#0071e3]'
- }`}
+ className={`relative inline-flex h-8 w-14 flex-shrink-0 cursor-pointer rounded-full ${ feePayer === 'MERCHANT' ? 'bg-emerald-600' : 'bg-[#0071e3]' }`}
  >
  <span
  aria-hidden="true"
- className={`pointer-events-none inline-block h-7 w-7 mt-0.5 ml-0.5 transform rounded-full bg-white shadow-xs ${
- feePayer === 'MERCHANT' ? 'translate-x-6' : 'translate-x-0'
- }`}
+ className={`pointer-events-none inline-block h-7 w-7 mt-0.5 ml-0.5 transform rounded-full bg-white ${ feePayer === 'MERCHANT' ? 'translate-x-6' : 'translate-x-0' }`}
  />
  </button>
  </div>
@@ -359,7 +343,7 @@ export default function AdminShopDetailPage({ params }: { params: Promise<{ id: 
  type="button"
  onClick={() => void handleSaveMonetization()}
  disabled={saving}
- className="inline-flex items-center justify-center gap-2 rounded-full bg-[#1d1d1f] px-5 py-2.5 text-xs sm:text-sm font-semibold text-white shadow-xs hover:bg-black disabled:opacity-50 "
+ className="inline-flex items-center justify-center gap-2 rounded-full bg-[#1d1d1f] px-5 py-2.5 text-xs sm:text-sm font-semibold text-white hover:bg-black disabled:opacity-50 "
  >
  <Save className="h-3.5 w-3.5" />
  <span>{saving ? 'Applying rate changes…' : 'Save Venue Policy'}</span>
@@ -377,18 +361,18 @@ export default function AdminShopDetailPage({ params }: { params: Promise<{ id: 
 
  {/* Right: Live Preview & Venue Info (5 cols) */}
  <div className="lg:col-span-5 space-y-6">
- <div className="rounded-3xl bg-white p-6 .08] shadow-xs space-y-4">
- <div className="flex items-center justify-between .06] pb-3">
+ <div className="rounded-3xl bg-white p-6 space-y-4">
+ <div className="flex items-center justify-between pb-3">
  <div className="flex items-center gap-2">
  <Info className="h-4 w-4 text-[#0071e3]" />
  <h3 className="text-sm font-semibold text-[#1d1d1f]">Live Order Simulation</h3>
  </div>
- <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-black/[0.04] text-[#86868b] .06]">
+ <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-black/[0.04] text-[#86868b]">
  RM 20.00 order
  </span>
  </div>
 
- <div className="space-y-2.5 rounded-2xl bg-[#fafafc] p-4 .06] text-xs">
+ <div className="space-y-2.5 rounded-2xl bg-[#fafafc] p-4 text-xs">
  <div className="flex justify-between text-[#6e6e73]">
  <span>Food Cart Subtotal:</span>
  <span className="font-semibold text-[#1d1d1f]">RM 20.00</span>
@@ -401,7 +385,7 @@ export default function AdminShopDetailPage({ params }: { params: Promise<{ id: 
  <span className="font-semibold">RM {sampleFee.toFixed(2)}</span>
  </div>
 
- <div className="pt-2 .06] flex justify-between font-semibold text-[#1d1d1f]">
+ <div className="pt-2 flex justify-between font-semibold text-[#1d1d1f]">
  <span>Diner Total Bill:</span>
  <span className="text-sm font-bold">RM {sampleCustomerTotal.toFixed(2)}</span>
  </div>
@@ -413,7 +397,7 @@ export default function AdminShopDetailPage({ params }: { params: Promise<{ id: 
  </div>
  </div>
 
- <div className="rounded-3xl bg-white p-6 .08] shadow-xs space-y-3">
+ <div className="rounded-3xl bg-white p-6 space-y-3">
  <h3 className="text-sm font-semibold text-[#1d1d1f]">Venue Details</h3>
  <div className="space-y-2 text-xs text-[#6e6e73]">
  <div className="flex justify-between">

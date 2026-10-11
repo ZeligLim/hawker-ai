@@ -88,11 +88,11 @@ export default function CustomerLandingPage() {
  return (
  <div className="min-h-screen bg-[#f5f5f7] text-[#1d1d1f] antialiased selection:bg-[#0071e3] selection:text-white">
  {/* ── Sticky Customer Navigation Bar (Spacious & Clean) ── */}
- <header className="sticky top-0 z-50 backdrop-blur-2xl bg-[#f5f5f7]/90 .06] ">
+ <header className="sticky top-0 z-50 backdrop-blur-2xl bg-[#f5f5f7]/90 ">
  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between gap-4">
  {/* Logo */}
  <Link href={'/customer' as any} className="flex items-center gap-2.5 shrink-0 group">
- <div className="w-7 h-7 rounded-lg bg-[#0071e3] text-white flex items-center justify-center font-black text-xs tracking-tighter shadow-sm group-hover:scale-105 -transform">
+ <div className="w-7 h-7 rounded-lg bg-[#0071e3] text-white flex items-center justify-center font-black text-xs tracking-tighter group-hover:scale-105 -transform">
  H
  </div>
  <div className="flex items-center gap-2">
@@ -123,7 +123,7 @@ export default function CustomerLandingPage() {
  <div className="hidden sm:flex items-center gap-2.5 shrink-0">
  <Link
  href="/scan"
- className="inline-flex items-center gap-1.5 text-xs font-semibold text-black px-4 py-2 rounded-full bg-neutral-100 hover:bg-neutral-200 shadow-xs"
+ className="inline-flex items-center gap-1.5 text-xs font-semibold text-black px-4 py-2 rounded-full bg-neutral-100 hover:bg-neutral-200 "
  >
  <QrCode className="w-3.5 h-3.5 text-black" />
  <span>Scan QR</span>
@@ -133,7 +133,7 @@ export default function CustomerLandingPage() {
  {isAuthenticated ? (
  <Link
  href="/profile"
- className="flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-neutral-100 hover:bg-neutral-200 text-xs font-semibold text-black shadow-xs "
+ className="flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-neutral-100 hover:bg-neutral-200 text-xs font-semibold text-black "
  >
  <div className="w-2 h-2 rounded-full bg-emerald-500" />
  <span className="truncate max-w-[80px]">{displayName}</span>
@@ -152,7 +152,7 @@ export default function CustomerLandingPage() {
  <div className="flex sm:hidden items-center gap-2">
  <Link
  href="/scan"
- className="inline-flex items-center gap-1 text-xs font-semibold text-[#1d1d1f] bg-white px-2.5 py-1.5 rounded-full shadow-xs"
+ className="inline-flex items-center gap-1 text-xs font-semibold text-[#1d1d1f] bg-white px-2.5 py-1.5 rounded-full "
  aria-label="Scan QR"
  >
  <QrCode className="w-3.5 h-3.5 text-[#0071e3]" />
@@ -172,7 +172,7 @@ export default function CustomerLandingPage() {
 
  {/* Mobile Dropdown Menu */}
  {mobileMenuOpen && (
- <div className="md:hidden .06] bg-[#f5f5f7] px-4 pt-2 pb-6 space-y-3">
+ <div className="md:hidden bg-[#f5f5f7] px-4 pt-2 pb-6 space-y-3">
  <div className="flex flex-col space-y-2 text-sm font-medium text-[#1d1d1f]">
  <a
  href="#how-it-works"
@@ -204,12 +204,12 @@ export default function CustomerLandingPage() {
  </a>
  </div>
 
- <div className="pt-3 .06] flex flex-col gap-2">
+ <div className="pt-3 flex flex-col gap-2">
 
  <a
  href="#food-halls"
  onClick={() => setMobileMenuOpen(false)}
- className="flex items-center justify-center gap-2 py-2.5 rounded-full bg-[#0071e3] text-xs font-semibold text-white shadow-sm"
+ className="flex items-center justify-center gap-2 py-2.5 rounded-full bg-[#0071e3] text-xs font-semibold text-white "
  >
  <Store className="w-4 h-4" />
  Explore Hawker Centres
@@ -260,7 +260,7 @@ export default function CustomerLandingPage() {
  <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3.5">
  <a
  href="#food-halls"
- className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-3 rounded-full text-sm font-semibold text-white bg-[#0071e3] hover:bg-[#0077ed] shadow-[0_2px_12px_rgba(0,113,227,0.28)] hover:shadow-[0_4px_18px_rgba(0,113,227,0.38)]"
+ className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-3 rounded-full text-sm font-semibold text-white bg-[#0071e3] hover:bg-[#0077ed] "
  >
  <Store className="w-4 h-4 mr-2" />
  Explore Hawker Centres
@@ -270,7 +270,7 @@ export default function CustomerLandingPage() {
  </div>
 
  {/* Feature Highlights */}
- <div className="mt-10 pt-6 .06] flex flex-wrap items-center justify-center gap-6 text-xs text-[#6e6e73]">
+ <div className="mt-10 pt-6 flex flex-wrap items-center justify-center gap-6 text-xs text-[#6e6e73]">
  <div className="flex items-center gap-1.5">
  <CheckCircle2 className="w-4 h-4 text-[#30d158]" />
  <span>No App Download</span>
@@ -292,7 +292,7 @@ export default function CustomerLandingPage() {
  </section>
 
  {/* ── HOW ORDERING WORKS (STEP BY STEP) ── */}
- <section id="how-it-works" className="py-16 sm:py-20 bg-white .06]">
+ <section id="how-it-works" className="py-16 sm:py-20 bg-white">
  <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
  <div className="text-center max-w-xl mx-auto mb-12">
  <span className="text-xs font-semibold text-[#0071e3]">
@@ -308,7 +308,7 @@ export default function CustomerLandingPage() {
 
  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
  {/* Step 1 */}
- <div className="p-6 rounded-2xl bg-[#f5f5f7] .04] space-y-3">
+ <div className="p-6 rounded-2xl bg-[#f5f5f7] space-y-3">
  <div className="w-10 h-10 rounded-xl bg-[#0071e3]/10 text-[#0071e3] flex items-center justify-center font-bold text-base">
  1
  </div>
@@ -319,7 +319,7 @@ export default function CustomerLandingPage() {
  </div>
 
  {/* Step 2 */}
- <div className="p-6 rounded-2xl bg-[#f5f5f7] .04] space-y-3">
+ <div className="p-6 rounded-2xl bg-[#f5f5f7] space-y-3">
  <div className="w-10 h-10 rounded-xl bg-[#0071e3]/10 text-[#0071e3] flex items-center justify-center font-bold text-base">
  2
  </div>
@@ -330,7 +330,7 @@ export default function CustomerLandingPage() {
  </div>
 
  {/* Step 3 */}
- <div className="p-6 rounded-2xl bg-[#f5f5f7] .04] space-y-3">
+ <div className="p-6 rounded-2xl bg-[#f5f5f7] space-y-3">
  <div className="w-10 h-10 rounded-xl bg-[#30d158]/15 text-[#248a3d] flex items-center justify-center font-bold text-base">
  3
  </div>
@@ -355,7 +355,7 @@ export default function CustomerLandingPage() {
  </div>
 
  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
- <div className="p-6 rounded-2xl bg-white .06] shadow-sm space-y-2">
+ <div className="p-6 rounded-2xl bg-white space-y-2">
  <div className="w-9 h-9 rounded-lg bg-[#0071e3]/10 text-[#0071e3] flex items-center justify-center font-bold">
  <ShoppingBag className="w-5 h-5" />
  </div>
@@ -365,7 +365,7 @@ export default function CustomerLandingPage() {
  </p>
  </div>
 
- <div className="p-6 rounded-2xl bg-white .06] shadow-sm space-y-2">
+ <div className="p-6 rounded-2xl bg-white space-y-2">
  <div className="w-9 h-9 rounded-lg bg-[#30d158]/15 text-[#248a3d] flex items-center justify-center font-bold">
  <Smartphone className="w-5 h-5" />
  </div>
@@ -375,7 +375,7 @@ export default function CustomerLandingPage() {
  </p>
  </div>
 
- <div className="p-6 rounded-2xl bg-white .06] shadow-sm space-y-2">
+ <div className="p-6 rounded-2xl bg-white space-y-2">
  <div className="w-9 h-9 rounded-lg bg-[#ff9500]/15 text-[#c96f00] flex items-center justify-center font-bold">
  <Clock className="w-5 h-5" />
  </div>
@@ -385,7 +385,7 @@ export default function CustomerLandingPage() {
  </p>
  </div>
 
- <div className="p-6 rounded-2xl bg-white .06] shadow-sm space-y-2">
+ <div className="p-6 rounded-2xl bg-white space-y-2">
  <div className="w-9 h-9 rounded-lg bg-[#5856d6]/15 text-[#5856d6] flex items-center justify-center font-bold">
  <ShieldCheck className="w-5 h-5" />
  </div>
@@ -398,7 +398,7 @@ export default function CustomerLandingPage() {
  </section>
 
  {/* ── POPULAR HAWKER CENTRES & FOOD HALLS ── */}
- <section id="food-halls" className="py-16 sm:py-20 bg-white .06]">
+ <section id="food-halls" className="py-16 sm:py-20 bg-white">
  <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
  <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-3">
  <div>
@@ -425,14 +425,14 @@ export default function CustomerLandingPage() {
  {foodHalls.map((hall) => (
  <div
  key={hall.id}
- className="bg-neutral-50 rounded-3xl p-5 shadow-xs flex flex-col justify-between space-y-4 hover:bg-neutral-100 "
+ className="bg-neutral-50 rounded-3xl p-5 flex flex-col justify-between space-y-4 hover:bg-neutral-100 "
  >
  <div>
  <div className="flex items-center justify-between mb-2">
- <div className="w-9 h-9 rounded-xl bg-white flex items-center justify-center text-black font-bold shadow-xs">
+ <div className="w-9 h-9 rounded-xl bg-white flex items-center justify-center text-black font-bold ">
  <Store className="w-5 h-5" />
  </div>
- <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white text-black shadow-xs">
+ <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white text-black ">
  ★ {hall.rating}
  </span>
  </div>
@@ -458,7 +458,7 @@ export default function CustomerLandingPage() {
 
  <Link
  href={`/stall/${hall.id || 'centre'}/${hall.slug}` as any}
- className="w-full inline-flex items-center justify-center py-2.5 rounded-full bg-white hover:bg-black/[0.02] text-xs font-semibold text-[#1d1d1f] shadow-xs"
+ className="w-full inline-flex items-center justify-center py-2.5 rounded-full bg-white hover:bg-black/[0.02] text-xs font-semibold text-[#1d1d1f] "
  >
  View Food Centre ({hall.stallsCount} {hall.stallsCount === 1 ? 'Stall' : 'Stalls'})
  </Link>
@@ -466,7 +466,7 @@ export default function CustomerLandingPage() {
  ))}
  </div>
  ) : (
- <div className="rounded-2xl .06] bg-[#f5f5f7] p-12 text-center text-xs sm:text-sm text-[#6e6e73]">
+ <div className="rounded-2xl bg-[#f5f5f7] p-12 text-center text-xs sm:text-sm text-[#6e6e73]">
  No active hawker centres available at the moment.
  </div>
  )}
@@ -490,7 +490,7 @@ export default function CustomerLandingPage() {
  return (
  <div
  key={faq.question}
- className="bg-white rounded-2xl .06] overflow-hidden "
+ className="bg-white rounded-2xl overflow-hidden "
  >
  <button
  type="button"
@@ -500,13 +500,11 @@ export default function CustomerLandingPage() {
  >
  <span>{faq.question}</span>
  <ChevronDown
- className={`w-4 h-4 text-[#86868b] shrink-0 -transform ${
- isOpen ? 'rotate-180' : ''
- }`}
+ className={`w-4 h-4 text-[#86868b] shrink-0 -transform ${ isOpen ? 'rotate-180' : '' }`}
  />
  </button>
  {isOpen && (
- <div className="px-5 pb-4 text-xs sm:text-sm text-[#6e6e73] leading-relaxed .04] pt-2.5">
+ <div className="px-5 pb-4 text-xs sm:text-sm text-[#6e6e73] leading-relaxed pt-2.5">
  {faq.answer}
  </div>
  )}
@@ -529,7 +527,7 @@ export default function CustomerLandingPage() {
  <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
  <a
  href="#food-halls"
- className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-3 rounded-full text-xs sm:text-sm font-semibold text-black bg-white hover:bg-white/90 shadow-md"
+ className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-3 rounded-full text-xs sm:text-sm font-semibold text-black bg-white hover:bg-white/90 "
  >
  <Store className="w-4 h-4 mr-2" />
  Explore Hawker Centres
@@ -540,7 +538,7 @@ export default function CustomerLandingPage() {
  </section>
 
  {/* ── SIMPLE CUSTOMER FOOTER ── */}
- <footer className="bg-white .06] py-8 text-xs text-[#6e6e73]">
+ <footer className="bg-white py-8 text-xs text-[#6e6e73]">
  <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
  <div className="flex items-center gap-2">
  <div className="w-5 h-5 rounded bg-[#0071e3] text-white flex items-center justify-center font-bold text-[10px]">

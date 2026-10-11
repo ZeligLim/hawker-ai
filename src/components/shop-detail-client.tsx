@@ -36,7 +36,7 @@ export function ShopDetailClient({ shop, slug }: { shop: ShopData; slug: string 
 
  addDish({
  dishId: targetDishId,
-      restaurantId: shop.restaurantId || shop.id || '',
+ restaurantId: shop.restaurantId || shop.id || '',
  name: dish.name,
  restaurantName: shop.restaurantName ?? shop.name,
  stallName: shop.name,
@@ -70,7 +70,7 @@ export function ShopDetailClient({ shop, slug }: { shop: ShopData; slug: string 
 
  addDish({
  dishId: targetDishId,
-      restaurantId: shop.restaurantId || shop.id || '',
+ restaurantId: shop.restaurantId || shop.id || '',
  customizationKey: selection.options.map((option) => option.id).sort().join('|'),
  customizations: selection.options.map((option) => option.label),
  name: dish.name,
@@ -86,10 +86,10 @@ export function ShopDetailClient({ shop, slug }: { shop: ShopData; slug: string 
  return (
  <main className="min-h-screen bg-[#f5f5f7] px-4 pb-32 pt-5 text-[#1d1d1f] sm:px-6">
  <div className="mx-auto w-full max-w-md sm:max-w-xl md:max-w-3xl lg:max-w-5xl">
- <section className="rounded-[28px] bg-white p-5 sm:p-6 shadow-[0_12px_28px_rgba(15,23,42,0.04)] .04]">
+ <section className="rounded-[28px] bg-white p-5 sm:p-6 ">
  <div className="flex items-start justify-between gap-2.5 sm:gap-3">
  <div className="flex min-w-0 flex-1 items-start gap-3 sm:gap-3.5">
- <div className="flex h-11 w-11 sm:h-14 sm:w-14 shrink-0 items-center justify-center rounded-[14px] sm:rounded-[16px] bg-[#111827] text-sm sm:text-lg font-bold text-white shadow-sm">
+ <div className="flex h-11 w-11 sm:h-14 sm:w-14 shrink-0 items-center justify-center rounded-[14px] sm:rounded-[16px] bg-[#111827] text-sm sm:text-lg font-bold text-white ">
  {shop.name
  .split(' ')
  .slice(0, 2)
@@ -108,15 +108,7 @@ export function ShopDetailClient({ shop, slug }: { shop: ShopData; slug: string 
 
  <div className="flex shrink-0 flex-col items-end gap-1 text-right">
  <span
- className={`whitespace-nowrap rounded-full px-2 sm:px-2.5 py-0.5 sm:py-1 text-[10px] font-semibold ${
- shop.busy === 'Busy'
- ? 'bg-[#fef3c7] text-[#b45309]'
- : shop.busy === 'Moderate'
- ? 'bg-[#dbeafe] text-[#1d4ed8]'
- : shop.busy === 'Closed'
- ? 'bg-[#f5f5f7] text-[#6e6e73]'
- : 'bg-[#dcfce7] text-[#166534]'
- }`}
+ className={`whitespace-nowrap rounded-full px-2 sm:px-2.5 py-0.5 sm:py-1 text-[10px] font-semibold ${ shop.busy === 'Busy' ? 'bg-[#fef3c7] text-[#b45309]' : shop.busy === 'Moderate' ? 'bg-[#dbeafe] text-[#1d4ed8]' : shop.busy === 'Closed' ? 'bg-[#f5f5f7] text-[#6e6e73]' : 'bg-[#dcfce7] text-[#166534]' }`}
  >
  {shop.busy}
  </span>

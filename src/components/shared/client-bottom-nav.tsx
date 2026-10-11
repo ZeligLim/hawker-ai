@@ -26,9 +26,9 @@ export function ClientBottomNav({
 
  // Unified pure black and white scheme without borders
  const containerTheme =
- 'bg-white/95 backdrop-blur-2xl shadow-[0_4px_24px_rgba(0,0,0,0.08)]';
+ 'bg-white/95 backdrop-blur-2xl ';
 
- const activeTheme = 'bg-black text-white shadow-xs';
+ const activeTheme = 'bg-black text-white ';
 
  const inactiveTheme = 'text-neutral-400 hover:text-black hover:bg-neutral-100';
 
@@ -48,9 +48,9 @@ export function ClientBottomNav({
  className={`grid ${gridColsClass} gap-1 rounded-full p-1.5 backdrop-blur-xl ${containerTheme}`}
  >
  {items.map(({ href, label, icon: Icon }) => {
-  const basePath = href.split('?')[0];
-          const isHome = basePath === '/stall' || basePath === '/owner' || basePath === '/admin';
-          const active = isHome
+ const basePath = href.split('?')[0];
+ const isHome = basePath === '/stall' || basePath === '/owner' || basePath === '/admin';
+ const active = isHome
             ? pathname === basePath
             : pathname === basePath || pathname.startsWith(basePath + '/');
 
@@ -58,9 +58,7 @@ export function ClientBottomNav({
  <Link
  key={label}
  href={href as any}
- className={`flex h-11 items-center justify-center rounded-full ${
- active ? activeTheme : inactiveTheme
- }`}
+ className={`flex h-11 items-center justify-center rounded-full ${ active ? activeTheme : inactiveTheme }`}
  aria-label={label}
  title={label}
  aria-current={active ? 'page' : undefined}

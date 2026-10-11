@@ -194,7 +194,7 @@ function AdminMonetizationContent() {
  return (
  <div className="space-y-6 sm:space-y-8">
  {/* Header */}
- <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 .06] pb-5">
+ <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-5">
  <div>
  <div className="flex items-center gap-2">
  <Link
@@ -205,7 +205,7 @@ function AdminMonetizationContent() {
  Admin Overview
  </Link>
  <span className="text-[#86868b]">&bull;</span>
- <span className="text-xs font-semibold text-[#86868b] bg-black/[0.04] .06] px-2.5 py-0.5 rounded-full">
+ <span className="text-xs font-semibold text-[#86868b] bg-black/[0.04] px-2.5 py-0.5 rounded-full">
  Monetization engine
  </span>
  </div>
@@ -221,7 +221,7 @@ function AdminMonetizationContent() {
  type="button"
  onClick={() => void handleRefresh()}
  disabled={loading}
- className="inline-flex items-center gap-1.5 rounded-full bg-white px-3.5 py-2 text-xs font-semibold text-[#1d1d1f] hover:bg-black/[0.03] shadow-xs"
+ className="inline-flex items-center gap-1.5 rounded-full bg-white px-3.5 py-2 text-xs font-semibold text-[#1d1d1f] hover:bg-black/[0.03] "
  >
  <RefreshCw className={`w-3.5 h-3.5 text-[#6e6e73] ${loading ? '' : ''}`} />
  Refresh
@@ -232,7 +232,7 @@ function AdminMonetizationContent() {
  {loading && shops.length === 0 ? (
  <PageLoader text="Loading venues and platform fee models" fullHeight={false} />
  ) : shops.length === 0 ? (
- <div className="rounded-3xl bg-white p-12 text-center text-[#86868b] .08] shadow-xs">
+ <div className="rounded-3xl bg-white p-12 text-center text-[#86868b] ">
  <Building2 className="w-8 h-8 text-[#86868b] mx-auto mb-3" />
  <p className="text-base font-semibold text-[#1d1d1f]">No Food Halls Found</p>
  <p className="text-xs text-[#86868b] mt-1">Register a food hall to configure platform fees.</p>
@@ -241,7 +241,7 @@ function AdminMonetizationContent() {
  <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8">
  {/* Main Configurator Form (Left / 7 cols) */}
  <div className="lg:col-span-7 space-y-6">
- <div className="rounded-3xl bg-white p-6 sm:p-7 .08] shadow-xs space-y-6">
+ <div className="rounded-3xl bg-white p-6 sm:p-7 space-y-6">
  {/* Venue Selector */}
  <div>
  <label className="block text-xs font-semibold text-[#86868b] mb-2">
@@ -251,7 +251,7 @@ function AdminMonetizationContent() {
  <select
  value={selectedShopId}
  onChange={(e) => handleSelectShop(e.target.value)}
- className="w-full rounded-xl bg-white px-3.5 py-2.5 text-xs sm:text-sm font-semibold text-[#1d1d1f] focus:] focus: focus: shadow-xs outline-none cursor-pointer"
+ className="w-full rounded-xl bg-white px-3.5 py-2.5 text-xs sm:text-sm font-semibold text-[#1d1d1f] focus:] focus: focus: cursor-pointer"
  >
  {shops.map((s) => (
  <option key={s.id} value={s.id}>
@@ -276,11 +276,7 @@ function AdminMonetizationContent() {
  <button
  type="button"
  onClick={() => setFeeMode('percentage')}
- className={`rounded-xl p-3 text-left ${
- feeMode === 'percentage'
- ? 'bg-white text-[#1d1d1f] shadow-xs font-semibold'
- : 'text-[#6e6e73] hover:text-[#1d1d1f] hover:bg-white/40'
- }`}
+ className={`rounded-xl p-3 text-left ${ feeMode === 'percentage' ? 'bg-white text-[#1d1d1f] font-semibold' : 'text-[#6e6e73] hover:text-[#1d1d1f] hover:bg-white/40' }`}
  >
  <div className="flex items-center gap-1.5 text-xs font-semibold">
  <Percent className="h-3.5 w-3.5 text-[#0071e3]" />
@@ -292,11 +288,7 @@ function AdminMonetizationContent() {
  <button
  type="button"
  onClick={() => setFeeMode('fixed')}
- className={`rounded-xl p-3 text-left ${
- feeMode === 'fixed'
- ? 'bg-white text-[#1d1d1f] shadow-xs font-semibold'
- : 'text-[#6e6e73] hover:text-[#1d1d1f] hover:bg-white/40'
- }`}
+ className={`rounded-xl p-3 text-left ${ feeMode === 'fixed' ? 'bg-white text-[#1d1d1f] font-semibold' : 'text-[#6e6e73] hover:text-[#1d1d1f] hover:bg-white/40' }`}
  >
  <div className="flex items-center gap-1.5 text-xs font-semibold">
  <DollarSign className="h-3.5 w-3.5 text-emerald-600" />
@@ -308,11 +300,7 @@ function AdminMonetizationContent() {
  <button
  type="button"
  onClick={() => setFeeMode('mixed')}
- className={`rounded-xl p-3 text-left ${
- feeMode === 'mixed'
- ? 'bg-white text-[#1d1d1f] shadow-xs font-semibold'
- : 'text-[#6e6e73] hover:text-[#1d1d1f] hover:bg-white/40'
- }`}
+ className={`rounded-xl p-3 text-left ${ feeMode === 'mixed' ? 'bg-white text-[#1d1d1f] font-semibold' : 'text-[#6e6e73] hover:text-[#1d1d1f] hover:bg-white/40' }`}
  >
  <div className="flex items-center gap-1.5 text-xs font-semibold">
  <Sliders className="h-3.5 w-3.5 text-amber-700" />
@@ -338,7 +326,7 @@ function AdminMonetizationContent() {
  max="100"
  value={platformFeePercent}
  onChange={(e) => setPlatformFeePercent(Math.max(0, Number(e.target.value)))}
- className="w-full rounded-xl bg-white px-3.5 py-2.5 text-sm font-semibold text-[#1d1d1f] focus:] focus: focus: shadow-xs outline-none "
+ className="w-full rounded-xl bg-white px-3.5 py-2.5 text-sm font-semibold text-[#1d1d1f] focus:] focus: focus: "
  />
  <span className="absolute right-3.5 top-2.5 text-xs font-semibold text-[#86868b]">%</span>
  </div>
@@ -350,11 +338,7 @@ function AdminMonetizationContent() {
  key={preset}
  type="button"
  onClick={() => setPlatformFeePercent(preset)}
- className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
- platformFeePercent === preset
- ? 'bg-[#1d1d1f] text-white shadow-xs'
- : 'bg-white text-[#6e6e73] hover:text-[#1d1d1f] hover:bg-black/[0.02]'
- }`}
+ className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${ platformFeePercent === preset ? 'bg-[#1d1d1f] text-white ' : 'bg-white text-[#6e6e73] hover:text-[#1d1d1f] hover:bg-black/[0.02]' }`}
  >
  {preset}%
  </button>
@@ -376,7 +360,7 @@ function AdminMonetizationContent() {
  min="0"
  value={platformFeeFixed}
  onChange={(e) => setPlatformFeeFixed(Math.max(0, Number(e.target.value)))}
- className="w-full rounded-xl bg-white pl-10 pr-3.5 py-2.5 text-sm font-semibold text-[#1d1d1f] focus:] focus: focus: shadow-xs outline-none "
+ className="w-full rounded-xl bg-white pl-10 pr-3.5 py-2.5 text-sm font-semibold text-[#1d1d1f] focus:] focus: focus: "
  />
  </div>
  <div className="mt-2.5 flex flex-wrap gap-1.5">
@@ -385,11 +369,7 @@ function AdminMonetizationContent() {
  key={preset}
  type="button"
  onClick={() => setPlatformFeeFixed(preset)}
- className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
- platformFeeFixed === preset
- ? 'bg-[#1d1d1f] text-white shadow-xs'
- : 'bg-white text-[#6e6e73] hover:text-[#1d1d1f] hover:bg-black/[0.02]'
- }`}
+ className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${ platformFeeFixed === preset ? 'bg-[#1d1d1f] text-white ' : 'bg-white text-[#6e6e73] hover:text-[#1d1d1f] hover:bg-black/[0.02]' }`}
  >
  RM {preset.toFixed(2)}
  </button>
@@ -414,15 +394,11 @@ function AdminMonetizationContent() {
  role="switch"
  aria-checked={feePayer === 'MERCHANT'}
  onClick={() => setFeePayer(feePayer === 'CUSTOMER' ? 'MERCHANT' : 'CUSTOMER')}
- className={`relative inline-flex h-8 w-14 flex-shrink-0 cursor-pointer rounded-full focus:outline-none shadow-inner ${
- feePayer === 'MERCHANT' ? 'bg-emerald-600' : 'bg-[#0071e3]'
- }`}
+ className={`relative inline-flex h-8 w-14 flex-shrink-0 cursor-pointer rounded-full ${ feePayer === 'MERCHANT' ? 'bg-emerald-600' : 'bg-[#0071e3]' }`}
  >
  <span
  aria-hidden="true"
- className={`pointer-events-none inline-block h-7 w-7 mt-0.5 ml-0.5 transform rounded-full bg-white shadow-xs ${
- feePayer === 'MERCHANT' ? 'translate-x-6' : 'translate-x-0'
- }`}
+ className={`pointer-events-none inline-block h-7 w-7 mt-0.5 ml-0.5 transform rounded-full bg-white ${ feePayer === 'MERCHANT' ? 'translate-x-6' : 'translate-x-0' }`}
  />
  </button>
  </div>
@@ -443,7 +419,7 @@ function AdminMonetizationContent() {
  type="button"
  onClick={() => void handleSaveMonetization()}
  disabled={saving || !selectedShopId}
- className="inline-flex items-center justify-center gap-2 rounded-full bg-[#1d1d1f] px-5 py-2.5 text-xs sm:text-sm font-semibold text-white shadow-xs hover:bg-black disabled:opacity-50 "
+ className="inline-flex items-center justify-center gap-2 rounded-full bg-[#1d1d1f] px-5 py-2.5 text-xs sm:text-sm font-semibold text-white hover:bg-black disabled:opacity-50 "
  >
  <Save className="h-3.5 w-3.5" />
  <span>{saving ? 'Saving…' : 'Save'}</span>
@@ -455,13 +431,13 @@ function AdminMonetizationContent() {
  {/* Live Simulation & Details (Right / 5 cols) */}
  <div className="lg:col-span-5 space-y-6">
  {/* Live Calculation Preview Card */}
- <div className="rounded-3xl bg-white p-6 .08] shadow-xs space-y-4">
- <div className="flex items-center justify-between .06] pb-3">
+ <div className="rounded-3xl bg-white p-6 space-y-4">
+ <div className="flex items-center justify-between pb-3">
  <div className="flex items-center gap-2">
  <Info className="h-4 w-4 text-[#0071e3]" />
  <h3 className="text-sm font-semibold text-[#1d1d1f]">Live Order Simulation</h3>
  </div>
- <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-black/[0.04] text-[#86868b] .06]">
+ <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-black/[0.04] text-[#86868b]">
  RM 20.00 order
  </span>
  </div>
@@ -470,7 +446,7 @@ function AdminMonetizationContent() {
  Real-time breakdown showing how this policy impacts customer checkout and stall merchant net payouts:
  </p>
 
- <div className="space-y-2.5 rounded-2xl bg-[#fafafc] p-4 .06] text-xs">
+ <div className="space-y-2.5 rounded-2xl bg-[#fafafc] p-4 text-xs">
  <div className="flex justify-between text-[#6e6e73]">
  <span>Food Cart Subtotal:</span>
  <span className="font-semibold text-[#1d1d1f]">RM 20.00</span>
@@ -483,7 +459,7 @@ function AdminMonetizationContent() {
  <span className="font-semibold">RM {sampleFee.toFixed(2)}</span>
  </div>
 
- <div className="pt-2 .06] flex justify-between font-semibold text-[#1d1d1f]">
+ <div className="pt-2 flex justify-between font-semibold text-[#1d1d1f]">
  <span>Diner Total Bill:</span>
  <span className="text-sm font-bold">RM {sampleCustomerTotal.toFixed(2)}</span>
  </div>
@@ -504,7 +480,7 @@ function AdminMonetizationContent() {
  </div>
 
  {/* Platform Security Badge */}
- <div className="rounded-3xl bg-white p-6 .08] shadow-xs space-y-3">
+ <div className="rounded-3xl bg-white p-6 space-y-3">
  <div className="flex items-center gap-2 text-purple-700">
  <ShieldCheck className="w-4 h-4" />
  <h3 className="text-sm font-semibold text-[#1d1d1f]">Engine-Level Security Protection</h3>
@@ -518,8 +494,8 @@ function AdminMonetizationContent() {
  )}
 
  {/* Venues Overview Grid */}
- <div className="rounded-3xl bg-white p-6 .08] shadow-xs space-y-4">
- <div className="flex items-center justify-between .06] pb-4">
+ <div className="rounded-3xl bg-white p-6 space-y-4">
+ <div className="flex items-center justify-between pb-4">
  <div>
  <h2 className="text-base font-semibold text-[#1d1d1f]">Active Venue Pricing Directory</h2>
  <p className="text-xs text-[#86868b]">Click any venue to load its fee configuration.</p>
@@ -544,11 +520,7 @@ function AdminMonetizationContent() {
  key={s.id}
  type="button"
  onClick={() => handleSelectShop(s.id)}
- className={`p-4 rounded-2xl text-left ${
- isSelected
- ? '] bg-black/[0.02] shadow-xs'
- : '.06] bg-white hover:bg-black/[0.01]'
- }`}
+ className={`p-4 rounded-2xl text-left ${ isSelected ? '] bg-black/[0.02] ' : '.06] bg-white hover:bg-black/[0.01]' }`}
  >
  <div className="flex items-start justify-between gap-2">
  <div className="min-w-0">
@@ -556,16 +528,12 @@ function AdminMonetizationContent() {
  <p className="text-xs text-[#86868b] font-mono mt-0.5">/{s.slug ?? 'unknown'}</p>
  </div>
  <span
- className={`text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0 ${
- isDiner
- ? 'bg-blue-50 text-blue-700 '
- : 'bg-emerald-50 text-emerald-700 '
- }`}
+ className={`text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0 ${ isDiner ? 'bg-blue-50 text-blue-700 ' : 'bg-emerald-50 text-emerald-700 ' }`}
  >
  {isDiner ? 'Diner' : 'Stall'}
  </span>
  </div>
- <div className="mt-3 flex items-center justify-between text-xs pt-2 .06]">
+ <div className="mt-3 flex items-center justify-between text-xs pt-2">
  <span className="text-[#86868b]">Current Rate:</span>
  <span className="font-semibold text-[#1d1d1f]">{rate}</span>
  </div>
@@ -582,8 +550,8 @@ export default function AdminMonetizationPage() {
  return (
  <Suspense
  fallback={
- <div className="rounded-3xl bg-white p-16 text-center text-[#86868b] .08] shadow-xs flex flex-col items-center justify-center gap-3">
- <div className="h-5 w-5 rounded-full ] " />
+ <div className="rounded-3xl bg-white p-16 text-center text-[#86868b] flex flex-col items-center justify-center gap-3">
+ <div className="h-5 w-5 rounded-full " />
  <p className="text-xs sm:text-sm font-medium">Loading monetization controls…</p>
  </div>
  }

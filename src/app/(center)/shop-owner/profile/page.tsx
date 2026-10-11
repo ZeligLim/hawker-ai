@@ -13,234 +13,234 @@ import Script from 'next/script';
 import { LocationAutocomplete } from '@/components/location-autocomplete';
 
 type Shop = {
-  id: string;
-  name: string;
-  slug: string | null;
-  phone?: string | null;
-  lat?: number;
-  lng?: number;
-  address: string | null;
-  role: string;
-  booths: Array<{ id: string; name: string }>;
-  isActive?: boolean;
-  schedule?: OperatingSchedule;
+ id: string;
+ name: string;
+ slug: string | null;
+ phone?: string | null;
+ lat?: number;
+ lng?: number;
+ address: string | null;
+ role: string;
+ booths: Array<{ id: string; name: string }>;
+ isActive?: boolean;
+ schedule?: OperatingSchedule;
 };
 
 export default function ShopOwnerProfilePage() {
-  const { signOut } = useAuth();
-  const [isSignOutDialogOpen, setIsSignOutDialogOpen] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
-  const [shop, setShop] = useState<Shop | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [saveSuccess, setSaveSuccess] = useState(false);
-  const [creating, setCreating] = useState(false);
+ const { signOut } = useAuth();
+ const [isSignOutDialogOpen, setIsSignOutDialogOpen] = useState(false);
+ const [isEditing, setIsEditing] = useState(false);
+ const [shop, setShop] = useState<Shop | null>(null);
+ const [loading, setLoading] = useState(true);
+ const [saving, setSaving] = useState(false);
+ const [saveSuccess, setSaveSuccess] = useState(false);
+ const [creating, setCreating] = useState(false);
 
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState<'shop' | 'account' | null>(null);
+ const [isDeleting, setIsDeleting] = useState(false);
+ const [showDeleteConfirm, setShowDeleteConfirm] = useState<'shop' | 'account' | null>(null);
 
-  const handleDeleteShop = async () => {
-    if (!shop?.id) return;
-    setIsDeleting(true);
-    try {
-      const response = await authenticatedFetch(`/api/owner/shops/${shop.id}`, { method: 'DELETE' });
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Failed to delete shop');
+ const handleDeleteShop = async () => {
+ if (!shop?.id) return;
+ setIsDeleting(true);
+ try {
+ const response = await authenticatedFetch(`/api/owner/shops/${shop.id}`, { method: 'DELETE' });
+ if (!response.ok) {
+ const data = await response.json();
+ throw new Error(data.error || 'Failed to delete shop');
       }
-      window.location.href = window.location.origin + '/profile';
+ window.location.href = window.location.origin + '/profile';
     } catch (e: any) {
-      alert(e.message || 'Failed to delete shop');
-      setIsDeleting(false);
-      setShowDeleteConfirm(null);
+ alert(e.message || 'Failed to delete shop');
+ setIsDeleting(false);
+ setShowDeleteConfirm(null);
     }
   };
 
-  const handleDeleteAccount = async () => {
-    setIsDeleting(true);
-    try {
-      const response = await authenticatedFetch('/api/user/delete', { method: 'DELETE' });
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Failed to delete account');
+ const handleDeleteAccount = async () => {
+ setIsDeleting(true);
+ try {
+ const response = await authenticatedFetch('/api/user/delete', { method: 'DELETE' });
+ if (!response.ok) {
+ const data = await response.json();
+ throw new Error(data.error || 'Failed to delete account');
       }
-      if (typeof window !== 'undefined') {
-        window.localStorage.clear();
-        window.sessionStorage.clear();
+ if (typeof window !== 'undefined') {
+ window.localStorage.clear();
+ window.sessionStorage.clear();
       }
-      window.location.href = window.location.origin + '/';
+ window.location.href = window.location.origin + '/';
     } catch (e: any) {
-      alert(e.message || 'Failed to delete account');
-      setIsDeleting(false);
-      setShowDeleteConfirm(null);
+ alert(e.message || 'Failed to delete account');
+ setIsDeleting(false);
+ setShowDeleteConfirm(null);
     }
   };
 
-  const [draft, setDraft] = useState({ name: "", address: "", slug: "", phone: "", lat: 0, lng: 0 });
-  const [createForm, setCreateForm] = useState({ name: '', address: '', phone: '', lat: 0, lng: 0 });
+ const [draft, setDraft] = useState({ name: "", address: "", slug: "", phone: "", lat: 0, lng: 0 });
+ const [createForm, setCreateForm] = useState({ name: '', address: '', phone: '', lat: 0, lng: 0 });
 
-  const [scheduleModal, setScheduleModal] = useState<{
-    isOpen: boolean;
-    targetType: 'shop' | 'booth';
-    targetId: string;
-    title: string;
-    description: string;
-    initialSchedule?: any;
+ const [scheduleModal, setScheduleModal] = useState<{
+ isOpen: boolean;
+ targetType: 'shop' | 'booth';
+ targetId: string;
+ title: string;
+ description: string;
+ initialSchedule?: any;
   }>({ isOpen: false, targetType: 'shop', targetId: '', title: '', description: '' });
 
 
 
-  const handleToggleShopActive = async () => {
-    if (!shop) return;
-    const nextActive = shop.isActive !== false ? false : true;
+ const handleToggleShopActive = async () => {
+ if (!shop) return;
+ const nextActive = shop.isActive !== false ? false : true;
 
-    if (nextActive === false) {
-      if (!window.confirm('Are you sure you want to deactivate this venue? It will no longer be visible to customers.')) {
-        return;
+ if (nextActive === false) {
+ if (!window.confirm('Are you sure you want to deactivate this venue? It will no longer be visible to customers.')) {
+ return;
       }
     } else {
-      if (!window.confirm('Are you sure you want to activate this venue?')) {
-        return;
+ if (!window.confirm('Are you sure you want to activate this venue?')) {
+ return;
       }
     }
 
-    setShop({ ...shop, isActive: nextActive });
-    try {
-      const res = await authenticatedFetch(`/api/owner/shops/${shop.id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ is_active: nextActive }),
+ setShop({ ...shop, isActive: nextActive });
+ try {
+ const res = await authenticatedFetch(`/api/owner/shops/${shop.id}`, {
+ method: 'PATCH',
+ headers: { 'Content-Type': 'application/json' },
+ body: JSON.stringify({ is_active: nextActive }),
       });
-      if (!res.ok) throw new Error('Failed to update shop status');
+ if (!res.ok) throw new Error('Failed to update shop status');
     } catch (err) {
-      alert('Failed to update status');
-      setShop({ ...shop, isActive: !nextActive });
+ alert('Failed to update status');
+ setShop({ ...shop, isActive: !nextActive });
     }
   };
 
-  const handleSaveSchedule = async (schedule: any) => {
-    if (!shop) return;
-    const res = await authenticatedFetch(`/api/owner/shops/${shop.id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ schedule }),
+ const handleSaveSchedule = async (schedule: any) => {
+ if (!shop) return;
+ const res = await authenticatedFetch(`/api/owner/shops/${shop.id}`, {
+ method: 'PATCH',
+ headers: { 'Content-Type': 'application/json' },
+ body: JSON.stringify({ schedule }),
     });
-    if (!res.ok) throw new Error('Failed to save schedule');
-    await loadShop();
+ if (!res.ok) throw new Error('Failed to save schedule');
+ await loadShop();
   };
 
-  const loadShop = useCallback(async () => {
-    try {
-      const response = await authenticatedFetch('/api/owner/shops');
-      const payload = (await response.json()) as { shops?: Shop[] };
-      const nextShop = payload.shops?.[0] ?? null;
-      setShop(nextShop);
-      if (nextShop) {
-        setDraft({
-          name: nextShop.name,
-          address: nextShop.address ?? '',
-          slug: nextShop.slug ?? "", phone: (nextShop as any).phone ?? "", lat: (nextShop as any).lat ?? 0, lng: (nextShop as any).lng ?? 0,
+ const loadShop = useCallback(async () => {
+ try {
+ const response = await authenticatedFetch('/api/owner/shops');
+ const payload = (await response.json()) as { shops?: Shop[] };
+ const nextShop = payload.shops?.[0] ?? null;
+ setShop(nextShop);
+ if (nextShop) {
+ setDraft({
+ name: nextShop.name,
+ address: nextShop.address ?? '',
+ slug: nextShop.slug ?? "", phone: (nextShop as any).phone ?? "", lat: (nextShop as any).lat ?? 0, lng: (nextShop as any).lng ?? 0,
         });
       }
     } catch {
-      setShop(null);
+ setShop(null);
     } finally {
-      setLoading(false);
+ setLoading(false);
     }
   }, []);
 
-  useEffect(() => {
-    const timeoutId = window.setTimeout(() => {
-      void loadShop();
+ useEffect(() => {
+ const timeoutId = window.setTimeout(() => {
+ void loadShop();
     }, 0);
 
-    return () => window.clearTimeout(timeoutId);
+ return () => window.clearTimeout(timeoutId);
   }, [loadShop]);
 
-  const handleSave = async () => {
-    if (!shop) return;
+ const handleSave = async () => {
+ if (!shop) return;
 
-    setSaving(true);
-    setSaveSuccess(false);
-    try {
-      const response = await authenticatedFetch(`/api/owner/shops/${shop.id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: draft.name,
-          address: draft.address,
-          slug: draft.slug, phone: draft.phone, lat: draft.lat, lng: draft.lng,
+ setSaving(true);
+ setSaveSuccess(false);
+ try {
+ const response = await authenticatedFetch(`/api/owner/shops/${shop.id}`, {
+ method: 'PATCH',
+ headers: { 'Content-Type': 'application/json' },
+ body: JSON.stringify({
+ name: draft.name,
+ address: draft.address,
+ slug: draft.slug, phone: draft.phone, lat: draft.lat, lng: draft.lng,
         }),
       });
 
-      const payload = (await response.json()) as { error?: string; shop?: Shop };
-      if (!response.ok || !payload.shop) {
-        throw new Error(payload.error ?? 'Unable to update shop information.');
+ const payload = (await response.json()) as { error?: string; shop?: Shop };
+ if (!response.ok || !payload.shop) {
+ throw new Error(payload.error ?? 'Unable to update shop information.');
       }
 
-      setShop({ ...shop, ...payload.shop, role: shop.role, booths: shop.booths });
-      setSaveSuccess(true);
-      setTimeout(() => setSaveSuccess(false), 3000);
+ setShop({ ...shop, ...payload.shop, role: shop.role, booths: shop.booths });
+ setSaveSuccess(true);
+ setTimeout(() => setSaveSuccess(false), 3000);
     } catch (error) {
-      console.error(error);
+ console.error(error);
     } finally {
-      setSaving(false);
+ setSaving(false);
     }
   };
 
-  const handleCreate = async () => {
-    setCreating(true);
-    try {
-      const response = await authenticatedFetch('/api/owner/shops', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: createForm.name,
-          address: createForm.address,
-          phone: createForm.phone,
-          lat: createForm.lat,
-          lng: createForm.lng,
+ const handleCreate = async () => {
+ setCreating(true);
+ try {
+ const response = await authenticatedFetch('/api/owner/shops', {
+ method: 'POST',
+ headers: { 'Content-Type': 'application/json' },
+ body: JSON.stringify({
+ name: createForm.name,
+ address: createForm.address,
+ phone: createForm.phone,
+ lat: createForm.lat,
+ lng: createForm.lng,
         }),
       });
 
-      const payload = (await response.json()) as { error?: string; shop?: Shop };
-      if (!response.ok || !payload.shop) {
-        throw new Error(payload.error ?? 'Could not create your shop.');
+ const payload = (await response.json()) as { error?: string; shop?: Shop };
+ if (!response.ok || !payload.shop) {
+ throw new Error(payload.error ?? 'Could not create your shop.');
       }
 
-      setShop({ ...payload.shop, role: 'owner', booths: [] });
-      setCreateForm({ name: '', address: '', phone: '', lat: 0, lng: 0 });
-      setCreating(false);
-      void loadShop();
+ setShop({ ...payload.shop, role: 'owner', booths: [] });
+ setCreateForm({ name: '', address: '', phone: '', lat: 0, lng: 0 });
+ setCreating(false);
+ void loadShop();
     } catch (error) {
-      console.error(error);
+ console.error(error);
     } finally {
-      setCreating(false);
+ setCreating(false);
     }
   };
 
-  if (loading) {
-    return <main className="min-h-screen bg-[#f5f5f7] px-4 pb-32 pt-5 text-[#1d1d1f]">
+ if (loading) {
+ return <main className="min-h-screen bg-[#f5f5f7] px-4 pb-32 pt-5 text-[#1d1d1f]">
       <Script src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`} strategy="lazyOnload" />
       <PageLoader text="Loading shop information" />
     </main>;
   }
 
-  if (!shop) {
-    return (
+ if (!shop) {
+ return (
       <main className="min-h-screen bg-[#f5f5f7] px-4 pb-32 pt-5 text-[#1d1d1f]">
         <Script src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`} strategy="lazyOnload" />
         <Script src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`} strategy="lazyOnload" />
         <div className="mx-auto max-w-[760px]">
-          <section className="rounded-[26px] bg-white p-5 shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
+          <section className="rounded-[26px] bg-white p-5 ">
             <div className="space-y-3">
-              <input value={createForm.name} onChange={(event) => setCreateForm({ ...createForm, name: event.target.value })} placeholder="Shop name" className="w-full rounded-[14px] bg-[#f5f5f7] px-3 py-2.5 outline-none" />
+              <input value={createForm.name} onChange={(event) => setCreateForm({ ...createForm, name: event.target.value })} placeholder="Shop name" className="w-full rounded-[14px] bg-[#f5f5f7] px-3 py-2.5 " />
               <LocationAutocomplete
-                address={createForm.address}
-                onAddressChange={(addr) => setCreateForm({ ...createForm, address: addr })}
-                onLocationSelect={(lat, lng) => setCreateForm({ ...createForm, lat, lng })}
+ address={createForm.address}
+ onAddressChange={(addr) => setCreateForm({ ...createForm, address: addr })}
+ onLocationSelect={(lat, lng) => setCreateForm({ ...createForm, lat, lng })}
               />
-              <input value={createForm.phone} onChange={(event) => setCreateForm({ ...createForm, phone: event.target.value })} placeholder="Phone" className="w-full rounded-[14px] bg-[#f5f5f7] px-3 py-2.5 outline-none" />
+              <input value={createForm.phone} onChange={(event) => setCreateForm({ ...createForm, phone: event.target.value })} placeholder="Phone" className="w-full rounded-[14px] bg-[#f5f5f7] px-3 py-2.5 " />
             </div>
             <button type="button" onClick={() => void handleCreate()} className="mt-5 inline-flex items-center gap-2 rounded-full bg-[#111827] px-4 py-3 text-sm font-semibold text-white">
               Create
@@ -251,7 +251,7 @@ export default function ShopOwnerProfilePage() {
     );
   }
 
-  return (
+ return (
     <main className="min-h-screen bg-[#f5f5f7] px-4 pb-32 pt-5 sm:px-6 text-[#1d1d1f]">
       <Script src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`} strategy="lazyOnload" />
       <Script src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`} strategy="lazyOnload" />
@@ -259,7 +259,7 @@ export default function ShopOwnerProfilePage() {
 
 
         {/* General Shop Profile */}
-        <section className="rounded-[26px] bg-white p-5 sm:p-6 shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
+        <section className="rounded-[26px] bg-white p-5 sm:p-6 ">
 
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -274,18 +274,18 @@ export default function ShopOwnerProfilePage() {
             {!isEditing && (
               <div className="flex items-center gap-2">
                 <button
-                  type="button"
-                  onClick={() => setIsEditing(true)}
-                  className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#f5f5f7] text-[#1d1d1f] hover:bg-neutral-200 shadow-xs"
-                  aria-label="Edit Profile"
+ type="button"
+ onClick={() => setIsEditing(true)}
+ className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#f5f5f7] text-[#1d1d1f] hover:bg-neutral-200 "
+ aria-label="Edit Profile"
                 >
                   <Settings className="h-4 w-4" />
                 </button>
                 <button
-                  type="button"
-                  onClick={() => setIsSignOutDialogOpen(true)}
-                  className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#f5f5f7] text-[#1d1d1f] hover:bg-neutral-200 shadow-xs"
-                  aria-label="Sign out"
+ type="button"
+ onClick={() => setIsSignOutDialogOpen(true)}
+ className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#f5f5f7] text-[#1d1d1f] hover:bg-neutral-200 "
+ aria-label="Sign out"
                 >
                   <LogOut className="h-4 w-4" />
                 </button>
@@ -298,23 +298,23 @@ export default function ShopOwnerProfilePage() {
           {isEditing && (
             <div className="mt-5 pt-5 slide-in-from-top-2">
               <div className="space-y-3">
-                <input value={draft.name} onChange={(event) => setDraft({ ...draft, name: event.target.value })} placeholder="Shop name" className="w-full rounded-[14px] bg-[#f5f5f7] px-3 py-2.5 outline-none" />
-                <input value={draft.slug} onChange={(event) => setDraft({ ...draft, slug: event.target.value })} placeholder="Shop slug (URL identifier)" className="w-full rounded-[14px] bg-[#f5f5f7] px-3 py-2.5 outline-none font-mono text-sm" />
+                <input value={draft.name} onChange={(event) => setDraft({ ...draft, name: event.target.value })} placeholder="Shop name" className="w-full rounded-[14px] bg-[#f5f5f7] px-3 py-2.5 " />
+                <input value={draft.slug} onChange={(event) => setDraft({ ...draft, slug: event.target.value })} placeholder="Shop slug (URL identifier)" className="w-full rounded-[14px] bg-[#f5f5f7] px-3 py-2.5 font-mono text-sm" />
                 <LocationAutocomplete
-                  address={draft.address}
-                  onAddressChange={(addr) => setDraft({ ...draft, address: addr })}
-                  onLocationSelect={(lat, lng) => setDraft({ ...draft, lat, lng })}
+ address={draft.address}
+ onAddressChange={(addr) => setDraft({ ...draft, address: addr })}
+ onLocationSelect={(lat, lng) => setDraft({ ...draft, lat, lng })}
                 />
-                <input value={draft.phone} onChange={(event) => setDraft({ ...draft, phone: event.target.value })} placeholder="Phone" className="w-full rounded-[14px] bg-[#f5f5f7] px-3 py-2.5 outline-none" />
+                <input value={draft.phone} onChange={(event) => setDraft({ ...draft, phone: event.target.value })} placeholder="Phone" className="w-full rounded-[14px] bg-[#f5f5f7] px-3 py-2.5 " />
               </div>
 
               <div className="mt-5 flex items-center gap-3">
                 <SaveCancelButtons
-                  isSaving={saving}
-                  onSave={() => { void handleSave(); setIsEditing(false); }}
-                  onCancel={() => setIsEditing(false)}
-                  saveLabel="Save shop details"
-                  cancelLabel="Cancel editing"
+ isSaving={saving}
+ onSave={() => { void handleSave(); setIsEditing(false); }}
+ onCancel={() => setIsEditing(false)}
+ saveLabel="Save shop details"
+ cancelLabel="Cancel editing"
                 />
                 {saveSuccess ? (
                   <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-600 ml-auto">
@@ -328,32 +328,29 @@ export default function ShopOwnerProfilePage() {
 
 
 
-        <section className="mt-6 rounded-[26px] bg-white p-5 sm:p-6 shadow-xs">
+        <section className="mt-6 rounded-[26px] bg-white p-5 sm:p-6 ">
           <div className="flex flex-col sm:flex-row gap-3">
             <button
-              type="button"
-              onClick={() =>
-                setScheduleModal({
-                  isOpen: true,
-                  targetType: 'shop',
-                  targetId: shop.id,
-                  title: `${shop.name} Operating Hours`,
-                  description: '',
-                  initialSchedule: shop.schedule,
+ type="button"
+ onClick={() =>
+ setScheduleModal({
+ isOpen: true,
+ targetType: 'shop',
+ targetId: shop.id,
+ title: `${shop.name} Operating Hours`,
+ description: '',
+ initialSchedule: shop.schedule,
                 })
               }
-              className="inline-flex h-11 items-center justify-center gap-1.5 rounded-full bg-[#f5f5f7] px-4 text-xs font-semibold text-[#1d1d1f] hover:bg-neutral-200 shadow-xs"
+ className="inline-flex h-11 items-center justify-center gap-1.5 rounded-full bg-[#f5f5f7] px-4 text-xs font-semibold text-[#1d1d1f] hover:bg-neutral-200 "
             >
               <Clock className="h-4 w-4 text-blue-600" />
               Venue Hours
             </button>
             <button
-              type="button"
-              onClick={handleToggleShopActive}
-              className={`inline-flex h-11 items-center justify-center gap-1.5 rounded-full px-4 text-xs font-semibold shadow-xs ${shop.isActive !== false
-                ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
-                : 'bg-[#f5f5f7] text-[#6e6e73] hover:bg-neutral-200'
-                }`}
+ type="button"
+ onClick={handleToggleShopActive}
+ className={`inline-flex h-11 items-center justify-center gap-1.5 rounded-full px-4 text-xs font-semibold ${shop.isActive !== false ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100' : 'bg-[#f5f5f7] text-[#6e6e73] hover:bg-neutral-200' }`}
             >
               <ShieldAlert className="h-4 w-4" />
               {shop.isActive !== false ? 'Put Inactive' : 'Activate Venue'}
@@ -367,7 +364,7 @@ export default function ShopOwnerProfilePage() {
 
 
 
-        <section className="mt-6 rounded-[26px] bg-white p-5 sm:p-6 shadow-xs">
+        <section className="mt-6 rounded-[26px] bg-white p-5 sm:p-6 ">
 
           <div className="flex flex-col gap-3">
             {showDeleteConfirm === 'shop' ? (
@@ -377,7 +374,7 @@ export default function ShopOwnerProfilePage() {
                   <button type="button" onClick={handleDeleteShop} disabled={isDeleting} className="flex-1 rounded-full bg-[#9f1239] px-3 py-2.5 text-xs font-semibold text-white">
                     {isDeleting ? 'Deleting...' : 'Delete'}
                   </button>
-                  <button type="button" onClick={() => setShowDeleteConfirm(null)} disabled={isDeleting} className="flex-1 rounded-full bg-white px-3 py-2.5 text-xs font-medium text-[#1d1d1f] shadow-sm">
+                  <button type="button" onClick={() => setShowDeleteConfirm(null)} disabled={isDeleting} className="flex-1 rounded-full bg-white px-3 py-2.5 text-xs font-medium text-[#1d1d1f] ">
                     Cancel
                   </button>
                 </div>
@@ -395,7 +392,7 @@ export default function ShopOwnerProfilePage() {
                   <button type="button" onClick={handleDeleteAccount} disabled={isDeleting} className="flex-1 rounded-full bg-[#9f1239] px-3 py-2.5 text-xs font-semibold text-white">
                     {isDeleting ? 'Deleting...' : 'Delete'}
                   </button>
-                  <button type="button" onClick={() => setShowDeleteConfirm(null)} disabled={isDeleting} className="flex-1 rounded-full bg-white px-3 py-2.5 text-xs font-medium text-[#1d1d1f] shadow-sm">
+                  <button type="button" onClick={() => setShowDeleteConfirm(null)} disabled={isDeleting} className="flex-1 rounded-full bg-white px-3 py-2.5 text-xs font-medium text-[#1d1d1f] ">
                     Cancel
                   </button>
                 </div>
@@ -412,7 +409,7 @@ export default function ShopOwnerProfilePage() {
 
         {isSignOutDialogOpen ? (
           <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/35 px-4" role="presentation">
-            <div role="dialog" aria-modal="true" aria-labelledby="shop-owner-sign-out-title" className="w-full max-w-[360px] rounded-[24px] bg-white p-5 shadow-[0_24px_70px_rgba(15,23,42,0.24)]">
+            <div role="dialog" aria-modal="true" aria-labelledby="shop-owner-sign-out-title" className="w-full max-w-[360px] rounded-[24px] bg-white p-5 ">
               <h2 id="shop-owner-sign-out-title" className="text-xl font-semibold tracking-[-0.04em]">Sign out?</h2>
               <p className="mt-2 text-sm text-[#6e6e73]">You can sign in again anytime to manage your food hall.</p>
               <div className="mt-5 flex gap-2">
@@ -428,14 +425,14 @@ export default function ShopOwnerProfilePage() {
         ) : null}
 
         <OperatingScheduleModal
-          isOpen={scheduleModal.isOpen}
-          onClose={() => setScheduleModal((prev) => ({ ...prev, isOpen: false }))}
-          title={scheduleModal.title}
-          description={scheduleModal.description}
-          initialSchedule={scheduleModal.initialSchedule}
-          onSave={async (schedule: OperatingSchedule) => {
-            await handleSaveSchedule(schedule);
-            setScheduleModal((prev) => ({ ...prev, isOpen: false }));
+ isOpen={scheduleModal.isOpen}
+ onClose={() => setScheduleModal((prev) => ({ ...prev, isOpen: false }))}
+ title={scheduleModal.title}
+ description={scheduleModal.description}
+ initialSchedule={scheduleModal.initialSchedule}
+ onSave={async (schedule: OperatingSchedule) => {
+ await handleSaveSchedule(schedule);
+ setScheduleModal((prev) => ({ ...prev, isOpen: false }));
           }}
         />
 

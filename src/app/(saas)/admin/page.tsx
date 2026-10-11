@@ -86,10 +86,10 @@ export default function AdminDashboardPage() {
  return (
  <div className="space-y-6 sm:space-y-8">
  {/* Page Header */}
- <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 .06] pb-5">
+ <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-5">
  <div>
  <div className="flex items-center gap-2">
- <span className="text-xs font-semibold text-[#86868b] bg-black/[0.04] .06] px-2.5 py-0.5 rounded-full">
+ <span className="text-xs font-semibold text-[#86868b] bg-black/[0.04] px-2.5 py-0.5 rounded-full">
  Platform control plane
  </span>
  </div>
@@ -105,14 +105,14 @@ export default function AdminDashboardPage() {
  type="button"
  onClick={() => void handleRefresh()}
  disabled={loading}
- className="inline-flex items-center gap-1.5 rounded-full bg-white px-3.5 py-2 text-xs font-semibold text-[#1d1d1f] hover:bg-black/[0.03] shadow-xs"
+ className="inline-flex items-center gap-1.5 rounded-full bg-white px-3.5 py-2 text-xs font-semibold text-[#1d1d1f] hover:bg-black/[0.03] "
  >
  <RefreshCw className={`w-3.5 h-3.5 text-[#6e6e73] ${loading ? '' : ''}`} />
  Refresh
  </button>
  <Link
  href={'/admin/monetization' as any}
- className="inline-flex items-center gap-1.5 rounded-full bg-[#1d1d1f] px-4 py-2 text-xs font-semibold text-white shadow-xs hover:bg-black "
+ className="inline-flex items-center gap-1.5 rounded-full bg-[#1d1d1f] px-4 py-2 text-xs font-semibold text-white hover:bg-black "
  >
  <Percent className="w-3.5 h-3.5" />
  Manage Monetization
@@ -123,7 +123,7 @@ export default function AdminDashboardPage() {
  {/* KPI Cards */}
  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
  {/* Total Venues */}
- <div className="rounded-2xl bg-white p-5 .06] shadow-xs">
+ <div className="rounded-2xl bg-white p-5 ">
  <div className="flex items-center justify-between text-[#86868b]">
  <span className="text-xs font-semibold">Registered venues</span>
  <div className="w-8 h-8 rounded-xl bg-blue-50 text-[#0071e3] flex items-center justify-center">
@@ -135,7 +135,7 @@ export default function AdminDashboardPage() {
  </div>
 
  {/* Operating Stalls */}
- <div className="rounded-2xl bg-white p-5 .06] shadow-xs">
+ <div className="rounded-2xl bg-white p-5 ">
  <div className="flex items-center justify-between text-[#86868b]">
  <span className="text-xs font-semibold">Active stalls</span>
  <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
@@ -147,7 +147,7 @@ export default function AdminDashboardPage() {
  </div>
 
  {/* Monetization Model */}
- <div className="rounded-2xl bg-white p-5 .06] shadow-xs">
+ <div className="rounded-2xl bg-white p-5 ">
  <div className="flex items-center justify-between text-[#86868b]">
  <span className="text-xs font-semibold">Fee distribution</span>
  <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center">
@@ -162,7 +162,7 @@ export default function AdminDashboardPage() {
  </div>
 
  {/* Security & RBAC Status */}
- <div className="rounded-2xl bg-white p-5 .06] shadow-xs">
+ <div className="rounded-2xl bg-white p-5 ">
  <div className="flex items-center justify-between text-[#86868b]">
  <span className="text-xs font-semibold">Security & RLS</span>
  <div className="w-8 h-8 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center">
@@ -178,7 +178,7 @@ export default function AdminDashboardPage() {
  </div>
 
  {/* Quick Monetization Action Card */}
- <div className="rounded-3xl bg-white p-6 sm:p-7 .08] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-6">
+ <div className="rounded-3xl bg-white p-6 sm:p-7 flex flex-col md:flex-row md:items-center justify-between gap-6">
  <div className="max-w-2xl">
  <div className="inline-flex items-center gap-1.5 text-[#0071e3] bg-blue-50 px-2.5 py-0.5 rounded-full text-[11px] font-semibold">
  <Sliders className="w-3.5 h-3.5" />
@@ -193,7 +193,7 @@ export default function AdminDashboardPage() {
  </div>
  <Link
  href={'/admin/monetization' as any}
- className="inline-flex items-center justify-center gap-1.5 rounded-full bg-[#0071e3] px-5 py-2.5 text-xs font-semibold text-white shadow-xs hover:bg-[#0077ed] shrink-0"
+ className="inline-flex items-center justify-center gap-1.5 rounded-full bg-[#0071e3] px-5 py-2.5 text-xs font-semibold text-white hover:bg-[#0077ed] shrink-0"
  >
  <span>Open Fee Configurator</span>
  <ArrowUpRight className="w-4 h-4" />
@@ -201,8 +201,8 @@ export default function AdminDashboardPage() {
  </div>
 
  {/* Venues Table Section */}
- <div className="rounded-3xl bg-white .08] shadow-xs overflow-hidden">
- <div className="p-5 sm:p-6 .06] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+ <div className="rounded-3xl bg-white overflow-hidden">
+ <div className="p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
  <div>
  <h2 className="text-base sm:text-lg font-semibold text-[#1d1d1f] tracking-tight">
  All Multi-Tenant Food Halls ({shops.length})
@@ -237,7 +237,7 @@ export default function AdminDashboardPage() {
  <div className="hidden md:block overflow-x-auto">
  <table className="w-full text-left ">
  <thead>
- <tr className=" .06] bg-[#fafafc] text-xs font-semibold text-[#86868b]">
+ <tr className=" bg-[#fafafc] text-xs font-semibold text-[#86868b]">
  <th className="py-3 px-5">Venue</th>
  <th className="py-3 px-5">URL slug</th>
  <th className="py-3 px-5">Stalls</th>
@@ -246,7 +246,7 @@ export default function AdminDashboardPage() {
  <th className="py-3 px-5 text-right">Actions</th>
  </tr>
  </thead>
- <tbody className=" .04] text-xs sm:text-sm text-[#1d1d1f]">
+ <tbody className=" text-xs sm:text-sm text-[#1d1d1f]">
  {shops.map((shop) => {
  const feePercent = (shop.platformFeePercent ?? 0) * 100;
  const feeFixed = shop.platformFeeFixed ?? 0;
@@ -268,7 +268,7 @@ export default function AdminDashboardPage() {
  <div className="text-xs text-[#86868b] truncate max-w-xs">{shop.address ?? 'No address'}</div>
  </td>
  <td className="py-3.5 px-5">
- <span className="font-mono text-xs text-[#6e6e73] bg-black/[0.04] px-2 py-0.5 rounded-md .06]">
+ <span className="font-mono text-xs text-[#6e6e73] bg-black/[0.04] px-2 py-0.5 rounded-md">
  /{shop.slug ?? 'unknown'}
  </span>
  </td>
@@ -280,11 +280,7 @@ export default function AdminDashboardPage() {
  </td>
  <td className="py-3.5 px-5">
  <span
- className={`inline-flex items-center text-[11px] font-semibold px-2.5 py-0.5 rounded-full ${
- isDiner
- ? 'bg-blue-50 text-blue-700 '
- : 'bg-emerald-50 text-emerald-700 '
- }`}
+ className={`inline-flex items-center text-[11px] font-semibold px-2.5 py-0.5 rounded-full ${ isDiner ? 'bg-blue-50 text-blue-700 ' : 'bg-emerald-50 text-emerald-700 ' }`}
  >
  {isDiner ? 'Diner Pays Surcharge' : 'Stall Pays Commission'}
  </span>
@@ -297,7 +293,7 @@ export default function AdminDashboardPage() {
  <td className="py-3.5 px-5 text-right">
  <Link
  href={`/admin/monetization?shopId=${shop.id}` as any}
- className="inline-flex items-center gap-1 rounded-full bg-black/[0.04] px-3 py-1 text-xs font-semibold text-[#1d1d1f] hover:bg-black/[0.08] .06]"
+ className="inline-flex items-center gap-1 rounded-full bg-black/[0.04] px-3 py-1 text-xs font-semibold text-[#1d1d1f] hover:bg-black/[0.08]"
  >
  <Sliders className="w-3 h-3 text-[#6e6e73]" />
  <span>Configure</span>
@@ -310,7 +306,7 @@ export default function AdminDashboardPage() {
  </table>
  </div>
 
- <div className="md:hidden .04]">
+ <div className="md:hidden">
  {shops.map((shop) => {
  const feePercent = (shop.platformFeePercent ?? 0) * 100;
  const feeFixed = shop.platformFeeFixed ?? 0;
@@ -332,7 +328,7 @@ export default function AdminDashboardPage() {
  <div className="font-semibold text-sm text-[#1d1d1f]">{shop.name}</div>
  <div className="text-xs text-[#86868b] mt-0.5">{shop.address ?? 'No address'}</div>
  </div>
- <span className="font-mono text-[10px] text-[#6e6e73] bg-black/[0.04] px-1.5 py-0.5 rounded .06] shrink-0">
+ <span className="font-mono text-[10px] text-[#6e6e73] bg-black/[0.04] px-1.5 py-0.5 rounded shrink-0">
  /{shop.slug ?? 'unknown'}
  </span>
  </div>
@@ -342,11 +338,7 @@ export default function AdminDashboardPage() {
  {shop.booths?.length ?? 0}
  </span>
  <span
- className={`inline-flex items-center text-[10px] font-semibold px-2 py-0.5 rounded-full ${
- isDiner
- ? 'bg-blue-50 text-blue-700 '
- : 'bg-emerald-50 text-emerald-700 '
- }`}
+ className={`inline-flex items-center text-[10px] font-semibold px-2 py-0.5 rounded-full ${ isDiner ? 'bg-blue-50 text-blue-700 ' : 'bg-emerald-50 text-emerald-700 ' }`}
  >
  {isDiner ? 'Diner' : 'Stall'}
  </span>
@@ -356,7 +348,7 @@ export default function AdminDashboardPage() {
  </div>
  <Link
  href={`/admin/monetization?shopId=${shop.id}` as any}
- className="w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-black/[0.04] px-3 py-2 text-xs font-semibold text-[#1d1d1f] hover:bg-black/[0.08] .06]"
+ className="w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-black/[0.04] px-3 py-2 text-xs font-semibold text-[#1d1d1f] hover:bg-black/[0.08]"
  >
  <Sliders className="w-3.5 h-3.5 text-[#6e6e73]" />
  <span>Configure</span>

@@ -41,10 +41,10 @@ const nextBackendStatus: Record<OrderStatus, OrderStatus> = {
 };
 
 const getActionLabel = (status: OrderStatus) => {
-  if (status === 'PENDING' || status === 'CONFIRMED') return 'Accept & Prepare';
-  if (status === 'PREPARING') return 'Mark Ready';
-  if (status === 'READY') return 'Complete';
-  return 'Done';
+ if (status === 'PENDING' || status === 'CONFIRMED') return 'Accept & Prepare';
+ if (status === 'PREPARING') return 'Mark Ready';
+ if (status === 'READY') return 'Complete';
+ return 'Done';
 };
 
 export default function OwnerOrdersPage() {
@@ -76,9 +76,16 @@ export default function OwnerOrdersPage() {
  headers: { Authorization: `Bearer ${session.access_token}` },
  });
  if (!response.ok) {
- if (active) setError('Failed to load orders.');
- return;
- }
+          const errText = await response.text();
+          console.error("Frontend Orders Fetch Error:", errText);
+          let userMsg = 'Failed to load orders.';
+          try {
+            const parsed = JSON.parse(errText);
+            if (parsed.error) userMsg = parsed.error;
+          } catch (e) {}
+          if (active) setError(userMsg);
+          return;
+        }
 
  const data = await response.json();
  if (active && data.orders) {
@@ -142,8 +149,8 @@ export default function OwnerOrdersPage() {
 
  const visibleOrders = useMemo(
  () => orders.filter((order) => {
-   const isCompleted = order.status === 'COMPLETED' || order.status === 'CANCELLED';
-   return filter === 'active' ? !isCompleted : isCompleted;
+ const isCompleted = order.status === 'COMPLETED' || order.status === 'CANCELLED';
+ return filter === 'active' ? !isCompleted : isCompleted;
  }),
  [filter, orders]
  );
@@ -166,42 +173,42 @@ export default function OwnerOrdersPage() {
  });
 
  setProcessingId(null);
- if (!response.ok) {
+ if (!response.ok) { console.error("Frontend Orders Fetch Error:", await response.text());
  setError('Order status could not be saved. Please try again.');
  setRefreshTrigger((c) => c + 1);
  } else {
-   setOrders((current) =>
-     current.map((order) => (order.backendId === backendId ? { ...order, status: backendSt } : order))
+ setOrders((current) =>
+ current.map((order) => (order.backendId === backendId ? { ...order, status: backendSt } : order))
    );
  }
  };
 
  const handleCancellation = async (backendId: string, action: 'approve' | 'reject') => {
-   if (!supabase) return;
-   setProcessingId(backendId);
-   setError('');
+ if (!supabase) return;
+ setProcessingId(backendId);
+ setError('');
    
-   const token = (await supabase.auth.getSession())?.data.session?.access_token;
-   if (!token) return;
+ const token = (await supabase.auth.getSession())?.data.session?.access_token;
+ if (!token) return;
 
-   const endpoint = `/api/owner/orders/${backendId}/${action}-cancel`;
+ const endpoint = `/api/owner/orders/${backendId}/${action}-cancel`;
 
-   const response = await fetch(endpoint, {
-     method: 'POST',
-     headers: { Authorization: `Bearer ${token}` }
+ const response = await fetch(endpoint, {
+ method: 'POST',
+ headers: { Authorization: `Bearer ${token}` }
    });
 
-   setProcessingId(null);
-   if (!response.ok) {
-     setError(`Failed to ${action} cancellation request.`);
-     setRefreshTrigger((c) => c + 1);
+ setProcessingId(null);
+ if (!response.ok) { console.error("Frontend Orders Fetch Error:", await response.text());
+ setError(`Failed to ${action} cancellation request.`);
+ setRefreshTrigger((c) => c + 1);
    } else {
-     const result = await response.json();
-     setActionSuccess(`Cancellation ${action}ed.`);
-     setTimeout(() => setActionSuccess(null), 3000);
+ const result = await response.json();
+ setActionSuccess(`Cancellation ${action}ed.`);
+ setTimeout(() => setActionSuccess(null), 3000);
      
-     setOrders((current) =>
-       current.map((order) => (order.backendId === backendId ? { ...order, status: result.status } : order))
+ setOrders((current) =>
+ current.map((order) => (order.backendId === backendId ? { ...order, status: result.status } : order))
      );
    }
  };
@@ -212,15 +219,13 @@ export default function OwnerOrdersPage() {
  
 
  {/* Filter Tabs */}
- <div className="mt-5 grid grid-cols-2 rounded-[20px] bg-white p-1 shadow-[0_12px_26px_rgba(15,23,42,0.04)] .04]">
+ <div className="mt-5 grid grid-cols-2 rounded-[20px] bg-white p-1 ">
  {(['active', 'completed'] as const).map((option) => (
  <button
  key={option}
  type="button"
  onClick={() => setFilter(option)}
- className={`inline-flex h-9 items-center justify-center rounded-full px-4 text-xs font-bold capitalize ${
- filter === option ? 'bg-[#111827] text-white shadow-xs' : 'text-[#6e6e73] hover:text-[#1d1d1f]'
- }`}
+ className={`inline-flex h-9 items-center justify-center rounded-full px-4 text-xs font-bold capitalize ${ filter === option ? 'bg-[#111827] text-white ' : 'text-[#6e6e73] hover:text-[#1d1d1f]' }`}
  >
  {option} tickets
  </button>
@@ -235,7 +240,7 @@ export default function OwnerOrdersPage() {
  </div>
  ) : null}
 
- {error ? (
+ {error && orders.length > 0 ? (
  <div className="mt-4 p-3.5 rounded-2xl bg-rose-50 text-xs font-medium text-rose-800 flex items-center gap-2">
  <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
  <span>{error}</span>
@@ -246,8 +251,21 @@ export default function OwnerOrdersPage() {
  <section className="mt-6">
  {loading ? (
  <PageLoader text="Loading kitchen tickets" fullHeight={false} />
+ ) : error && orders.length === 0 ? (
+ <div className="rounded-[24px] bg-white p-10 text-center ">
+ <AlertCircle className="mx-auto h-8 w-8 text-rose-500" />
+ <p className="mt-3 text-sm font-medium text-[#1d1d1f]">Failed to load orders</p>
+ <p className="text-xs text-[#86868b] mt-1">{error}</p>
+ <button 
+   onClick={() => { setLoading(true); setError(''); setRefreshTrigger(c => c + 1); }}
+   className="mt-5 inline-flex items-center justify-center rounded-full bg-[#111827] px-5 py-2 text-xs font-semibold text-white hover:bg-black"
+ >
+   <RefreshCw className="mr-2 h-3.5 w-3.5" />
+   Retry
+ </button>
+ </div>
  ) : visibleOrders.length === 0 ? (
- <div className="rounded-[24px] bg-white p-10 text-center shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
+ <div className="rounded-[24px] bg-white p-10 text-center ">
  <PackageCheck className="mx-auto h-8 w-8 text-[#86868b]" />
  <p className="mt-3 text-sm font-medium text-[#1d1d1f]">No {filter} tickets</p>
  <p className="text-xs text-[#86868b] mt-1">Orders dispatched by diners will appear here in real time.</p>
@@ -261,7 +279,7 @@ export default function OwnerOrdersPage() {
  return (
  <article
  key={order.backendId}
- className={`flex flex-col justify-between rounded-[26px] bg-white p-5 shadow-[0_14px_30px_rgba(15,23,42,0.04)] ${isPendingCancel ? '' : ''}`}
+ className={`flex flex-col justify-between rounded-[26px] bg-white p-5 ${isPendingCancel ? '' : ''}`}
  >
  {/* Ticket Header: Table & Time */}
  <div className="flex items-start justify-between gap-3 pb-3.5">
@@ -281,17 +299,7 @@ export default function OwnerOrdersPage() {
 
  <div className="text-right">
  <span
- className={`inline-block rounded-full px-3 py-1 text-xs font-semibold ${
- order.status === 'PENDING'
- ? 'bg-amber-100 text-amber-800'
- : order.status === 'PREPARING'
- ? 'bg-blue-100 text-blue-800'
- : order.status === 'READY'
- ? 'bg-emerald-100 text-emerald-800'
- : isPendingCancel
- ? 'bg-rose-100 text-rose-800'
- : 'bg-slate-100 text-slate-700'
- }`}
+ className={`inline-block rounded-full px-3 py-1 text-xs font-semibold ${ order.status === 'PENDING' ? 'bg-amber-100 text-amber-800' : order.status === 'PREPARING' ? 'bg-blue-100 text-blue-800' : order.status === 'READY' ? 'bg-emerald-100 text-emerald-800' : isPendingCancel ? 'bg-rose-100 text-rose-800' : 'bg-slate-100 text-slate-700' }`}
  >
  {isPendingCancel ? 'Cancel Requested' : order.status}
  </span>
@@ -358,18 +366,18 @@ export default function OwnerOrdersPage() {
  {isPendingCancel ? (
    <div className="flex items-center gap-2 mt-2">
      <button
-       type="button"
-       disabled={isProcessing}
-       onClick={() => handleCancellation(order.backendId, 'reject')}
-       className="flex-1 h-11 px-4 rounded-full bg-neutral-100 text-sm font-semibold text-neutral-800 hover:bg-neutral-200 disabled:opacity-50"
+ type="button"
+ disabled={isProcessing}
+ onClick={() => handleCancellation(order.backendId, 'reject')}
+ className="flex-1 h-11 px-4 rounded-full bg-neutral-100 text-sm font-semibold text-neutral-800 hover:bg-neutral-200 disabled:opacity-50"
      >
        Reject
      </button>
      <button
-       type="button"
-       disabled={isProcessing}
-       onClick={() => handleCancellation(order.backendId, 'approve')}
-       className="flex-1 h-11 px-4 rounded-full bg-rose-600 text-sm font-semibold text-white hover:bg-rose-700 disabled:opacity-50"
+ type="button"
+ disabled={isProcessing}
+ onClick={() => handleCancellation(order.backendId, 'approve')}
+ className="flex-1 h-11 px-4 rounded-full bg-rose-600 text-sm font-semibold text-white hover:bg-rose-700 disabled:opacity-50"
      >
        Approve Cancel
      </button>
@@ -401,7 +409,7 @@ export default function OwnerOrdersPage() {
  <button
  type="button"
  onClick={() => setRefreshTrigger((c) => c + 1)}
- className="fixed bottom-24 sm:bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-white text-[#1d1d1f] shadow-lg hover:bg-neutral-50 disabled:opacity-50"
+ className="fixed bottom-24 sm:bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-white text-[#1d1d1f] hover:bg-neutral-50 disabled:opacity-50"
  aria-label="Refresh tickets"
  title="Refresh tickets"
  >

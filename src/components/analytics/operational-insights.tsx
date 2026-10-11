@@ -12,9 +12,9 @@ export function OperationalInsights({
  totalOrders: number;
 }) {
  return (
- <div className="rounded-[26px] bg-white p-5 sm:p-6 shadow-xs">
+ <div className="rounded-[26px] bg-white p-5 sm:p-6 ">
  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
- <div className="rounded-2xl bg-[#f5f5f7] p-3.5 .02]">
+ <div className="rounded-2xl bg-[#f5f5f7] p-3.5">
  <p className="text-xs font-semibold text-[#86868b]">Top earner</p>
  <p className="mt-1 text-sm font-semibold text-[#1d1d1f] truncate">
  {topBooth?.name ?? '—'}
@@ -26,7 +26,7 @@ export function OperationalInsights({
  </p>
  </div>
 
- <div className="rounded-2xl bg-[#f5f5f7] p-3.5 .02]">
+ <div className="rounded-2xl bg-[#f5f5f7] p-3.5">
  <p className="text-xs font-semibold text-[#86868b]">Occupancy rate</p>
  <p className="mt-1 text-sm font-semibold text-[#1d1d1f]">
  {totalBooths > 0 ? `${((activeBoothCount / totalBooths) * 100).toFixed(0)}%` : '0%'}
@@ -36,7 +36,7 @@ export function OperationalInsights({
  </p>
  </div>
 
- <div className="rounded-2xl bg-[#f5f5f7] p-3.5 .02]">
+ <div className="rounded-2xl bg-[#f5f5f7] p-3.5">
  <p className="text-xs font-semibold text-[#86868b]">Average stall velocity</p>
  <p className="mt-1 text-sm font-semibold text-[#1d1d1f]">
  {activeBoothCount > 0 ? (totalOrders / activeBoothCount).toFixed(1) : 0} orders

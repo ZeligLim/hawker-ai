@@ -29,83 +29,83 @@ export type ReceiptData = {
 };
 
 export function CustomerReceipt({
-  initialData,
-  onBack,
-  onClearActive,
-  simplified = false,
+ initialData,
+ onBack,
+ onClearActive,
+ simplified = false,
 }: {
-  initialData: ReceiptData;
-  onBack?: () => void;
-  onClearActive?: () => void;
-  simplified?: boolean;
+ initialData: ReceiptData;
+ onBack?: () => void;
+ onClearActive?: () => void;
+ simplified?: boolean;
 }) {
-  const [data, setData] = useState(initialData);
-  const [eta, setEta] = useState<string>('Calculating...');
-  const [cancelling, setCancelling] = useState(false);
-  const [cancelError, setCancelError] = useState('');
+ const [data, setData] = useState(initialData);
+ const [eta, setEta] = useState<string>('Calculating...');
+ const [cancelling, setCancelling] = useState(false);
+ const [cancelError, setCancelError] = useState('');
 
-  const orderStatus = data.status;
+ const orderStatus = data.status;
 
   // Realtime subscription for status updates
-  useEffect(() => {
-    if (!supabase) return;
-    const channel = supabase
+ useEffect(() => {
+ if (!supabase) return;
+ const channel = supabase
       .channel(`customer-order-${data.id}`)
       .on(
         'postgres_changes',
         { event: 'UPDATE', schema: 'public', table: 'orders', filter: `id=eq.${data.id}` },
         (payload) => {
-          if (payload.new && payload.new.status) {
-            setData((prev) => ({ ...prev, status: payload.new.status as any }));
+ if (payload.new && payload.new.status) {
+ setData((prev) => ({ ...prev, status: payload.new.status as any }));
           }
         }
       )
       .subscribe();
 
-    return () => {
-      supabase?.removeChannel(channel);
+ return () => {
+ supabase?.removeChannel(channel);
     };
   }, [data.id]);
 
-  useEffect(() => {
-    if (orderStatus === 'COMPLETED' || orderStatus === 'CANCELLED') return;
-    let active = true;
-    fetch(`/api/orders/${data.id}/eta`).then(res => res.json()).then(resData => {
-      if (active && resData.eta) setEta(`ETA ${resData.eta}`);
+ useEffect(() => {
+ if (orderStatus === 'COMPLETED' || orderStatus === 'CANCELLED') return;
+ let active = true;
+ fetch(`/api/orders/${data.id}/eta`).then(res => res.json()).then(resData => {
+ if (active && resData.eta) setEta(`ETA ${resData.eta}`);
     }).catch(() => {});
-    return () => { active = false; };
+ return () => { active = false; };
   }, [data.id, orderStatus]);
 
-  const handleCancelOrder = async () => {
-    if (!window.confirm('Are you sure you want to cancel this order? The restaurant will be notified.')) return;
-    setCancelling(true);
-    setCancelError('');
+ const handleCancelOrder = async () => {
+ if (!window.confirm('Are you sure you want to cancel this order? The restaurant will be notified.')) return;
+ setCancelling(true);
+ setCancelError('');
 
-    try {
-      const response = await fetch(`/api/orders/${data.id}/cancel`, {
-        method: 'POST',
+ try {
+ const response = await fetch(`/api/orders/${data.id}/cancel`, {
+ method: 'POST',
       });
-      const result = await response.json();
-      if (!response.ok) throw new Error(result.error || 'Failed to cancel order.');
+ const result = await response.json();
+ if (!response.ok) throw new Error(result.error || 'Failed to cancel order.');
       
-      setData((prev) => ({ ...prev, status: 'CANCELLATION_REQUESTED' }));
+ setData((prev) => ({ ...prev, status: 'CANCELLATION_REQUESTED' }));
     } catch (err: any) {
-      setCancelError(err.message || 'An error occurred.');
+ setCancelError(err.message || 'An error occurred.');
     } finally {
-      setCancelling(false);
+ setCancelling(false);
     }
   };
 
-  const isCancellable = orderStatus === 'PENDING' || orderStatus === 'CONFIRMED' || orderStatus === 'PREPARING';
+ const isCancellable = orderStatus === 'PENDING' || orderStatus === 'CONFIRMED' || orderStatus === 'PREPARING';
 
-  return (
-    <div className="w-full max-w-lg mx-auto bg-white rounded-3xl shadow-lg overflow-hidden text-black">
+ return (
+    <div className="w-full max-w-lg mx-auto bg-white rounded-3xl overflow-hidden text-black">
       {/* Mark as Received Button */}
       {onClearActive && (orderStatus === 'COMPLETED' || orderStatus === 'READY') ? (
         <div className="bg-[#f5f5f7] p-3 flex justify-center">
           <button
-            onClick={onClearActive}
-            className="w-full max-w-[200px] h-11 rounded-full bg-emerald-500 text-white font-semibold text-sm hover:bg-emerald-600 transition-colors"
+ onClick={onClearActive}
+ className="w-full max-w-[200px] h-11 rounded-full bg-emerald-500 text-white font-semibold text-sm hover:bg-emerald-600 transition-colors"
           >
             Food Received
           </button>
@@ -154,9 +154,9 @@ export function CustomerReceipt({
           <div className="flex items-center gap-2">
             {onBack ? (
               <button
-                type="button"
-                onClick={onBack}
-                className="p-1.5 -ml-1 text-neutral-500 hover:text-black rounded-full hover:bg-neutral-200 transition-colors"
+ type="button"
+ onClick={onBack}
+ className="p-1.5 -ml-1 text-neutral-500 hover:text-black rounded-full hover:bg-neutral-200 transition-colors"
               >
                 <ArrowLeft className="w-4 h-4" />
               </button>
@@ -194,8 +194,8 @@ export function CustomerReceipt({
           </p>
           <div className="space-y-2">
             {data.items.map((item) => {
-              const itemTotal = (item.price || item.unitPrice || 0) * item.quantity;
-              return (
+ const itemTotal = (item.price || item.unitPrice || 0) * item.quantity;
+ return (
                 <div key={item.id} className="py-2 bg-neutral-50 rounded-2xl px-3.5">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1">
@@ -256,9 +256,9 @@ export function CustomerReceipt({
             {isCancellable && (
                <div className="pt-4 mt-2">
                  <button
-                   onClick={handleCancelOrder}
-                   disabled={cancelling}
-                   className="w-full py-2.5 rounded-full bg-white text-rose-600 font-semibold text-xs hover:bg-rose-50 disabled:opacity-50"
+ onClick={handleCancelOrder}
+ disabled={cancelling}
+ className="w-full py-2.5 rounded-full bg-white text-rose-600 font-semibold text-xs hover:bg-rose-50 disabled:opacity-50"
                  >
                    {cancelling ? 'Requesting...' : 'Cancel Order'}
                  </button>

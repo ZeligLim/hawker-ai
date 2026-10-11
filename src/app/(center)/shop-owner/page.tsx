@@ -140,7 +140,7 @@ export default function ShopOwnerDashboard() {
  <div className="flex items-center gap-2 shrink-0">
  <Link
  href={'/shop-owner/booths' as any}
- className="inline-flex h-9 items-center justify-center gap-1.5 rounded-full bg-[#111827] px-4 text-xs font-semibold text-white hover:bg-black shadow-xs shrink-0"
+ className="inline-flex h-9 items-center justify-center gap-1.5 rounded-full bg-[#111827] px-4 text-xs font-semibold text-white hover:bg-black shrink-0"
  >
  <Plus className="w-3.5 h-3.5" />
  <span>Add Booth Slot</span>
@@ -149,13 +149,13 @@ export default function ShopOwnerDashboard() {
  </header>
 
  {/* Responsive KPI Grid - 2x2 on mobile, 4 columns on desktop */}
- <section className="mt-6 grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
- <div className="rounded-[22px] bg-white p-4 sm:p-5 .04] shadow-xs flex flex-col justify-between">
+ <section className="mt-5 grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+ <div className="rounded-[16px] bg-white p-4 sm:p-5 flex flex-col justify-between">
  <div className="flex items-center justify-between text-[#86868b]">
  <span className="text-xs font-medium">Managed Venues</span>
  <Building2 className="w-4 h-4" />
  </div>
- <div className="mt-3">
+ <div className="mt-1.5">
  <p className="text-2xl sm:text-3xl font-semibold tracking-tight text-[#1d1d1f]">
  {shops.length}
  </p>
@@ -163,12 +163,12 @@ export default function ShopOwnerDashboard() {
  </div>
  </div>
 
- <div className="rounded-[22px] bg-white p-4 sm:p-5 .04] shadow-xs flex flex-col justify-between">
+ <div className="rounded-[16px] bg-white p-4 sm:p-5 flex flex-col justify-between">
  <div className="flex items-center justify-between text-[#86868b]">
  <span className="text-xs font-medium">Stall Slots</span>
  <Store className="w-4 h-4" />
  </div>
- <div className="mt-3">
+ <div className="mt-1.5">
  <p className="text-2xl sm:text-3xl font-semibold tracking-tight text-[#1d1d1f]">
  {totalBooths}
  </p>
@@ -176,12 +176,12 @@ export default function ShopOwnerDashboard() {
  </div>
  </div>
 
- <div className="rounded-[22px] bg-white p-4 sm:p-5 .04] shadow-xs flex flex-col justify-between">
+ <div className="rounded-[16px] bg-white p-4 sm:p-5 flex flex-col justify-between">
  <div className="flex items-center justify-between text-[#86868b]">
  <span className="text-xs font-medium">Active Vendors</span>
  <Users className="w-4 h-4" />
  </div>
- <div className="mt-3">
+ <div className="mt-1.5">
  <p className="text-2xl sm:text-3xl font-semibold tracking-tight text-[#1d1d1f]">
  {activeVendorsCount}
  </p>
@@ -189,12 +189,12 @@ export default function ShopOwnerDashboard() {
  </div>
  </div>
 
- <div className="rounded-[22px] bg-white p-4 sm:p-5 .04] shadow-xs flex flex-col justify-between">
+ <div className="rounded-[16px] bg-white p-4 sm:p-5 flex flex-col justify-between">
  <div className="flex items-center justify-between text-[#86868b]">
  <span className="text-xs font-medium">Operator Access</span>
  <ShieldCheck className="w-4 h-4 text-emerald-600" />
  </div>
- <div className="mt-3">
+ <div className="mt-1.5">
  <p className="text-lg sm:text-xl font-semibold tracking-tight text-[#1d1d1f] capitalize">
  {shops[0]?.role ?? 'Owner'}
  </p>
@@ -204,10 +204,10 @@ export default function ShopOwnerDashboard() {
  </section>
 
  {/* Widescreen Multi-Column Grid */}
- <section className="mt-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+ <section className="mt-5 grid grid-cols-1 lg:grid-cols-12 gap-4">
  {/* Main Left Column: Food Hall Stalls Directory */}
  <div className="lg:col-span-8 space-y-4">
- <div className="rounded-[26px] bg-white p-5 sm:p-6 .04] shadow-xs">
+ <div className="rounded-[20px] bg-white p-4 sm:p-5 ">
  <div className="flex items-center justify-between gap-3 mb-5">
  <div>
  <h2 className="text-lg sm:text-xl font-semibold tracking-tight text-[#1d1d1f]">
@@ -229,7 +229,7 @@ export default function ShopOwnerDashboard() {
  {loading ? (
  <PageLoader text="Loading venues" fullHeight={false} />
  ) : shops.length === 0 ? (
- <div className="rounded-2xl bg-[#f5f5f7] p-8 text-center text-xs text-[#6e6e73]">
+ <div className="rounded-2xl bg-[#f5f5f7] p-6 text-center text-xs text-[#6e6e73]">
  <Store className="w-8 h-8 text-[#86868b] mx-auto mb-2 opacity-50" />
  <p className="font-semibold text-sm text-[#1d1d1f]">No food hall registered yet</p>
  <p className="mt-1 max-w-sm mx-auto">
@@ -247,11 +247,11 @@ export default function ShopOwnerDashboard() {
  {shops.map((shop) => (
  <div
  key={shop.id}
- className="rounded-2xl bg-[#f5f5f7]/80 .04] p-4 sm:p-5"
+ className="rounded-2xl bg-[#f5f5f7]/80 p-4 sm:p-5"
  >
- <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 .06]">
+ <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3">
  <div className="flex items-center gap-3 min-w-0">
- <div className="w-9 h-9 rounded-xl bg-[#111827] text-white flex items-center justify-center font-bold text-sm shadow-xs shrink-0">
+ <div className="w-9 h-9 rounded-xl bg-[#111827] text-white flex items-center justify-center font-bold text-sm shrink-0">
  {shop.name.charAt(0).toUpperCase()}
  </div>
  <div className="min-w-0">
@@ -266,16 +266,10 @@ export default function ShopOwnerDashboard() {
 
  <div className="flex items-center gap-2 shrink-0 self-start sm:self-auto">
  <span
- className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${
- shop.isActive !== false
- ? 'bg-emerald-50 text-emerald-700 '
- : 'bg-zinc-100 text-zinc-600 '
- }`}
+ className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${ shop.isActive !== false ? 'bg-emerald-50 text-emerald-700 ' : 'bg-zinc-100 text-zinc-600 ' }`}
  >
  <span
- className={`w-1.5 h-1.5 rounded-full ${
- shop.isActive !== false ? 'bg-emerald-500 ' : 'bg-zinc-400'
- }`}
+ className={`w-1.5 h-1.5 rounded-full ${ shop.isActive !== false ? 'bg-emerald-500 ' : 'bg-zinc-400' }`}
  />
  {shop.isActive !== false ? 'Active' : 'Inactive'}
  </span>
@@ -286,11 +280,7 @@ export default function ShopOwnerDashboard() {
  onClick={() => handleToggleShopActive(shop.id, shop.isActive !== false)}
  title={shop.isActive !== false ? 'Put shop as inactive' : 'Set shop as active'}
  aria-label={shop.isActive !== false ? 'Put shop as inactive' : 'Set shop as active'}
- className={`flex h-8 items-center justify-center gap-1.5 rounded-xl px-2.5 text-xs font-semibold shadow-xs disabled:opacity-50 shrink-0 ${
- shop.isActive !== false
- ? ' bg-amber-50/80 text-amber-700 hover:bg-amber-100'
- : ' bg-emerald-50/80 text-emerald-700 hover:bg-emerald-100'
- }`}
+ className={`flex h-8 items-center justify-center gap-1.5 rounded-xl px-2.5 text-xs font-semibold disabled:opacity-50 shrink-0 ${ shop.isActive !== false ? ' bg-amber-50/80 text-amber-700 hover:bg-amber-100' : ' bg-emerald-50/80 text-emerald-700 hover:bg-emerald-100' }`}
  >
  <Power className="w-3.5 h-3.5" />
  <span>{shop.isActive !== false ? 'Put Inactive' : 'Activate'}</span>
@@ -314,7 +304,7 @@ export default function ShopOwnerDashboard() {
  return (
  <div
  key={booth.id}
- className="flex items-center justify-between gap-2 rounded-xl bg-white p-3 .04] shadow-xs"
+ className="flex items-center justify-between gap-2 rounded-xl bg-white p-3 "
  >
  <div className="min-w-0">
  <p className="text-xs font-semibold text-[#1d1d1f] truncate">
@@ -326,11 +316,7 @@ export default function ShopOwnerDashboard() {
  </div>
  <div className="flex items-center gap-1.5 shrink-0">
  <span
- className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ${
- hasMember
- ? 'bg-emerald-50 text-emerald-700 '
- : 'bg-black/5 text-[#1d1d1f] '
- }`}
+ className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ${ hasMember ? 'bg-emerald-50 text-emerald-700 ' : 'bg-black/5 text-[#1d1d1f] ' }`}
  >
  {hasMember ? 'Claimed' : 'Available'}
  </span>
@@ -351,7 +337,7 @@ export default function ShopOwnerDashboard() {
 
  {/* Right Column: Quick Action Cards & Guidance */}
  <div className="lg:col-span-4 space-y-4">
- <div className="rounded-[26px] bg-white p-5 sm:p-6 .04] shadow-xs">
+ <div className="rounded-[20px] bg-white p-4 sm:p-5 ">
  <h2 className="text-base sm:text-lg font-semibold tracking-tight text-[#1d1d1f]">
  Quick Operations
  </h2>
@@ -362,10 +348,10 @@ export default function ShopOwnerDashboard() {
  <div className="mt-4 space-y-2.5">
  <Link
  href={'/shop-owner/booths' as any}
- className="group flex items-center justify-between rounded-2xl bg-[#f5f5f7] p-3.5 hover:bg-black/5 .02]"
+ className="group flex items-center justify-between rounded-2xl bg-[#f5f5f7] p-3.5 hover:bg-black/5"
  >
  <div className="flex items-center gap-3 min-w-0">
- <div className="w-8 h-8 rounded-xl bg-[#111827] text-white flex items-center justify-center shadow-xs shrink-0">
+ <div className="w-8 h-8 rounded-xl bg-[#111827] text-white flex items-center justify-center shrink-0">
  <Store className="w-4 h-4" />
  </div>
  <div className="min-w-0">
@@ -380,10 +366,10 @@ export default function ShopOwnerDashboard() {
 
  <Link
  href={'/shop-owner/tables' as any}
- className="group flex items-center justify-between rounded-2xl bg-[#f5f5f7] p-3.5 hover:bg-black/5 .02]"
+ className="group flex items-center justify-between rounded-2xl bg-[#f5f5f7] p-3.5 hover:bg-black/5"
  >
  <div className="flex items-center gap-3 min-w-0">
- <div className="w-8 h-8 rounded-xl bg-[#111827] text-white flex items-center justify-center shadow-xs shrink-0">
+ <div className="w-8 h-8 rounded-xl bg-[#111827] text-white flex items-center justify-center shrink-0">
  <QrCode className="w-4 h-4" />
  </div>
  <div className="min-w-0">
@@ -400,10 +386,10 @@ export default function ShopOwnerDashboard() {
 
  <Link
  href={'/shop-owner/profile' as any}
- className="group flex items-center justify-between rounded-2xl bg-[#f5f5f7] p-3.5 hover:bg-black/5 .02]"
+ className="group flex items-center justify-between rounded-2xl bg-[#f5f5f7] p-3.5 hover:bg-black/5"
  >
  <div className="flex items-center gap-3 min-w-0">
- <div className="w-8 h-8 rounded-xl bg-[#111827] text-white flex items-center justify-center shadow-xs shrink-0">
+ <div className="w-8 h-8 rounded-xl bg-[#111827] text-white flex items-center justify-center shrink-0">
  <Building2 className="w-4 h-4" />
  </div>
  <div className="min-w-0">
@@ -419,7 +405,7 @@ export default function ShopOwnerDashboard() {
  </div>
 
  {/* Operator Safety Notice */}
- <div className="rounded-[24px] bg-[#111827] text-white p-5 shadow-xs">
+ <div className="rounded-[20px] bg-[#111827] text-white p-5 ">
  <div className="flex items-center gap-2 text-xs font-semibold text-emerald-400">
  <ShieldCheck className="w-4 h-4 shrink-0" />
  <span>Isolated Merchant Security</span>

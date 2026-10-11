@@ -18,7 +18,7 @@ export function ResultCard({
  onAddToCart?: (dish: SearchResult) => void;
 }) {
  return (
- <article className="rounded-[28px] ] bg-white p-4 shadow-[0_12px_28px_rgba(15,23,42,0.05)] hover:-translate-y-0.5 hover:shadow-[0_20px_40px_rgba(15,23,42,0.08)]">
+ <article className="rounded-[28px] bg-white p-4 hover:-translate-y-0.5 ">
  {dish.imageUrl ? (
  <div className="relative aspect-[16/9] w-full overflow-hidden rounded-[20px] bg-[#f5f5f7] mb-3">
  <img
@@ -107,7 +107,7 @@ export function ResultCard({
  type="button"
  onClick={() => onAddToCart?.(dish)}
  aria-label={`Add ${dish.name} to your order`}
- className="mt-5 flex h-11 w-full items-center justify-center gap-1.5 rounded-full bg-[#007aff] hover:bg-[#0071e3] px-5 text-sm font-semibold text-white shadow-xs active:scale-[0.98]"
+ className="mt-5 flex h-11 w-full items-center justify-center gap-1.5 rounded-full bg-[#007aff] hover:bg-[#0071e3] px-5 text-sm font-semibold text-white active:scale-[0.98]"
  >
  <Plus className="h-4 w-4" strokeWidth={2.5} />
  <span>Add to order</span>

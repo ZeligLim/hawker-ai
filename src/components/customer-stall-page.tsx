@@ -51,7 +51,7 @@ function CustomerStallContent() {
  const [filterMode, setFilterMode] = useState<'all' | 'open' | 'fast'>('all');
  const [stalls, setStalls] = useState<StallDirectoryItem[]>([]);
  const [isLoading, setIsLoading] = useState(true);
-  const targetCentreSlug = activeCentre?.slug || rawCentreParam || tableSession?.centreSlug || '';
+ const targetCentreSlug = activeCentre?.slug || rawCentreParam || tableSession?.centreSlug || '';
 
  const { cartItems } = useCartItems();
 
@@ -210,7 +210,7 @@ function CustomerStallContent() {
  <div className="mx-auto w-full max-w-md sm:max-w-xl md:max-w-3xl lg:max-w-4xl px-4 pt-5 sm:px-6">
  {/* Table Session / QR Scanner Top Bar */}
  {tableSession?.tableNumber ? (
- <div className="mb-4 flex items-center justify-between rounded-2xl bg-white p-3 shadow-xs">
+ <div className="mb-4 flex items-center justify-between rounded-2xl bg-white p-3 ">
  <div className="flex items-center gap-2.5 min-w-0">
  <span className="flex h-2.5 w-2.5 rounded-full bg-emerald-500 shrink-0" />
  <div className="min-w-0">
@@ -262,33 +262,21 @@ function CustomerStallContent() {
  <button
  type="button"
  onClick={() => setFilterMode('all')}
- className={`h-11 px-5 rounded-full text-xs font-semibold shrink-0 ${
- filterMode === 'all'
- ? 'bg-black text-white shadow-xs'
- : 'bg-white text-black hover:bg-neutral-100'
- }`}
+ className={`h-11 px-5 rounded-full text-xs font-semibold shrink-0 ${ filterMode === 'all' ? 'bg-black text-white ' : 'bg-white text-black hover:bg-neutral-100' }`}
  >
  All Stalls ({stalls.length})
  </button>
  <button
  type="button"
  onClick={() => setFilterMode('open')}
- className={`h-11 px-5 rounded-full text-xs font-semibold shrink-0 ${
- filterMode === 'open'
- ? 'bg-black text-white shadow-xs'
- : 'bg-white text-black hover:bg-neutral-100'
- }`}
+ className={`h-11 px-5 rounded-full text-xs font-semibold shrink-0 ${ filterMode === 'open' ? 'bg-black text-white ' : 'bg-white text-black hover:bg-neutral-100' }`}
  >
  Open Now
  </button>
  <button
  type="button"
  onClick={() => setFilterMode('fast')}
- className={`h-11 px-5 rounded-full text-xs font-semibold shrink-0 ${
- filterMode === 'fast'
- ? 'bg-black text-white shadow-xs'
- : 'bg-white text-black hover:bg-neutral-100'
- }`}
+ className={`h-11 px-5 rounded-full text-xs font-semibold shrink-0 ${ filterMode === 'fast' ? 'bg-black text-white ' : 'bg-white text-black hover:bg-neutral-100' }`}
  >
  Fast ETA (&le; 10 min)
  </button>
@@ -300,7 +288,7 @@ function CustomerStallContent() {
  Loading stalls near you...
  </div>
  ) : filteredStalls.length === 0 ? (
- <div className="rounded-[22px] bg-white p-8 text-center text-xs sm:text-sm text-[#86868b] shadow-xs">
+ <div className="rounded-[22px] bg-white p-8 text-center text-xs sm:text-sm text-[#86868b] ">
  No stalls found matching your search.
  </div>
  ) : (
@@ -312,10 +300,10 @@ function CustomerStallContent() {
  href={`/stall/${activeCentre?.slug || rawCentreParam || tableSession?.centreSlug || 'centre'}/${stall.slug}` as any}
  className="block group"
  >
- <article className="rounded-3xl bg-white p-4 shadow-sm hover:bg-neutral-50 ">
+ <article className="rounded-3xl bg-white p-4 hover:bg-neutral-50 ">
  <div className="flex items-start justify-between gap-3">
  <div className="flex min-w-0 items-start gap-3">
- <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-neutral-100 text-sm font-bold text-black shadow-xs">
+ <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-neutral-100 text-sm font-bold text-black ">
  {stall.name
  .split(' ')
  .slice(0, 2)
@@ -334,15 +322,7 @@ function CustomerStallContent() {
 
  <div className="flex min-w-[84px] shrink-0 flex-col items-end gap-1 text-right">
  <span
- className={`whitespace-nowrap rounded-full px-2.5 py-0.5 text-[10px] font-semibold ${
- stall.busy === 'Busy'
- ? 'bg-amber-100 text-amber-900'
- : stall.busy === 'Moderate'
- ? 'bg-blue-100 text-blue-900'
- : stall.busy === 'Closed'
- ? 'bg-neutral-200 text-neutral-700'
- : 'bg-emerald-100 text-emerald-900'
- }`}
+ className={`whitespace-nowrap rounded-full px-2.5 py-0.5 text-[10px] font-semibold ${ stall.busy === 'Busy' ? 'bg-amber-100 text-amber-900' : stall.busy === 'Moderate' ? 'bg-blue-100 text-blue-900' : stall.busy === 'Closed' ? 'bg-neutral-200 text-neutral-700' : 'bg-emerald-100 text-emerald-900' }`}
  >
  {stall.busy}
  </span>
@@ -379,7 +359,7 @@ function CustomerStallContent() {
  <div className="fixed bottom-20 left-4 right-4 z-40 mx-auto max-w-md">
  <Link
  href="/orders"
- className="flex h-11 items-center justify-between rounded-full bg-black px-5 text-white shadow-lg hover:bg-neutral-800 "
+ className="flex h-11 items-center justify-between rounded-full bg-black px-5 text-white hover:bg-neutral-800 "
  >
  <div className="flex items-center gap-2">
  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-white/20 text-xs font-bold">

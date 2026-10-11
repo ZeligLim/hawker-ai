@@ -27,7 +27,7 @@ export function SaveCancelButtons({
  type={type}
  onClick={onSave}
  disabled={isSaving}
- className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-[#111827] text-white shadow-xs hover:bg-black disabled:opacity-70 shrink-0"
+ className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-[#111827] text-white hover:bg-black disabled:opacity-70 shrink-0"
  aria-label={saveLabel}
  title={saveLabel}
  >
@@ -36,7 +36,7 @@ export function SaveCancelButtons({
  <button
  type="button"
  onClick={onCancel}
- className={`inline-flex h-11 w-11 items-center justify-center rounded-full text-[#1d1d1f] shrink-0 ${cancelBg === 'white' ? 'bg-white hover:bg-neutral-100 shadow-xs' : 'bg-[#f5f5f7] hover:bg-neutral-200'}`}
+ className={`inline-flex h-11 w-11 items-center justify-center rounded-full text-[#1d1d1f] shrink-0 ${cancelBg === 'white' ? 'bg-white hover:bg-neutral-100 ' : 'bg-[#f5f5f7] hover:bg-neutral-200'}`}
  aria-label={cancelLabel}
  title={cancelLabel}
  >

@@ -19,43 +19,43 @@ export default function OwnerProfilePage() {
  const [isScheduleOpen, setIsScheduleOpen] = useState(false);
  const [isTogglingOpen, setIsTogglingOpen] = useState(false);
 
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState<'stall' | 'account' | null>(null);
+ const [isDeleting, setIsDeleting] = useState(false);
+ const [showDeleteConfirm, setShowDeleteConfirm] = useState<'stall' | 'account' | null>(null);
 
-  const handleDeleteStall = async () => {
-    if (!currentBooth?.id) return;
-    setIsDeleting(true);
-    try {
-      const response = await authenticatedFetch(`/api/owner/booths/${currentBooth.id}`, { method: 'DELETE' });
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Failed to delete stall');
+ const handleDeleteStall = async () => {
+ if (!currentBooth?.id) return;
+ setIsDeleting(true);
+ try {
+ const response = await authenticatedFetch(`/api/owner/booths/${currentBooth.id}`, { method: 'DELETE' });
+ if (!response.ok) {
+ const data = await response.json();
+ throw new Error(data.error || 'Failed to delete stall');
       }
-      window.location.href = window.location.origin + '/profile';
+ window.location.href = window.location.origin + '/profile';
     } catch (e: any) {
-      alert(e.message || 'Failed to delete stall');
-      setIsDeleting(false);
-      setShowDeleteConfirm(null);
+ alert(e.message || 'Failed to delete stall');
+ setIsDeleting(false);
+ setShowDeleteConfirm(null);
     }
   };
 
-  const handleDeleteAccount = async () => {
-    setIsDeleting(true);
-    try {
-      const response = await authenticatedFetch('/api/user/delete', { method: 'DELETE' });
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Failed to delete account');
+ const handleDeleteAccount = async () => {
+ setIsDeleting(true);
+ try {
+ const response = await authenticatedFetch('/api/user/delete', { method: 'DELETE' });
+ if (!response.ok) {
+ const data = await response.json();
+ throw new Error(data.error || 'Failed to delete account');
       }
-      if (typeof window !== 'undefined') {
-        window.localStorage.clear();
-        window.sessionStorage.clear();
+ if (typeof window !== 'undefined') {
+ window.localStorage.clear();
+ window.sessionStorage.clear();
       }
-      window.location.href = window.location.origin + '/';
+ window.location.href = window.location.origin + '/';
     } catch (e: any) {
-      alert(e.message || 'Failed to delete account');
-      setIsDeleting(false);
-      setShowDeleteConfirm(null);
+ alert(e.message || 'Failed to delete account');
+ setIsDeleting(false);
+ setShowDeleteConfirm(null);
     }
   };
 
@@ -102,7 +102,7 @@ export default function OwnerProfilePage() {
  return (
  <main className="min-h-screen bg-[#f5f5f7] px-4 pb-32 pt-5 text-[#1d1d1f]">
  <div className="mx-auto max-w-[760px]">
- <section className="rounded-[26px] bg-white p-5 shadow-xs">
+ <section className="rounded-[26px] bg-white p-5 ">
  <div className="flex items-center justify-between">
  <div className="flex items-center gap-3">
  <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#111827] text-lg font-semibold text-white">
@@ -117,7 +117,7 @@ export default function OwnerProfilePage() {
  <button
  type="button"
  onClick={() => setIsSignOutDialogOpen(true)}
- className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#f5f5f7] text-[#1d1d1f] hover:bg-neutral-200 shadow-xs"
+ className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#f5f5f7] text-[#1d1d1f] hover:bg-neutral-200 "
  aria-label="Sign out"
  >
  <LogOut className="h-4 w-4" />
@@ -134,12 +134,12 @@ export default function OwnerProfilePage() {
  </div>
  </section>
 
- <section className="mt-6 rounded-[26px] bg-white p-5 sm:p-6 shadow-xs">
+ <section className="mt-6 rounded-[26px] bg-white p-5 sm:p-6 ">
   <div className="flex flex-col sm:flex-row gap-3">
  <button
  type="button"
  onClick={() => setIsScheduleOpen(true)}
- className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-[#f5f5f7] px-4 text-xs font-semibold text-[#1d1d1f] hover:bg-neutral-200 shadow-xs"
+ className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-[#f5f5f7] px-4 text-xs font-semibold text-[#1d1d1f] hover:bg-neutral-200 "
  >
  <Clock className="h-4 w-4 text-[#1d1d1f]" />
  Stall Hours
@@ -148,11 +148,7 @@ export default function OwnerProfilePage() {
  type="button"
  disabled={isTogglingOpen}
  onClick={handleToggleStallOpen}
- className={`inline-flex h-11 items-center justify-center gap-2 rounded-full px-4 text-xs font-semibold shadow-xs disabled:opacity-50 ${
- currentBooth?.isActive !== false
- ? 'bg-rose-50 text-rose-700 hover:bg-rose-100'
- : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
- }`}
+ className={`inline-flex h-11 items-center justify-center gap-2 rounded-full px-4 text-xs font-semibold disabled:opacity-50 ${ currentBooth?.isActive !== false ? 'bg-rose-50 text-rose-700 hover:bg-rose-100' : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100' }`}
  >
  <ShieldAlert className="h-4 w-4" />
  {currentBooth?.isActive !== false ? 'Put Inactive' : 'Activate Stall'}
@@ -160,7 +156,7 @@ export default function OwnerProfilePage() {
  </div>
  </section>
 
- <section className="mt-6 rounded-[26px] bg-white p-5 sm:p-6 shadow-xs">
+ <section className="mt-6 rounded-[26px] bg-white p-5 sm:p-6 ">
  <h3 className="text-sm font-semibold text-[#1d1d1f] mb-3">Payment & Payouts</h3>
  <p className="mb-4 text-xs text-[#6e6e73]">
  Connect your Airwallex account to receive payouts from online orders.
@@ -175,7 +171,7 @@ export default function OwnerProfilePage() {
  type="text"
  placeholder="e.g. acct_..."
  defaultValue={currentBooth?.airwallex_account_id || ''}
- className="w-full rounded-xl bg-[#f5f5f7] px-4 py-3 text-sm text-[#1d1d1f] placeholder:text-[#86868b] focus:outline-none focus: focus:]"
+ className="w-full rounded-xl bg-[#f5f5f7] px-4 py-3 text-sm text-[#1d1d1f] placeholder:text-[#86868b] focus: focus:]"
  onBlur={async (e) => {
  const val = e.target.value.trim() || null;
  if (val === currentBooth?.airwallex_account_id) return;
@@ -205,7 +201,7 @@ export default function OwnerProfilePage() {
 
 
  
-        <section className="mt-6 rounded-[26px] bg-white p-5 sm:p-6 shadow-xs">
+        <section className="mt-6 rounded-[26px] bg-white p-5 sm:p-6 ">
                     
           <div className="flex flex-col gap-3">
             {showDeleteConfirm === 'stall' ? (
@@ -215,7 +211,7 @@ export default function OwnerProfilePage() {
                   <button type="button" onClick={handleDeleteStall} disabled={isDeleting} className="flex-1 rounded-full bg-[#9f1239] px-3 py-2.5 text-xs font-semibold text-white">
                     {isDeleting ? 'Deleting...' : 'Yes, Delete Stall'}
                   </button>
-                  <button type="button" onClick={() => setShowDeleteConfirm(null)} disabled={isDeleting} className="flex-1 rounded-full bg-white px-3 py-2.5 text-xs font-medium text-[#1d1d1f] shadow-sm">
+                  <button type="button" onClick={() => setShowDeleteConfirm(null)} disabled={isDeleting} className="flex-1 rounded-full bg-white px-3 py-2.5 text-xs font-medium text-[#1d1d1f] ">
                     Cancel
                   </button>
                 </div>
@@ -233,7 +229,7 @@ export default function OwnerProfilePage() {
                   <button type="button" onClick={handleDeleteAccount} disabled={isDeleting} className="flex-1 rounded-full bg-[#9f1239] px-3 py-2.5 text-xs font-semibold text-white">
                     {isDeleting ? 'Deleting...' : 'Yes, Delete Account'}
                   </button>
-                  <button type="button" onClick={() => setShowDeleteConfirm(null)} disabled={isDeleting} className="flex-1 rounded-full bg-white px-3 py-2.5 text-xs font-medium text-[#1d1d1f] shadow-sm">
+                  <button type="button" onClick={() => setShowDeleteConfirm(null)} disabled={isDeleting} className="flex-1 rounded-full bg-white px-3 py-2.5 text-xs font-medium text-[#1d1d1f] ">
                     Cancel
                   </button>
                 </div>
@@ -257,7 +253,7 @@ export default function OwnerProfilePage() {
 
  {isSignOutDialogOpen ? (
  <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/35 px-4" role="presentation">
- <div role="dialog" aria-modal="true" aria-labelledby="owner-sign-out-title" className="w-full max-w-[360px] rounded-[24px] bg-white p-5 shadow-[0_24px_70px_rgba(15,23,42,0.24)]">
+ <div role="dialog" aria-modal="true" aria-labelledby="owner-sign-out-title" className="w-full max-w-[360px] rounded-[24px] bg-white p-5 ">
  <h2 id="owner-sign-out-title" className="text-xl font-semibold tracking-[-0.04em]">Sign out?</h2>
  <p className="mt-2 text-sm text-[#6e6e73]">You can sign in again anytime to manage your stall.</p>
  <div className="mt-5 flex gap-2">

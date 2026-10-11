@@ -60,7 +60,7 @@ export default function AuthCallbackPage() {
  return (
  <main className="min-h-screen bg-[#f5f5f7] px-4 py-8 text-[#1d1d1f]">
  <div className="mx-auto flex min-h-[80vh] max-w-[420px] items-center justify-center">
- <div className="w-full rounded-[30px] bg-white p-6 text-center shadow-[0_16px_40px_rgba(15,23,42,0.06)]">
+ <div className="w-full rounded-[30px] bg-white p-6 text-center ">
  <div className="flex items-center justify-center">
  <LoaderCircle className="h-8 w-8 text-[#1d1d1f] animate-spin" />
  </div>

@@ -265,7 +265,7 @@ export default function StallOverviewPage() {
  {roles.booths && roles.booths.length > 1 && (
  <div className="mb-4 flex justify-end">
  <select
- className="inline-flex h-9 items-center justify-center rounded-full bg-white px-3 text-xs font-semibold text-[#1d1d1f] shadow-xs outline-none cursor-pointer"
+ className="inline-flex h-9 items-center justify-center rounded-full bg-white px-3 text-xs font-semibold text-[#1d1d1f] cursor-pointer"
  aria-label="Select booth"
  >
  {roles.booths.map((b) => (
@@ -304,11 +304,11 @@ export default function StallOverviewPage() {
  )}
 
  {/* Database Metric Cards */}
- <section className="mt-6 grid gap-2 grid-cols-3 sm:gap-3">
+ <section className="mt-5 grid gap-2 grid-cols-3 sm:gap-3">
  {stats.map((stat) => (
- <div key={stat.label} className="rounded-[20px] sm:rounded-[24px] bg-white p-3 sm:p-5 shadow-xs flex flex-col justify-between overflow-hidden">
+ <div key={stat.label} className="rounded-[16px] sm:rounded-[16px] bg-white p-3 sm:p-4 flex flex-col justify-between overflow-hidden">
  <p className="text-[10px] sm:text-sm font-medium text-[#6e6e73] truncate">{stat.label}</p>
- <p className="mt-1 sm:mt-2 text-lg sm:text-3xl font-semibold tracking-[-0.05em] text-[#1d1d1f] truncate">
+ <p className="mt-1 sm:mt-2 text-lg sm:text-2xl font-semibold tracking-[-0.05em] text-[#1d1d1f] truncate">
  {isLoading ? (
  <span className="inline-block h-8 w-20 rounded bg-black/5" />
  ) : (
@@ -325,7 +325,7 @@ export default function StallOverviewPage() {
  {/* Order Activity */}
  <section className="mt-5">
  {/* Live Database Order Activity */}
- <div className="rounded-[26px] bg-white p-5 sm:p-6 shadow-xs">
+ <div className="rounded-[20px] bg-white p-4 sm:p-5 ">
  <div className="flex items-center justify-between gap-2">
  <h2 className="text-lg sm:text-xl font-semibold tracking-[-0.03em] text-[#1d1d1f]">
  Recent Orders
@@ -425,7 +425,7 @@ export default function StallOverviewPage() {
  type="button"
  onClick={() => void handleManualRefresh()}
  disabled={isRefreshing || isLoading}
- className="fixed bottom-24 sm:bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-white text-[#1d1d1f] shadow-lg hover:bg-neutral-50 disabled:opacity-50"
+ className="fixed bottom-24 sm:bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-white text-[#1d1d1f] hover:bg-neutral-50 disabled:opacity-50"
  aria-label="Refresh stall data"
  title="Refresh stall data"
  >

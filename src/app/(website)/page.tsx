@@ -142,7 +142,7 @@ export default function LandingPage() {
  <section className="relative overflow-hidden pt-8 pb-12 sm:pt-16 sm:pb-20 lg:pt-24 lg:pb-28">
  <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
  {/* Status Badge */}
- <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/[0.04] .05] text-[11px] sm:text-xs font-semibold text-[#1d1d1f] mb-4 shadow-2xs">
+ <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/[0.04] text-[11px] sm:text-xs font-semibold text-[#1d1d1f] mb-4 ">
  <span className="w-2 h-2 rounded-full bg-[#30d158] " />
  Next-Generation Hawker OS
  </div>
@@ -162,14 +162,14 @@ export default function LandingPage() {
  {roles.hasShopOwner ? (
  <Link
  href="/shop-owner/booths"
- className="w-full sm:w-auto h-11 px-6 rounded-full text-sm font-semibold bg-[#1d1d1f] text-white hover:bg-black shadow-xs flex items-center justify-center gap-2 active:scale-[0.98]"
+ className="w-full sm:w-auto h-11 px-6 rounded-full text-sm font-semibold bg-[#1d1d1f] text-white hover:bg-black flex items-center justify-center gap-2 active:scale-[0.98]"
  >
  Shop Dashboard <ArrowRight className="w-4 h-4" />
  </Link>
  ) : (
  <Link
  href={'/shop-owner/profile' as any}
- className="w-full sm:w-auto h-11 px-6 rounded-full text-sm font-semibold bg-[#007aff] text-white hover:bg-[#0071e3] shadow-xs flex items-center justify-center gap-2 active:scale-[0.98]"
+ className="w-full sm:w-auto h-11 px-6 rounded-full text-sm font-semibold bg-[#007aff] text-white hover:bg-[#0071e3] flex items-center justify-center gap-2 active:scale-[0.98]"
  >
  Start Free as Operator <ArrowRight className="w-4 h-4" />
  </Link>
@@ -179,19 +179,19 @@ export default function LandingPage() {
 
  {/* Key Value Strip */}
  <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-4 mt-8 sm:mt-14 max-w-4xl mx-auto">
- <div className="bg-white/80 backdrop-blur-sm p-3 sm:p-4 rounded-2xl .04] text-center shadow-2xs">
+ <div className="bg-white/80 backdrop-blur-sm p-3 sm:p-4 rounded-2xl text-center ">
  <p className="text-xl sm:text-2xl font-bold tracking-tight text-[#1d1d1f]">RM 0.00</p>
  <p className="text-[11px] sm:text-xs text-[#86868b] mt-0.5 truncate">Zero subscription</p>
  </div>
- <div className="bg-white/80 backdrop-blur-sm p-3 sm:p-4 rounded-2xl .04] text-center shadow-2xs">
+ <div className="bg-white/80 backdrop-blur-sm p-3 sm:p-4 rounded-2xl text-center ">
  <p className="text-xl sm:text-2xl font-bold tracking-tight text-[#1d1d1f]">&lt; 1 sec</p>
  <p className="text-[11px] sm:text-xs text-[#86868b] mt-0.5 truncate">Instant web app</p>
  </div>
- <div className="bg-white/80 backdrop-blur-sm p-3 sm:p-4 rounded-2xl .04] text-center shadow-2xs">
+ <div className="bg-white/80 backdrop-blur-sm p-3 sm:p-4 rounded-2xl text-center ">
  <p className="text-xl sm:text-2xl font-bold tracking-tight text-[#1d1d1f]">100%</p>
  <p className="text-[11px] sm:text-xs text-[#86868b] mt-0.5 truncate">Direct food cut</p>
  </div>
- <div className="bg-white/80 backdrop-blur-sm p-3 sm:p-4 rounded-2xl .04] text-center shadow-2xs">
+ <div className="bg-white/80 backdrop-blur-sm p-3 sm:p-4 rounded-2xl text-center ">
  <p className="text-xl sm:text-2xl font-bold tracking-tight text-[#1d1d1f]">1 Tap</p>
  <p className="text-[11px] sm:text-xs text-[#86868b] mt-0.5 truncate">Multi-stall cart</p>
  </div>
@@ -202,36 +202,24 @@ export default function LandingPage() {
  <div id="product" className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-10 sm:mt-16">
  {/* Segmented Control Switcher - Compact on mobile */}
  <div className="flex justify-center mb-5 sm:mb-6">
- <div className="inline-flex w-full sm:w-auto p-1 bg-black/[0.06] backdrop-blur-md rounded-full .04]">
+ <div className="inline-flex w-full sm:w-auto p-1 bg-black/[0.06] backdrop-blur-md rounded-full">
  <button
  onClick={() => setActiveShowcaseTab('operator')}
- className={`flex-1 sm:flex-initial px-3 sm:px-5 py-2 rounded-full text-xs font-semibold ${
- activeShowcaseTab === 'operator'
- ? 'bg-white text-[#1d1d1f] shadow-sm'
- : 'text-[#6e6e73] hover:text-[#1d1d1f]'
- }`}
+ className={`flex-1 sm:flex-initial px-3 sm:px-5 py-2 rounded-full text-xs font-semibold ${ activeShowcaseTab === 'operator' ? 'bg-white text-[#1d1d1f] ' : 'text-[#6e6e73] hover:text-[#1d1d1f]' }`}
  >
  <span className="sm:hidden">🏢 Operator</span>
  <span className="hidden sm:inline">🏢 Food Court Operator</span>
  </button>
  <button
  onClick={() => setActiveShowcaseTab('kitchen')}
- className={`flex-1 sm:flex-initial px-3 sm:px-5 py-2 rounded-full text-xs font-semibold ${
- activeShowcaseTab === 'kitchen'
- ? 'bg-white text-[#1d1d1f] shadow-sm'
- : 'text-[#6e6e73] hover:text-[#1d1d1f]'
- }`}
+ className={`flex-1 sm:flex-initial px-3 sm:px-5 py-2 rounded-full text-xs font-semibold ${ activeShowcaseTab === 'kitchen' ? 'bg-white text-[#1d1d1f] ' : 'text-[#6e6e73] hover:text-[#1d1d1f]' }`}
  >
  <span className="sm:hidden">🍳 Kitchen</span>
  <span className="hidden sm:inline">🍳 Stall Kitchen View</span>
  </button>
  <button
  onClick={() => setActiveShowcaseTab('customer')}
- className={`flex-1 sm:flex-initial px-3 sm:px-5 py-2 rounded-full text-xs font-semibold ${
- activeShowcaseTab === 'customer'
- ? 'bg-white text-[#1d1d1f] shadow-sm'
- : 'text-[#6e6e73] hover:text-[#1d1d1f]'
- }`}
+ className={`flex-1 sm:flex-initial px-3 sm:px-5 py-2 rounded-full text-xs font-semibold ${ activeShowcaseTab === 'customer' ? 'bg-white text-[#1d1d1f] ' : 'text-[#6e6e73] hover:text-[#1d1d1f]' }`}
  >
  <span className="sm:hidden">📱 Diner QR</span>
  <span className="hidden sm:inline">📱 Diner QR Experience</span>
@@ -240,9 +228,9 @@ export default function LandingPage() {
  </div>
 
  {/* Hardware Display Frame */}
- <div className="relative rounded-[22px] sm:rounded-[36px] bg-[#1d1d1f] p-2 sm:p-4 shadow-[0_24px_60px_rgba(0,0,0,0.14)] ">
+ <div className="relative rounded-[22px] sm:rounded-[36px] bg-[#1d1d1f] p-2 sm:p-4 ">
  {/* Top Bar */}
- <div className="flex items-center justify-between px-3 py-2 text-white/50 text-[11px] .06]">
+ <div className="flex items-center justify-between px-3 py-2 text-white/50 text-[11px]">
  <div className="flex items-center gap-1.5 min-w-0">
  <span className="w-2.5 h-2.5 rounded-full bg-[#ff5f56] shrink-0" />
  <span className="w-2.5 h-2.5 rounded-full bg-[#ffbd2e] shrink-0" />
@@ -266,7 +254,7 @@ export default function LandingPage() {
  <div className="space-y-4 sm:space-y-6">
  {/* Stats Grid */}
  <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-4">
- <div className="bg-white p-3 sm:p-4 rounded-xl sm:rounded-2xl .06] shadow-2xs">
+ <div className="bg-white p-3 sm:p-4 rounded-xl sm:rounded-2xl ">
  <p className="text-[10px] sm:text-xs text-[#86868b] font-medium truncate">Today&apos;s Sales</p>
  <p className="text-lg sm:text-2xl font-bold mt-0.5 tracking-tight">RM 1,420.00</p>
  <span className="inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-semibold text-[#30d158] mt-0.5">
@@ -274,7 +262,7 @@ export default function LandingPage() {
  </span>
  </div>
 
- <div className="bg-white p-3 sm:p-4 rounded-xl sm:rounded-2xl .06] shadow-2xs">
+ <div className="bg-white p-3 sm:p-4 rounded-xl sm:rounded-2xl ">
  <p className="text-[10px] sm:text-xs text-[#86868b] font-medium truncate">Total Orders</p>
  <p className="text-lg sm:text-2xl font-bold mt-0.5 tracking-tight">142</p>
  <span className="text-[10px] sm:text-[11px] font-medium text-[#86868b] mt-0.5 block truncate">
@@ -282,7 +270,7 @@ export default function LandingPage() {
  </span>
  </div>
 
- <div className="bg-white p-3 sm:p-4 rounded-xl sm:rounded-2xl .06] shadow-2xs hidden md:block">
+ <div className="bg-white p-3 sm:p-4 rounded-xl sm:rounded-2xl hidden md:block">
  <p className="text-xs text-[#86868b] font-medium">Prep Velocity</p>
  <p className="text-2xl font-bold mt-0.5 tracking-tight">6.0 mins</p>
  <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#30d158] mt-0.5">
@@ -290,7 +278,7 @@ export default function LandingPage() {
  </span>
  </div>
 
- <div className="bg-white p-3 sm:p-4 rounded-xl sm:rounded-2xl .06] shadow-2xs hidden md:block">
+ <div className="bg-white p-3 sm:p-4 rounded-xl sm:rounded-2xl hidden md:block">
  <p className="text-xs text-[#86868b] font-medium">Active Booths</p>
  <p className="text-2xl font-bold mt-0.5 tracking-tight">10 Slots</p>
  <span className="text-[11px] font-medium text-[#0071e3] mt-0.5 block">
@@ -338,7 +326,7 @@ export default function LandingPage() {
  ].map((booth) => (
  <div
  key={booth.stall}
- className="bg-white p-3 rounded-xl .05] shadow-2xs"
+ className="bg-white p-3 rounded-xl "
  >
  <div className="flex items-start justify-between">
  <div>
@@ -351,7 +339,7 @@ export default function LandingPage() {
  {booth.status}
  </span>
  </div>
- <div className="mt-2.5 flex items-center justify-between text-xs pt-2 .04]">
+ <div className="mt-2.5 flex items-center justify-between text-xs pt-2">
  <span className="font-bold text-[#1d1d1f]">{booth.revenue}</span>
  <span className="text-[10px] text-[#86868b] truncate">{booth.badge}</span>
  </div>
@@ -383,14 +371,14 @@ export default function LandingPage() {
  </div>
 
  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
- <div className="bg-white rounded-2xl ] p-3.5 sm:p-4 shadow-sm">
+ <div className="bg-white rounded-2xl p-3.5 sm:p-4 ">
  <div className="flex items-center justify-between text-xs">
  <span className="font-bold text-[#1d1d1f]">Ticket #1042</span>
  <span className="px-2 py-0.5 rounded-full bg-[#ff9f0a]/15 text-[#ff9f0a] font-bold text-[10px]">
  Table 04 • 3m ago
  </span>
  </div>
- <div className="mt-2.5 space-y-1.5 .06] py-2.5 text-xs">
+ <div className="mt-2.5 space-y-1.5 py-2.5 text-xs">
  <div className="font-medium text-[#1d1d1f]">
  <p className="font-bold text-sm">1x Spaghetti</p>
  <p className="text-[11px] text-[#0071e3] font-semibold mt-0.5">• Freshly Prepared Pasta</p>
@@ -407,14 +395,14 @@ export default function LandingPage() {
  </button>
  </div>
 
- <div className="bg-white rounded-2xl .08] p-3.5 sm:p-4 shadow-sm hidden sm:block">
+ <div className="bg-white rounded-2xl p-3.5 sm:p-4 hidden sm:block">
  <div className="flex items-center justify-between text-xs">
  <span className="font-bold text-[#1d1d1f]">Ticket #1043</span>
  <span className="px-2 py-0.5 rounded-full bg-[#0071e3]/10 text-[#0071e3] font-bold text-[10px]">
  Table 02 • 1m ago
  </span>
  </div>
- <div className="mt-2.5 space-y-1.5 .06] py-2.5 text-xs">
+ <div className="mt-2.5 space-y-1.5 py-2.5 text-xs">
  <div className="flex items-start justify-between gap-2">
  <div className="font-medium text-[#1d1d1f]">
  <p className="font-bold text-sm">1x Spaghetti</p>
@@ -441,8 +429,8 @@ export default function LandingPage() {
 
  {/* TAB 3: Diner Mobile Experience */}
  {activeShowcaseTab === 'customer' && (
- <div className="max-w-sm mx-auto bg-white rounded-2xl sm:rounded-3xl .08] shadow-lg p-4 sm:p-5 space-y-3.5">
- <div className="flex items-center justify-between .06] pb-3">
+ <div className="max-w-sm mx-auto bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-5 space-y-3.5">
+ <div className="flex items-center justify-between pb-3">
  <div className="flex items-center gap-2">
  <div className="w-8 h-8 rounded-full bg-[#0071e3] text-white flex items-center justify-center font-bold text-xs shrink-0">
  04
@@ -462,7 +450,7 @@ export default function LandingPage() {
  <span>1x Spaghetti (Western - Booth 01)</span>
  <span className="font-bold text-[#1d1d1f]">RM 10.01</span>
  </div>
- <div className="pt-2 .06] flex items-center justify-between text-xs text-[#6e6e73]">
+ <div className="pt-2 flex items-center justify-between text-xs text-[#6e6e73]">
  <span>Subtotal</span>
  <span className="font-medium text-[#1d1d1f]">RM 10.01</span>
  </div>
@@ -470,13 +458,13 @@ export default function LandingPage() {
  <span>Convenience Fee (Diner Flat)</span>
  <span className="font-medium text-[#1d1d1f]">RM 0.50</span>
  </div>
- <div className="pt-2 .06] flex items-center justify-between font-bold text-sm">
+ <div className="pt-2 flex items-center justify-between font-bold text-sm">
  <span>Total Paid</span>
  <span className="text-[#0071e3]">RM 10.51</span>
  </div>
  </div>
 
- <button className="w-full py-3 rounded-full text-xs font-bold bg-[#1d1d1f] text-white shadow-sm flex items-center justify-center gap-2">
+ <button className="w-full py-3 rounded-full text-xs font-bold bg-[#1d1d1f] text-white flex items-center justify-center gap-2">
  <CreditCard className="w-4 h-4" /> Paid via DuitNow QR
  </button>
  <p className="text-center text-[10px] text-[#86868b]">
@@ -490,7 +478,7 @@ export default function LandingPage() {
  </section>
 
  {/* ── THE PROBLEM & THE SOLUTION (Apple Contrast) ── */}
- <section className="py-14 sm:py-24 bg-white .06]">
+ <section className="py-14 sm:py-24 bg-white">
  <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
  <div className="max-w-2xl mx-auto text-center mb-10 sm:mb-16">
  <p className="text-xs font-semibold text-[#0071e3] mb-2">
@@ -506,7 +494,7 @@ export default function LandingPage() {
 
  <div className="grid md:grid-cols-2 gap-6 sm:gap-8 items-stretch">
  {/* The Old Way */}
- <div className="bg-[#f5f5f7] p-5 sm:p-8 rounded-2xl sm:rounded-3xl .04] flex flex-col justify-between">
+ <div className="bg-[#f5f5f7] p-5 sm:p-8 rounded-2xl sm:rounded-3xl flex flex-col justify-between">
  <div>
  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-black/[0.06] text-[#6e6e73] mb-4">
  The Old Way
@@ -541,13 +529,13 @@ export default function LandingPage() {
  </li>
  </ul>
  </div>
- <div className="mt-6 pt-4 .06] text-xs text-[#86868b]">
+ <div className="mt-6 pt-4 text-xs text-[#86868b]">
  Result: Lost sales, customer friction, and painful paper accounting.
  </div>
  </div>
 
  {/* The Hawker Way */}
- <div className="bg-[#1d1d1f] text-white p-5 sm:p-8 rounded-2xl sm:rounded-3xl shadow-xl flex flex-col justify-between relative overflow-hidden">
+ <div className="bg-[#1d1d1f] text-white p-5 sm:p-8 rounded-2xl sm:rounded-3xl flex flex-col justify-between relative overflow-hidden">
  <div className="absolute top-0 right-0 w-64 h-64 bg-[#0071e3]/20 rounded-full blur-3xl pointer-events-none" />
  <div>
  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-[#0071e3]/20 text-[#2997ff] mb-4">
@@ -636,7 +624,7 @@ export default function LandingPage() {
  ].map((item) => (
  <div
  key={item.step}
- className="bg-white p-5 sm:p-6 rounded-2xl sm:rounded-3xl .06] shadow-2xs hover:shadow-sm flex flex-col justify-between"
+ className="bg-white p-5 sm:p-6 rounded-2xl sm:rounded-3xl flex flex-col justify-between"
  >
  <div>
  <div className="flex items-center justify-between mb-4">
@@ -653,7 +641,7 @@ export default function LandingPage() {
  </div>
 
  {/* Invitation Deep Dive Card */}
- <div className="mt-8 sm:mt-12 bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-8 .06] shadow-sm">
+ <div className="mt-8 sm:mt-12 bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-8 ">
  <div className="grid lg:grid-cols-2 gap-6 sm:gap-8 items-center">
  <div>
  <span className="text-xs font-semibold text-[#0071e3]">
@@ -677,12 +665,12 @@ export default function LandingPage() {
  </div>
 
  {/* Interactive Mock Invite Code Card */}
- <div className="bg-[#f5f5f7] p-4 sm:p-5 rounded-2xl .06]">
+ <div className="bg-[#f5f5f7] p-4 sm:p-5 rounded-2xl">
  <div className="flex items-center justify-between text-xs text-[#86868b] mb-2.5">
  <span>Generated by Shop Owner</span>
  <span className="text-[#30d158] font-bold">Active & Valid</span>
  </div>
- <div className="bg-white p-3.5 rounded-xl .06] flex items-center justify-between gap-3">
+ <div className="bg-white p-3.5 rounded-xl flex items-center justify-between gap-3">
  <div className="min-w-0">
  <p className="text-xs text-[#86868b] font-semibold">
  Booth #04 invitation key
@@ -717,7 +705,7 @@ export default function LandingPage() {
  </section>
 
  {/* ── BENTO FEATURES GRID ── */}
- <section id="features" className="py-14 sm:py-24 bg-white .06]">
+ <section id="features" className="py-14 sm:py-24 bg-white">
  <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
  <div className="max-w-2xl mx-auto text-center mb-10 sm:mb-16">
  <p className="text-xs font-semibold text-[#0071e3] mb-2">
@@ -733,9 +721,9 @@ export default function LandingPage() {
 
  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
  {/* Bento 1: Multi-Stall Cart (Span 2) */}
- <div className="md:col-span-2 bg-[#f5f5f7] p-5 sm:p-8 rounded-2xl sm:rounded-3xl .06] flex flex-col justify-between">
+ <div className="md:col-span-2 bg-[#f5f5f7] p-5 sm:p-8 rounded-2xl sm:rounded-3xl flex flex-col justify-between">
  <div>
- <div className="w-10 h-10 rounded-2xl bg-white flex items-center justify-center text-[#0071e3] shadow-xs mb-4">
+ <div className="w-10 h-10 rounded-2xl bg-white flex items-center justify-center text-[#0071e3] mb-4">
  <Receipt className="w-5 h-5" />
  </div>
  <span className="text-xs font-semibold text-[#0071e3]">
@@ -748,7 +736,7 @@ export default function LandingPage() {
  Diners can select satay from Stall 1, laksa from Stall 4, and iced teh tarik from the drink stall in one digital basket. Hawker handles the sub-order breakdown, kitchen dispatch, and payment splits automatically.
  </p>
  </div>
- <div className="mt-6 bg-white p-3.5 rounded-xl .05] flex flex-wrap items-center justify-between gap-2 text-xs">
+ <div className="mt-6 bg-white p-3.5 rounded-xl flex flex-wrap items-center justify-between gap-2 text-xs">
  <span className="font-semibold text-[#1d1d1f]">Supported Payments:</span>
  <div className="flex flex-wrap items-center gap-1.5 font-medium">
  <span className="px-2 py-0.5 rounded-full bg-[#f5f5f7] text-[#1d1d1f]">DuitNow QR</span>
@@ -759,9 +747,9 @@ export default function LandingPage() {
  </div>
 
  {/* Bento 2: Zero App Download */}
- <div className="bg-[#f5f5f7] p-5 sm:p-8 rounded-2xl sm:rounded-3xl .06] flex flex-col justify-between">
+ <div className="bg-[#f5f5f7] p-5 sm:p-8 rounded-2xl sm:rounded-3xl flex flex-col justify-between">
  <div>
- <div className="w-10 h-10 rounded-2xl bg-white flex items-center justify-center text-[#30d158] shadow-xs mb-4">
+ <div className="w-10 h-10 rounded-2xl bg-white flex items-center justify-center text-[#30d158] mb-4">
  <QrCode className="w-5 h-5" />
  </div>
  <span className="text-xs font-semibold text-[#248a3d]">
@@ -774,16 +762,16 @@ export default function LandingPage() {
  No App Store downloads. No password signups. Diners scan the table QR code and the full menu opens in 0.8 seconds on Safari or Chrome.
  </p>
  </div>
- <div className="mt-6 pt-3 .06] text-xs font-semibold text-[#1d1d1f] flex items-center justify-between">
+ <div className="mt-6 pt-3 text-xs font-semibold text-[#1d1d1f] flex items-center justify-between">
  <span>Edge Speed</span>
  <span>&lt; 1s LCP</span>
  </div>
  </div>
 
  {/* Bento 3: Stall Autonomy */}
- <div className="bg-[#f5f5f7] p-5 sm:p-8 rounded-2xl sm:rounded-3xl .06] flex flex-col justify-between">
+ <div className="bg-[#f5f5f7] p-5 sm:p-8 rounded-2xl sm:rounded-3xl flex flex-col justify-between">
  <div>
- <div className="w-10 h-10 rounded-2xl bg-white flex items-center justify-center text-[#ff9f0a] shadow-xs mb-4">
+ <div className="w-10 h-10 rounded-2xl bg-white flex items-center justify-center text-[#ff9f0a] mb-4">
  <SlidersHorizontal className="w-5 h-5" />
  </div>
  <span className="text-xs font-semibold text-[#c96f00]">
@@ -796,16 +784,16 @@ export default function LandingPage() {
  Stalls customize dish modifiers (extra egg, noodle choice, spicy level) and 1-tap 86/sold-out toggle during lunch rushes.
  </p>
  </div>
- <div className="mt-6 pt-3 .06] text-xs font-semibold text-[#1d1d1f] flex items-center justify-between">
+ <div className="mt-6 pt-3 text-xs font-semibold text-[#1d1d1f] flex items-center justify-between">
  <span>Modifiers</span>
  <span>Active</span>
  </div>
  </div>
 
  {/* Bento 4: Operator Analytics (Span 2) */}
- <div className="md:col-span-2 bg-[#f5f5f7] p-5 sm:p-8 rounded-2xl sm:rounded-3xl .06] flex flex-col justify-between">
+ <div className="md:col-span-2 bg-[#f5f5f7] p-5 sm:p-8 rounded-2xl sm:rounded-3xl flex flex-col justify-between">
  <div>
- <div className="w-10 h-10 rounded-2xl bg-white flex items-center justify-center text-[#bf5af2] shadow-xs mb-4">
+ <div className="w-10 h-10 rounded-2xl bg-white flex items-center justify-center text-[#bf5af2] mb-4">
  <BarChart3 className="w-5 h-5" />
  </div>
  <span className="text-xs font-semibold text-[#bf5af2]">
@@ -819,15 +807,15 @@ export default function LandingPage() {
  </p>
  </div>
  <div className="mt-6 grid grid-cols-3 gap-2.5">
- <div className="bg-white p-2.5 sm:p-3 rounded-xl .05]">
+ <div className="bg-white p-2.5 sm:p-3 rounded-xl">
  <p className="text-[10px] text-[#86868b] font-medium">Daily Report</p>
  <p className="text-xs sm:text-sm font-bold text-[#1d1d1f] mt-0.5 truncate">Automated CSV</p>
  </div>
- <div className="bg-white p-2.5 sm:p-3 rounded-xl .05]">
+ <div className="bg-white p-2.5 sm:p-3 rounded-xl">
  <p className="text-[10px] text-[#86868b] font-medium">Lease Payouts</p>
  <p className="text-xs sm:text-sm font-bold text-[#1d1d1f] mt-0.5 truncate">Split Engine</p>
  </div>
- <div className="bg-white p-2.5 sm:p-3 rounded-xl .05]">
+ <div className="bg-white p-2.5 sm:p-3 rounded-xl">
  <p className="text-[10px] text-[#86868b] font-medium">Dish Rankings</p>
  <p className="text-xs sm:text-sm font-bold text-[#1d1d1f] mt-0.5 truncate">Live Top 10</p>
  </div>
@@ -853,18 +841,14 @@ export default function LandingPage() {
  </p>
  </div>
 
- <div className="bg-[#16171a] rounded-2xl sm:rounded-3xl p-4 sm:p-8 shadow-2xl">
+ <div className="bg-[#16171a] rounded-2xl sm:rounded-3xl p-4 sm:p-8 ">
  {/* Prompt Selector */}
  <div className="flex flex-wrap items-center justify-center gap-2 mb-6">
  {aiQueries.map((item, idx) => (
  <button
  key={idx}
  onClick={() => setActiveAiIndex(idx)}
- className={`text-xs px-3.5 py-1.5 rounded-full font-semibold ${
- activeAiIndex === idx
- ? 'bg-white text-[#1d1d1f] shadow-md'
- : 'bg-white/5 text-white/70 hover:bg-white/10 '
- }`}
+ className={`text-xs px-3.5 py-1.5 rounded-full font-semibold ${ activeAiIndex === idx ? 'bg-white text-[#1d1d1f] ' : 'bg-white/5 text-white/70 hover:bg-white/10 ' }`}
  >
  Prompt #{idx + 1}
  </button>
@@ -955,7 +939,7 @@ export default function LandingPage() {
 
  <div className="grid md:grid-cols-2 gap-6 sm:gap-8">
  {/* Role 1: Food Court Operator */}
- <div className="bg-white p-5 sm:p-8 rounded-2xl sm:rounded-3xl .06] shadow-2xs flex flex-col justify-between">
+ <div className="bg-white p-5 sm:p-8 rounded-2xl sm:rounded-3xl flex flex-col justify-between">
  <div>
  <div className="w-12 h-12 rounded-2xl bg-[#0071e3]/10 text-[#0071e3] flex items-center justify-center font-bold mb-4">
  <Building2 className="w-6 h-6" />
@@ -982,7 +966,7 @@ export default function LandingPage() {
  </ul>
  </div>
 
- <div className="mt-6 pt-5 .06]">
+ <div className="mt-6 pt-5">
  {roles.hasShopOwner ? (
  <Link
  href="/shop-owner/booths"
@@ -1004,7 +988,7 @@ export default function LandingPage() {
  </div>
 
  {/* Role 2: Booth Owner */}
- <div className="bg-white p-5 sm:p-8 rounded-2xl sm:rounded-3xl .06] shadow-2xs flex flex-col justify-between">
+ <div className="bg-white p-5 sm:p-8 rounded-2xl sm:rounded-3xl flex flex-col justify-between">
  <div>
  <div className="w-12 h-12 rounded-2xl bg-[#30d158]/10 text-[#30d158] flex items-center justify-center font-bold mb-4">
  <ChefHat className="w-6 h-6" />
@@ -1031,8 +1015,8 @@ export default function LandingPage() {
  </ul>
  </div>
 
- <div className="mt-6 pt-5 .06]">
- <div className="w-full h-12 inline-flex items-center justify-center rounded-full text-xs font-semibold bg-[#f5f5f7] text-[#6e6e73] .04]">
+ <div className="mt-6 pt-5">
+ <div className="w-full h-12 inline-flex items-center justify-center rounded-full text-xs font-semibold bg-[#f5f5f7] text-[#6e6e73]">
  Joined via private email invitation from venue operator
  </div>
  </div>
@@ -1042,7 +1026,7 @@ export default function LandingPage() {
  </section>
 
  {/* ── PRICING & MODEL (Mobile-First) ── */}
- <section id="pricing" className="py-14 sm:py-24 bg-white .06]">
+ <section id="pricing" className="py-14 sm:py-24 bg-white">
  <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
  <div className="max-w-3xl mx-auto text-center mb-10 sm:mb-16">
  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0071e3]/10 text-[#0071e3] text-xs font-semibold mb-3">
@@ -1060,7 +1044,7 @@ export default function LandingPage() {
 
  <div className="grid lg:grid-cols-2 gap-6 sm:gap-8 items-stretch mb-10 sm:mb-16">
  {/* The Legacy Extortion Model */}
- <div className="rounded-2xl sm:rounded-3xl bg-[#f5f5f7] p-5 sm:p-8 .06] flex flex-col justify-between">
+ <div className="rounded-2xl sm:rounded-3xl bg-[#f5f5f7] p-5 sm:p-8 flex flex-col justify-between">
  <div>
  <div className="flex items-center justify-between mb-4">
  <span className="px-3 py-1 rounded-full text-xs font-semibold bg-black/5 text-[#86868b]">
@@ -1079,7 +1063,7 @@ export default function LandingPage() {
  </p>
 
  <div className="mt-6 space-y-3">
- <div className="p-3.5 rounded-xl bg-white .04] flex items-start gap-3">
+ <div className="p-3.5 rounded-xl bg-white flex items-start gap-3">
  <div className="w-6 h-6 rounded-lg bg-red-100 text-red-600 flex items-center justify-center shrink-0 mt-0.5 text-xs font-bold">
  RM
  </div>
@@ -1089,7 +1073,7 @@ export default function LandingPage() {
  </div>
  </div>
 
- <div className="p-3.5 rounded-xl bg-white .04] flex items-start gap-3">
+ <div className="p-3.5 rounded-xl bg-white flex items-start gap-3">
  <div className="w-6 h-6 rounded-lg bg-red-100 text-red-600 flex items-center justify-center shrink-0 mt-0.5 text-xs font-bold">
  POS
  </div>
@@ -1101,13 +1085,13 @@ export default function LandingPage() {
  </div>
  </div>
 
- <div className="mt-6 pt-4 .06] text-xs text-[#86868b]">
+ <div className="mt-6 pt-4 text-xs text-[#86868b]">
  Locked 24–36 month contracts with early termination penalties.
  </div>
  </div>
 
  {/* The Hawker Standard */}
- <div className="rounded-2xl sm:rounded-3xl bg-[#1d1d1f] text-white p-5 sm:p-8 shadow-xl flex flex-col justify-between relative overflow-hidden">
+ <div className="rounded-2xl sm:rounded-3xl bg-[#1d1d1f] text-white p-5 sm:p-8 flex flex-col justify-between relative overflow-hidden">
  <div className="absolute -top-24 -right-24 w-80 h-80 rounded-full bg-[#0071e3]/20 blur-3xl pointer-events-none" />
 
  <div>
@@ -1157,14 +1141,14 @@ export default function LandingPage() {
  {roles.hasShopOwner ? (
  <Link
  href="/shop-owner/booths"
- className="w-full sm:w-auto h-11 px-6 rounded-full text-xs font-bold bg-white text-[#1d1d1f] hover:bg-white/90 shadow-md flex items-center justify-center gap-1.5"
+ className="w-full sm:w-auto h-11 px-6 rounded-full text-xs font-bold bg-white text-[#1d1d1f] hover:bg-white/90 flex items-center justify-center gap-1.5"
  >
  Open Shop Dashboard <ArrowRight className="w-3.5 h-3.5" />
  </Link>
  ) : (
  <Link
  href={'/shop-owner/profile' as any}
- className="w-full sm:w-auto h-11 px-6 rounded-full text-xs font-bold bg-[#0071e3] text-white hover:bg-[#0077ed] shadow-md flex items-center justify-center gap-1.5"
+ className="w-full sm:w-auto h-11 px-6 rounded-full text-xs font-bold bg-[#0071e3] text-white hover:bg-[#0077ed] flex items-center justify-center gap-1.5"
  >
  Start Free for RM 0 <ArrowRight className="w-3.5 h-3.5" />
  </Link>
@@ -1174,7 +1158,7 @@ export default function LandingPage() {
  </div>
 
  {/* 4-Step Transaction Cut Breakdown */}
- <div className="rounded-2xl sm:rounded-3xl bg-[#fbfbfd] p-5 sm:p-8 .06] shadow-2xs">
+ <div className="rounded-2xl sm:rounded-3xl bg-[#fbfbfd] p-5 sm:p-8 ">
  <div className="max-w-2xl mb-6">
  <span className="text-xs font-semibold text-[#0071e3]">
  Transparent fee breakdown
@@ -1188,13 +1172,13 @@ export default function LandingPage() {
  </div>
 
  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
- <div className="p-4 rounded-xl bg-white .06]">
+ <div className="p-4 rounded-xl bg-white">
  <p className="text-xs font-semibold text-[#86868b]">1. Customer basket</p>
  <p className="text-lg font-bold text-[#1d1d1f] mt-0.5">RM 15.00</p>
  <p className="text-xs text-[#6e6e73] mt-0.5">Chicken Rice + Iced Kopi across 2 stalls.</p>
  </div>
 
- <div className="p-4 rounded-xl bg-white .06]">
+ <div className="p-4 rounded-xl bg-white">
  <p className="text-xs font-semibold text-[#0071e3]">2. Diner platform fee</p>
  <p className="text-lg font-bold text-[#0071e3] mt-0.5">+ RM 0.50</p>
  <p className="text-xs text-[#6e6e73] mt-0.5">Paid by diner at checkout.</p>
@@ -1206,7 +1190,7 @@ export default function LandingPage() {
  <p className="text-xs text-[#6e6e73] mt-0.5">Zero stall cut. Hawkers retain full price.</p>
  </div>
 
- <div className="p-4 rounded-xl bg-white .06]">
+ <div className="p-4 rounded-xl bg-white">
  <p className="text-xs font-semibold text-[#86868b]">4. Automated payout</p>
  <p className="text-lg font-bold text-[#1d1d1f] mt-0.5">Daily / Direct</p>
  <p className="text-xs text-[#6e6e73] mt-0.5">Settled via DuitNow bank transfer.</p>
@@ -1217,7 +1201,7 @@ export default function LandingPage() {
  </section>
 
  {/* ── FREQUENTLY ASKED QUESTIONS (FAQ) ── */}
- <section id="faq" className="py-14 sm:py-24 bg-[#f5f5f7] .06]">
+ <section id="faq" className="py-14 sm:py-24 bg-[#f5f5f7]">
  <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
  <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-16">
  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0071e3]/10 text-[#0071e3] text-xs font-semibold mb-3">
@@ -1238,7 +1222,7 @@ export default function LandingPage() {
  return (
  <div
  key={faq.question}
- className="bg-white rounded-2xl .06] shadow-2xs overflow-hidden"
+ className="bg-white rounded-2xl overflow-hidden"
  >
  <button
  type="button"
@@ -1250,15 +1234,13 @@ export default function LandingPage() {
  {faq.question}
  </span>
  <span
- className={`w-6 h-6 rounded-full bg-black/5 flex items-center justify-center shrink-0 text-[#1d1d1f] -transform ${
- isOpen ? 'rotate-180 bg-black/10' : ''
- }`}
+ className={`w-6 h-6 rounded-full bg-black/5 flex items-center justify-center shrink-0 text-[#1d1d1f] -transform ${ isOpen ? 'rotate-180 bg-black/10' : '' }`}
  >
  <ChevronDown className="w-4 h-4" />
  </span>
  </button>
  {isOpen && (
- <div className="px-4 sm:px-6 pb-5 text-xs sm:text-sm text-[#6e6e73] leading-relaxed .04] pt-3">
+ <div className="px-4 sm:px-6 pb-5 text-xs sm:text-sm text-[#6e6e73] leading-relaxed pt-3">
  {faq.answer}
  </div>
  )}
@@ -1268,7 +1250,7 @@ export default function LandingPage() {
  </div>
 
  {/* Callout box for Stall Vendors */}
- <div className="mt-8 sm:mt-12 bg-white rounded-2xl sm:rounded-3xl .08] p-5 sm:p-7 flex flex-col sm:flex-row items-center gap-4 sm:gap-6 shadow-2xs">
+ <div className="mt-8 sm:mt-12 bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-7 flex flex-col sm:flex-row items-center gap-4 sm:gap-6 ">
  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-[#0071e3]/10 text-[#0071e3] flex items-center justify-center shrink-0">
  <Mail className="w-5 h-5 sm:w-6 sm:h-6" />
  </div>
@@ -1307,14 +1289,14 @@ export default function LandingPage() {
  {roles.hasShopOwner ? (
  <Link
  href="/shop-owner/booths"
- className="w-full sm:w-auto h-12 px-7 rounded-full text-sm font-bold bg-white text-[#1d1d1f] hover:bg-white/90 shadow-sm flex items-center justify-center"
+ className="w-full sm:w-auto h-12 px-7 rounded-full text-sm font-bold bg-white text-[#1d1d1f] hover:bg-white/90 flex items-center justify-center"
  >
  Go to Shop Dashboard
  </Link>
  ) : (
  <Link
  href={'/shop-owner/profile' as any}
- className="w-full sm:w-auto h-12 px-7 rounded-full text-sm font-bold bg-[#0071e3] text-white hover:bg-[#0077ed] shadow-md flex items-center justify-center"
+ className="w-full sm:w-auto h-12 px-7 rounded-full text-sm font-bold bg-[#0071e3] text-white hover:bg-[#0077ed] flex items-center justify-center"
  >
  Start Free
  </Link>
@@ -1330,7 +1312,7 @@ export default function LandingPage() {
  </section>
 
  {/* ── FOOTER ── */}
- <footer className="bg-[#f5f5f7] .08] text-xs text-[#6e6e73] py-10 sm:py-14">
+ <footer className="bg-[#f5f5f7] text-xs text-[#6e6e73] py-10 sm:py-14">
  <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
  <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 pb-8">
  <div>
@@ -1382,7 +1364,7 @@ export default function LandingPage() {
  </div>
  </div>
 
- <div className="pt-6 .08] flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-[#86868b]">
+ <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-[#86868b]">
  <p>&copy; {new Date().getFullYear()} Hawker Technologies Inc. All rights reserved.</p>
  <div className="flex flex-wrap items-center gap-3">
  <a href="#" className="hover:underline">Privacy Policy</a>

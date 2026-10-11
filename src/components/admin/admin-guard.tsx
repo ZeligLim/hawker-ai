@@ -12,8 +12,8 @@ export function AdminGuard({ children }: { children: React.ReactNode }) {
  if (status === 'loading' || roles.isLoading) {
  return (
  <div className="flex min-h-screen flex-col items-center justify-center bg-[#f5f5f7] px-4 text-[#1d1d1f]">
- <div className="flex items-center gap-3.5 rounded-2xl bg-white px-6 py-5 shadow-sm .08]">
- <div className="h-4 w-4 rounded-full ] " />
+ <div className="flex items-center gap-3.5 rounded-2xl bg-white px-6 py-5 ">
+ <div className="h-4 w-4 rounded-full " />
  <p className="text-xs sm:text-sm font-medium text-[#6e6e73]">
  Verifying SaaS Superadmin credentials…
  </p>
@@ -26,8 +26,8 @@ export function AdminGuard({ children }: { children: React.ReactNode }) {
  if (status === 'unauthenticated' || isGuest) {
  return (
  <div className="flex min-h-screen flex-col items-center justify-center bg-[#f5f5f7] px-4 text-[#1d1d1f]">
- <div className="max-w-md w-full rounded-3xl bg-white p-8 text-center shadow-sm .08]">
- <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-black/[0.04] text-[#1d1d1f] .06]">
+ <div className="max-w-md w-full rounded-3xl bg-white p-8 text-center ">
+ <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-black/[0.04] text-[#1d1d1f]">
  <Lock className="h-6 w-6" />
  </div>
  <h2 className="mt-4 text-xl sm:text-2xl font-semibold tracking-[-0.03em] text-[#1d1d1f]">
@@ -39,13 +39,13 @@ export function AdminGuard({ children }: { children: React.ReactNode }) {
  <div className="mt-6 flex flex-col gap-2.5">
  <Link
  href={'/auth?redirect=/admin' as any}
- className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-[#1d1d1f] py-3 text-xs sm:text-sm font-semibold text-white shadow-xs hover:bg-black "
+ className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-[#1d1d1f] py-3 text-xs sm:text-sm font-semibold text-white hover:bg-black "
  >
  <LogIn className="h-4 w-4" /> Sign In as Superadmin
  </Link>
  <Link
  href={'/stall' as any}
- className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-white py-3 text-xs sm:text-sm font-medium text-[#1d1d1f] hover:bg-black/[0.03] shadow-xs"
+ className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-white py-3 text-xs sm:text-sm font-medium text-[#1d1d1f] hover:bg-black/[0.03] "
  >
  <ArrowLeft className="h-4 w-4" /> Return to Diner App
  </Link>
@@ -60,7 +60,7 @@ export function AdminGuard({ children }: { children: React.ReactNode }) {
  if (!isAuthorized) {
  return (
  <div className="flex min-h-screen flex-col items-center justify-center bg-[#f5f5f7] px-4 text-[#1d1d1f]">
- <div className="max-w-lg w-full rounded-3xl bg-white p-8 text-center shadow-sm .08]">
+ <div className="max-w-lg w-full rounded-3xl bg-white p-8 text-center ">
  <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-red-50 text-red-600 ">
  <ShieldAlert className="h-6 w-6" />
  </div>
@@ -79,14 +79,14 @@ export function AdminGuard({ children }: { children: React.ReactNode }) {
  <div className="mt-6 flex flex-col sm:flex-row gap-2.5">
  <Link
  href={'/stall' as any}
- className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl bg-white py-2.5 text-xs font-semibold text-[#1d1d1f] hover:bg-black/[0.03] shadow-xs"
+ className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl bg-white py-2.5 text-xs font-semibold text-[#1d1d1f] hover:bg-black/[0.03] "
  >
  <ArrowLeft className="h-3.5 w-3.5" /> Diner App
  </Link>
  {roles.hasShopOwner && (
  <Link
  href={'/shop-owner/booths' as any}
- className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl bg-white py-2.5 text-xs font-semibold text-[#1d1d1f] hover:bg-black/[0.03] shadow-xs"
+ className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl bg-white py-2.5 text-xs font-semibold text-[#1d1d1f] hover:bg-black/[0.03] "
  >
  Food Hall Portal
  </Link>
@@ -96,7 +96,7 @@ export function AdminGuard({ children }: { children: React.ReactNode }) {
  await signOut();
  window.location.href = window.location.origin + '/auth?redirect=/admin';
  }}
- className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl bg-[#1d1d1f] py-2.5 text-xs font-semibold text-white shadow-xs hover:bg-black "
+ className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl bg-[#1d1d1f] py-2.5 text-xs font-semibold text-white hover:bg-black "
  >
  Switch Account
  </button>

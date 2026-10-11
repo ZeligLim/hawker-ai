@@ -22,8 +22,8 @@ function ResultsFallback() {
  return (
  <main className="min-h-screen bg-[#f5f5f7] text-[#1d1d1f]">
  <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6 lg:px-8">
- <div className="rounded-[32px] ] bg-white p-4 shadow-[0_20px_80px_rgba(15,23,42,0.08)] sm:p-6">
- <div className="rounded-[24px] ] bg-[#fafafa] p-6 text-sm text-[#6e6e73]">
+ <div className="rounded-[32px] bg-white p-4 sm:p-6">
+ <div className="rounded-[24px] bg-[#fafafa] p-6 text-sm text-[#6e6e73]">
  Loading results…
  </div>
  </div>
@@ -58,7 +58,7 @@ function ResultsContent() {
  dishId: dish.id,
  name: dish.name,
  restaurantId: dish.restaurantId ?? '',
-      restaurantName: dish.restaurantName,
+ restaurantName: dish.restaurantName,
  stallName: dish.stallName,
  stallId,
  price: dish.price,
@@ -124,7 +124,7 @@ function ResultsContent() {
  return (
  <main className={`${shellClasses} min-h-screen `}>
  <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6 lg:px-8">
- <div className={`rounded-[32px] ${cardClasses} p-4 shadow-[0_20px_80px_rgba(15,23,42,0.08)] sm:p-6`}>
+ <div className={`rounded-[32px] ${cardClasses} p-4 sm:p-6`}>
  <header className="mb-6 flex items-center justify-between gap-3">
  <div className="flex items-center gap-3">
  <Link href="/" className="flex h-10 w-10 items-center justify-center rounded-full bg-[#111827] text-sm font-semibold text-white">
@@ -142,7 +142,7 @@ function ResultsContent() {
  >
  {isDark ? 'Light mode' : 'Dark mode'}
  </button>
- <Link href="/" className="flex h-11 items-center px-4 rounded-full text-xs font-semibold bg-[#007aff] hover:bg-[#0071e3] text-white shadow-xs active:scale-[0.98]">
+ <Link href="/" className="flex h-11 items-center px-4 rounded-full text-xs font-semibold bg-[#007aff] hover:bg-[#0071e3] text-white active:scale-[0.98]">
  New search
  </Link>
  </div>
@@ -171,7 +171,7 @@ function ResultsContent() {
  {results.length > 0 ? (
  results.map((dish) => <ResultCard key={dish.id} dish={dish} onAddToCart={handleAddToCart} />)
  ) : (
- <div className={`col-span-full rounded-[24px] ${isDark ? '] bg-[#111214] text-[#a1a1aa]' : ' ] bg-[#fafafa] text-[#6e6e73]'} p-10 text-center`}>
+ <div className={`col-span-full rounded-[24px] ${isDark ? '] bg-[#111214] text-[#a1a1aa]' : ' bg-[#fafafa] text-[#6e6e73]'} p-10 text-center`}>
  No matches yet. Try a slightly broader search.
  </div>
  )}
@@ -192,7 +192,7 @@ function ResultsContent() {
  )}
 
  {checkoutMessage && (
- <div className="mt-5 rounded-[22px] ] bg-[#ecfdf5] p-3 text-sm font-medium text-[#166534]">
+ <div className="mt-5 rounded-[22px] bg-[#ecfdf5] p-3 text-sm font-medium text-[#166534]">
  {checkoutMessage}
  </div>
  )}

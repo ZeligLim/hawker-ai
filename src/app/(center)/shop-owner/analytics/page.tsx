@@ -149,12 +149,12 @@ function ShopOwnerAnalyticsContent() {
 
  <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
  {/* Stall Focus Filter */}
- <div className="inline-flex h-11 items-center gap-1.5 rounded-full bg-white px-3.5 shadow-xs text-xs">
+ <div className="inline-flex h-11 items-center gap-1.5 rounded-full bg-white px-3.5 text-xs">
  <Store className="w-3.5 h-3.5 text-[#6e6e73]" />
  <select
  value={selectedBoothId}
  onChange={(e) => setSelectedBoothId(e.target.value)}
- className="bg-transparent font-semibold text-[#1d1d1f] outline-none cursor-pointer pr-1"
+ className="bg-transparent font-semibold text-[#1d1d1f] cursor-pointer pr-1"
  aria-label="Filter by booth"
  >
  <option value="">All Stalls ({booths.length})</option>
@@ -177,7 +177,7 @@ function ShopOwnerAnalyticsContent() {
  </div>
 
  {/* Timeframe Segmented Switcher */}
- <div className="inline-flex items-center rounded-full bg-white p-1 shadow-xs">
+ <div className="inline-flex items-center rounded-full bg-white p-1 ">
  {periods.map((period) => {
  const active = selectedPeriod === period.id;
  return (
@@ -185,11 +185,7 @@ function ShopOwnerAnalyticsContent() {
  key={period.id}
  type="button"
  onClick={() => setSelectedPeriod(period.id)}
- className={`min-h-[34px] min-w-[56px] rounded-full px-3 py-1 text-xs font-semibold tracking-wide ${
- active
- ? 'bg-[#111827] text-white shadow-xs'
- : 'text-[#6e6e73] hover:text-[#1d1d1f]'
- }`}
+ className={`min-h-[34px] min-w-[56px] rounded-full px-3 py-1 text-xs font-semibold tracking-wide ${ active ? 'bg-[#111827] text-white ' : 'text-[#6e6e73] hover:text-[#1d1d1f]' }`}
  aria-pressed={active}
  >
  {period.label}
@@ -218,7 +214,7 @@ function ShopOwnerAnalyticsContent() {
  activeBoothCount={activeBoothCount}
  averageStallRevenue={averageBoothRevenue}
  />
-<section className="mt-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+<section className="mt-5 grid grid-cols-1 lg:grid-cols-12 gap-4">
  
  {/* Main Left Column */}
  <div className="lg:col-span-8 space-y-6">

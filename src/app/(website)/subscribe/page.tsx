@@ -182,10 +182,10 @@ function LaunchpadContent() {
  return (
  <div className="min-h-screen bg-[#f5f5f7] text-[#1d1d1f] antialiased selection:bg-[#0071e3] selection:text-white pb-24">
  {/* ── Apple Top Navigation Header ── */}
- <header className="sticky top-0 z-50 backdrop-blur-2xl bg-[#f5f5f7]/85 .06]">
+ <header className="sticky top-0 z-50 backdrop-blur-2xl bg-[#f5f5f7]/85">
  <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
  <Link href="/" className="flex items-center gap-2.5 group">
- <div className="w-7 h-7 rounded-lg bg-[#1d1d1f] text-white flex items-center justify-center font-black text-xs tracking-tighter shadow-sm group-hover:scale-105 -transform">
+ <div className="w-7 h-7 rounded-lg bg-[#1d1d1f] text-white flex items-center justify-center font-black text-xs tracking-tighter group-hover:scale-105 -transform">
  H
  </div>
  <div className="flex items-center gap-2">
@@ -250,23 +250,11 @@ function LaunchpadContent() {
  <div className="max-w-3xl mb-8">
  <div className="grid grid-cols-3 gap-2 sm:gap-4 text-xs font-medium">
  <div
- className={`p-3 rounded-2xl ${
- currentStep === 1
- ? '] bg-[#0071e3]/5 text-[#0071e3]'
- : currentStep > 1
- ? ' bg-[#30d158]/5 text-[#30d158]'
- : ' bg-white text-[#86868b]'
- }`}
+ className={`p-3 rounded-2xl ${ currentStep === 1 ? '] bg-[#0071e3]/5 text-[#0071e3]' : currentStep > 1 ? ' bg-[#30d158]/5 text-[#30d158]' : ' bg-white text-[#86868b]' }`}
  >
  <div className="flex items-center gap-2">
  <span
- className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${
- currentStep > 1
- ? 'bg-[#30d158] text-white'
- : currentStep === 1
- ? 'bg-[#0071e3] text-white'
- : 'bg-black/10 text-[#86868b]'
- }`}
+ className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${ currentStep > 1 ? 'bg-[#30d158] text-white' : currentStep === 1 ? 'bg-[#0071e3] text-white' : 'bg-black/10 text-[#86868b]' }`}
  >
  {currentStep > 1 ? <Check className="w-3 h-3" /> : '1'}
  </span>
@@ -275,23 +263,11 @@ function LaunchpadContent() {
  </div>
 
  <div
- className={`p-3 rounded-2xl ${
- currentStep === 2
- ? '] bg-[#0071e3]/5 text-[#0071e3]'
- : currentStep > 2
- ? ' bg-[#30d158]/5 text-[#30d158]'
- : ' bg-white text-[#86868b]'
- }`}
+ className={`p-3 rounded-2xl ${ currentStep === 2 ? '] bg-[#0071e3]/5 text-[#0071e3]' : currentStep > 2 ? ' bg-[#30d158]/5 text-[#30d158]' : ' bg-white text-[#86868b]' }`}
  >
  <div className="flex items-center gap-2">
  <span
- className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${
- currentStep > 2
- ? 'bg-[#30d158] text-white'
- : currentStep === 2
- ? 'bg-[#0071e3] text-white'
- : 'bg-black/10 text-[#86868b]'
- }`}
+ className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${ currentStep > 2 ? 'bg-[#30d158] text-white' : currentStep === 2 ? 'bg-[#0071e3] text-white' : 'bg-black/10 text-[#86868b]' }`}
  >
  {currentStep > 2 ? <Check className="w-3 h-3" /> : '2'}
  </span>
@@ -300,23 +276,11 @@ function LaunchpadContent() {
  </div>
 
  <div
- className={`p-3 rounded-2xl ${
- currentStep === 3
- ? '] bg-[#0071e3]/5 text-[#0071e3]'
- : currentStep > 3
- ? ' bg-[#30d158]/5 text-[#30d158]'
- : ' bg-white text-[#86868b]'
- }`}
+ className={`p-3 rounded-2xl ${ currentStep === 3 ? '] bg-[#0071e3]/5 text-[#0071e3]' : currentStep > 3 ? ' bg-[#30d158]/5 text-[#30d158]' : ' bg-white text-[#86868b]' }`}
  >
  <div className="flex items-center gap-2">
  <span
- className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${
- currentStep > 3
- ? 'bg-[#30d158] text-white'
- : currentStep === 3
- ? 'bg-[#0071e3] text-white'
- : 'bg-black/10 text-[#86868b]'
- }`}
+ className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${ currentStep > 3 ? 'bg-[#30d158] text-white' : currentStep === 3 ? 'bg-[#0071e3] text-white' : 'bg-black/10 text-[#86868b]' }`}
  >
  {currentStep > 3 ? <Check className="w-3 h-3" /> : '3'}
  </span>
@@ -329,7 +293,7 @@ function LaunchpadContent() {
  {/* ── Two-Column Layout ── */}
  <div className="grid lg:grid-cols-[1.25fr_0.75fr] gap-8 items-start">
  {/* LEFT: INTERACTIVE ONBOARDING STAGES */}
- <div className="bg-white rounded-[32px] p-6 sm:p-10 .06] shadow-[0_4px_24px_rgba(0,0,0,0.03)]">
+ <div className="bg-white rounded-[32px] p-6 sm:p-10 ">
  {/* ── STEP 1: VENUE PROFILE ── */}
  {currentStep === 1 && (
  <div className="space-y-6">
@@ -356,7 +320,7 @@ function LaunchpadContent() {
  value={venueName}
  onChange={(e) => setVenueName(e.target.value)}
  placeholder="e.g. Lot 10 Hutong Food Hall"
- className="w-full h-[46px] rounded-2xl bg-white px-4 py-3 text-sm text-[#1d1d1f] outline-none focus:] focus: focus: shadow-[0_1px_2px_rgba(0,0,0,0.04)] placeholder:text-[#86868b]"
+ className="w-full h-[46px] rounded-2xl bg-white px-4 py-3 text-sm text-[#1d1d1f] focus:] focus: focus: placeholder:text-[#86868b]"
  />
  </div>
 
@@ -370,7 +334,7 @@ function LaunchpadContent() {
  value={operatorName}
  onChange={(e) => setOperatorName(e.target.value)}
  placeholder="e.g. Tan Wei Ming"
- className="w-full h-[46px] rounded-2xl bg-white px-4 py-3 text-sm text-[#1d1d1f] outline-none focus:] focus: focus: shadow-[0_1px_2px_rgba(0,0,0,0.04)] placeholder:text-[#86868b]"
+ className="w-full h-[46px] rounded-2xl bg-white px-4 py-3 text-sm text-[#1d1d1f] focus:] focus: focus: placeholder:text-[#86868b]"
  />
  </div>
  <div>
@@ -382,7 +346,7 @@ function LaunchpadContent() {
  value={email}
  onChange={(e) => setEmail(e.target.value)}
  placeholder="e.g. operator@hutong.com.my"
- className="w-full h-[46px] rounded-2xl bg-white px-4 py-3 text-sm text-[#1d1d1f] outline-none focus:] focus: focus: shadow-[0_1px_2px_rgba(0,0,0,0.04)] placeholder:text-[#86868b]"
+ className="w-full h-[46px] rounded-2xl bg-white px-4 py-3 text-sm text-[#1d1d1f] focus:] focus: focus: placeholder:text-[#86868b]"
  />
  </div>
  </div>
@@ -397,7 +361,7 @@ function LaunchpadContent() {
  value={phone}
  onChange={(e) => setPhone(e.target.value)}
  placeholder="+60 12-345 6789"
- className="w-full h-[46px] rounded-2xl bg-white px-4 py-3 text-sm text-[#1d1d1f] outline-none focus:] focus: focus: shadow-[0_1px_2px_rgba(0,0,0,0.04)] placeholder:text-[#86868b]"
+ className="w-full h-[46px] rounded-2xl bg-white px-4 py-3 text-sm text-[#1d1d1f] focus:] focus: focus: placeholder:text-[#86868b]"
  />
  </div>
  <div>
@@ -408,7 +372,7 @@ function LaunchpadContent() {
  <select
  value={city}
  onChange={(e) => setCity(e.target.value)}
- className="w-full h-[46px] appearance-none rounded-2xl bg-white px-4 pr-10 text-sm text-[#1d1d1f] outline-none focus:] focus: focus: shadow-[0_1px_2px_rgba(0,0,0,0.04)] cursor-pointer"
+ className="w-full h-[46px] appearance-none rounded-2xl bg-white px-4 pr-10 text-sm text-[#1d1d1f] focus:] focus: focus: cursor-pointer"
  >
  <option value="Kuala Lumpur">Kuala Lumpur</option>
  <option value="Petaling Jaya / Selangor">Petaling Jaya / Selangor</option>
@@ -433,11 +397,7 @@ function LaunchpadContent() {
  key={opt}
  type="button"
  onClick={() => setStallCount(opt)}
- className={`py-2.5 px-3 rounded-xl text-xs font-medium text-center ${
- stallCount === opt
- ? '] bg-[#0071e3]/10 text-[#0071e3] font-semibold'
- : ' bg-white text-[#1d1d1f] hover:bg-black/[0.02]'
- }`}
+ className={`py-2.5 px-3 rounded-xl text-xs font-medium text-center ${ stallCount === opt ? '] bg-[#0071e3]/10 text-[#0071e3] font-semibold' : ' bg-white text-[#1d1d1f] hover:bg-black/[0.02]' }`}
  >
  {opt}
  </button>
@@ -446,11 +406,11 @@ function LaunchpadContent() {
  </div>
  </div>
 
- <div className="pt-4 flex items-center justify-between .06]">
+ <div className="pt-4 flex items-center justify-between">
  <span className="text-xs text-[#86868b]">Zero software bills &bull; RM 0 today</span>
  <button
  onClick={handleNext}
- className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-xs font-semibold bg-[#0071e3] text-white hover:bg-[#0077ed] shadow-sm"
+ className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-xs font-semibold bg-[#0071e3] text-white hover:bg-[#0077ed] "
  >
  Continue to Payout Setup
  <ArrowRight className="w-3.5 h-3.5" />
@@ -476,7 +436,7 @@ function LaunchpadContent() {
  </div>
 
  {/* 3-Pillar Economics Banner */}
- <div className="grid sm:grid-cols-3 gap-3 p-4 rounded-2xl bg-[#f5f5f7] .06]">
+ <div className="grid sm:grid-cols-3 gap-3 p-4 rounded-2xl bg-[#f5f5f7]">
  <div className="space-y-0.5">
  <p className="text-xs text-[#86868b] font-semibold">Monthly software</p>
  <p className="text-base font-bold text-[#30d158]">RM 0.00 / mo</p>
@@ -503,11 +463,7 @@ function LaunchpadContent() {
  <button
  type="button"
  onClick={() => setFeePayer('CUSTOMER')}
- className={`p-4 rounded-2xl text-left relative flex flex-col justify-between ${
- feePayer === 'CUSTOMER'
- ? '] bg-[#0071e3]/[0.03] shadow-sm'
- : ' bg-white hover:bg-black/[0.02]'
- }`}
+ className={`p-4 rounded-2xl text-left relative flex flex-col justify-between ${ feePayer === 'CUSTOMER' ? '] bg-[#0071e3]/[0.03] ' : ' bg-white hover:bg-black/[0.02]' }`}
  >
  <div>
  <div className="flex items-center justify-between mb-1.5">
@@ -520,7 +476,7 @@ function LaunchpadContent() {
  Diners pay a flat <strong className="text-[#1d1d1f]">RM 0.50 platform service fee</strong> at checkout.
  </p>
  </div>
- <div className="mt-3 pt-3 .06] text-[11px] text-[#248a3d] font-semibold">
+ <div className="mt-3 pt-3 text-[11px] text-[#248a3d] font-semibold">
  Stall owners keep 100% of dish revenue
  </div>
  </button>
@@ -528,11 +484,7 @@ function LaunchpadContent() {
  <button
  type="button"
  onClick={() => setFeePayer('MERCHANT')}
- className={`p-4 rounded-2xl text-left relative flex flex-col justify-between ${
- feePayer === 'MERCHANT'
- ? '] bg-[#0071e3]/[0.03] shadow-sm'
- : ' bg-white hover:bg-black/[0.02]'
- }`}
+ className={`p-4 rounded-2xl text-left relative flex flex-col justify-between ${ feePayer === 'MERCHANT' ? '] bg-[#0071e3]/[0.03] ' : ' bg-white hover:bg-black/[0.02]' }`}
  >
  <div>
  <div className="flex items-center justify-between mb-1.5">
@@ -545,7 +497,7 @@ function LaunchpadContent() {
  The platform cut is deducted directly from daily gross settlement payouts.
  </p>
  </div>
- <div className="mt-3 pt-3 .06] text-[11px] text-[#6e6e73]">
+ <div className="mt-3 pt-3 text-[11px] text-[#6e6e73]">
  Diners see zero extra fee on the checkout bill
  </div>
  </button>
@@ -570,7 +522,7 @@ function LaunchpadContent() {
  <select
  value={bankName}
  onChange={(e) => setBankName(e.target.value)}
- className="w-full h-[46px] appearance-none rounded-2xl bg-white px-4 pr-10 text-sm text-[#1d1d1f] outline-none focus:] focus: focus: shadow-[0_1px_2px_rgba(0,0,0,0.04)] cursor-pointer"
+ className="w-full h-[46px] appearance-none rounded-2xl bg-white px-4 pr-10 text-sm text-[#1d1d1f] focus:] focus: focus: cursor-pointer"
  >
  <option value="Maybank">Malayan Banking Berhad (Maybank)</option>
  <option value="CIMB">CIMB Bank Berhad</option>
@@ -593,7 +545,7 @@ function LaunchpadContent() {
  value={bankAccountNumber}
  onChange={(e) => setBankAccountNumber(e.target.value)}
  placeholder="e.g. 5140 1234 5678"
- className="w-full h-[46px] rounded-2xl bg-white px-4 py-3 text-sm text-[#1d1d1f] outline-none focus:] focus: focus: shadow-[0_1px_2px_rgba(0,0,0,0.04)] placeholder:text-[#86868b]"
+ className="w-full h-[46px] rounded-2xl bg-white px-4 py-3 text-sm text-[#1d1d1f] focus:] focus: focus: placeholder:text-[#86868b]"
  />
  </div>
  </div>
@@ -607,12 +559,12 @@ function LaunchpadContent() {
  value={accountHolder}
  onChange={(e) => setAccountHolder(e.target.value)}
  placeholder="e.g. Lot 10 Hutong Sdn Bhd"
- className="w-full h-[46px] rounded-2xl bg-white px-4 py-3 text-sm text-[#1d1d1f] outline-none focus:] focus: focus: shadow-[0_1px_2px_rgba(0,0,0,0.04)] placeholder:text-[#86868b]"
+ className="w-full h-[46px] rounded-2xl bg-white px-4 py-3 text-sm text-[#1d1d1f] focus:] focus: focus: placeholder:text-[#86868b]"
  />
  </div>
  </div>
 
- <div className="pt-4 flex items-center justify-between .06]">
+ <div className="pt-4 flex items-center justify-between">
  <button
  onClick={handleBack}
  className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-full text-xs font-semibold text-[#6e6e73] hover:text-[#1d1d1f] "
@@ -621,7 +573,7 @@ function LaunchpadContent() {
  </button>
  <button
  onClick={handleNext}
- className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-xs font-semibold bg-[#0071e3] text-white hover:bg-[#0077ed] shadow-sm"
+ className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-xs font-semibold bg-[#0071e3] text-white hover:bg-[#0077ed] "
  >
  Generate Booth Token
  <ArrowRight className="w-3.5 h-3.5" />
@@ -657,7 +609,7 @@ function LaunchpadContent() {
  value={firstStallSlot}
  onChange={(e) => setFirstStallSlot(e.target.value)}
  placeholder="e.g. Slot #01"
- className="w-full h-[46px] rounded-2xl bg-white px-4 py-3 text-sm text-[#1d1d1f] outline-none focus:] focus: focus: shadow-[0_1px_2px_rgba(0,0,0,0.04)] placeholder:text-[#86868b]"
+ className="w-full h-[46px] rounded-2xl bg-white px-4 py-3 text-sm text-[#1d1d1f] focus:] focus: focus: placeholder:text-[#86868b]"
  />
  </div>
  <div>
@@ -669,13 +621,13 @@ function LaunchpadContent() {
  value={slotLocation}
  onChange={(e) => setSlotLocation(e.target.value)}
  placeholder="e.g. Counter 1, Ground Floor"
- className="w-full h-[46px] rounded-2xl bg-white px-4 py-3 text-sm text-[#1d1d1f] outline-none focus:] focus: focus: shadow-[0_1px_2px_rgba(0,0,0,0.04)] placeholder:text-[#86868b]"
+ className="w-full h-[46px] rounded-2xl bg-white px-4 py-3 text-sm text-[#1d1d1f] focus:] focus: focus: placeholder:text-[#86868b]"
  />
  </div>
  </div>
 
  {/* Informational Callout */}
- <div className="p-4 rounded-2xl bg-[#f5f5f7] .06] flex items-start gap-3">
+ <div className="p-4 rounded-2xl bg-[#f5f5f7] flex items-start gap-3">
  <Sparkles className="w-4 h-4 text-[#0071e3] shrink-0 mt-0.5" />
  <p className="text-xs text-[#6e6e73] leading-relaxed">
  Launching will generate a 1-click invitation link. You can send it directly to your stall holder via WhatsApp, message, or QR code.
@@ -689,7 +641,7 @@ function LaunchpadContent() {
  </div>
  )}
 
- <div className="pt-4 flex items-center justify-between .06]">
+ <div className="pt-4 flex items-center justify-between">
  <button
  onClick={handleBack}
  disabled={isSubmitting}
@@ -700,7 +652,7 @@ function LaunchpadContent() {
  <button
  onClick={handleNext}
  disabled={isSubmitting}
- className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-xs font-semibold bg-[#0071e3] text-white hover:bg-[#0077ed] shadow-sm disabled:opacity-70"
+ className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-xs font-semibold bg-[#0071e3] text-white hover:bg-[#0077ed] disabled:opacity-70"
  >
  {isSubmitting ? (
  <>
@@ -735,7 +687,7 @@ function LaunchpadContent() {
  </div>
 
  {/* Generated Invitation Token Card */}
- <div className="p-5 sm:p-6 rounded-2xl bg-[#f5f5f7] .08] space-y-4">
+ <div className="p-5 sm:p-6 rounded-2xl bg-[#f5f5f7] space-y-4">
  <div className="flex items-center justify-between text-xs">
  <span className="font-semibold text-[#1d1d1f] flex items-center gap-1.5">
  <KeyRound className="w-4 h-4 text-[#0071e3]" /> Booth Invitation Token
@@ -743,7 +695,7 @@ function LaunchpadContent() {
  <span className="text-[#30d158] font-semibold text-[11px]">Valid for 48 Hours</span>
  </div>
 
- <div className="bg-white p-4 rounded-xl .06] flex items-center justify-between gap-4">
+ <div className="bg-white p-4 rounded-xl flex items-center justify-between gap-4">
  <div>
  <p className="text-xs text-[#86868b] font-semibold">
  {firstStallSlot} &bull; Invitation code
@@ -794,7 +746,7 @@ function LaunchpadContent() {
  <div className="pt-2 space-y-3">
  <Link
  href={'/shop-owner/booths' as any}
- className="w-full inline-flex items-center justify-center py-3.5 rounded-full text-xs font-semibold bg-[#1d1d1f] text-white hover:bg-black shadow-md gap-2"
+ className="w-full inline-flex items-center justify-center py-3.5 rounded-full text-xs font-semibold bg-[#1d1d1f] text-white hover:bg-black gap-2"
  >
  Open Food Hall Operator Dashboard
  <ArrowRight className="w-4 h-4" />
@@ -820,7 +772,7 @@ function LaunchpadContent() {
  </div>
 
  {/* RIGHT: THE ZERO-RISK TRANSPARENCY CARD (Sticky) */}
- <aside className="bg-white rounded-[32px] p-6 sm:p-8 .06] shadow-[0_4px_24px_rgba(0,0,0,0.03)] space-y-6 lg:sticky lg:top-20">
+ <aside className="bg-white rounded-[32px] p-6 sm:p-8 space-y-6 lg:sticky lg:top-20">
  <div>
  <div className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-black/5 text-[#86868b] text-xs font-semibold mb-2">
  The Hawker commitment
@@ -854,7 +806,7 @@ function LaunchpadContent() {
  <span>Platform Monetization</span>
  <span className="font-semibold text-[#0071e3]">Small cut per transaction</span>
  </div>
- <div className="pt-2 .06] flex items-center justify-between font-bold text-sm text-[#1d1d1f]">
+ <div className="pt-2 flex items-center justify-between font-bold text-sm text-[#1d1d1f]">
  <span>Total Due Today</span>
  <span className="text-[#0071e3]">RM 0.00</span>
  </div>
@@ -874,7 +826,7 @@ function LaunchpadContent() {
  </div>
 
  {/* Guarantees Strip */}
- <div className="pt-4 .06] space-y-2 text-[11px] text-[#86868b]">
+ <div className="pt-4 space-y-2 text-[11px] text-[#86868b]">
  <div className="flex items-center gap-2">
  <ShieldCheck className="w-3.5 h-3.5 text-[#30d158] shrink-0" />
  <span>Zero monthly invoices &bull; Pause anytime</span>

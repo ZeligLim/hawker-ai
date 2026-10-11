@@ -52,13 +52,13 @@ export default function OwnerDishEditorPage() {
  setIsLoading(true);
  const token = (await client.auth.getSession()).data.session?.access_token;
  if (!token) {
-   if (active) setIsLoading(false);
-   return;
+ if (active) setIsLoading(false);
+ return;
  }
  const response = await fetch('/api/owner/dishes', { headers: { Authorization: `Bearer ${token}` } });
  if (!response.ok) {
-   if (active) setIsLoading(false);
-   return;
+ if (active) setIsLoading(false);
+ return;
  }
  const payload = await response.json() as { dishes?: Array<Record<string, unknown>>; foodOutletIds?: string[] };
  if (!active) return;
@@ -97,7 +97,7 @@ export default function OwnerDishEditorPage() {
  }
 
  if (!dish) {
- return <main className="min-h-screen bg-[#f5f5f7] p-5 text-[#1d1d1f] text-center pt-20"><p className="mb-4 font-medium">Dish not found</p><Link href="/owner/menu" className="inline-flex h-9 items-center justify-center rounded-full bg-[#111827] px-4 text-xs font-semibold text-white hover:bg-black shadow-xs">Back to menu</Link></main>;
+ return <main className="min-h-screen bg-[#f5f5f7] p-5 text-[#1d1d1f] text-center pt-20"><p className="mb-4 font-medium">Dish not found</p><Link href="/owner/menu" className="inline-flex h-9 items-center justify-center rounded-full bg-[#111827] px-4 text-xs font-semibold text-white hover:bg-black ">Back to menu</Link></main>;
  }
 
  const updateDish = (changes: Partial<Dish>) => setDish((current) => current ? { ...current, ...changes } : current);
@@ -189,7 +189,7 @@ export default function OwnerDishEditorPage() {
  <header className="flex items-center gap-3">
  <Link
  href="/owner/menu"
- className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-[#1d1d1f] hover:bg-neutral-100 shadow-xs"
+ className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-[#1d1d1f] hover:bg-neutral-100 "
  aria-label="Back to menu"
  >
  <ArrowLeft className="h-5 w-5" />
@@ -197,7 +197,7 @@ export default function OwnerDishEditorPage() {
  <div><h1 className="text-3xl font-semibold tracking-[-0.06em]">{isNew ? 'Add dish' : 'Edit dish'}</h1></div>
  </header>
  <form onSubmit={save} className="mt-6 space-y-4">
- <section className="rounded-[24px] bg-white p-4 shadow-sm">
+ <section className="rounded-[24px] bg-white p-4 ">
  <label className="block text-sm font-medium">Dish photo
  <div className="mt-2 flex h-44 items-center justify-center overflow-hidden rounded-[18px] bg-[#f5f5f7]">
  {dish.imageUrl ? <img src={dish.imageUrl} alt="" className="h-full w-full object-cover" /> : <ImagePlus className="h-8 w-8 text-[#6e6e73]" />}
@@ -205,36 +205,36 @@ export default function OwnerDishEditorPage() {
  <input type="file" accept="image/*" onChange={(event) => handlePhoto(event.target.files?.[0])} className="mt-3 block w-full text-sm" />
  </label>
  </section>
- <section className="rounded-[24px] bg-white p-4 shadow-sm">
+ <section className="rounded-[24px] bg-white p-4 ">
  <div className="grid gap-3 sm:grid-cols-3">
- <input value={dish.name} onChange={(event) => updateDish({ name: event.target.value })} placeholder="Dish name" className="h-11 rounded-[14px] bg-[#f5f5f7] px-3 text-sm outline-none" />
- <select value={dish.category} onChange={(event) => updateDish({ category: event.target.value })} className="h-11 appearance-none rounded-[14px] bg-[#f5f5f7] px-3 text-sm outline-none"><option>Main course</option><option>Drinks</option><option>Desserts</option></select>
- <input type="number" min="0" step="any" value={dish.price === 0 ? '' : dish.price} onChange={(event) => updateDish({ price: event.target.value === '' ? 0 : parseFloat(event.target.value) })} placeholder="Price (RM)" className="h-11 rounded-[14px] bg-[#f5f5f7] px-3 text-sm outline-none" />
+ <input value={dish.name} onChange={(event) => updateDish({ name: event.target.value })} placeholder="Dish name" className="h-11 rounded-[14px] bg-[#f5f5f7] px-3 text-sm " />
+ <select value={dish.category} onChange={(event) => updateDish({ category: event.target.value })} className="h-11 appearance-none rounded-[14px] bg-[#f5f5f7] px-3 text-sm "><option>Main course</option><option>Drinks</option><option>Desserts</option></select>
+ <input type="number" min="0" step="any" value={dish.price === 0 ? '' : dish.price} onChange={(event) => updateDish({ price: event.target.value === '' ? 0 : parseFloat(event.target.value) })} placeholder="Price (RM)" className="h-11 rounded-[14px] bg-[#f5f5f7] px-3 text-sm " />
  </div>
  <div className="mt-4 flex items-center justify-between rounded-[14px] bg-[#f5f5f7] px-3 py-3 text-sm font-medium">
  <span>Vegetarian dish</span>
  <button type="button" role="switch" aria-checked={vegetarian} onClick={() => setVegetarian((current) => !current)} className={`relative h-7 w-12 rounded-full ${vegetarian ? 'bg-emerald-500' : 'bg-[#d1d5db]'}`} aria-label="Toggle vegetarian dish">
- <span className={`absolute top-1 h-5 w-5 rounded-full bg-white shadow-sm ${vegetarian ? 'left-6' : 'left-1'}`} />
+ <span className={`absolute top-1 h-5 w-5 rounded-full bg-white ${vegetarian ? 'left-6' : 'left-1'}`} />
  </button>
  </div>
  <label className="mt-4 block text-sm font-medium">
  Description
- <textarea value={description} onChange={(event) => setDescription(event.target.value)} placeholder="Describe the dish, ingredients, and flavour." rows={3} className="mt-2 w-full resize-none rounded-[14px] bg-[#f5f5f7] px-3 py-3 text-sm outline-none" />
+ <textarea value={description} onChange={(event) => setDescription(event.target.value)} placeholder="Describe the dish, ingredients, and flavour." rows={3} className="mt-2 w-full resize-none rounded-[14px] bg-[#f5f5f7] px-3 py-3 text-sm " />
  </label>
  <label className="mt-4 block text-sm font-medium">
  Search tags
- <input value={tags} onChange={(event) => setTags(event.target.value)} placeholder="e.g. halal, no onion, breakfast" className="mt-2 w-full rounded-[14px] bg-[#f5f5f7] px-3 py-3 text-sm outline-none" />
+ <input value={tags} onChange={(event) => setTags(event.target.value)} placeholder="e.g. halal, no onion, breakfast" className="mt-2 w-full rounded-[14px] bg-[#f5f5f7] px-3 py-3 text-sm " />
  <span className="mt-1 block text-xs font-normal text-[#6e6e73]">Separate tags with commas. These will support future AI search.</span>
  </label>
  </section>
- <section className="rounded-[24px] bg-white p-4 shadow-sm">
+ <section className="rounded-[24px] bg-white p-4 ">
  <h2 className="text-lg font-semibold">Customisation</h2>
  <p className="mt-1 text-sm text-[#6e6e73]">Add up to 10 options. Enter the label and extra price for each option.</p>
  <div className="mt-4 space-y-3">
  {customizations.map((option, index) => (
  <div key={index} className="flex items-center gap-2">
- <input value={option.label} onChange={(event) => setCustomizations((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, label: event.target.value } : item))} placeholder="e.g. Add egg or Large" className="min-w-0 flex-1 rounded-[12px] bg-[#f5f5f7] px-3 py-3 text-sm outline-none" />
- <input type="number" min="0" step="any" value={option.price === 0 ? '' : option.price} onChange={(event) => setCustomizations((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, price: event.target.value === '' ? 0 : parseFloat(event.target.value) } : item))} placeholder="RM" className="w-20 rounded-[12px] bg-[#f5f5f7] px-2 py-3 text-sm outline-none" aria-label={`Price for customisation ${index + 1}`} />
+ <input value={option.label} onChange={(event) => setCustomizations((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, label: event.target.value } : item))} placeholder="e.g. Add egg or Large" className="min-w-0 flex-1 rounded-[12px] bg-[#f5f5f7] px-3 py-3 text-sm " />
+ <input type="number" min="0" step="any" value={option.price === 0 ? '' : option.price} onChange={(event) => setCustomizations((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, price: event.target.value === '' ? 0 : parseFloat(event.target.value) } : item))} placeholder="RM" className="w-20 rounded-[12px] bg-[#f5f5f7] px-2 py-3 text-sm " aria-label={`Price for customisation ${index + 1}`} />
  <button type="button" onClick={() => setCustomizations((current) => current.filter((_, itemIndex) => itemIndex !== index))} className="rounded-full p-2 text-[#6e6e73]" aria-label={`Remove customisation ${index + 1}`}><Trash2 className="h-4 w-4" /></button>
  </div>
  ))}
@@ -242,7 +242,7 @@ export default function OwnerDishEditorPage() {
  {customizations.length < 10 ? (
  <button type="button" onClick={() => setCustomizations((current) => [...current, { label: '', price: 0 }])} className="mt-4 inline-flex items-center gap-2 rounded-full bg-[#f5f5f7] px-4 py-2.5 text-sm font-semibold"><Plus className="h-4 w-4" /> Add customisation</button>
  ) : <p className="mt-4 text-xs text-[#6e6e73]">Maximum of 10 customisations reached.</p>}
- <div className="mt-6 ] pt-4">
+ <div className="mt-6 pt-4">
  <div className="flex items-center justify-between gap-3">
  <div>
  <p className="text-sm font-semibold">Spicy level</p>

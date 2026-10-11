@@ -69,7 +69,7 @@ export async function GET(request: NextRequest) {
  `)
  .in('food_outlet_id', outletIds)
  .order('created_at', { ascending: false });
- if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+ if (error) { console.error("Merchant Orders Error:", error); return NextResponse.json({ error: error.message }, { status: 500 }); }
 
  return NextResponse.json({ orders: data ?? [] });
 }

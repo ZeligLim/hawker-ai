@@ -126,7 +126,7 @@ function JoinBoothContent() {
  const redirectUrl = `/booths/join${token ? `?token=${encodeURIComponent(token)}` : ''}`;
  return (
  <main className="min-h-screen bg-[#f5f5f7] px-4 py-12 text-[#1d1d1f] flex items-center justify-center">
- <div className="w-full max-w-[480px] rounded-[32px] bg-white p-6 sm:p-8 shadow-[0_12px_32px_rgba(0,0,0,0.04)] .06]">
+ <div className="w-full max-w-[480px] rounded-[32px] bg-white p-6 sm:p-8 ">
  <div className="w-10 h-10 rounded-2xl bg-[#0071e3]/10 text-[#0071e3] flex items-center justify-center mb-4">
  <Store className="w-5 h-5" />
  </div>
@@ -139,7 +139,7 @@ function JoinBoothContent() {
  </p>
  <Link
  href={`/auth?redirect=${encodeURIComponent(redirectUrl)}` as any}
- className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#111827] px-5 py-3 text-xs font-semibold text-white hover:bg-black shadow-sm"
+ className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#111827] px-5 py-3 text-xs font-semibold text-white hover:bg-black "
  >
  Sign in to claim stall
  <ArrowRight className="w-3.5 h-3.5" />
@@ -155,7 +155,7 @@ function JoinBoothContent() {
 
  return (
  <main className="min-h-screen bg-[#f5f5f7] px-4 py-12 text-[#1d1d1f] flex items-center justify-center">
- <div className="w-full max-w-[480px] rounded-[32px] bg-white p-6 sm:p-8 shadow-[0_12px_32px_rgba(0,0,0,0.04)] .06]">
+ <div className="w-full max-w-[480px] rounded-[32px] bg-white p-6 sm:p-8 ">
  <div className="w-10 h-10 rounded-2xl bg-[#30d158]/10 text-[#30d158] flex items-center justify-center mb-4">
  <KeyRound className="w-5 h-5" />
  </div>
@@ -207,7 +207,7 @@ function JoinBoothContent() {
  if (!next) setInvitationPreview(null);
  }}
  placeholder="Paste token or link"
- className="w-full h-[46px] rounded-2xl bg-white px-4 text-sm font-mono tracking-wide text-[#1d1d1f] outline-none focus:] focus: focus: placeholder:font-sans placeholder:normal-case placeholder:text-[#86868b]"
+ className="w-full h-[46px] rounded-2xl bg-white px-4 text-sm font-mono tracking-wide text-[#1d1d1f] focus:] focus: focus: placeholder:font-sans placeholder:normal-case placeholder:text-[#86868b]"
  />
  </div>
 
@@ -220,7 +220,7 @@ function JoinBoothContent() {
  value={stallName}
  onChange={(event) => setStallName(event.target.value)}
  placeholder="e.g. Ah Fatt Hainanese Chicken Rice"
- className="w-full h-[46px] rounded-2xl bg-white px-4 text-sm text-[#1d1d1f] outline-none focus:] focus: focus: placeholder:text-[#86868b]"
+ className="w-full h-[46px] rounded-2xl bg-white px-4 text-sm text-[#1d1d1f] focus:] focus: focus: placeholder:text-[#86868b]"
  />
  <p className="mt-1 text-[11px] text-[#86868b]">
  This is the brand name diners will see on the food court digital menu.
@@ -230,7 +230,7 @@ function JoinBoothContent() {
  <button
  type="submit"
  disabled={isLoading || isSuccess}
- className="w-full h-[46px] mt-2 inline-flex items-center justify-center gap-2 rounded-full bg-[#111827] px-5 py-3 text-xs font-semibold text-white hover:bg-black shadow-sm disabled:cursor-not-allowed disabled:opacity-70"
+ className="w-full h-[46px] mt-2 inline-flex items-center justify-center gap-2 rounded-full bg-[#111827] px-5 py-3 text-xs font-semibold text-white hover:bg-black disabled:cursor-not-allowed disabled:opacity-70"
  >
  {isLoading ? (
  <>
@@ -253,9 +253,7 @@ function JoinBoothContent() {
 
  {message && (
  <div
- className={`mt-4 rounded-2xl p-3.5 text-xs font-medium ${
- isSuccess ? 'bg-[#30d158]/10 text-[#248a3d] ' : 'bg-red-50 text-red-700 '
- }`}
+ className={`mt-4 rounded-2xl p-3.5 text-xs font-medium ${ isSuccess ? 'bg-[#30d158]/10 text-[#248a3d] ' : 'bg-red-50 text-red-700 ' }`}
  >
  {message}
  </div>

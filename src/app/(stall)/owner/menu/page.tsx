@@ -28,9 +28,9 @@ export default function OwnerMenuPage() {
  const [selectedBoothId, setSelectedBoothId] = useState<string | null>(null);
 
  useEffect(() => {
-  if (roles.booths && roles.booths.length > 0 && !selectedBoothId) {
+ if (roles.booths && roles.booths.length > 0 && !selectedBoothId) {
    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setSelectedBoothId(roles.booths[0].id);
+ setSelectedBoothId(roles.booths[0].id);
   }
  }, [roles.booths, selectedBoothId]);
 
@@ -127,7 +127,7 @@ export default function OwnerMenuPage() {
  
 
  {error ? (
- <div className="mt-4 rounded-[18px] ] bg-[#fff1f2] p-4 text-xs sm:text-sm text-[#9f1239] truncate">
+ <div className="mt-4 rounded-[18px] bg-[#fff1f2] p-4 text-xs sm:text-sm text-[#9f1239] truncate">
  {error}
  </div>
  ) : null}
@@ -139,7 +139,7 @@ export default function OwnerMenuPage() {
  <select
  value={selectedBoothId || ''}
  onChange={(e) => setSelectedBoothId(e.target.value)}
- className="inline-flex h-9 items-center justify-center rounded-full bg-white px-3 text-xs font-semibold text-[#1d1d1f] shadow-xs outline-none cursor-pointer"
+ className="inline-flex h-9 items-center justify-center rounded-full bg-white px-3 text-xs font-semibold text-[#1d1d1f] cursor-pointer"
  aria-label="Select booth"
  >
  {roles.booths.map((b) => (
@@ -157,7 +157,7 @@ export default function OwnerMenuPage() {
  ) : null}
 
  {!isLoading && dishes.length === 0 && !error ? (
- <div className="rounded-[24px] bg-white p-8 text-center shadow-[0_12px_26px_rgba(15,23,42,0.04)]">
+ <div className="rounded-[24px] bg-white p-8 text-center ">
  <UtensilsCrossed className="mx-auto h-8 w-8 text-[#86868b] mb-3" />
  <h3 className="text-base font-semibold text-[#1d1d1f] truncate">No dishes on your menu yet</h3>
  <p className="mt-1 text-xs text-[#6e6e73] max-w-sm mx-auto truncate">
@@ -168,14 +168,14 @@ export default function OwnerMenuPage() {
  <div className="mt-5 flex flex-wrap justify-center gap-3">
  <Link
  href={`/owner/menu/new${selectedBoothId ? `?boothId=${selectedBoothId}` : ''}` as any}
- className="inline-flex h-9 items-center rounded-full bg-[#111827] px-4 text-xs font-semibold text-white hover:bg-black shadow-xs"
+ className="inline-flex h-9 items-center rounded-full bg-[#111827] px-4 text-xs font-semibold text-white hover:bg-black "
  >
  Add your first dish
  </Link>
  {foodOutletIds.length === 0 && (
  <Link
  href="/booths/join"
- className="inline-flex h-9 items-center rounded-full bg-white px-4 text-xs font-semibold text-[#1d1d1f] hover:bg-black/[0.04] shadow-xs"
+ className="inline-flex h-9 items-center rounded-full bg-white px-4 text-xs font-semibold text-[#1d1d1f] hover:bg-black/[0.04] "
  >
  Join booth with code
  </Link>
@@ -188,7 +188,7 @@ export default function OwnerMenuPage() {
  {dishes.map((dish) => (
  <article
  key={dish.id}
- className="flex items-center justify-between gap-3 sm:gap-4 rounded-[22px] bg-white p-3.5 sm:p-4 shadow-[0_12px_26px_rgba(15,23,42,0.04)] .04]"
+ className="flex items-center justify-between gap-3 sm:gap-4 rounded-[22px] bg-white p-3.5 sm:p-4 "
  >
  <Link href={`/owner/menu/${dish.id}` as any} className="flex min-w-0 flex-1 items-center gap-3">
  {dish.imageUrl ? (
@@ -208,7 +208,7 @@ export default function OwnerMenuPage() {
  </Link>
  <Link
  href={`/owner/menu/${dish.id}` as any}
- className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-[#f5f5f7] text-[#1d1d1f] hover:bg-black/5 shadow-xs"
+ className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-[#f5f5f7] text-[#1d1d1f] hover:bg-black/5 "
  aria-label={`Edit ${dish.name}`}
  title={`Edit ${dish.name}`}
  >
@@ -219,15 +219,11 @@ export default function OwnerMenuPage() {
  role="switch"
  aria-checked={dish.available}
  onClick={() => toggleAvailability(dish.id)}
- className={`relative h-7 w-12 shrink-0 rounded-full ${
- dish.available ? 'bg-emerald-500' : 'bg-[#d1d5db]'
- }`}
+ className={`relative h-7 w-12 shrink-0 rounded-full ${ dish.available ? 'bg-emerald-500' : 'bg-[#d1d5db]' }`}
  aria-label={`${dish.name} ${dish.available ? 'available' : 'unavailable'}`}
  >
  <span
- className={`absolute top-1 h-5 w-5 rounded-full bg-white shadow-sm ${
- dish.available ? 'left-6' : 'left-1'
- }`}
+ className={`absolute top-1 h-5 w-5 rounded-full bg-white ${ dish.available ? 'left-6' : 'left-1' }`}
  />
  </button>
  </article>
@@ -239,7 +235,7 @@ export default function OwnerMenuPage() {
 
  <Link
  href={`/owner/menu/new${selectedBoothId ? `?boothId=${selectedBoothId}` : ''}` as any}
- className="fixed bottom-40 sm:bottom-24 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-[#111827] text-white shadow-lg hover:bg-black "
+ className="fixed bottom-40 sm:bottom-24 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-[#111827] text-white hover:bg-black "
  aria-label="Add dish"
  title="Add dish"
  >

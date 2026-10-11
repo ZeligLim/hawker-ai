@@ -4,7 +4,7 @@ import React from 'react';
 import { Flame, Leaf, Plus, UtensilsCrossed } from 'lucide-react';
 
 export interface DishCardProps {
-  isAvailable?: boolean;
+ isAvailable?: boolean;
  id: string;
  name: string;
  price: number;
@@ -17,7 +17,7 @@ export interface DishCardProps {
 }
 
 export function DishCard({
-  isAvailable = true,
+ isAvailable = true,
  id,
  name,
  price,
@@ -30,9 +30,9 @@ export function DishCard({
 }: DishCardProps) {
  return (
  <article
-      data-dish-id={id}
-      aria-label={name}
-      className={`group relative flex flex-col justify-between overflow-hidden rounded-[22px] sm:rounded-[26px] bg-white shadow-[0_8px_20px_rgba(15,23,42,0.03)] ${!isAvailable ? 'opacity-50 grayscale' : ''}`}
+ data-dish-id={id}
+ aria-label={name}
+ className={`group relative flex flex-col justify-between overflow-hidden rounded-[22px] sm:rounded-[26px] bg-white ${!isAvailable ? 'opacity-50 grayscale' : ''}`}
  >
  {/* Visual Picture-Only Card Area */}
  <div className="relative aspect-square w-full overflow-hidden bg-neutral-100">
@@ -51,10 +51,10 @@ export function DishCard({
 
  {/* Floating Dish Name Island */}
         <div className="absolute left-2.5 top-2.5 flex flex-col gap-1 items-start max-w-[calc(100%-60px)] z-10">
-          <div className="rounded-full bg-white/95 px-3 py-1.5 text-[11px] sm:text-xs font-bold text-[#1d1d1f] shadow-sm backdrop-blur-md truncate max-w-full ">
+          <div className="rounded-full bg-white/95 px-3 py-1.5 text-[11px] sm:text-xs font-bold text-[#1d1d1f] backdrop-blur-md truncate max-w-full ">
             {name}
           </div>
-          <div className="rounded-full bg-black/80 px-2.5 py-1 text-[11px] font-semibold text-white backdrop-blur-md shadow-xs">
+          <div className="rounded-full bg-black/80 px-2.5 py-1 text-[11px] font-semibold text-white backdrop-blur-md ">
             RM {price.toFixed(2)}
           </div>
         </div>
@@ -87,7 +87,7 @@ export function DishCard({
  {/* Quantity Controls Floating on Image Bottom */}
  <div className="absolute bottom-2.5 left-2.5 right-2.5">
  {quantity > 0 ? (
- <div className="flex w-full items-center justify-between rounded-full bg-white/95 px-2 py-1 shadow-md backdrop-blur-md">
+ <div className="flex w-full items-center justify-between rounded-full bg-white/95 px-2 py-1 backdrop-blur-md">
  <button
  type="button"
  aria-label={`Decrease ${name} quantity`}
@@ -118,13 +118,13 @@ export function DishCard({
  <div className="flex justify-end">
               {isAvailable ? (
                 <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onAdd();
+ type="button"
+ onClick={(e) => {
+ e.stopPropagation();
+ onAdd();
                   }}
-                  className="flex h-9 w-9 items-center justify-center rounded-full bg-black text-white shadow-xs hover:bg-neutral-800 "
-                  aria-label={`Add ${name} to cart`}
+ className="flex h-9 w-9 items-center justify-center rounded-full bg-black text-white hover:bg-neutral-800 "
+ aria-label={`Add ${name} to cart`}
                 >
                   <Plus className="h-4 w-4" strokeWidth={2.2} />
                 </button>

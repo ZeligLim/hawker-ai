@@ -244,10 +244,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
  let active = true;
  const timeoutId = window.setTimeout(() => {
  if (active) {
-        if (status === 'authenticated' && user) {
-          void refreshRoles();
+ if (status === 'authenticated' && user) {
+ void refreshRoles();
         } else if (status === 'unauthenticated') {
-          void refreshRoles();
+ void refreshRoles();
         }
       }
  }, 0);
@@ -354,11 +354,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
  const redirectUrl = `${getAppUrl()}/auth/callback?redirect=${encodeURIComponent(redirectTarget)}`;
 
  const { error } = await client.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: redirectUrl,
-        queryParams: {
-          prompt: 'select_account',
+ provider: 'google',
+ options: {
+ redirectTo: redirectUrl,
+ queryParams: {
+ prompt: 'select_account',
         },
       },
     });

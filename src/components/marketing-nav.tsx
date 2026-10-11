@@ -69,7 +69,7 @@ export function MarketingNav({ currentPath = '/' }: MarketingNavProps) {
  const [mounted, setMounted] = useState(false);
  useEffect(() => {
  // eslint-disable-next-line react-hooks/set-state-in-effect
-    setMounted(true); }, []);
+ setMounted(true); }, []);
  const isLoading = !mounted || status === 'loading';
 
  // Role capability checks
@@ -101,11 +101,11 @@ export function MarketingNav({ currentPath = '/' }: MarketingNavProps) {
  };
 
  return (
- <nav className="sticky top-0 z-50 backdrop-blur-2xl bg-[#f5f5f7]/85 .06] ">
+ <nav className="sticky top-0 z-50 backdrop-blur-2xl bg-[#f5f5f7]/85 ">
  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-12 sm:h-14 flex items-center justify-between">
  {/* Brand */}
  <Link href="/" className="flex items-center gap-2.5 group">
- <div className="w-7 h-7 rounded-lg bg-[#1d1d1f] text-white flex items-center justify-center font-black text-xs tracking-tighter shadow-sm group-hover:scale-105 -transform">
+ <div className="w-7 h-7 rounded-lg bg-[#1d1d1f] text-white flex items-center justify-center font-black text-xs tracking-tighter group-hover:scale-105 -transform">
  H
  </div>
  <span className="font-semibold text-base tracking-tight text-[#1d1d1f]">Hawker</span>
@@ -158,7 +158,7 @@ export function MarketingNav({ currentPath = '/' }: MarketingNavProps) {
  setDashboardDropdownOpen((prev) => !prev);
  setAccountDropdownOpen(false);
  }}
- className="inline-flex items-center gap-1.5 text-xs font-semibold text-white bg-[#1d1d1f] hover:bg-black px-3.5 py-1.5 rounded-full shadow-sm "
+ className="inline-flex items-center gap-1.5 text-xs font-semibold text-white bg-[#1d1d1f] hover:bg-black px-3.5 py-1.5 rounded-full "
  aria-expanded={dashboardDropdownOpen}
  aria-haspopup="menu"
  >
@@ -170,8 +170,8 @@ export function MarketingNav({ currentPath = '/' }: MarketingNavProps) {
  </button>
 
  {dashboardDropdownOpen && (
- <div className="absolute right-0 mt-2 w-60 rounded-2xl bg-white shadow-[0_12px_36px_rgba(0,0,0,0.12)] py-1.5 text-xs text-[#1d1d1f] z-50 ">
- <div className="px-3.5 py-1.5 text-[10px] font-semibold text-[#86868b] .04]">
+ <div className="absolute right-0 mt-2 w-60 rounded-2xl bg-white py-1.5 text-xs text-[#1d1d1f] z-50 ">
+ <div className="px-3.5 py-1.5 text-[10px] font-semibold text-[#86868b]">
  Choose workspace
  </div>
  <Link
@@ -207,7 +207,7 @@ export function MarketingNav({ currentPath = '/' }: MarketingNavProps) {
  /* Only Shop Owner */
  <Link
  href="/shop-owner/booths"
- className="inline-flex items-center gap-1.5 text-xs font-semibold text-white bg-[#1d1d1f] hover:bg-black px-3.5 py-1.5 rounded-full shadow-sm "
+ className="inline-flex items-center gap-1.5 text-xs font-semibold text-white bg-[#1d1d1f] hover:bg-black px-3.5 py-1.5 rounded-full "
  >
  <Store className="w-3.5 h-3.5" />
  Shop Dashboard
@@ -216,7 +216,7 @@ export function MarketingNav({ currentPath = '/' }: MarketingNavProps) {
  /* Only Stall Worker */
  <Link
  href="/owner"
- className="inline-flex items-center gap-1.5 text-xs font-semibold text-white bg-[#1d1d1f] hover:bg-black px-3.5 py-1.5 rounded-full shadow-sm "
+ className="inline-flex items-center gap-1.5 text-xs font-semibold text-white bg-[#1d1d1f] hover:bg-black px-3.5 py-1.5 rounded-full "
  >
  <CookingPot className="w-3.5 h-3.5" />
  Stall Overview
@@ -232,7 +232,7 @@ export function MarketingNav({ currentPath = '/' }: MarketingNavProps) {
  setAccountDropdownOpen((prev) => !prev);
  setDashboardDropdownOpen(false);
  }}
- className="flex items-center gap-2 px-2.5 py-1 rounded-full bg-white hover:bg-black/[0.03] text-xs font-medium text-[#1d1d1f] shadow-[0_1px_2px_rgba(0,0,0,0.04)]"
+ className="flex items-center gap-2 px-2.5 py-1 rounded-full bg-white hover:bg-black/[0.03] text-xs font-medium text-[#1d1d1f] "
  aria-expanded={accountDropdownOpen}
  aria-haspopup="menu"
  >
@@ -244,8 +244,8 @@ export function MarketingNav({ currentPath = '/' }: MarketingNavProps) {
  </button>
 
  {accountDropdownOpen && (
- <div className="absolute right-0 mt-2 w-64 rounded-2xl bg-white shadow-[0_12px_36px_rgba(0,0,0,0.12)] py-2 text-xs text-[#1d1d1f] z-50 ">
- <div className="px-4 py-2 .06]">
+ <div className="absolute right-0 mt-2 w-64 rounded-2xl bg-white py-2 text-xs text-[#1d1d1f] z-50 ">
+ <div className="px-4 py-2">
  <p className="font-semibold text-[#1d1d1f] truncate">{displayName}</p>
  {userEmail && <p className="text-[11px] text-[#6e6e73] truncate">{userEmail}</p>}
  <div className="mt-1.5 flex items-center gap-1.5">
@@ -308,7 +308,7 @@ export function MarketingNav({ currentPath = '/' }: MarketingNavProps) {
  </Link>
  </div>
 
- <div className="pt-1 .06]">
+ <div className="pt-1">
  <button
  type="button"
  onClick={handleSignOut}
@@ -332,7 +332,7 @@ export function MarketingNav({ currentPath = '/' }: MarketingNavProps) {
  </Link>
  <Link
  href={'/shop-owner/profile' as any}
- className="text-xs font-semibold text-white bg-[#0071e3] hover:bg-[#0077ed] px-3.5 py-1.5 rounded-full shadow-[0_1px_2px_rgba(0,0,0,0.08)] hover:shadow"
+ className="text-xs font-semibold text-white bg-[#0071e3] hover:bg-[#0077ed] px-3.5 py-1.5 rounded-full "
  >
  Start Free
  </Link>
@@ -347,7 +347,7 @@ export function MarketingNav({ currentPath = '/' }: MarketingNavProps) {
  <button
  type="button"
  onClick={() => setMobileMenuOpen(true)}
- className="inline-flex items-center gap-1 text-[11px] font-semibold text-white bg-[#1d1d1f] p-2 xs:px-2.5 xs:py-1 rounded-full shadow-sm"
+ className="inline-flex items-center gap-1 text-[11px] font-semibold text-white bg-[#1d1d1f] p-2 xs:px-2.5 xs:py-1 rounded-full "
  aria-label="Dashboard"
  >
  <LayoutDashboard className="w-3.5 h-3.5" />
@@ -356,7 +356,7 @@ export function MarketingNav({ currentPath = '/' }: MarketingNavProps) {
  ) : hasShop ? (
  <Link
  href="/shop-owner/booths"
- className="inline-flex items-center gap-1 text-[11px] font-semibold text-white bg-[#1d1d1f] p-2 xs:px-2.5 xs:py-1 rounded-full shadow-sm"
+ className="inline-flex items-center gap-1 text-[11px] font-semibold text-white bg-[#1d1d1f] p-2 xs:px-2.5 xs:py-1 rounded-full "
  aria-label="Shop Dashboard"
  >
  <Store className="w-3.5 h-3.5" />
@@ -365,7 +365,7 @@ export function MarketingNav({ currentPath = '/' }: MarketingNavProps) {
  ) : (
  <Link
  href="/owner/orders"
- className="inline-flex items-center gap-1 text-[11px] font-semibold text-white bg-[#1d1d1f] p-2 xs:px-2.5 xs:py-1 rounded-full shadow-sm"
+ className="inline-flex items-center gap-1 text-[11px] font-semibold text-white bg-[#1d1d1f] p-2 xs:px-2.5 xs:py-1 rounded-full "
  aria-label="Stall Kitchen"
  >
  <CookingPot className="w-3.5 h-3.5" />
@@ -386,9 +386,9 @@ export function MarketingNav({ currentPath = '/' }: MarketingNavProps) {
 
  {/* Mobile Drawer */}
  {mobileMenuOpen && (
- <div className="sm:hidden .06] bg-[#f5f5f7] px-4 pt-3 pb-6 flex flex-col gap-3">
+ <div className="sm:hidden bg-[#f5f5f7] px-4 pt-3 pb-6 flex flex-col gap-3">
  {isAuthenticated ? (
- <div className="p-3 bg-white rounded-2xl .08] shadow-sm mb-1">
+ <div className="p-3 bg-white rounded-2xl mb-1">
  <div className="flex items-center gap-3">
  <div className="w-8 h-8 rounded-full bg-[#1d1d1f] text-white flex items-center justify-center font-bold text-xs">
  {initials}
@@ -411,7 +411,7 @@ export function MarketingNav({ currentPath = '/' }: MarketingNavProps) {
  <Link href="/pricing" onClick={() => setMobileMenuOpen(false)} className="py-1">Pricing</Link>
  </div>
 
- <div className="pt-2 flex flex-col gap-2 .06]">
+ <div className="pt-2 flex flex-col gap-2">
  {isLoading ? (
  <div className="h-10 rounded-full bg-black/5 " />
  ) : isAuthenticated ? (

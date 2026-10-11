@@ -17,7 +17,7 @@ export function RentInvoices({ boothId }: { boothId: string }) {
  const [invoices, setInvoices] = useState<RentInvoice[]>([]);
  const [loading, setLoading] = useState(true);
  const [payingInvoice, setPayingInvoice] = useState<RentInvoice | null>(null);
-  const [processingStatus, setProcessingStatus] = useState<'idle' | 'generating' | 'ready' | 'success' | 'error'>('idle');
+ const [processingStatus, setProcessingStatus] = useState<'idle' | 'generating' | 'ready' | 'success' | 'error'>('idle');
 
  useEffect(() => {
  async function loadInvoices() {
@@ -36,14 +36,14 @@ export function RentInvoices({ boothId }: { boothId: string }) {
 
  
  const handlePay = async (invoice: RentInvoice) => {
-    setPayingInvoice(invoice);
-    setProcessingStatus('generating');
-    try {
-      await authenticatedFetch(`/api/owner/rent/${invoice.id}/pay`, { method: 'POST' });
-      setProcessingStatus('success');
-      setInvoices(prev => prev.map(inv => inv.id === invoice.id ? { ...inv, status: 'paid' } : inv));
+ setPayingInvoice(invoice);
+ setProcessingStatus('generating');
+ try {
+ await authenticatedFetch(`/api/owner/rent/${invoice.id}/pay`, { method: 'POST' });
+ setProcessingStatus('success');
+ setInvoices(prev => prev.map(inv => inv.id === invoice.id ? { ...inv, status: 'paid' } : inv));
     } catch (err) {
-      setProcessingStatus('error');
+ setProcessingStatus('error');
     }
   };
 
@@ -52,7 +52,7 @@ export function RentInvoices({ boothId }: { boothId: string }) {
  if (invoices.length === 0) return null;
 
  return (
- <section className="mt-6 rounded-[26px] bg-white p-5 sm:p-6 shadow-xs">
+ <section className="mt-6 rounded-[26px] bg-white p-5 sm:p-6 ">
  <div className="flex items-center gap-2 mb-4">
  <FileText className="h-5 w-5 text-[#1d1d1f]" />
  <h3 className="text-sm font-semibold text-[#1d1d1f]">Rent Invoices</h3>
@@ -78,7 +78,7 @@ export function RentInvoices({ boothId }: { boothId: string }) {
  <button
  onClick={() => handlePay(inv)}
  disabled={processingStatus === 'generating' || processingStatus === 'ready'}
- className="rounded-full bg-[#111827] px-4 py-2 text-xs font-semibold text-white hover:bg-black shadow-xs disabled:opacity-50 self-start sm:self-auto"
+ className="rounded-full bg-[#111827] px-4 py-2 text-xs font-semibold text-white hover:bg-black disabled:opacity-50 self-start sm:self-auto"
  >
  {payingInvoice?.id === inv.id && processingStatus === 'generating' ? (
  <span className="flex items-center gap-1"><LoaderCircle className="h-3.5 w-3.5 animate-spin" /> Processing...</span>

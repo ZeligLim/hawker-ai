@@ -161,7 +161,7 @@ export default function PlansPage() {
 
  {/* ── CORE PRICING HERO CARD ── */}
  <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
- <div className="bg-[#1d1d1f] text-white rounded-[36px] p-8 sm:p-12 shadow-2xl relative overflow-hidden ">
+ <div className="bg-[#1d1d1f] text-white rounded-[36px] p-8 sm:p-12 relative overflow-hidden ">
  <div className="absolute top-0 right-0 w-96 h-96 bg-[#0071e3]/20 rounded-full blur-3xl pointer-events-none" />
 
  <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8 pb-8 ">
@@ -223,7 +223,7 @@ export default function PlansPage() {
 
  <Link
  href={'/shop-owner/profile' as any}
- className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-3.5 rounded-full text-sm font-semibold bg-[#0071e3] text-white hover:bg-[#0077ed] shadow-lg hover:shadow-xl shrink-0"
+ className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-3.5 rounded-full text-sm font-semibold bg-[#0071e3] text-white hover:bg-[#0077ed] shrink-0"
  >
  Start Free
  <ArrowRight className="w-4 h-4 ml-2" />
@@ -252,7 +252,7 @@ export default function PlansPage() {
  return (
  <div
  key={idx}
- className="bg-white p-6 sm:p-7 rounded-[28px] .06] shadow-sm hover:shadow-md -shadow"
+ className="bg-white p-6 sm:p-7 rounded-[28px]"
  >
  <div className="w-10 h-10 rounded-2xl bg-[#0071e3]/10 text-[#0071e3] flex items-center justify-center mb-4">
  <Icon className="w-5 h-5" />
@@ -279,20 +279,18 @@ export default function PlansPage() {
  </p>
  </div>
 
- <div className="bg-white rounded-[32px] .08] shadow-sm overflow-hidden">
- <div className="grid grid-cols-[1.2fr_1fr_1fr] p-5 sm:p-6 bg-[#f5f5f7] .06] text-xs font-semibold text-[#86868b]">
+ <div className="bg-white rounded-[32px] overflow-hidden">
+ <div className="grid grid-cols-[1.2fr_1fr_1fr] p-5 sm:p-6 bg-[#f5f5f7] text-xs font-semibold text-[#86868b]">
  <div>Feature</div>
  <div className="text-[#0071e3]">Hawker (Pay-as-you-grow)</div>
  <div className="text-[#86868b]">Traditional POS / SaaS</div>
  </div>
 
- <div className=" .06] text-xs sm:text-sm">
+ <div className=" text-xs sm:text-sm">
  {comparisonRows.map((row, idx) => (
  <div
  key={idx}
- className={`grid grid-cols-[1.2fr_1fr_1fr] p-4 sm:p-5 items-center ${
- row.highlight ? 'bg-[#0071e3]/[0.02]' : 'hover:bg-black/[0.01]'
- }`}
+ className={`grid grid-cols-[1.2fr_1fr_1fr] p-4 sm:p-5 items-center ${ row.highlight ? 'bg-[#0071e3]/[0.02]' : 'hover:bg-black/[0.01]' }`}
  >
  <div className="font-medium text-[#1d1d1f] pr-3">{row.feature}</div>
  <div className="font-semibold text-[#0071e3] flex items-center gap-2 pr-3">
@@ -324,7 +322,7 @@ export default function PlansPage() {
  {faqs.map((faq, idx) => (
  <div
  key={idx}
- className="bg-white p-6 rounded-2xl .06] shadow-sm space-y-2"
+ className="bg-white p-6 rounded-2xl space-y-2"
  >
  <h3 className="text-base font-semibold text-[#1d1d1f] flex items-start gap-2.5">
  <span className="text-[#0071e3] font-bold">Q:</span>
@@ -340,7 +338,7 @@ export default function PlansPage() {
 
  {/* ── BOTTOM CTA BANNER ── */}
  <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-24 text-center">
- <div className="bg-[#1d1d1f] text-white rounded-[32px] p-8 sm:p-14 shadow-xl relative overflow-hidden">
+ <div className="bg-[#1d1d1f] text-white rounded-[32px] p-8 sm:p-14 relative overflow-hidden">
  <h2 className="text-3xl sm:text-5xl font-semibold tracking-tight text-white leading-tight">
  Ready to bring your food hall into the future?
  </h2>
@@ -351,7 +349,7 @@ export default function PlansPage() {
  <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
  <Link
  href={'/shop-owner/profile' as any}
- className="w-full sm:w-auto px-8 py-3.5 rounded-full text-sm font-semibold bg-[#0071e3] text-white hover:bg-[#0077ed] shadow-lg"
+ className="w-full sm:w-auto px-8 py-3.5 rounded-full text-sm font-semibold bg-[#0071e3] text-white hover:bg-[#0077ed] "
  >
  Get Started for Free
  </Link>

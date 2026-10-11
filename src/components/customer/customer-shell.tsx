@@ -14,40 +14,40 @@ import { useState, useEffect } from 'react';
 
 
 function CustomerShellContent({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const centreParam = searchParams.get('centre') || searchParams.get('slug');
-  const isHomePage = pathname === '/stall';
-  const [session, setSession] = useState<CurrentTableSession | null>(null);
+ const pathname = usePathname();
+ const searchParams = useSearchParams();
+ const centreParam = searchParams.get('centre') || searchParams.get('slug');
+ const isHomePage = pathname === '/stall';
+ const [session, setSession] = useState<CurrentTableSession | null>(null);
 
-  useEffect(() => {
+ useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setSession(getStoredTableSession());    const handleStorageChange = () => setSession(getStoredTableSession());
-    window.addEventListener('storage', handleStorageChange);
-    window.addEventListener('hawker-session-changed', handleStorageChange);
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      window.removeEventListener('hawker-session-changed', handleStorageChange);
+ setSession(getStoredTableSession()); const handleStorageChange = () => setSession(getStoredTableSession());
+ window.addEventListener('storage', handleStorageChange);
+ window.addEventListener('hawker-session-changed', handleStorageChange);
+ return () => {
+ window.removeEventListener('storage', handleStorageChange);
+ window.removeEventListener('hawker-session-changed', handleStorageChange);
     };
   }, [pathname]);
 
-  const activeCentreSlug = centreParam || session?.centreSlug;
-  const suffix = activeCentreSlug ? `?centre=${encodeURIComponent(activeCentreSlug)}` : '';
+ const activeCentreSlug = centreParam || session?.centreSlug;
+ const suffix = activeCentreSlug ? `?centre=${encodeURIComponent(activeCentreSlug)}` : '';
 
-  const customerNavItems = [
+ const customerNavItems = [
     { href: `/stall${suffix}`, label: 'Stall', icon: Store },
     { href: `/menu${suffix}`, label: 'Menu', icon: UtensilsCrossed },
     { href: '/orders', label: 'Orders', icon: ClipboardList },
     { href: '/profile', label: 'Profile', icon: UserRound },
   ];
 
-  return (
+ return (
     <div className={`relative ${isHomePage ? 'h-screen w-screen overflow-hidden' : 'min-h-screen'} bg-[#f5f5f7] text-black`}>
       <main className={isHomePage ? 'h-full w-full overflow-hidden' : 'pb-24'}>{children}</main>
       <ClientBottomNav
-        items={customerNavItems}
-        theme="customer"
-        ariaLabel="Customer Navigation"
+ items={customerNavItems}
+ theme="customer"
+ ariaLabel="Customer Navigation"
       />
 
     </div>
@@ -55,7 +55,7 @@ function CustomerShellContent({ children }: { children: React.ReactNode }) {
 }
 
 export function CustomerShell({ children }: { children: React.ReactNode }) {
-  return (
+ return (
     <Suspense fallback={<ComponentLoader text="Loading" />}>
       <CustomerShellContent>{children}</CustomerShellContent>
     </Suspense>

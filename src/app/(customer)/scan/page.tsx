@@ -9,95 +9,95 @@ import { setCurrentTableSession } from '@/lib/table-session';
 import Link from 'next/link';
 
 export default function CustomerScanPage() {
-  const router = useRouter();
-  const [error, setError] = useState<string | null>(null);
-  const [processing, setProcessing] = useState(false);
-  const [cameraError, setCameraError] = useState(false);
+ const router = useRouter();
+ const [error, setError] = useState<string | null>(null);
+ const [processing, setProcessing] = useState(false);
+ const [cameraError, setCameraError] = useState(false);
 
-  const handleQrData = useCallback(async (text: string) => {
-    if (processing) return;
-    setProcessing(true);
-    setError(null);
+ const handleQrData = useCallback(async (text: string) => {
+ if (processing) return;
+ setProcessing(true);
+ setError(null);
 
-    try {
+ try {
       // Validate that it's a URL
-      let url: URL;
-      try {
-        url = new URL(text);
+ let url: URL;
+ try {
+ url = new URL(text);
       } catch {
-        throw new Error('Invalid QR code format. Not a recognized Hawker QR code.');
+ throw new Error('Invalid QR code format. Not a recognized Hawker QR code.');
       }
 
-      const tableId = url.searchParams.get('table_id');
-      const outletId = url.searchParams.get('outlet_id'); // This is the restaurant_id
+ const tableId = url.searchParams.get('table_id');
+ const outletId = url.searchParams.get('outlet_id'); // This is the restaurant_id
 
-      if (!tableId || !outletId) {
-        throw new Error('This QR code does not contain valid table information.');
+ if (!tableId || !outletId) {
+ throw new Error('This QR code does not contain valid table information.');
       }
 
       // Call our backend to create/fetch a table session and get the centre slug
-      const res = await fetch('/api/table-sessions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ tableId }),
+ const res = await fetch('/api/table-sessions', {
+ method: 'POST',
+ headers: { 'Content-Type': 'application/json' },
+ body: JSON.stringify({ tableId }),
       });
 
-      if (!res.ok) {
-        const errPayload = await res.json().catch(() => ({}));
-        throw new Error(errPayload.error || 'Failed to validate table.');
+ if (!res.ok) {
+ const errPayload = await res.json().catch(() => ({}));
+ throw new Error(errPayload.error || 'Failed to validate table.');
       }
 
-      const { table } = await res.json();
+ const { table } = await res.json();
       
-      const centre = Array.isArray(table.restaurants) ? table.restaurants[0] : table.restaurants;
+ const centre = Array.isArray(table.restaurants) ? table.restaurants[0] : table.restaurants;
       
-      if (!centre || !centre.slug) {
-         throw new Error('Associated hawker centre not found.');
+ if (!centre || !centre.slug) {
+ throw new Error('Associated hawker centre not found.');
       }
 
       // Set the session globally
-      setCurrentTableSession(table.table_number, table.id, {
-        centreId: centre.id,
-        centreSlug: centre.slug,
-        centreName: centre.name,
+ setCurrentTableSession(table.table_number, table.id, {
+ centreId: centre.id,
+ centreSlug: centre.slug,
+ centreName: centre.name,
       });
 
       // Redirect to the centre ordering interface
-      router.replace(`/${centre.slug}`);
+ router.replace(`/${centre.slug}`);
     } catch (err: any) {
-      setError(err.message || 'Could not process QR code.');
-      setProcessing(false);
+ setError(err.message || 'Could not process QR code.');
+ setProcessing(false);
     }
   }, [processing, router]);
 
   // We handle incoming URL parameters if they are already present
   // e.g. /scan?outlet_id=xxx&table_id=yyy (If camera app decoded the standard URL)
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const outletId = params.get('outlet_id');
-    const tableId = params.get('table_id');
+ useEffect(() => {
+ const params = new URLSearchParams(window.location.search);
+ const outletId = params.get('outlet_id');
+ const tableId = params.get('table_id');
     
-    if (outletId && tableId && !processing) {
+ if (outletId && tableId && !processing) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
-      handleQrData(window.location.href);
+ handleQrData(window.location.href);
     }
   }, [handleQrData, processing]);
 
-  const handleCameraError = (err: unknown) => {
-    console.error('Camera error:', err);
-    setCameraError(true);
+ const handleCameraError = (err: unknown) => {
+ console.error('Camera error:', err);
+ setCameraError(true);
   };
 
-  if (processing) {
-    return <PageLoader text="Connecting to table" />;
+ if (processing) {
+ return <PageLoader text="Connecting to table" />;
   }
 
-  return (
+ return (
     <main className="min-h-screen bg-black text-white flex flex-col">
       <div className="flex items-center justify-between p-4 z-10 relative">
         <Link 
-          href="/stall" 
-          className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors"
+ href="/stall" 
+ className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors"
         >
           <ArrowLeft className="w-5 h-5 text-white" />
         </Link>
@@ -107,7 +107,7 @@ export default function CustomerScanPage() {
 
       <div className="flex-1 flex flex-col items-center justify-center relative">
         {error && (
-          <div className="absolute top-4 left-4 right-4 z-20 bg-red-500 text-white p-3 rounded-2xl text-xs font-semibold shadow-lg flex items-center gap-2">
+          <div className="absolute top-4 left-4 right-4 z-20 bg-red-500 text-white p-3 rounded-2xl text-xs font-semibold flex items-center gap-2">
             <AlertCircle className="w-4 h-4 shrink-0" />
             <p className="flex-1">{error}</p>
             <button onClick={() => setError(null)} className="p-1">
@@ -124,8 +124,8 @@ export default function CustomerScanPage() {
               We could not access your camera. Please check your browser permissions or manually enter your table number at the food court page.
             </p>
             <Link 
-              href="/stall" 
-              className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-white px-6 text-sm font-semibold text-black hover:bg-neutral-200"
+ href="/stall" 
+ className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-white px-6 text-sm font-semibold text-black hover:bg-neutral-200"
             >
               <Store className="w-4 h-4" /> Go to Centres
             </Link>
@@ -133,19 +133,19 @@ export default function CustomerScanPage() {
         ) : (
           <div className="w-full max-w-md aspect-[3/4] sm:aspect-square relative overflow-hidden bg-black flex items-center justify-center">
             <Scanner
-              onScan={(result) => {
-                if (result && result.length > 0) {
-                  handleQrData(result[0].rawValue);
+ onScan={(result) => {
+ if (result && result.length > 0) {
+ handleQrData(result[0].rawValue);
                 }
               }}
-              onError={handleCameraError}
-              constraints={{ facingMode: 'environment' }}
-              components={{
-                finder: false,
+ onError={handleCameraError}
+ constraints={{ facingMode: 'environment' }}
+ components={{
+ finder: false,
               }}
-              styles={{
-                container: { width: '100%', height: '100%' },
-                video: { objectFit: 'cover' },
+ styles={{
+ container: { width: '100%', height: '100%' },
+ video: { objectFit: 'cover' },
               }}
             />
             
@@ -161,7 +161,7 @@ export default function CustomerScanPage() {
                   <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-br-3xl" />
                   
                   {/* Scanning Animation Line */}
-                  <div className="absolute top-0 left-0 right-0 h-0.5 bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.8)] animate-[scan_2s_ease-in-out_infinite]" />
+                  <div className="absolute top-0 left-0 right-0 h-0.5 bg-emerald-400 animate-[scan_2s_ease-in-out_infinite]" />
                 </div>
                 <div className="w-12 sm:w-16 bg-black/40" />
               </div>
@@ -178,8 +178,8 @@ export default function CustomerScanPage() {
           </p>
           
           <Link 
-             href="/stall" 
-             className="mt-6 inline-flex text-xs font-semibold text-white/70 hover:text-white"
+ href="/stall" 
+ className="mt-6 inline-flex text-xs font-semibold text-white/70 hover:text-white"
           >
             Enter table manually instead
           </Link>
@@ -188,8 +188,8 @@ export default function CustomerScanPage() {
 
       <style jsx global>{`
         @keyframes scan {
-          0%, 100% { top: 0%; }
-          50% { top: 100%; }
+ 0%, 100% { top: 0%; }
+ 50% { top: 100%; }
         }
       `}</style>
     </main>

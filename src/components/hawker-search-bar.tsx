@@ -37,7 +37,7 @@ export function HawkerSearchBar({
  const hasExtraRight = Boolean(value || rightActions);
 
  const content = (
- <div className="relative flex items-center h-11 w-full rounded-full bg-white/95 backdrop-blur-xl shadow-xs ">
+ <div className="relative flex items-center h-11 w-full rounded-full bg-white/95 backdrop-blur-xl ">
  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#8e8e93] pointer-events-none shrink-0" />
  <input
  type="text"
@@ -46,9 +46,7 @@ export function HawkerSearchBar({
  aria-label={placeholder}
  placeholder={placeholder}
  autoFocus={autoFocus}
- className={`w-full h-full pl-10 ${
- hasExtraRight ? 'pr-20' : 'pr-4'
- } bg-transparent text-sm text-[#1d1d1f] placeholder-[#8e8e93] outline-none font-normal`}
+ className={`w-full h-full pl-10 ${ hasExtraRight ? 'pr-20' : 'pr-4' } bg-transparent text-sm text-[#1d1d1f] placeholder-[#8e8e93] font-normal`}
  />
  <div className="absolute right-2 flex items-center gap-1">
  {value ? (

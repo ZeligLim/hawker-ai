@@ -169,9 +169,9 @@ export async function GET(request: NextRequest) {
  name: restaurant?.name ?? 'Unknown shop',
  slug: restaurant?.slug ?? null,
  address: restaurant?.address ?? null,
-      phone: restaurant?.phone ?? null,
-      lat: restaurant?.lat ?? 0,
-      lng: restaurant?.lng ?? 0,
+ phone: restaurant?.phone ?? null,
+ lat: restaurant?.lat ?? 0,
+ lng: restaurant?.lng ?? 0,
  createdAt: restaurant?.created_at ?? null,
  role: membership.role,
  isActive,
@@ -251,8 +251,8 @@ export async function POST(request: NextRequest) {
  p_address: address,
  p_lat: typeof body?.lat === 'number' ? body.lat : 0,
  p_lng: typeof body?.lng === 'number' ? body.lng : 0,
-        p_phone: typeof body?.phone === 'string' ? body.phone.trim() : null,
-        p_booth_count: boothCount,
+ p_phone: typeof body?.phone === 'string' ? body.phone.trim() : null,
+ p_booth_count: boothCount,
  p_status: shopStatus,
  });
 
@@ -281,9 +281,9 @@ export async function POST(request: NextRequest) {
  name,
  slug,
  address,
-      phone: typeof body?.phone === 'string' ? body.phone.trim() : null,
-      lat: typeof body?.lat === 'number' ? body.lat : 0,
-      lng: typeof body?.lng === 'number' ? body.lng : 0,
+ phone: typeof body?.phone === 'string' ? body.phone.trim() : null,
+ lat: typeof body?.lat === 'number' ? body.lat : 0,
+ lng: typeof body?.lng === 'number' ? body.lng : 0,
  })
  .select('id, name, slug, address, phone, lat, lng, created_at')
  .single();

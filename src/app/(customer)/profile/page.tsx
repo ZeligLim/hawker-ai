@@ -182,7 +182,7 @@ setEditName(authProfile.displayName);
  return [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 3);
  }, [orders]);
 
-  const [showAllOrders, setShowAllOrders] = useState(false);
+ const [showAllOrders, setShowAllOrders] = useState(false);
 
  const orderLinks = useMemo(
  () =>
@@ -218,14 +218,14 @@ setEditName(authProfile.displayName);
  return (
  <main className="min-h-screen bg-[#f5f5f7] px-4 pb-32 pt-5 text-black sm:px-6">
  <div className="mx-auto w-full max-w-md sm:max-w-xl md:max-w-2xl">
- <section className="rounded-3xl bg-white p-6 shadow-sm">
+ <section className="rounded-3xl bg-white p-6 ">
  <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Sign in</h1>
  <p className="mt-2 text-sm text-neutral-500">
  Save your favourite hawker picks and revisit your recent orders in one place.
  </p>
  <Link
  href="/auth?redirect=/profile"
- className="mt-6 inline-flex h-11 w-full items-center justify-center rounded-full bg-black px-5 text-sm font-semibold text-white shadow-xs hover:bg-neutral-800 "
+ className="mt-6 inline-flex h-11 w-full items-center justify-center rounded-full bg-black px-5 text-sm font-semibold text-white hover:bg-neutral-800 "
  >
  Sign in
  </Link>
@@ -239,24 +239,24 @@ setEditName(authProfile.displayName);
  <main className="min-h-screen bg-[#f5f5f7] px-4 pb-32 pt-5 text-black sm:px-6">
  <div className="mx-auto w-full max-w-md sm:max-w-xl md:max-w-2xl">
  {!signedIn ? (
- <section className="rounded-3xl bg-white p-6 shadow-sm">
+ <section className="rounded-3xl bg-white p-6 ">
  <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Diner Profile</h1>
  <p className="mt-2 text-sm text-neutral-500">
  Sign in with your email or social account to view your past orders, manage preferences, and reorder favourite dishes in one tap.
  </p>
  <Link
  href="/auth?redirect=/profile"
- className="mt-6 inline-flex h-11 w-full items-center justify-center rounded-full bg-black px-5 text-sm font-semibold text-white shadow-xs hover:bg-neutral-800 "
+ className="mt-6 inline-flex h-11 w-full items-center justify-center rounded-full bg-black px-5 text-sm font-semibold text-white hover:bg-neutral-800 "
  >
  Sign In / Sign Up
  </Link>
  </section>
  ) : (
  <>
- <section className="rounded-3xl bg-white p-5 sm:p-6 shadow-sm">
+ <section className="rounded-3xl bg-white p-5 sm:p-6 ">
  <div className="flex items-center justify-between gap-4">
  <div className="flex min-w-0 items-center gap-3.5">
- <div className="flex h-12 w-12 sm:h-14 sm:w-14 shrink-0 items-center justify-center rounded-full bg-black text-base sm:text-lg font-bold text-white shadow-xs">
+ <div className="flex h-12 w-12 sm:h-14 sm:w-14 shrink-0 items-center justify-center rounded-full bg-black text-base sm:text-lg font-bold text-white ">
  {initials}
  </div>
  <div className="min-w-0">
@@ -269,7 +269,7 @@ setEditName(authProfile.displayName);
  <button
  type="button"
  onClick={() => setIsEditing(true)}
- className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-neutral-100 text-black hover:bg-neutral-200 shadow-xs"
+ className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-neutral-100 text-black hover:bg-neutral-200 "
  aria-label="Edit settings"
  >
  <Settings className="h-4 w-4 sm:h-5 sm:w-5" />
@@ -278,7 +278,7 @@ setEditName(authProfile.displayName);
  <button
  type="button"
  onClick={() => setIsSignOutDialogOpen(true)}
- className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-neutral-100 text-black hover:bg-neutral-200 shadow-xs"
+ className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-neutral-100 text-black hover:bg-neutral-200 "
  aria-label="Sign out"
  >
  <LogOut className="h-4 w-4 sm:h-5 sm:w-5" />
@@ -294,7 +294,7 @@ setEditName(authProfile.displayName);
  <input
  value={editName}
  onChange={(e) => setEditName(e.target.value)}
- className="w-full h-11 rounded-full bg-neutral-100 px-4 text-sm outline-none focus:bg-neutral-200 mb-4"
+ className="w-full h-11 rounded-full bg-neutral-100 px-4 text-sm focus:bg-neutral-200 mb-4"
  />
  
  <div className="flex items-center gap-2">
@@ -331,7 +331,7 @@ setEditName(authProfile.displayName);
 
  {isSignOutDialogOpen ? (
  <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 px-4" role="presentation">
- <div role="dialog" aria-modal="true" aria-labelledby="sign-out-title" className="w-full max-w-[360px] rounded-3xl bg-white p-6 shadow-2xl">
+ <div role="dialog" aria-modal="true" aria-labelledby="sign-out-title" className="w-full max-w-[360px] rounded-3xl bg-white p-6 ">
  <h2 id="sign-out-title" className="text-xl font-bold">Sign out?</h2>
  <p className="mt-2 text-sm text-neutral-500">You can sign in again anytime to access your profile.</p>
  <div className="mt-5 flex gap-2">
@@ -357,14 +357,14 @@ setEditName(authProfile.displayName);
  )}
 
  {/* Previous Orders Section: 0 Border, Account-Specific */}
- <section className="mt-6 rounded-3xl bg-white p-5 shadow-sm">
+ <section className="mt-6 rounded-3xl bg-white p-5 ">
  <div className="mb-3 flex items-center justify-between">
  <h2 className="text-base sm:text-lg font-bold text-black">Previous orders</h2>
  <span className="text-xs sm:text-sm font-semibold text-neutral-500">{orders.length} orders</span>
  </div>
 
  {orders.length === 0 ? (
- <div className="rounded-2xl bg-neutral-50 p-6 text-center text-xs sm:text-sm text-neutral-500 shadow-xs">
+ <div className="rounded-2xl bg-neutral-50 p-6 text-center text-xs sm:text-sm text-neutral-500 ">
  No previous orders found for this account.
  </div>
  ) : (
@@ -376,7 +376,7 @@ setEditName(authProfile.displayName);
  <Link
  key={id}
  href={orderHref}
- className="flex items-center justify-between gap-3 rounded-2xl bg-neutral-50 p-4 text-left shadow-xs hover:bg-neutral-100 "
+ className="flex items-center justify-between gap-3 rounded-2xl bg-neutral-50 p-4 text-left hover:bg-neutral-100 "
  >
  <div>
  <p className="text-sm font-bold text-black">{order.dish}</p>
@@ -392,10 +392,10 @@ setEditName(authProfile.displayName);
 
  {/* Eating Pattern */}
  {orders.length > 0 && favoriteDishes.length > 0 && (
- <section className="mt-6 rounded-3xl bg-white p-5 shadow-sm">
+ <section className="mt-6 rounded-3xl bg-white p-5 ">
  <h2 className="text-base sm:text-lg font-bold text-black">Eating pattern</h2>
 
- <div className="mt-3 rounded-2xl bg-neutral-50 p-4 shadow-xs">
+ <div className="mt-3 rounded-2xl bg-neutral-50 p-4 ">
  <p className="text-xs font-semibold text-neutral-500">Most ordered</p>
  <div className="mt-3 flex flex-wrap gap-2">
  {favoriteDishes.map(([dish, count]) => (
