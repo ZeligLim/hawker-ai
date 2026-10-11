@@ -28,8 +28,8 @@ export function LocationAutocomplete({ address, onAddressChange, onLocationSelec
   // Sync prop changes that didn't originate from this component
   useEffect(() => {
     if (address !== localAddress) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-    setLocalAddress(address);    }
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+setLocalAddress(address);    }
   }, [address]);
 
   useEffect(() => {

@@ -69,7 +69,7 @@ export function CentreDinerPage({ centre }: { centre: HawkerCentreSummary }) {
  const [manualTableInput, setManualTableInput] = useState('04');
  const [isTableModalOpen, setIsTableModalOpen] = useState(false);
 
- const { cartItems, setCartItems, addDish: addToCartWithWarning, CartWarningModal } = useCartAdd();
+ const { cartItems, setCartItems, addDish: addToCartWithWarning, cartWarningNode } = useCartAdd();
  const [customizingDish, setCustomizingDish] = useState<FeaturedDish | null>(null);
 
  // Check stored table session
@@ -610,7 +610,7 @@ export function CentreDinerPage({ centre }: { centre: HawkerCentreSummary }) {
  </div>
  </aside>
  )}
- <CartWarningModal />
+ {cartWarningNode}
  </div>
  );
 }

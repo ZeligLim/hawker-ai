@@ -22,7 +22,7 @@ export function FloatingAiWidget() {
  const recognitionRef = useRef<any>(null);
  const holdTimeoutRef = useRef<NodeJS.Timeout | null>(null);
  
- const { addDish, CartWarningModal } = useCartAdd();
+ const { addDish, cartWarningNode } = useCartAdd();
 
  const { messages, sendMessage, status } = useChat({
  transport: new DefaultChatTransport({ api: '/api/ai-chat' }),
@@ -239,7 +239,7 @@ export function FloatingAiWidget() {
  </div>
  )}
  
- <CartWarningModal />
+ {cartWarningNode}
  </>
  );
 }

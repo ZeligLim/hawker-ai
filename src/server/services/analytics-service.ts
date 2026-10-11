@@ -21,22 +21,14 @@ export async function getOwnerAnalytics(client: SupabaseClient<any>, userId: str
   const restaurantIds = authorizedRestaurantMemberships.map((r) => r.restaurant_id).filter(Boolean);
   let shopOutletIds: string[] = [];
 
+  let foodOutlets: Array<{ id: string; name: string }> = [];
   if (restaurantIds.length > 0) {
     const { data: shopOutlets } = await client
       .from('food_outlets')
-      .select('id')
-      .in('restaurant_id', restaurantIds);
-
-    shopOutletIds = shopOutlets?.map((o) => o.id).filter(Boolean) ?? [];
-  }
-
-  let foodOutlets: Array<{ id: string; name: string }> = [];
-  if (shopOutletIds.length > 0) {
-    const { data: outlets } = await client
-      .from('food_outlets')
       .select('id, name')
-      .in('id', shopOutletIds);
-    foodOutlets = outlets ?? [];
+      .in('restaurant_id', restaurantIds);
+      
+    foodOutlets = shopOutlets ?? [];
   }
 
   const effectiveOutletIds = foodOutlets.map((o) => o.id);

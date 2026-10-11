@@ -88,9 +88,8 @@ export default function ProfilePage() {
  
  useEffect(() => {
  if (authProfile?.displayName) {
- // eslint-disable-next-line react-hooks/set-state-in-effect
- // eslint-disable-next-line react-hooks/set-state-in-effect
-      setEditName(authProfile.displayName);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+setEditName(authProfile.displayName);
  }
  }, [authProfile?.displayName]);
  const { name, orders } = profile;

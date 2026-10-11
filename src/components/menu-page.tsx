@@ -61,7 +61,7 @@ function MenuContent() {
  const [searchValue, setSearchValue] = useState('');
  const [items, setItems] = useState<MenuItem[]>([]);
  const [loading, setLoading] = useState(true);
- const { cartItems, setCartItems, addDish, CartWarningModal } = useCartAdd();
+ const { cartItems, setCartItems, addDish, cartWarningNode } = useCartAdd();
  const [customizingItem, setCustomizingItem] = useState<MenuItem | null>(null);
 
  useEffect(() => {
@@ -307,7 +307,7 @@ function MenuContent() {
  </Link>
  </div>
  )}
- <CartWarningModal />
+ {cartWarningNode}
  </main>
  );
 }

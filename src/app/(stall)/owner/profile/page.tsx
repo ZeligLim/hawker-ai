@@ -31,7 +31,7 @@ export default function OwnerProfilePage() {
         const data = await response.json();
         throw new Error(data.error || 'Failed to delete stall');
       }
-      window.location.href = '/profile';
+      window.location.href = window.location.origin + '/profile';
     } catch (e: any) {
       alert(e.message || 'Failed to delete stall');
       setIsDeleting(false);
@@ -51,7 +51,7 @@ export default function OwnerProfilePage() {
         window.localStorage.clear();
         window.sessionStorage.clear();
       }
-      window.location.href = '/';
+      window.location.href = window.location.origin + '/';
     } catch (e: any) {
       alert(e.message || 'Failed to delete account');
       setIsDeleting(false);

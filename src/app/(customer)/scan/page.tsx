@@ -81,7 +81,7 @@ function ScanTableContent() {
  }, 0);
  return () => clearTimeout(timer);
  }
- }, [initialTable, initialCentre]);
+ }, [initialTable, initialCentre, linkTable]);
 
  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
  event.preventDefault();

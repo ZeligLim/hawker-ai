@@ -5,7 +5,12 @@ import { usePathname, useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 import { House, Store, UtensilsCrossed, ClipboardList, UserRound } from 'lucide-react';
 import { ClientBottomNav } from '@/components/shared/client-bottom-nav';
-import { FloatingAiWidget } from '@/components/floating-ai-widget';
+import dynamic from 'next/dynamic';
+
+const FloatingAiWidget = dynamic(
+  () => import('@/components/floating-ai-widget').then(m => m.FloatingAiWidget),
+  { ssr: false }
+);
 import { getStoredTableSession, type CurrentTableSession } from '@/lib/table-session';
 import { useState, useEffect } from 'react';
 

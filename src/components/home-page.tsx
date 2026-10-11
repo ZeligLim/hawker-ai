@@ -297,7 +297,7 @@ export function HomePage() {
                   key={centre.id}
                   href={`/stall?centre=${encodeURIComponent(centre.slug)}` as any}
                   onClick={(e) => handleNavigate(centre, e)}
- className="block w-full rounded-2xl bg-white p-4 text-left shadow-sm hover:bg-neutral-50 "
+ className="block w-full rounded-2xl bg-white p-4 text-left shadow-sm hover:bg-neutral-50 [content-visibility:auto] [contain-intrinsic-size:auto_100px] "
  >
  <div className="flex items-start justify-between gap-3">
  <div className="min-w-0 flex-1">

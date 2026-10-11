@@ -53,7 +53,7 @@ export function HawkerSearch({ initialQuery = 'I want a vegetarian meal under RM
  const [results, setResults] = useState<SearchResult[]>([]);
  const [loading, setLoading] = useState(false);
  const [error, setError] = useState<string | null>(null);
- const { cartItems, setCartItems, addDish, CartWarningModal } = useCartAdd();
+ const { cartItems, setCartItems, addDish, cartWarningNode } = useCartAdd();
  const [checkoutMessage, setCheckoutMessage] = useState<string | null>(null);
 
  const isDark = theme === 'dark';
@@ -317,7 +317,7 @@ export function HawkerSearch({ initialQuery = 'I want a vegetarian meal under RM
  )}
  </div>
  </div>
- <CartWarningModal />
+ {cartWarningNode}
  </div>
  );
 }

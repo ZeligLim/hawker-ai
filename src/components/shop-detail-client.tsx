@@ -21,7 +21,7 @@ export type ShopData = {
 };
 
 export function ShopDetailClient({ shop, slug }: { shop: ShopData; slug: string }) {
- const { cartItems, setCartItems, addDish, CartWarningModal } = useCartAdd();
+ const { cartItems, setCartItems, addDish, cartWarningNode } = useCartAdd();
  const [customizingDish, setCustomizingDish] = useState<ShopData['dishes'][number] | null>(null);
 
  const updateDishQuantity = (dish: ShopData['dishes'][number], delta: number) => {
@@ -181,7 +181,7 @@ export function ShopDetailClient({ shop, slug }: { shop: ShopData; slug: string 
  onConfirm={(selection) => confirmCustomization(customizingDish, selection)}
  />
  ) : null}
- <CartWarningModal />
+ {cartWarningNode}
 
  <Link href="/stall" className="mt-6 inline-flex rounded-full bg-[#111827] px-4 py-2.5 text-sm font-medium text-white hover:bg-black ">
  Back to stalls

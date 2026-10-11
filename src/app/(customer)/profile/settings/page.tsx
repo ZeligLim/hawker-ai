@@ -31,7 +31,7 @@ export default function ProfileSettingsPage() {
         throw new Error(data.error || 'Failed to delete account');
       }
       
-      window.location.href = '/';
+      window.location.href = window.location.origin + '/';
     } catch (e: any) {
       setError(e.message || 'Failed to delete account');
       setIsDeleting(false);

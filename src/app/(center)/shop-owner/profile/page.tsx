@@ -47,7 +47,7 @@ export default function ShopOwnerProfilePage() {
         const data = await response.json();
         throw new Error(data.error || 'Failed to delete shop');
       }
-      window.location.href = '/profile';
+      window.location.href = window.location.origin + '/profile';
     } catch (e: any) {
       alert(e.message || 'Failed to delete shop');
       setIsDeleting(false);
@@ -67,7 +67,7 @@ export default function ShopOwnerProfilePage() {
         window.localStorage.clear();
         window.sessionStorage.clear();
       }
-      window.location.href = '/';
+      window.location.href = window.location.origin + '/';
     } catch (e: any) {
       alert(e.message || 'Failed to delete account');
       setIsDeleting(false);

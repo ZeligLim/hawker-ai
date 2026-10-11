@@ -94,7 +94,7 @@ export function AdminGuard({ children }: { children: React.ReactNode }) {
  <button
  onClick={async () => {
  await signOut();
- window.location.href = '/auth?redirect=/admin';
+ window.location.href = window.location.origin + '/auth?redirect=/admin';
  }}
  className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl bg-[#1d1d1f] py-2.5 text-xs font-semibold text-white shadow-xs hover:bg-black "
  >

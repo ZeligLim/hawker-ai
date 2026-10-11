@@ -37,7 +37,7 @@ function ResultsContent() {
  const [results, setResults] = useState<SearchResult[]>([]);
  const [loading, setLoading] = useState(true);
  const [error, setError] = useState<string | null>(null);
- const { cartItems, setCartItems, addDish, CartWarningModal } = useCartAdd();
+ const { cartItems, setCartItems, addDish, cartWarningNode } = useCartAdd();
  const [checkoutMessage, setCheckoutMessage] = useState<string | null>(null);
 
  const query = searchParams.get('query') ?? searchParams.get('q') ?? '';
@@ -199,7 +199,7 @@ function ResultsContent() {
  )}
  </div>
  </div>
- <CartWarningModal />
+ {cartWarningNode}
  </main>
  );
 }

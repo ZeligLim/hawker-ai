@@ -81,19 +81,20 @@ export default function OrdersPage() {
     const active = getActiveOrder(getCurrentTableSession().tableId ?? null);
     if (active) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
-      setPlacedReceipt(active);
+setPlacedReceipt(active);
     }
   }, []);
 
   useEffect(() => {
     if (cartItems.length > 0 && checkoutState === "success") {
       // eslint-disable-next-line react-hooks/set-state-in-effect
-      setCheckoutState("idle");
+setCheckoutState("idle");
     }
   }, [cartItems.length, checkoutState]);
   const [feeConfig, setFeeConfig] = useState<any>(undefined);
   const [isFeeConfigLoading, setIsFeeConfigLoading] = useState(true);
 
+  const firstStallId = cartItems.length > 0 ? cartItems[0].stallId : null;
   useEffect(() => {
     let active = true;
     async function fetchFeeConfig() {
@@ -130,7 +131,7 @@ export default function OrdersPage() {
     return () => {
       active = false;
     };
-  }, [cartItems.length > 0 ? cartItems[0].stallId : null]);
+  }, [firstStallId, cartItems]);
 
   const summary = useMemo(
     () => buildCartSummary(cartItems, feeConfig),
@@ -214,7 +215,6 @@ export default function OrdersPage() {
     } catch (err: any) {
       console.error(err);
       setCheckoutError(err.message || "Payment service unavailable");
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setCheckoutState("idle");
     }
   };
@@ -224,7 +224,6 @@ export default function OrdersPage() {
       setCheckoutState("submitting");
       if (!supabase) {
         setCheckoutError("Supabase is not configured.");
-        // eslint-disable-next-line react-hooks/set-state-in-effect
       setCheckoutState("idle");
         return;
       }
@@ -266,7 +265,6 @@ export default function OrdersPage() {
         setCheckoutError(
           err.error || "Failed to submit order. Please check with counter.",
         );
-        // eslint-disable-next-line react-hooks/set-state-in-effect
       setCheckoutState("idle");
         return;
       }
@@ -528,7 +526,6 @@ export default function OrdersPage() {
                   onClearActive={() => {
                     clearActiveOrder();
                     setPlacedReceipt(null);
-                    // eslint-disable-next-line react-hooks/set-state-in-effect
       setCheckoutState("idle");
                   }}
                 />

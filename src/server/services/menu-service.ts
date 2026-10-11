@@ -1,38 +1,31 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 export async function getAuthorizedOutletIds(client: SupabaseClient<any>, userId: string, requestedOutletId?: string | null): Promise<string[]> {
-  // 1. Get booths from direct merchant memberships
-  const { data: merchantMemberships, error: merchantError } = await client
-    .from('merchant_memberships')
-    .select('food_outlet_id')
-    .eq('user_id', userId);
+  // Run independent queries in parallel to avoid waterfall
+  const [merchantRes, restaurantRes] = await Promise.all([
+    client.from('merchant_memberships').select('food_outlet_id').eq('user_id', userId),
+    client.from('restaurant_memberships').select('restaurant_id').eq('user_id', userId)
+  ]);
 
-  if (merchantError) {
-    throw new Error(merchantError.message);
+  if (merchantRes.error) {
+    throw new Error(merchantRes.error.message);
   }
 
-  const directOutletIds = merchantMemberships?.map((row) => row.food_outlet_id).filter(Boolean) ?? [];
-
-  // 2. Also check if user is a shop owner whose restaurants have booths
+  const directOutletIds = merchantRes.data?.map((row) => row.food_outlet_id).filter(Boolean) ?? [];
   let shopOutletIds: string[] = [];
-  try {
-    const { data: restaurantMemberships } = await client
-      .from('restaurant_memberships')
-      .select('restaurant_id')
-      .eq('user_id', userId);
 
-    const restaurantIds = restaurantMemberships?.map((row) => row.restaurant_id).filter(Boolean) ?? [];
-
-    if (restaurantIds.length > 0) {
+  const restaurantIds = restaurantRes.data?.map((row) => row.restaurant_id).filter(Boolean) ?? [];
+  if (restaurantIds.length > 0) {
+    try {
       const { data: shopOutlets } = await client
         .from('food_outlets')
         .select('id')
         .in('restaurant_id', restaurantIds);
 
       shopOutletIds = shopOutlets?.map((row) => row.id).filter(Boolean) ?? [];
+    } catch {
+      // ignore
     }
-  } catch {
-    // ignore
   }
 
   let allOutletIds = Array.from(new Set([...directOutletIds, ...shopOutletIds]));
