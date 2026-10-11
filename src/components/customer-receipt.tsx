@@ -149,7 +149,7 @@ export function CustomerReceipt({
       )}
 
       {/* Header */}
-      <div className="p-6 pb-4 bg-neutral-50 border-b border-neutral-100">
+      <div className="p-6 pb-4 bg-neutral-50">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             {onBack ? (
@@ -254,7 +254,7 @@ export function CustomerReceipt({
             </div>
             
             {isCancellable && (
-               <div className="pt-4 border-t border-neutral-200 mt-2">
+               <div className="pt-4 mt-2">
                  <button
                    onClick={handleCancelOrder}
                    disabled={cancelling}

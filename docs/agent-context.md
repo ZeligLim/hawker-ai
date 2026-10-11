@@ -59,7 +59,6 @@
 - **Render Optmizations**: Removed inline React Component declarations from hook return values (`useCartAdd`) to stop child re-mount thrashing.
 - **Linter Safety**: Stabilized missing `react-hooks/exhaustive-deps` (stale closures) explicitly across `scan/page.tsx`, `orders/page.tsx` with clean `React.useCallback` wrapping.
 
-
 ## Phase 10: AI Removal, Loading States & Table QR Generation
 - Wiped out legacy AI Menu Scanner and AI features across the DB schemas, API routes, and components.
 - Standardised UI Loading states (`PageLoader`, `ComponentLoader`, `ButtonLoader`, `SkeletonLoader`) replacing custom inconsistent spinners globally.
@@ -67,3 +66,10 @@
 - Added QR code generation (`qrcode.react`) and Print/Save functionality for Centre Owners.
 - Resurrected the `/(customer)/scan` route using `@yudiel/react-qr-scanner`, parsing `outlet_id` and `table_id`, creating a `table_session`, and pushing the user seamlessly to the menu ordering screen.
 
+## Phase 11: Simplified Order Management and Cancellation Workflow
+- Removed all obsolete payment integrations, checkouts, and backend gateways for V1.
+- Restructured `merchant_orders` and `orders` to follow strict standard statuses (PENDING -> CONFIRMED -> PREPARING -> READY -> COMPLETED).
+- Established a `CANCELLATION_REQUESTED` and `CANCELLED` workflow with backend validations.
+- Enabled stall owners to directly Accept or Reject a customer's cancellation request, gracefully reverting to the order's `previous_status` upon rejection.
+- Executed strict compliance sweep across UI guidelines (removing borders, hover boundaries, standardizing heights).
+- Passed final unit testing, build (`next build`), and typechecks.

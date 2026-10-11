@@ -264,7 +264,7 @@ export default function OwnerOrdersPage() {
  className={`flex flex-col justify-between rounded-[26px] bg-white p-5 shadow-[0_14px_30px_rgba(15,23,42,0.04)] ${isPendingCancel ? 'ring-2 ring-rose-500' : ''}`}
  >
  {/* Ticket Header: Table & Time */}
- <div className="flex items-start justify-between gap-3 border-b border-neutral-100 pb-3.5">
+ <div className="flex items-start justify-between gap-3 pb-3.5">
  <div>
  <div className="flex items-center gap-2">
  <span className="text-base font-bold tracking-tight text-[#1d1d1f]">
@@ -345,7 +345,7 @@ export default function OwnerOrdersPage() {
  </div>
 
  {/* Subtotal & Actions */}
- <div className="mt-4 pt-3.5 border-t border-neutral-100 flex flex-col gap-3">
+ <div className="mt-4 pt-3.5 flex flex-col gap-3">
  <div className="flex justify-between items-center min-w-0">
  <p className="text-xs font-semibold text-[#86868b] truncate">
  Stall subtotal
