@@ -1,4 +1,5 @@
 import type { SupabaseClient, User } from '@supabase/supabase-js';
+import { getStallRoute } from '@/lib/stall-route';
 
 /**
  * Sanitizes a redirect path to ensure it is a safe, internal, relative URL.
@@ -60,20 +61,20 @@ export function clearAuthRedirect(): void {
  * stored mode (shop owner, booth owner, or customer).
  */
 export function resolveDefaultAppRoute(): string {
- if (typeof window === 'undefined') return '/stall';
+ if (typeof window === 'undefined') return '/';
 
  try {
  const isShopOwner = window.localStorage.getItem('hawker-shop-owner-mode') === 'true';
  if (isShopOwner) return '/shop-owner/booths';
 
  const userMode = window.localStorage.getItem('hawker-user-mode');
- if (userMode === 'owner') return '/owner';
+ if (userMode === 'owner') return window.localStorage.getItem('hawker-stall-route') || '/';
   } catch {
     // ignore
   }
 
   // Default for customer experience
- return '/stall';
+ return '/';
 }
 
 /**
@@ -168,7 +169,7 @@ export async function resolveUserDestination(
       // Check merchant (booth) memberships
  const { data: merchantMemberships, error: merchErr } = await client
         .from('merchant_memberships')
-        .select('food_outlet_id')
+        .select('food_outlet_id, food_outlets(name)')
         .eq('user_id', user.id)
         .limit(1);
 
@@ -176,7 +177,17 @@ export async function resolveUserDestination(
  if (typeof window !== 'undefined') {
  window.localStorage.setItem('hawker-user-mode', 'owner');
         }
- return '/owner';
+ const membership = merchantMemberships[0] as {
+ food_outlet_id: string;
+ food_outlets?: { name?: string } | Array<{ name?: string }> | null;
+ };
+ const outlet = Array.isArray(membership.food_outlets)
+ ? membership.food_outlets[0]
+ : membership.food_outlets;
+ return getStallRoute({
+ id: membership.food_outlet_id,
+ name: outlet?.name || 'stall',
+ }, 'orders');
       }
     } catch {
       // fallback to resolveDefaultAppRoute

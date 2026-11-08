@@ -17,26 +17,7 @@ export async function createOrder(client: SupabaseClient<any>, input: any) {
   }
  const dishMap = new Map(dishes.map((d: any) => [d.id, d]));
 
-  // 2. Fetch fee settings for the outlets
- const stallIds = Array.from(new Set(dishes.map((d: any) => d.food_outlet_id)));
- const { data: outlets, error: outletsError } = await client
-    .from('food_outlets')
-    .select('id, fee_payer, platform_fee_fixed, platform_fee_percent, restaurant_id, restaurants(fee_payer, platform_fee_fixed, platform_fee_percent)')
-    .in('id', stallIds);
-
- if (outletsError || !outlets || outlets.length === 0) {
- throw new Error('Failed to fetch outlet monetization settings');
-  }
-
- const outletSettings = new Map(outlets.map((o: any) => {
- const rest = Array.isArray(o.restaurants) ? o.restaurants[0] : o.restaurants;
- return [o.id, {
- feePayer: (rest?.fee_payer ?? o.fee_payer ?? 'CUSTOMER') as 'CUSTOMER' | 'MERCHANT',
- feeFixedSen: Math.round(Number(rest?.platform_fee_fixed ?? o.platform_fee_fixed ?? 0.50) * 100),
- feePercent: Number(rest?.platform_fee_percent ?? o.platform_fee_percent ?? 0.0000)
-    }];
-  }));
-
+  // Level 1 accepts orders for payment at the counter, so no online-payment fee is applied.
  let totalOrderSubtotalSen = 0;
  const merchantGroups = new Map<string, { stallId: string, subtotalSen: number, items: any[] }>();
 
@@ -100,27 +81,10 @@ export async function createOrder(client: SupabaseClient<any>, input: any) {
  const validatedRpcItems: any[] = [];
 
  for (const group of merchantGroups.values()) {
- const settings = outletSettings.get(group.stallId);
- if (!settings) throw new Error(`Missing fee settings for stall ${group.stallId}`);
+ finalTotalSen += group.subtotalSen;
+ finalMerchantPayoutTotalSen += group.subtotalSen;
 
- const platformFeeSen = settings.feeFixedSen + Math.round(group.subtotalSen * settings.feePercent);
-    
- let totalSen = 0;
- let payoutSen = 0;
-
- if (settings.feePayer === 'CUSTOMER') {
- totalSen = group.subtotalSen + platformFeeSen;
- payoutSen = group.subtotalSen;
-    } else {
- totalSen = group.subtotalSen;
- payoutSen = Math.max(0, group.subtotalSen - platformFeeSen);
-    }
-
- finalTotalSen += totalSen;
- finalMerchantPayoutTotalSen += payoutSen;
- totalServiceFeeSen += platformFeeSen;
-
- merchantPayouts.set(group.stallId, payoutSen);
+ merchantPayouts.set(group.stallId, group.subtotalSen);
     
  for (const i of group.items) {
  validatedRpcItems.push(i);
@@ -236,6 +200,7 @@ export async function getOrderReceipt(client: SupabaseClient<any>, orderId: stri
  service_fee,
  total,
  payment_status,
+ status,
  merchant_orders (
  id,
  food_outlet_id,
@@ -289,6 +254,7 @@ export async function getOrderReceipt(client: SupabaseClient<any>, orderId: stri
  subtotal: order.subtotal,
  serviceFee: order.service_fee,
  total: order.total,
+ paymentStatus: order.payment_status,
  status: order.status,
  refundAmount: 0,
  items

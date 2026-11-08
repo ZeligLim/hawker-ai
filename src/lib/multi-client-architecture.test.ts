@@ -81,14 +81,15 @@ test('1. Client Path Resolution: identifies the correct client experience', () =
  assert.equal(PermissionEngine.getClientForPath('/shop/stall-1'), 'customer');
 
   // Hawker Stall Worker App
- assert.equal(PermissionEngine.getClientForPath('/owner'), 'stall');
- assert.equal(PermissionEngine.getClientForPath('/owner/orders'), 'stall');
- assert.equal(PermissionEngine.getClientForPath('/owner/menu'), 'stall');
+ assert.equal(PermissionEngine.getClientForPath('/ah-huat-curry-mee-1234/owner'), 'stall');
+ assert.equal(PermissionEngine.getClientForPath('/ah-huat-curry-mee-1234/owner/orders'), 'stall');
+ assert.equal(PermissionEngine.getClientForPath('/ah-huat-curry-mee-1234/owner/menu'), 'stall');
 
   // Shop Owner App
  assert.equal(PermissionEngine.getClientForPath('/shop-owner'), 'owner');
  assert.equal(PermissionEngine.getClientForPath('/shop-owner/booths'), 'owner');
  assert.equal(PermissionEngine.getClientForPath('/shop-owner/analytics'), 'owner');
+ assert.equal(PermissionEngine.getClientForPath('/hawker/lot-10-hutong/analytics'), 'owner');
 
   // SaaS Superadmin App
  assert.equal(PermissionEngine.getClientForPath('/admin'), 'admin');
@@ -102,7 +103,7 @@ test('2. Customer Client Boundaries: unauthenticated or diner access', () => {
 
   // Diners CANNOT access Stall App
  assert.equal(PermissionEngine.canAccessStall(mockDinerAuth), false);
- const dinerToStall = PermissionEngine.isRouteAllowed('/owner/orders', mockDinerAuth);
+ const dinerToStall = PermissionEngine.isRouteAllowed('/ah-huat-curry-mee-1234/owner/orders', mockDinerAuth);
  assert.equal(dinerToStall.allowed, false);
  assert.equal(dinerToStall.redirectUrl, '/profile');
 
@@ -130,6 +131,8 @@ test('3. Stall Worker Isolation: worker can manage own stall, but NOT other stal
 
  const workerToAnalytics = PermissionEngine.isRouteAllowed('/shop-owner/analytics', mockStallWorkerAAuth);
  assert.equal(workerToAnalytics.allowed, false);
+ const workerToHawkerAnalytics = PermissionEngine.isRouteAllowed('/hawker/centre-lot10/analytics', mockStallWorkerAAuth);
+ assert.equal(workerToHawkerAnalytics.allowed, false);
 });
 
 test('4. Shop Owner Isolation: owner can manage own venue, but NOT another venue', () => {
@@ -137,6 +140,8 @@ test('4. Shop Owner Isolation: owner can manage own venue, but NOT another venue
  assert.equal(PermissionEngine.canAccessOwner(mockShopOwnerAuth, 'centre-lot10'), true);
  assert.equal(PermissionEngine.canViewShopAnalytics(mockShopOwnerAuth, 'centre-lot10'), true);
  assert.equal(PermissionEngine.canManageShopSettings(mockShopOwnerAuth, 'centre-lot10'), true);
+ const ownerToHawkerAnalytics = PermissionEngine.isRouteAllowed('/hawker/centre-lot10/analytics', mockShopOwnerAuth);
+ assert.equal(ownerToHawkerAnalytics.allowed, true);
 
   // Cross-Shop Isolation: Owner 1 CANNOT manage Shop 2!
  assert.equal(PermissionEngine.canAccessOwner(mockShopOwnerAuth, 'centre-amoy-street'), false);
@@ -145,9 +150,9 @@ test('4. Shop Owner Isolation: owner can manage own venue, but NOT another venue
 });
 
 test('5. Unauthenticated Redirection: protects stall and owner portals with return redirect', () => {
- const stallAuthCheck = PermissionEngine.isRouteAllowed('/owner/orders', mockUnauthenticated);
+ const stallAuthCheck = PermissionEngine.isRouteAllowed('/ah-huat-curry-mee-1234/owner/orders', mockUnauthenticated);
  assert.equal(stallAuthCheck.allowed, false);
- assert.equal(stallAuthCheck.redirectUrl, '/auth?redirect=%2Fowner%2Forders');
+ assert.equal(stallAuthCheck.redirectUrl, '/auth?redirect=%2Fah-huat-curry-mee-1234%2Fowner%2Forders');
 
  const ownerAuthCheck = PermissionEngine.isRouteAllowed('/shop-owner/booths', mockUnauthenticated);
  assert.equal(ownerAuthCheck.allowed, false);
@@ -172,7 +177,7 @@ test('6. Stall Access Revocation: removing authorized email revokes store contro
  assert.equal(PermissionEngine.canManageStallOrder(revokedWorkerAuth, 'stall-outlet-a'), false);
  assert.equal(PermissionEngine.canManageStallDishes(revokedWorkerAuth, 'stall-outlet-a'), false);
 
- const routeCheck = PermissionEngine.isRouteAllowed('/owner/orders', revokedWorkerAuth);
+ const routeCheck = PermissionEngine.isRouteAllowed('/ah-huat-curry-mee-1234/owner/orders', revokedWorkerAuth);
  assert.equal(routeCheck.allowed, false);
  assert.equal(routeCheck.redirectUrl, '/profile');
 });
@@ -189,4 +194,3 @@ test('7. Email-gated setup link validation: only matching invited email can clai
  assert.equal(isEmailAuthorized('different.user@gmail.com', invitedEmail), false);
  assert.equal(isEmailAuthorized('hacker@attack.com', invitedEmail), false);
 });
-

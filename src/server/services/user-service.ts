@@ -6,7 +6,7 @@ export async function getUserRoles(client: SupabaseClient<any>, userId: string, 
  const [restMembershipsRes, merchMembershipsRes, platformRoleRes] = await Promise.all([
  client
       .from('restaurant_memberships')
-      .select('restaurant_id, role, restaurants(id, name, is_active, schedule, phone, address, lat, lng)')
+      .select('restaurant_id, role, restaurants(id, name, slug, is_active, schedule, phone, address, lat, lng)')
       .eq('user_id', userId),
  client
       .from('merchant_memberships')
@@ -15,11 +15,12 @@ export async function getUserRoles(client: SupabaseClient<any>, userId: string, 
  getPlatformRole(client, userId, userEmail)
   ]);
 
- let shops: Array<{ id: string; name: string; role: string; isActive?: boolean; schedule?: any }> = [];
+ let shops: Array<{ id: string; name: string; slug?: string | null; role: string; isActive?: boolean; schedule?: any; phone?: string; address?: string; lat?: number; lng?: number }> = [];
  if (restMembershipsRes.data) {
  shops = restMembershipsRes.data.map((m: any) => ({
  id: m.restaurants?.id || m.restaurant_id,
  name: m.restaurants?.name || 'Food Hall',
+ slug: m.restaurants?.slug || null,
  isActive: m.restaurants?.is_active ?? true,
  schedule: m.restaurants?.schedule,
  phone: m.restaurants?.phone,

@@ -3,8 +3,10 @@
 import Link from 'next/link';
 import { Edit3, Plus, UtensilsCrossed, Camera } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/components/auth-provider';
 import { supabase } from '@/lib/supabase/client';
+import { getStallRoute, getStallSlug } from '@/lib/stall-route';
 
 type OwnerDish = {
  id: string;
@@ -24,15 +26,11 @@ type OwnerDish = {
 };
 
 export default function OwnerMenuPage() {
+ const { centreSlug } = useParams<{ centreSlug: string }>();
+ const router = useRouter();
  const { roles } = useAuth();
- const [selectedBoothId, setSelectedBoothId] = useState<string | null>(null);
-
- useEffect(() => {
- if (roles.booths && roles.booths.length > 0 && !selectedBoothId) {
-   // eslint-disable-next-line react-hooks/set-state-in-effect
- setSelectedBoothId(roles.booths[0].id);
-  }
- }, [roles.booths, selectedBoothId]);
+ const selectedBooth = roles.booths.find((booth) => getStallSlug(booth) === centreSlug);
+ const selectedBoothId = selectedBooth?.id ?? null;
 
  const [dishes, setDishes] = useState<OwnerDish[]>([]);
  const [foodOutletIds, setFoodOutletIds] = useState<string[]>([]);
@@ -43,6 +41,14 @@ export default function OwnerMenuPage() {
  useEffect(() => {
  let active = true;
  const loadBackendDishes = async () => {
+ if (roles.isLoading) return;
+ if (!selectedBoothId) {
+ if (active) {
+ setError('This stall is not linked to your account.');
+ setIsLoading(false);
+ }
+ return;
+ }
  const token = (await supabase?.auth.getSession())?.data.session?.access_token;
  if (!token) {
  if (active) {
@@ -53,7 +59,7 @@ export default function OwnerMenuPage() {
  }
 
  try {
- const fetchUrl = selectedBoothId ? `/api/owner/dishes?foodOutletId=${selectedBoothId}` : '/api/owner/dishes';
+ const fetchUrl = `/api/owner/dishes?foodOutletId=${encodeURIComponent(selectedBoothId)}`;
  const response = await fetch(fetchUrl, {
  headers: { Authorization: `Bearer ${token}` },
  });
@@ -104,7 +110,7 @@ export default function OwnerMenuPage() {
  return () => {
  active = false;
  };
- }, [selectedBoothId]);
+ }, [roles.isLoading, selectedBoothId]);
 
  const toggleAvailability = async (id: string) => {
  const next = dishes.map((dish) => (dish.id === id ? { ...dish, available: !dish.available } : dish));
@@ -138,7 +144,10 @@ export default function OwnerMenuPage() {
  <div className="mb-4 flex justify-end">
  <select
  value={selectedBoothId || ''}
- onChange={(e) => setSelectedBoothId(e.target.value)}
+ onChange={(event) => {
+ const booth = roles.booths.find((item) => item.id === event.target.value);
+ if (booth) router.push(getStallRoute(booth, 'menu') as any);
+ }}
  className="inline-flex h-9 items-center justify-center rounded-full bg-white px-3 text-xs font-semibold text-[#1d1d1f] cursor-pointer"
  aria-label="Select booth"
  >
@@ -167,7 +176,7 @@ export default function OwnerMenuPage() {
  </p>
  <div className="mt-5 flex flex-wrap justify-center gap-3">
  <Link
- href={`/owner/menu/new${selectedBoothId ? `?boothId=${selectedBoothId}` : ''}` as any}
+ href={`/${encodeURIComponent(centreSlug)}/owner/menu/new${selectedBoothId ? `?boothId=${selectedBoothId}` : ''}` as any}
  className="inline-flex h-9 items-center rounded-full bg-[#111827] px-4 text-xs font-semibold text-white hover:bg-black "
  >
  Add your first dish
@@ -190,7 +199,7 @@ export default function OwnerMenuPage() {
  key={dish.id}
  className="flex items-center justify-between gap-3 sm:gap-4 rounded-[22px] bg-white p-3.5 sm:p-4 "
  >
- <Link href={`/owner/menu/${dish.id}` as any} className="flex min-w-0 flex-1 items-center gap-3">
+ <Link href={`/${encodeURIComponent(centreSlug)}/owner/menu/${dish.id}?foodOutletId=${selectedBoothId ?? ''}` as any} className="flex min-w-0 flex-1 items-center gap-3">
  {dish.imageUrl ? (
  <img src={dish.imageUrl} alt="" className="h-12 w-12 shrink-0 rounded-[14px] object-cover" />
  ) : (
@@ -207,7 +216,7 @@ export default function OwnerMenuPage() {
  </div>
  </Link>
  <Link
- href={`/owner/menu/${dish.id}` as any}
+ href={`/${encodeURIComponent(centreSlug)}/owner/menu/${dish.id}?foodOutletId=${selectedBoothId ?? ''}` as any}
  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-[#f5f5f7] text-[#1d1d1f] hover:bg-black/5 "
  aria-label={`Edit ${dish.name}`}
  title={`Edit ${dish.name}`}
@@ -234,7 +243,7 @@ export default function OwnerMenuPage() {
  
 
  <Link
- href={`/owner/menu/new${selectedBoothId ? `?boothId=${selectedBoothId}` : ''}` as any}
+ href={`/${encodeURIComponent(centreSlug)}/owner/menu/new${selectedBoothId ? `?boothId=${selectedBoothId}` : ''}` as any}
  className="fixed bottom-40 sm:bottom-24 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-[#111827] text-white hover:bg-black "
  aria-label="Add dish"
  title="Add dish"

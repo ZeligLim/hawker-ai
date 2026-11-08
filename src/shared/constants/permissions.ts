@@ -110,11 +110,16 @@ export class PermissionEngine {
  return 'admin';
     }
 
- if (pathname.startsWith('/owner')) {
+    if (pathname.split('/').filter(Boolean)[1] === 'owner') {
  return 'stall';
     }
 
- if (pathname.startsWith('/shop-owner') || pathname === '/booths' || pathname.startsWith('/booths/')) {
+ if (
+      pathname.startsWith('/shop-owner') ||
+      pathname === '/booths' ||
+      pathname.startsWith('/booths/') ||
+      pathname.startsWith('/hawker/')
+    ) {
  return 'owner';
     }
 

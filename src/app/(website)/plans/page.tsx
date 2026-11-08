@@ -20,57 +20,33 @@ import {
 
 const comparisonRows = [
  {
- feature: 'Monthly Software Subscription',
- hawker: 'RM 0.00 / month forever',
- legacy: 'RM 250 – RM 800 / month',
+ feature: 'Ordering',
+ hawker: 'QR menu and order submission',
+ legacy: 'QR ordering with online payment when a gateway is enabled',
  highlight: true,
  },
  {
- feature: 'Upfront Setup & Hardware Cost',
- hawker: 'RM 0.00 (Use any phone or tablet)',
- legacy: 'RM 3,000 – RM 10,000 terminals',
+ feature: 'Payment',
+ hawker: 'Pay at the counter; no online payment',
+ legacy: 'Online payment processing (gateway setup required)',
  highlight: true,
  },
  {
- feature: 'Pricing Model',
- hawker: 'Small cut from processed payments',
- legacy: 'Fixed monthly fee + transaction fees',
+ feature: 'Order management',
+ hawker: 'Live order status and stall routing',
+ legacy: 'Live order status, stall routing, and payment status',
  highlight: false,
  },
  {
- feature: 'Stall & Booth Capacity',
- hawker: 'Unlimited stalls from Day 1',
- legacy: 'Tier-gated (Pay more per booth)',
+ feature: 'Refunds',
+ hawker: 'No online payments to refund',
+ legacy: 'Online refunds depend on configured gateway support',
  highlight: false,
  },
  {
- feature: 'Multi-Stall Unified Checkout',
- hawker: 'Included (1 QR, multiple stalls)',
- legacy: 'Not supported or separate POS',
- highlight: false,
- },
- {
- feature: 'Cost During Slow / Off-Peak Days',
- hawker: 'RM 0.00 (Zero financial risk)',
- legacy: 'Full monthly subscription invoiced',
- highlight: true,
- },
- {
- feature: '1-Tap Sold-Out eWallet Refunds',
- hawker: 'Instant & automated from KDS',
- legacy: 'Manual cashier cash reconciliation',
- highlight: false,
- },
- {
- feature: 'AI Natural Language Search',
- hawker: 'Included for all food halls',
- legacy: 'Not available',
- highlight: false,
- },
- {
- feature: 'Contract Commitments',
- hawker: 'None (Cancel or pause anytime)',
- legacy: '12 – 36 month binding contracts',
+ feature: 'Plan availability',
+ hawker: 'Available now',
+ legacy: 'Requires payment provider integration',
  highlight: false,
  },
 ];
@@ -98,40 +74,32 @@ const includedFeatures = [
  },
  {
  icon: RefreshCw,
- title: '1-Tap Out-of-Stock Refunds',
- desc: 'Cooks mark sold-out items from the KDS; customers receive instant automated eWallet refunds.',
+ title: 'Pay-at-Counter Orders',
+ desc: 'Customers place orders from the table QR menu and pay the stall directly at the counter.',
  },
  {
  icon: ShieldCheck,
- title: 'Operator Telemetry & Statements',
- desc: 'Automated gross sales reporting and tenant settlement splits without spreadsheet headaches.',
+ title: 'Order & Revenue Reporting',
+ desc: 'Review incoming orders and recorded sales without collecting online payments.',
  },
 ];
 
 const faqs = [
  {
- q: 'Why does Hawker not charge a monthly subscription fee?',
- a: 'Traditional SaaS subscriptions penalize operators during slow months, rainy days, or renovation periods. By taking a small cut from processed payments, our business model aligns completely with yours: we only make money when your food hall makes sales.',
+ q: 'What is included in Level 1?',
+ a: 'Level 1 includes QR-based menus, ordering, and order management. Customers pay at the stall counter; checkout does not collect online payment.',
  },
  {
- q: 'How does the payment cut work?',
- a: 'When a diner places an order and pays through our integrated payment gateway (supporting DuitNow QR, eWallets, and cards), a small transparent cut is deducted to cover software infrastructure and payment processing. Net stall payouts are transferred directly to your bank account.',
+ q: 'What does Level 2 add?',
+ a: 'Level 2 is intended to add online payment processing. It is not currently available until a payment provider is integrated and configured.',
  },
  {
- q: 'Can the customer pay the platform fee instead of the venue?',
- a: 'Yes. Hawker supports flexible fee configuration: you can choose to have diners pay a transparent flat RM 0.50 platform fee at checkout, allowing the food hall and stall owners to keep 100% of dish prices.',
+ q: 'Are online payments or refunds enabled today?',
+ a: 'No. Level 1 orders are unpaid online and marked pending payment for counter collection. Level 2 payment processing and online refunds require a configured payment provider.',
  },
  {
- q: 'Do we need to buy specialized POS hardware or printers?',
- a: 'No. Hawker is 100% cloud-native and runs seamlessly in any modern web browser on devices you already own—smartphones, iPads, Android tablets, or laptops. Stall owners can view and manage orders directly from their phones.',
- },
- {
- q: 'How do 1-tap out-of-stock refunds work?',
- a: 'If a cook runs out of an ingredient during lunch rush, they tap "Item Sold Out / Refund" on their kitchen screen. The line item amount is refunded straight back to the diner’s eWallet or bank account via our payment gateway, and the dish is instantly marked unavailable across all menus.',
- },
- {
- q: 'Is there any contract, setup fee, or cancellation penalty?',
- a: 'None. You can register your venue, print table QR codes, and start taking orders for RM 0.00 today. There are no lock-in periods, cancellation fees, or minimum transaction requirements.',
+ q: 'Do customers need to pay to place a Level 1 order?',
+ a: 'No online payment is taken when the order is submitted. The customer pays the stall at the counter.',
  },
 ];
 
@@ -151,84 +119,50 @@ export default function PlansPage() {
  <h1 className="text-4xl sm:text-6xl font-semibold tracking-[-0.035em] text-[#1d1d1f] leading-[1.08]">
  No monthly software bills.
  <br />
- <span className="text-[#0071e3]">Just a small cut from payments.</span>
+ <span className="text-[#0071e3]">Choose how customers pay.</span>
  </h1>
 
  <p className="mt-5 text-base sm:text-xl text-[#6e6e73] max-w-2xl mx-auto leading-relaxed">
- Eliminate expensive subscriptions, upfront terminal costs, and hidden fees. Start free, scale indefinitely, and only pay when orders are placed.
+ Start with QR-based ordering and counter payment. Online payment processing is reserved for Level 2 and is not enabled until a provider is configured.
  </p>
  </section>
 
- {/* ── CORE PRICING HERO CARD ── */}
- <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
- <div className="bg-[#1d1d1f] text-white rounded-[36px] p-8 sm:p-12 relative overflow-hidden ">
- <div className="absolute top-0 right-0 w-96 h-96 bg-[#0071e3]/20 rounded-full blur-3xl pointer-events-none" />
-
- <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8 pb-8 ">
- <div>
- <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-[#2997ff] text-xs font-semibold mb-3">
- <CreditCard className="w-3.5 h-3.5" />
- <span>Zero Upfront Commitment</span>
- </div>
- <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white">
- Hawker Platform Access
- </h2>
- <p className="text-sm text-white/60 mt-1 max-w-md">
- Complete operating system for food halls, hawker centres, and culinary markets.
+ {/* ── ORDERING TIERS ── */}
+ <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+ <div className="grid md:grid-cols-2 gap-5">
+ <article className="rounded-[32px] bg-[#1d1d1f] p-8 text-white">
+ <p className="text-xs font-semibold uppercase tracking-wide text-[#30d158]">Available now</p>
+ <h2 className="mt-3 text-3xl font-semibold">Level 1 · Ordering</h2>
+ <p className="mt-2 text-sm leading-relaxed text-white/70">
+ Customers browse the centre menu, place orders, and pay at the stall counter.
  </p>
- </div>
-
- <div className="md:text-right shrink-0">
- <div className="flex items-baseline md:justify-end gap-1.5">
- <span className="text-5xl sm:text-6xl font-bold tracking-tight text-white">RM 0</span>
- <span className="text-sm text-white/60">/ month</span>
- </div>
- <p className="text-xs text-[#30d158] font-semibold mt-1">
- Zero software invoices &bull; Pay as you sell
- </p>
- </div>
- </div>
-
- <div className="relative z-10 grid sm:grid-cols-3 gap-6 pt-8">
- <div className="space-y-2">
- <p className="text-xs font-semibold text-white/60">Setup & software</p>
- <p className="text-2xl font-bold text-white">RM 0.00</p>
- <p className="text-xs text-white/60 leading-relaxed">
- Free venue account, unlimited QR codes, and zero terminal rental charges.
- </p>
- </div>
-
- <div className="space-y-2">
- <p className="text-xs font-semibold text-[#2997ff]">Monetization cut</p>
- <p className="text-2xl font-bold text-white">Small Cut</p>
- <p className="text-xs text-white/60 leading-relaxed">
- Transparent cut deducted from payment gateway transactions. No sales = RM 0 fee.
- </p>
- </div>
-
- <div className="space-y-2">
- <p className="text-xs font-semibold text-[#30d158]">Stall payouts</p>
- <p className="text-2xl font-bold text-white">Direct & Fast</p>
- <p className="text-xs text-white/60 leading-relaxed">
- Net earnings deposited automatically to your bank account with complete audit logs.
- </p>
- </div>
- </div>
-
- <div className="relative z-10 mt-10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
- <div className="flex items-center gap-2 text-xs text-white/70">
- <CheckCircle2 className="w-4 h-4 text-[#30d158] shrink-0" />
- <span>Full feature access &bull; Unlimited booths &bull; No credit card required to start</span>
- </div>
-
+ <ul className="mt-6 space-y-3 text-sm text-white/85">
+ <li className="flex gap-2"><CheckCircle2 className="h-4 w-4 shrink-0 text-[#30d158]" /> Centre QR menus and order submission</li>
+ <li className="flex gap-2"><CheckCircle2 className="h-4 w-4 shrink-0 text-[#30d158]" /> Live stall order management</li>
+ <li className="flex gap-2"><CheckCircle2 className="h-4 w-4 shrink-0 text-[#30d158]" /> No online payment is collected</li>
+ </ul>
  <Link
  href={'/shop-owner/profile' as any}
- className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-3.5 rounded-full text-sm font-semibold bg-[#0071e3] text-white hover:bg-[#0077ed] shrink-0"
+ className="mt-8 inline-flex items-center rounded-full bg-[#0071e3] px-6 py-3 text-sm font-semibold text-white hover:bg-[#0077ed]"
  >
- Start Free
- <ArrowRight className="w-4 h-4 ml-2" />
+ Start with Level 1 <ArrowRight className="ml-2 h-4 w-4" />
  </Link>
- </div>
+ </article>
+ <article className="rounded-[32px] bg-white p-8">
+ <p className="text-xs font-semibold uppercase tracking-wide text-[#0071e3]">Level 2</p>
+ <h2 className="mt-3 text-3xl font-semibold">Online payments</h2>
+ <p className="mt-2 text-sm leading-relaxed text-[#6e6e73]">
+ Adds online payment processing to ordering after a payment provider is integrated and configured.
+ </p>
+ <ul className="mt-6 space-y-3 text-sm text-[#515154]">
+ <li className="flex gap-2"><CreditCard className="h-4 w-4 shrink-0 text-[#0071e3]" /> Online checkout through a configured provider</li>
+ <li className="flex gap-2"><CreditCard className="h-4 w-4 shrink-0 text-[#0071e3]" /> Payment status and provider-dependent refunds</li>
+ <li className="flex gap-2"><XCircle className="h-4 w-4 shrink-0 text-[#86868b]" /> Not available until gateway integration is complete</li>
+ </ul>
+ <p className="mt-8 rounded-2xl bg-[#f5f5f7] p-4 text-xs leading-relaxed text-[#6e6e73]">
+ No gateway, transaction fee, or settlement capability is currently represented as active.
+ </p>
+ </article>
  </div>
  </section>
 
@@ -236,13 +170,13 @@ export default function PlansPage() {
  <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
  <div className="max-w-2xl mx-auto text-center mb-12">
  <p className="text-xs font-semibold text-[#0071e3] mb-2">
- No tier gates
+ Level 1 included features
  </p>
  <h2 className="text-2xl sm:text-4xl font-semibold tracking-tight text-[#1d1d1f]">
- Everything unlocked from day one.
+ Order without online payment.
  </h2>
  <p className="text-sm sm:text-base text-[#6e6e73] mt-2">
- We don&apos;t lock essential tools behind &ldquo;Pro&rdquo; or &ldquo;Enterprise&rdquo; paywalls. Every venue gets our full culinary suite.
+ Level 1 provides the digital menu and order flow; customers pay the stall directly at the counter.
  </p>
  </div>
 
@@ -265,25 +199,25 @@ export default function PlansPage() {
  </div>
  </section>
 
- {/* ── COMPARISON TABLE: HAWKER VS LEGACY POS ── */}
+ {/* ── TIER COMPARISON ── */}
  <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
  <div className="max-w-2xl mx-auto text-center mb-12">
  <p className="text-xs font-semibold text-[#0071e3] mb-2">
- Clear contrast
+ Plan comparison
  </p>
  <h2 className="text-2xl sm:text-4xl font-semibold tracking-tight text-[#1d1d1f]">
- Hawker vs. Legacy Subscription POS
+ Level 1 vs. Level 2
  </h2>
  <p className="text-sm sm:text-base text-[#6e6e73] mt-2">
- See how pay-as-you-grow economics compares to old-school software licensing.
+ Level 2 online payments require a payment provider integration that is not yet configured.
  </p>
  </div>
 
  <div className="bg-white rounded-[32px] overflow-hidden">
  <div className="grid grid-cols-[1.2fr_1fr_1fr] p-5 sm:p-6 bg-[#f5f5f7] text-xs font-semibold text-[#86868b]">
  <div>Feature</div>
- <div className="text-[#0071e3]">Hawker (Pay-as-you-grow)</div>
- <div className="text-[#86868b]">Traditional POS / SaaS</div>
+ <div className="text-[#0071e3]">Level 1 · Ordering</div>
+ <div className="text-[#86868b]">Level 2 · Online payments</div>
  </div>
 
  <div className=" text-xs sm:text-sm">

@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import {
  ChevronDown,
- ClipboardList,
  CookingPot,
  HelpCircle,
  LayoutDashboard,
@@ -18,6 +17,7 @@ import {
  X,
 } from 'lucide-react';
 import { useAuth } from '@/components/auth-provider';
+import { getStallRoute } from '@/lib/stall-route';
 
 interface MarketingNavProps {
  currentPath?: string;
@@ -77,6 +77,7 @@ export function MarketingNav({ currentPath = '/' }: MarketingNavProps) {
  const hasStall = roles.hasBooth;
  const hasDashboard = hasShop || hasStall;
  const hasBoth = hasShop && hasStall;
+ const stallDashboardHref = roles.booths[0] ? getStallRoute(roles.booths[0]) : '/auth';
 
  const displayName =
  profile?.displayName ||
@@ -188,7 +189,7 @@ export function MarketingNav({ currentPath = '/' }: MarketingNavProps) {
  </div>
  </Link>
  <Link
- href="/owner"
+ href={stallDashboardHref as any}
  onClick={() => setDashboardDropdownOpen(false)}
  className="flex items-center gap-3 px-3.5 py-2.5 hover:bg-black/[0.04] "
  >
@@ -215,7 +216,7 @@ export function MarketingNav({ currentPath = '/' }: MarketingNavProps) {
  ) : (
  /* Only Stall Worker */
  <Link
- href="/owner"
+ href={stallDashboardHref as any}
  className="inline-flex items-center gap-1.5 text-xs font-semibold text-white bg-[#1d1d1f] hover:bg-black px-3.5 py-1.5 rounded-full "
  >
  <CookingPot className="w-3.5 h-3.5" />
@@ -274,7 +275,7 @@ export function MarketingNav({ currentPath = '/' }: MarketingNavProps) {
  )}
  {roles.hasBooth && (
  <Link
- href="/owner"
+ href={stallDashboardHref as any}
  onClick={() => setAccountDropdownOpen(false)}
  className="flex items-center gap-2.5 px-4 py-2 hover:bg-black/[0.04] "
  >
@@ -283,20 +284,12 @@ export function MarketingNav({ currentPath = '/' }: MarketingNavProps) {
  </Link>
  )}
  <Link
- href="/stall"
+ href="/"
  onClick={() => setAccountDropdownOpen(false)}
  className="flex items-center gap-2.5 px-4 py-2 hover:bg-black/[0.04] "
  >
  <UtensilsCrossed className="w-4 h-4 text-[#6e6e73]" />
- <span>Diner Food Discovery</span>
- </Link>
- <Link
- href="/orders"
- onClick={() => setAccountDropdownOpen(false)}
- className="flex items-center gap-2.5 px-4 py-2 hover:bg-black/[0.04] "
- >
- <ClipboardList className="w-4 h-4 text-[#6e6e73]" />
- <span>Order History</span>
+ <span>Hawker Home</span>
  </Link>
  <Link
  href="/profile"
@@ -364,7 +357,7 @@ export function MarketingNav({ currentPath = '/' }: MarketingNavProps) {
  </Link>
  ) : (
  <Link
- href="/owner/orders"
+ href={(roles.booths[0] ? getStallRoute(roles.booths[0], 'orders') : '/auth') as any}
  className="inline-flex items-center gap-1 text-[11px] font-semibold text-white bg-[#1d1d1f] p-2 xs:px-2.5 xs:py-1 rounded-full "
  aria-label="Stall Kitchen"
  >
@@ -429,7 +422,7 @@ export function MarketingNav({ currentPath = '/' }: MarketingNavProps) {
  Shop Dashboard
  </Link>
  <Link
- href="/owner/orders"
+ href={(roles.booths[0] ? getStallRoute(roles.booths[0], 'orders') : '/auth') as any}
  onClick={() => setMobileMenuOpen(false)}
  className="flex items-center justify-center gap-1.5 py-2.5 rounded-full text-xs font-semibold text-white bg-[#1d1d1f]"
  >
@@ -448,7 +441,7 @@ export function MarketingNav({ currentPath = '/' }: MarketingNavProps) {
  </Link>
  ) : (
  <Link
- href="/owner"
+ href={stallDashboardHref as any}
  onClick={() => setMobileMenuOpen(false)}
  className="flex items-center justify-center gap-2 w-full text-center py-2.5 rounded-full text-sm font-semibold text-white bg-[#1d1d1f]"
  >

@@ -12,10 +12,7 @@ import {
  Building2,
  LogOut,
  ShieldCheck,
- Menu,
- X,
  ExternalLink,
- Store,
  ChevronRight,
 } from 'lucide-react';
 
@@ -27,24 +24,28 @@ const navItems = [
  {
  href: '/admin',
  label: 'Overview',
+ mobileLabel: 'Home',
  icon: LayoutDashboard,
  exact: true,
  },
  {
  href: '/admin/monetization',
  label: 'Monetization & Fees',
+ mobileLabel: 'Fees',
  icon: Percent,
  exact: false,
  },
  {
  href: '/admin/shops',
  label: 'Venues & Food Halls',
+ mobileLabel: 'Venues',
  icon: Building2,
  exact: false,
  },
  {
  href: '/admin/profile',
  label: 'Profile',
+ mobileLabel: 'Profile',
  icon: UserRound,
  exact: false,
  },
@@ -60,6 +61,26 @@ export function AdminShell({ children }: AdminShellProps) {
 
  return (
  <div className="min-h-screen bg-[#f5f5f7] text-[#1d1d1f] flex flex-col md:flex-row antialiased">
+ <header className="sticky top-0 z-30 flex items-center justify-between bg-[#fbfbfd]/95 px-4 py-3 backdrop-blur-xl md:hidden">
+ <div className="flex min-w-0 items-center gap-2.5">
+ <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#1d1d1f] text-white">
+ <ShieldCheck className="h-4 w-4" />
+ </div>
+ <div className="min-w-0">
+ <p className="truncate text-sm font-semibold">Hawker Platform</p>
+ <p className="text-[10px] font-medium text-[#6e6e73]">{roleLabel}</p>
+ </div>
+ </div>
+ <button
+ type="button"
+ onClick={() => setIsSignOutDialogOpen(true)}
+ aria-label="Sign out"
+ className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white text-[#6e6e73] hover:bg-red-50 hover:text-red-600"
+ >
+ <LogOut className="h-4 w-4" />
+ </button>
+ </header>
+
  {/* Desktop Sidebar Navigation Shell */}
  <aside
  className="hidden md:flex sticky top-0 bottom-0 left-0 z-50 w-64 lg:w-72 bg-[#fbfbfd]/90 backdrop-blur-xl flex-col"
@@ -121,16 +142,6 @@ export function AdminShell({ children }: AdminShellProps) {
  </p>
  <div className="space-y-1">
  <Link
- href={'/stall' as any}
- className="flex items-center justify-between px-3.5 py-2 rounded-xl text-xs font-medium text-[#6e6e73] hover:text-[#1d1d1f] hover:bg-black/[0.04] "
- >
- <div className="flex items-center gap-2.5">
- <Store className="w-3.5 h-3.5 text-[#86868b]" />
- <span>Diner App (Customer)</span>
- </div>
- <ExternalLink className="w-3 h-3 text-[#86868b]" />
- </Link>
- <Link
  href={'/shop-owner/booths' as any}
  className="flex items-center justify-between px-3.5 py-2 rounded-xl text-xs font-medium text-[#6e6e73] hover:text-[#1d1d1f] hover:bg-black/[0.04] "
  >
@@ -179,6 +190,7 @@ export function AdminShell({ children }: AdminShellProps) {
  items={navItems}
  theme="owner"
  ariaLabel="Admin Navigation"
+ showLabels
  />
  </div>
 

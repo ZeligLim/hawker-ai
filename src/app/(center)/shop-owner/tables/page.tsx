@@ -15,6 +15,7 @@ import {
 import { PageLoader, ButtonLoader } from '@/components/page-loader';
 import { authenticatedFetch } from '@/lib/supabase/client';
 import { QRCodeSVG } from 'qrcode.react';
+import { buildTableMenuUrl } from '@/lib/customer-table-link';
 
 type HawkerTable = {
  id: string;
@@ -26,7 +27,7 @@ type HawkerTable = {
 type Shop = {
  id: string;
  name: string;
- slug: string;
+ slug: string | null;
  tables: HawkerTable[];
 };
 
@@ -154,7 +155,7 @@ export default function TablesManagementPage() {
     }
   };
 
- const downloadQR = (table: HawkerTable, shopSlug: string) => {
+ const downloadQR = (table: HawkerTable) => {
  const svg = document.getElementById(`qr-${table.id}`);
  if (!svg) return;
     
@@ -327,25 +328,28 @@ export default function TablesManagementPage() {
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     {shop.tables.map((table) => {
- const scanUrl = `${window.location.origin}/scan?outlet_id=${shop.id}&table_id=${table.id}`;
+ const menuUrl = shop.slug
+ ? buildTableMenuUrl(window.location.origin, shop.slug, table.id)
+ : '';
                       
  return (
                         <div key={table.id} className="rounded-2xl bg-white p-5 flex flex-col items-center ">
                           <h3 className="text-lg font-bold mb-4">Table {table.table_number}</h3>
                           
                           <div className="bg-white p-2 rounded-xl mb-4">
-                            <QRCodeSVG
+                            {menuUrl ? <QRCodeSVG
  id={`qr-${table.id}`}
- value={scanUrl}
+ value={menuUrl}
  size={140}
  level="H"
  includeMargin={false}
-                            />
+                            /> : <p className="p-3 text-center text-xs text-red-600">Centre URL slug is missing.</p>}
                           </div>
                           
                           <div className="flex items-center gap-2 w-full mt-auto">
                             <button
- onClick={() => downloadQR(table, shop.slug)}
+ onClick={() => downloadQR(table)}
+ disabled={!shop.slug}
  className="flex-1 h-10 flex items-center justify-center gap-2 rounded-full bg-[#f5f5f7] text-xs font-semibold hover:bg-neutral-200"
                             >
                               <Download className="w-3.5 h-3.5" /> Save
@@ -377,12 +381,14 @@ export default function TablesManagementPage() {
               <h2 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '20px' }}>{shop.name}</h2>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px' }}>
                 {shop.tables.map((table) => {
- const scanUrl = typeof window !== 'undefined' ? `${window.location.origin}/scan?outlet_id=${shop.id}&table_id=${table.id}` : '';
+ const menuUrl = typeof window !== 'undefined' && shop.slug
+ ? buildTableMenuUrl(window.location.origin, shop.slug, table.id)
+ : '';
  return (
                     <div key={`print-qr-${table.id}`} style={{ padding: '20px', borderRadius: '16px', textAlign: 'center', width: '200px' }}>
                       <h3 style={{ fontSize: '20px', fontWeight: 'bold', margin: '0 0 15px 0' }}>Table {table.table_number}</h3>
-                      <QRCodeSVG value={scanUrl} size={160} level="H" />
-                      <p style={{ fontSize: '10px', color: '#666', marginTop: '15px', marginBottom: 0 }}>Scan to order</p>
+                      {menuUrl ? <QRCodeSVG value={menuUrl} size={160} level="H" /> : <p>Centre URL slug is missing.</p>}
+                      <p style={{ fontSize: '10px', color: '#666', marginTop: '15px', marginBottom: 0 }}>Open table menu</p>
                     </div>
                   );
                 })}

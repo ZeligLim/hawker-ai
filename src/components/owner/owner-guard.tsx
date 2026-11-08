@@ -22,7 +22,7 @@ export function OwnerGuard({ children }: { children: React.ReactNode }) {
  return (
  <div className="flex min-h-screen flex-col items-center justify-center bg-[#f5f5f7] px-4 text-[#1d1d1f]">
  <div className="flex items-center gap-3 rounded-2xl bg-white px-5 py-4 ">
- <div className="h-5 w-5 rounded-full " />
+ <div className="h-5 w-5 animate-pulse motion-reduce:animate-none rounded-full bg-neutral-200" />
  <p className="text-sm font-medium text-[#6e6e73]">Verifying shop owner credentials...</p>
  </div>
  </div>

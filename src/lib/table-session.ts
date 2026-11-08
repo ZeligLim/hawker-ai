@@ -3,6 +3,7 @@ export const TABLE_SESSION_STORAGE_KEY = 'hawker-current-table';
 export type CurrentTableSession = {
  tableNumber: string;
  tableId?: string | null;
+ sessionId?: string | null;
  centreId?: string | null;
  centreSlug?: string | null;
  centreName?: string | null;
@@ -30,6 +31,7 @@ export function getStoredTableSession(): CurrentTableSession | null {
  return {
  tableNumber,
  tableId: parsed.tableId ?? null,
+ sessionId: parsed.sessionId ?? null,
  centreId: parsed.centreId ?? null,
  centreSlug: parsed.centreSlug ?? null,
  centreName: parsed.centreName ?? null,
@@ -55,6 +57,7 @@ export function setCurrentTableSession(
  tableNumber: string,
  tableId?: string | null,
  centreInfo?: {
+ sessionId?: string | null;
  centreId?: string | null;
  centreSlug?: string | null;
  centreName?: string | null;
@@ -69,6 +72,7 @@ export function setCurrentTableSession(
  const next: CurrentTableSession = {
  tableNumber: trimmed,
  tableId: tableId ?? null,
+ sessionId: centreInfo?.sessionId ?? null,
  centreId: centreInfo?.centreId ?? null,
  centreSlug: centreInfo?.centreSlug ?? null,
  centreName: centreInfo?.centreName ?? null,

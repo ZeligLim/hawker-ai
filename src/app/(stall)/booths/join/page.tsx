@@ -6,6 +6,7 @@ import { Suspense, useEffect, useState } from 'react';
 import { useAuth } from '@/components/auth-provider';
 import { Store, KeyRound, ArrowRight, LoaderCircle, CheckCircle2, Building2, AlertCircle } from 'lucide-react';
 import { authenticatedFetch } from '@/lib/supabase/client';
+import { getStallRoute } from '@/lib/stall-route';
 
 function extractTokenString(raw: string): string {
  const trimmed = raw.trim();
@@ -101,8 +102,13 @@ function JoinBoothContent() {
  window.localStorage.setItem('hawker-user-mode', 'owner');
  }
 
+ const rolesResponse = await authenticatedFetch('/api/user/roles');
+ const rolesPayload = rolesResponse.ok
+ ? await rolesResponse.json() as { booths?: Array<{ id: string; name: string }> }
+ : null;
+ const booth = rolesPayload?.booths?.[0];
  window.setTimeout(() => {
- router.push('/owner');
+ router.push((booth ? getStallRoute(booth) : '/') as any);
  }, 1000);
  } catch (error) {
  setMessage(error instanceof Error ? error.message : 'Unable to join the booth.');

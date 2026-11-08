@@ -18,20 +18,17 @@ import {
  BadgePercent,
  LoaderCircle,
  Zap,
- Banknote,
 } from 'lucide-react';
 import { useAuth } from '@/components/auth-provider';
 import { supabase } from '@/lib/supabase/client';
 
 const platformGuarantees = [
- '0% stall transaction commission (hawkers keep 100%)',
+ 'QR menus and order submission with payment at the counter',
  'Unlimited stalls & QR table codes',
- 'Multi-stall unified checkout basket',
+ 'Multi-stall order routing',
  'Real-time mobile Kitchen Display System (KDS)',
- '1-tap automated sold-out eWallet refunds',
- 'OpenRouter AI culinary natural search',
- 'Automated daily DuitNow / FAST bank settlement',
  'Single-click cryptographic booth invite keys',
+ 'No bank or settlement details required for Level 1',
 ];
 
 function LaunchpadContent() {
@@ -48,12 +45,6 @@ function LaunchpadContent() {
  const [phone, setPhone] = useState('');
  const [city, setCity] = useState('Kuala Lumpur');
  const [stallCount, setStallCount] = useState('6-15 stalls');
-
- // Form states - Step 2: Settlement & Monetization Strategy
- const [feePayer, setFeePayer] = useState<'CUSTOMER' | 'MERCHANT'>('CUSTOMER');
- const [bankName, setBankName] = useState('Maybank');
- const [bankAccountNumber, setBankAccountNumber] = useState('');
- const [accountHolder, setAccountHolder] = useState('');
 
  // Form states - Step 3: Booth Token Generation
  const [firstStallSlot, setFirstStallSlot] = useState('Slot #01');
@@ -271,7 +262,7 @@ function LaunchpadContent() {
  >
  {currentStep > 2 ? <Check className="w-3 h-3" /> : '2'}
  </span>
- <span className="font-semibold truncate">2. Settlement</span>
+ <span className="font-semibold truncate">2. Order Plan</span>
  </div>
  </div>
 
@@ -412,156 +403,34 @@ function LaunchpadContent() {
  onClick={handleNext}
  className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-xs font-semibold bg-[#0071e3] text-white hover:bg-[#0077ed] "
  >
- Continue to Payout Setup
+ Continue to Order Plan
  <ArrowRight className="w-3.5 h-3.5" />
  </button>
  </div>
  </div>
  )}
 
- {/* ── STEP 2: SETTLEMENT & REVENUE MODEL ── */}
+ {/* ── STEP 2: ORDER PLAN ── */}
  {currentStep === 2 && (
  <div className="space-y-6">
  <div>
  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0071e3]/10 text-[#0071e3] text-xs font-semibold mb-3">
  <BadgePercent className="w-3.5 h-3.5" />
- Stage 2 of 3 &bull; Payout & Platform Cut
+ Stage 2 of 3 &bull; Ordering Tier
  </div>
  <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight text-[#1d1d1f]">
- Where should customer payments go?
+ Start with Level 1 ordering.
  </h2>
  <p className="mt-2 text-sm text-[#6e6e73] leading-relaxed">
- Hawker charges zero monthly subscription fees. We take a transparent cut directly from payment transactions. Choose how this cut is funded:
+ Level 1 lets customers order from your QR menu and pay at the stall counter. It does not collect online payments or require settlement account details.
  </p>
  </div>
 
- {/* 3-Pillar Economics Banner */}
- <div className="grid sm:grid-cols-3 gap-3 p-4 rounded-2xl bg-[#f5f5f7]">
- <div className="space-y-0.5">
- <p className="text-xs text-[#86868b] font-semibold">Monthly software</p>
- <p className="text-base font-bold text-[#30d158]">RM 0.00 / mo</p>
- <p className="text-[10px] text-[#6e6e73]">Free forever platform</p>
- </div>
- <div className="space-y-0.5">
- <p className="text-xs text-[#86868b] font-semibold">Hardware POS</p>
- <p className="text-base font-bold text-[#1d1d1f]">RM 0.00</p>
- <p className="text-[10px] text-[#6e6e73]">Bring your own devices</p>
- </div>
- <div className="space-y-0.5">
- <p className="text-xs text-[#86868b] font-semibold">Monetization</p>
- <p className="text-base font-bold text-[#0071e3]">Payment Cut</p>
- <p className="text-[10px] text-[#6e6e73]">Only on successful sales</p>
- </div>
- </div>
-
- {/* Dual Fee Model Selector */}
- <div className="space-y-3 pt-1">
- <label className="block text-xs font-semibold text-[#1d1d1f]">
- Platform fee strategy
- </label>
- <div className="grid sm:grid-cols-2 gap-3.5">
- <button
- type="button"
- onClick={() => setFeePayer('CUSTOMER')}
- className={`p-4 rounded-2xl text-left relative flex flex-col justify-between ${ feePayer === 'CUSTOMER' ? '] bg-[#0071e3]/[0.03] ' : ' bg-white hover:bg-black/[0.02]' }`}
- >
- <div>
- <div className="flex items-center justify-between mb-1.5">
- <span className="text-xs font-semibold text-[#1d1d1f]">Diner service fee</span>
- <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#30d158]/15 text-[#248a3d]">
- Recommended
- </span>
- </div>
- <p className="text-xs text-[#6e6e73] leading-relaxed">
- Diners pay a flat <strong className="text-[#1d1d1f]">RM 0.50 platform service fee</strong> at checkout.
+ <div className="rounded-2xl border border-[#0071e3]/15 bg-[#0071e3]/5 p-5">
+ <p className="text-sm font-semibold text-[#1d1d1f]">Level 1 · Order now, pay at the counter</p>
+ <p className="mt-1 text-xs leading-relaxed text-[#6e6e73]">
+ Level 2 online payments are planned for a later release and will only be enabled after a payment provider is integrated. No payment gateway or automatic settlement is active today.
  </p>
- </div>
- <div className="mt-3 pt-3 text-[11px] text-[#248a3d] font-semibold">
- Stall owners keep 100% of dish revenue
- </div>
- </button>
-
- <button
- type="button"
- onClick={() => setFeePayer('MERCHANT')}
- className={`p-4 rounded-2xl text-left relative flex flex-col justify-between ${ feePayer === 'MERCHANT' ? '] bg-[#0071e3]/[0.03] ' : ' bg-white hover:bg-black/[0.02]' }`}
- >
- <div>
- <div className="flex items-center justify-between mb-1.5">
- <span className="text-xs font-semibold text-[#1d1d1f]">Venue-absorbed cut</span>
- <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-black/5 text-[#86868b]">
- All-inclusive
- </span>
- </div>
- <p className="text-xs text-[#6e6e73] leading-relaxed">
- The platform cut is deducted directly from daily gross settlement payouts.
- </p>
- </div>
- <div className="mt-3 pt-3 text-[11px] text-[#6e6e73]">
- Diners see zero extra fee on the checkout bill
- </div>
- </button>
- </div>
- </div>
-
- {/* Direct Payout Bank Account Details */}
- <div className="space-y-4 pt-2">
- <div className="flex items-center gap-2">
- <Banknote className="w-4 h-4 text-[#0071e3]" />
- <h3 className="text-xs font-semibold text-[#1d1d1f]">
- DuitNow & FAST bank settlement details
- </h3>
- </div>
-
- <div className="grid sm:grid-cols-2 gap-4">
- <div>
- <label className="block text-xs font-semibold text-[#1d1d1f] mb-1.5">
- Settlement Bank
- </label>
- <div className="relative">
- <select
- value={bankName}
- onChange={(e) => setBankName(e.target.value)}
- className="w-full h-[46px] appearance-none rounded-2xl bg-white px-4 pr-10 text-sm text-[#1d1d1f] focus:] focus: focus: cursor-pointer"
- >
- <option value="Maybank">Malayan Banking Berhad (Maybank)</option>
- <option value="CIMB">CIMB Bank Berhad</option>
- <option value="Public Bank">Public Bank Berhad</option>
- <option value="Hong Leong">Hong Leong Bank Berhad</option>
- <option value="RHB">RHB Bank Berhad</option>
- <option value="AmBank">AmBank (M) Berhad</option>
- <option value="Touch 'n Go Biz">Touch &apos;n Go eWallet Merchant</option>
- </select>
- <ChevronDown className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-[#86868b]" />
- </div>
- </div>
-
- <div>
- <label className="block text-xs font-semibold text-[#1d1d1f] mb-1.5">
- Bank Account Number / DuitNow ID
- </label>
- <input
- type="text"
- value={bankAccountNumber}
- onChange={(e) => setBankAccountNumber(e.target.value)}
- placeholder="e.g. 5140 1234 5678"
- className="w-full h-[46px] rounded-2xl bg-white px-4 py-3 text-sm text-[#1d1d1f] focus:] focus: focus: placeholder:text-[#86868b]"
- />
- </div>
- </div>
-
- <div>
- <label className="block text-xs font-semibold text-[#1d1d1f] mb-1.5">
- Registered Company / Account Holder Name
- </label>
- <input
- type="text"
- value={accountHolder}
- onChange={(e) => setAccountHolder(e.target.value)}
- placeholder="e.g. Lot 10 Hutong Sdn Bhd"
- className="w-full h-[46px] rounded-2xl bg-white px-4 py-3 text-sm text-[#1d1d1f] focus:] focus: focus: placeholder:text-[#86868b]"
- />
- </div>
  </div>
 
  <div className="pt-4 flex items-center justify-between">
@@ -771,50 +640,50 @@ function LaunchpadContent() {
  )}
  </div>
 
- {/* RIGHT: THE ZERO-RISK TRANSPARENCY CARD (Sticky) */}
+ {/* RIGHT: LEVEL 1 SUMMARY */}
  <aside className="bg-white rounded-[32px] p-6 sm:p-8 space-y-6 lg:sticky lg:top-20">
  <div>
  <div className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-black/5 text-[#86868b] text-xs font-semibold mb-2">
- The Hawker commitment
+ Level 1 · Ordering
  </div>
  <h3 className="text-xl font-semibold tracking-tight text-[#1d1d1f]">
- Zero monthly subscriptions.
+ Digital ordering, no online payment.
  </h3>
  <p className="text-sm font-semibold text-[#0071e3] mt-0.5">
- We only win when you sell.
+ Customer pays the stall at the counter.
  </p>
  <p className="text-xs text-[#6e6e73] mt-1.5 leading-relaxed">
- No monthly software rent, no proprietary hardware terminals, and no cancellation penalties.
+ Orders are submitted to stalls through the QR menu and managed in the live order interface.
  </p>
  </div>
 
- {/* Financial Ledger Breakdown */}
+ {/* Level 1 summary */}
  <div className="bg-[#f5f5f7] p-4 rounded-2xl space-y-2.5 text-xs">
  <div className="flex items-center justify-between text-[#6e6e73]">
- <span>Monthly Software Fee</span>
- <span className="font-semibold text-[#30d158]">RM 0.00 / mo</span>
+ <span>Online payment collection</span>
+ <span className="font-semibold text-[#1d1d1f]">Not included</span>
  </div>
  <div className="flex items-center justify-between text-[#6e6e73]">
- <span>POS Hardware & Terminals</span>
- <span className="font-semibold text-[#1d1d1f]">RM 0.00 (BYO)</span>
+ <span>Payment at checkout</span>
+ <span className="font-semibold text-[#1d1d1f]">None</span>
  </div>
  <div className="flex items-center justify-between text-[#6e6e73]">
- <span>Setup & Activation</span>
- <span className="font-semibold text-[#1d1d1f]">RM 0.00</span>
+ <span>Customer payment</span>
+ <span className="font-semibold text-[#0071e3]">At stall counter</span>
  </div>
  <div className="flex items-center justify-between text-[#6e6e73]">
- <span>Platform Monetization</span>
- <span className="font-semibold text-[#0071e3]">Small cut per transaction</span>
+ <span>Settlement details</span>
+ <span className="font-semibold text-[#1d1d1f]">Not required</span>
  </div>
  <div className="pt-2 flex items-center justify-between font-bold text-sm text-[#1d1d1f]">
- <span>Total Due Today</span>
- <span className="text-[#0071e3]">RM 0.00</span>
+ <span>Online payment fees</span>
+ <span className="text-[#0071e3]">None</span>
  </div>
  </div>
 
  {/* Core Guarantees */}
  <div>
- <p className="text-xs font-semibold text-[#1d1d1f] mb-3">Included with every venue:</p>
+ <p className="text-xs font-semibold text-[#1d1d1f] mb-3">Level 1 includes:</p>
  <ul className="space-y-2.5 text-xs text-[#515154]">
  {platformGuarantees.map((feat) => (
  <li key={feat} className="flex items-start gap-2.5">
@@ -829,11 +698,11 @@ function LaunchpadContent() {
  <div className="pt-4 space-y-2 text-[11px] text-[#86868b]">
  <div className="flex items-center gap-2">
  <ShieldCheck className="w-3.5 h-3.5 text-[#30d158] shrink-0" />
- <span>Zero monthly invoices &bull; Pause anytime</span>
+ <span>QR ordering &bull; Pay at the counter</span>
  </div>
  <div className="flex items-center gap-2">
  <Clock className="w-3.5 h-3.5 text-[#0071e3] shrink-0" />
- <span>Rainy day with RM 0 sales = RM 0 platform cost</span>
+ <span>Online payment processing is not active</span>
  </div>
  </div>
  </aside>

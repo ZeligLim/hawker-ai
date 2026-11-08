@@ -100,19 +100,19 @@ export default function AdminDashboardPage() {
  System-wide operational metrics, multi-tenant food halls, and platform fee policies.
  </p>
  </div>
- <div className="flex items-center gap-2.5">
+ <div className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto sm:items-center">
  <button
  type="button"
  onClick={() => void handleRefresh()}
  disabled={loading}
- className="inline-flex items-center gap-1.5 rounded-full bg-white px-3.5 py-2 text-xs font-semibold text-[#1d1d1f] hover:bg-black/[0.03] "
+ className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-full bg-white px-2.5 py-2 text-[11px] font-semibold text-[#1d1d1f] hover:bg-black/[0.03] sm:px-3.5 sm:text-xs"
  >
  <RefreshCw className={`w-3.5 h-3.5 text-[#6e6e73] ${loading ? '' : ''}`} />
  Refresh
  </button>
  <Link
  href={'/admin/monetization' as any}
- className="inline-flex items-center gap-1.5 rounded-full bg-[#1d1d1f] px-4 py-2 text-xs font-semibold text-white hover:bg-black "
+ className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-full bg-[#1d1d1f] px-2.5 py-2 text-[11px] font-semibold text-white hover:bg-black sm:px-4 sm:text-xs"
  >
  <Percent className="w-3.5 h-3.5" />
  Manage Monetization
@@ -121,59 +121,65 @@ export default function AdminDashboardPage() {
  </div>
 
  {/* KPI Cards */}
- <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+ <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
  {/* Total Venues */}
- <div className="rounded-2xl bg-white p-5 ">
+ <div className="min-w-0 rounded-2xl bg-white p-3 sm:p-5">
  <div className="flex items-center justify-between text-[#86868b]">
- <span className="text-xs font-semibold">Registered venues</span>
+ <span className="min-w-0 text-[10px] font-semibold leading-tight sm:text-xs">Registered venues</span>
  <div className="w-8 h-8 rounded-xl bg-blue-50 text-[#0071e3] flex items-center justify-center">
  <Building2 className="w-4 h-4" />
  </div>
  </div>
- <p className="mt-3 text-3xl font-semibold tracking-tight text-[#1d1d1f]">{loading ? '—' : totalVenues}</p>
- <p className="mt-1 text-xs text-[#86868b]">Multi-tenant food halls & centres</p>
+ <p className="mt-2 text-2xl font-semibold tracking-tight text-[#1d1d1f] sm:mt-3 sm:text-3xl">{loading ? '—' : totalVenues}</p>
+ <p className="mt-1 text-[10px] leading-tight text-[#86868b] sm:text-xs">Multi-tenant food halls & centres</p>
  </div>
 
  {/* Operating Stalls */}
- <div className="rounded-2xl bg-white p-5 ">
+ <div className="min-w-0 rounded-2xl bg-white p-3 sm:p-5">
  <div className="flex items-center justify-between text-[#86868b]">
- <span className="text-xs font-semibold">Active stalls</span>
+ <span className="min-w-0 text-[10px] font-semibold leading-tight sm:text-xs">Active stalls</span>
  <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
  <Store className="w-4 h-4" />
  </div>
  </div>
- <p className="mt-3 text-3xl font-semibold tracking-tight text-[#1d1d1f]">{loading ? '—' : totalStalls}</p>
- <p className="mt-1 text-xs text-[#86868b]">Kitchen Display System nodes</p>
+ <p className="mt-2 text-2xl font-semibold tracking-tight text-[#1d1d1f] sm:mt-3 sm:text-3xl">{loading ? '—' : totalStalls}</p>
+ <p className="mt-1 text-[10px] leading-tight text-[#86868b] sm:text-xs">Kitchen Display System nodes</p>
  </div>
 
  {/* Monetization Model */}
- <div className="rounded-2xl bg-white p-5 ">
+ <div className="min-w-0 rounded-2xl bg-white p-3 sm:p-5">
  <div className="flex items-center justify-between text-[#86868b]">
- <span className="text-xs font-semibold">Fee distribution</span>
+ <span className="min-w-0 text-[10px] font-semibold leading-tight sm:text-xs">Fee distribution</span>
  <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center">
  <Coins className="w-4 h-4" />
  </div>
  </div>
- <div className="mt-3 flex items-baseline gap-2">
- <span className="text-3xl font-semibold tracking-tight text-[#1d1d1f]">{dinerFeeCount}</span>
- <span className="text-xs text-[#6e6e73]">Diner Surcharge / {stallFeeCount} Stall Comm.</span>
+ <div className="mt-3 grid grid-cols-2 gap-2">
+ <div>
+ <span className="block text-2xl font-semibold tracking-tight text-[#1d1d1f] sm:text-3xl">{dinerFeeCount}</span>
+ <span className="text-[9px] leading-tight text-[#6e6e73] sm:text-[10px]">Diner fee venues</span>
  </div>
- <p className="mt-1 text-xs text-amber-800 font-medium">Configurable per venue</p>
+ <div>
+ <span className="block text-2xl font-semibold tracking-tight text-[#1d1d1f] sm:text-3xl">{stallFeeCount}</span>
+ <span className="text-[9px] leading-tight text-[#6e6e73] sm:text-[10px]">Stall fee venues</span>
+ </div>
+ </div>
+ <p className="mt-1 text-[10px] font-medium text-amber-800 sm:text-xs">Configurable per venue</p>
  </div>
 
  {/* Security & RBAC Status */}
- <div className="rounded-2xl bg-white p-5 ">
+ <div className="min-w-0 rounded-2xl bg-white p-3 sm:p-5">
  <div className="flex items-center justify-between text-[#86868b]">
- <span className="text-xs font-semibold">Security & RLS</span>
+ <span className="min-w-0 text-[10px] font-semibold leading-tight sm:text-xs">Security & RLS</span>
  <div className="w-8 h-8 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center">
  <ShieldCheck className="w-4 h-4" />
  </div>
  </div>
  <div className="mt-3 flex items-center gap-1.5">
- <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
- <span className="text-sm font-semibold text-[#1d1d1f]">Database Triggers</span>
+ <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
+ <span className="text-xs font-semibold leading-tight text-[#1d1d1f] sm:text-sm">Database Triggers</span>
  </div>
- <p className="mt-1 text-xs text-[#86868b]">Engine-level 42501 fee protection active</p>
+ <p className="mt-1 text-[10px] leading-tight text-[#86868b] sm:text-xs">Engine-level 42501 fee protection active</p>
  </div>
  </div>
 

@@ -69,6 +69,30 @@ test('isOperatingOpen respects day marked as closed in schedule', () => {
  assert.equal(isOperatingOpen(schedule, true, monday2pm), false);
 });
 
+test('date exceptions close a scheduled stall for one calendar day', () => {
+ const schedule: OperatingSchedule = {
+ enabled: true,
+ weekly: DEFAULT_WEEKLY_SCHEDULE,
+ timezone: 'Asia/Kuala_Lumpur',
+ exceptions: [{ date: '2026-09-21', isOpen: false }],
+ };
+
+ assert.equal(isOperatingOpen(schedule, true, new Date('2026-09-21T06:00:00Z')), false);
+ assert.equal(isOperatingOpen(schedule, true, new Date('2026-09-22T06:00:00Z')), true);
+});
+
+test('date exceptions can set special opening hours for a single day', () => {
+ const schedule: OperatingSchedule = {
+ enabled: false,
+ weekly: DEFAULT_WEEKLY_SCHEDULE,
+ timezone: 'Asia/Kuala_Lumpur',
+ exceptions: [{ date: '2026-09-21', isOpen: true, open: '12:00', close: '18:00' }],
+ };
+
+ assert.equal(isOperatingOpen(schedule, false, new Date('2026-09-21T04:30:00Z')), true);
+ assert.equal(isOperatingOpen(schedule, false, new Date('2026-09-21T11:00:00Z')), false);
+});
+
 test('resolveEffectiveStallStatus enforces dual-layer master override rules', () => {
  const openDate = new Date('2026-09-21T14:00:00');
 

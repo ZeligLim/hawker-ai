@@ -6,12 +6,13 @@ import {
  resolveUserDestination,
  resolveSignOutDestination,
 } from './auth-redirect.ts';
+import { isCentreCustomerRoute } from './customer-routes.ts';
 
 test('sanitizeRedirectPath allows safe relative paths and blocks open redirects & auth loops', () => {
   // Safe relative paths
  assert.equal(sanitizeRedirectPath('/shop-owner/profile'), '/shop-owner/profile');
  assert.equal(sanitizeRedirectPath('/shop-owner/booths'), '/shop-owner/booths');
- assert.equal(sanitizeRedirectPath('/stall'), '/stall');
+ assert.equal(sanitizeRedirectPath('/customer'), '/customer');
 
   // Blocks open-redirect attacks
  assert.equal(sanitizeRedirectPath('https://evil.com'), null);
@@ -83,7 +84,7 @@ test('resolveUserDestination directs existing shop owner to /shop-owner/booths b
  assert.equal(destination, '/shop-owner/booths');
 });
 
-test('resolveUserDestination directs stall merchant to /owner by default', async () => {
+test('resolveUserDestination directs stall merchant to their scoped workspace by default', async () => {
  const mockUser = { id: 'usr-merchant-789', email: 'merchant@example.com' } as any;
 
   // Mock Supabase client returning no restaurant membership, but merchant_memberships
@@ -96,7 +97,7 @@ test('resolveUserDestination directs stall merchant to /owner by default', async
  return { data: [], error: null };
             }
  if (table === 'merchant_memberships') {
- return { data: [{ id: 'mm-1', food_outlet_id: 'fo-1', role: 'owner' }], error: null };
+ return { data: [{ id: 'mm-1', food_outlet_id: 'fo-12345678', food_outlets: { name: 'Ah Huat Curry Mee' }, role: 'owner' }], error: null };
             }
  return { data: [], error: null };
           },
@@ -106,10 +107,10 @@ test('resolveUserDestination directs stall merchant to /owner by default', async
   } as any;
 
  const destination = await resolveUserDestination(mockClient, mockUser, null);
- assert.equal(destination, '/owner');
+ assert.equal(destination, '/ah-huat-curry-mee-fo-12345/owner/orders');
 });
 
-test('resolveUserDestination directs regular diner to /stall by default', async () => {
+test('resolveUserDestination directs regular diner to the public landing page by default', async () => {
  const mockUser = { id: 'usr-diner-101', email: 'diner@example.com' } as any;
 
  const mockClient = {
@@ -123,17 +124,14 @@ test('resolveUserDestination directs regular diner to /stall by default', async 
   } as any;
 
  const destination = await resolveUserDestination(mockClient, mockUser, null);
- assert.equal(destination, '/stall');
+ assert.equal(destination, '/');
 });
 
 test('Customer intent route classification: guest mode applies strictly within customer app routes', () => {
  const isCustomerRoute = (redirectParam?: string | null): boolean => {
  return Boolean(
  redirectParam &&
-        (redirectParam.startsWith('/stall') ||
- redirectParam.startsWith('/menu') ||
- redirectParam.startsWith('/orders') ||
-
+ (isCentreCustomerRoute(redirectParam.split('?')[0]) ||
  redirectParam.startsWith('/shop/') ||
  redirectParam === '/shop' ||
  redirectParam.startsWith('/results'))
@@ -141,9 +139,13 @@ test('Customer intent route classification: guest mode applies strictly within c
   };
 
   // Customer app routes allow guest mode
- assert.equal(isCustomerRoute('/stall'), true);
- assert.equal(isCustomerRoute('/menu'), true);
- assert.equal(isCustomerRoute('/orders'), true);
+ assert.equal(isCustomerRoute('/stall'), false);
+ assert.equal(isCustomerRoute('/bukit-bintang/menu'), true);
+ assert.equal(isCustomerRoute('/bukit-bintang/orders?orderId=123'), true);
+ assert.equal(isCustomerRoute('/menu'), false);
+ assert.equal(isCustomerRoute('/orders'), false);
+ assert.equal(isCustomerRoute('/bukit-bintang'), true);
+ assert.equal(isCustomerRoute('/scan'), false);
 
  assert.equal(isCustomerRoute('/shop/madam-kwan'), true);
  assert.equal(isCustomerRoute('/results?query=laksa'), true);
@@ -154,7 +156,7 @@ test('Customer intent route classification: guest mode applies strictly within c
  assert.equal(isCustomerRoute('/'), false);
  assert.equal(isCustomerRoute('/shop-owner/profile'), false);
  assert.equal(isCustomerRoute('/owner'), false);
- assert.equal(isCustomerRoute('/owner/orders'), false);
+ assert.equal(isCustomerRoute('/ah-huat-curry-mee-1234/owner/orders'), false);
  assert.equal(isCustomerRoute('/shop-owner/booths'), false);
  assert.equal(isCustomerRoute('/pricing'), false);
  assert.equal(isCustomerRoute('/customer'), false); // Customer landing page is public marketing, not guest app
@@ -173,7 +175,7 @@ test('Marketing nav role detection & dashboard visibility logic', () => {
  hasBoth,
  showStartFree,
  dashboardType: hasBoth ? 'dropdown' : hasShop ? 'shop' : hasStall ? 'stall' : 'none',
- targetHref: hasBoth ? null : hasShop ? '/shop-owner/booths' : hasStall ? '/owner/orders' : null,
+ targetHref: hasBoth ? null : hasShop ? '/shop-owner/booths' : hasStall ? '/ah-huat-curry-mee-1234/owner/orders' : null,
     };
   };
 
@@ -196,7 +198,7 @@ test('Marketing nav role detection & dashboard visibility logic', () => {
  assert.equal(stallOnlyState.hasDashboard, true);
  assert.equal(stallOnlyState.hasBoth, false);
  assert.equal(stallOnlyState.dashboardType, 'stall');
- assert.equal(stallOnlyState.targetHref, '/owner/orders');
+ assert.equal(stallOnlyState.targetHref, '/ah-huat-curry-mee-1234/owner/orders');
  assert.equal(stallOnlyState.showStartFree, true); // Shown to allow registering a shop
 
   // 4. Dual Role Account (both Shop Owner AND Stall Worker)
@@ -206,4 +208,3 @@ test('Marketing nav role detection & dashboard visibility logic', () => {
  assert.equal(dualRoleState.dashboardType, 'dropdown'); // Renders dropdown with both options
  assert.equal(dualRoleState.showStartFree, false); // Hidden because shop onboarding is complete
 });
-

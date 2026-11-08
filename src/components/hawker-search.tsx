@@ -9,6 +9,7 @@ import type { SearchResult } from '@/shared/schemas/search';
 import { addItemToCart, buildCartSummary, removeCartItem, updateCartItemQuantity, useCartItems } from '@/lib/order/cart';
 import { useCartAdd } from '@/components/use-cart-add';
 import { ButtonLoader } from '@/components/page-loader';
+import { getStoredTableSession } from '@/lib/table-session';
 
 const quickIdeas = [
  'I want a halal meal under RM15',
@@ -97,7 +98,12 @@ export function HawkerSearch({ initialQuery = 'I want a vegetarian meal under RM
 
  const handleCheckout = () => {
  if (cartItems.length === 0) return;
- router.push('/orders' as any);
+ const tableSession = getStoredTableSession();
+ if (!tableSession?.centreSlug || !tableSession.tableId) {
+ setCheckoutMessage('Open the menu from your table QR code before placing an order.');
+ return;
+ }
+ router.push(`/${encodeURIComponent(tableSession.centreSlug)}/orders?table_id=${encodeURIComponent(tableSession.tableId)}`);
  };
 
  const handleUpdateQuantity = (itemId: string, quantity: number) => {
@@ -298,7 +304,7 @@ export function HawkerSearch({ initialQuery = 'I want a vegetarian meal under RM
  </div>
 
  {checkoutMessage && (
- <div className="mt-5 rounded-[22px] bg-[#ecfdf5] p-3 text-sm font-medium text-[#166534]">
+ <div className="mt-5 rounded-[22px] bg-[#fff1f2] p-3 text-sm font-medium text-[#9f1239]">
  {checkoutMessage}
  </div>
  )}

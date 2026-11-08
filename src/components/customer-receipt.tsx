@@ -23,6 +23,7 @@ export type ReceiptData = {
  subtotal: number;
  serviceFee: number;
  total: number;
+ paymentStatus?: 'PENDING' | 'PROCESSING' | 'PAID' | 'PARTIALLY_REFUNDED' | 'FULLY_REFUNDED' | 'FAILED' | 'CANCELLED';
  status: 'PENDING' | 'CONFIRMED' | 'PREPARING' | 'READY' | 'COMPLETED' | 'CANCELLATION_REQUESTED' | 'CANCELLED';
  createdAt: string;
  items: ReceiptItem[];
@@ -141,6 +142,12 @@ export function CustomerReceipt({
         )}
       </div>
 
+      {data.paymentStatus === 'PENDING' && (
+        <div className="bg-amber-50 px-4 py-3 text-center text-xs font-medium text-amber-900">
+          Pay {`RM ${data.total.toFixed(2)}`} at the counter. No online payment was taken.
+        </div>
+      )}
+
       {cancelError && (
         <div className="bg-rose-100 px-4 py-3 flex items-start gap-2.5 text-xs text-rose-900">
           <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
@@ -240,7 +247,7 @@ export function CustomerReceipt({
 
             <div className="flex items-center justify-between text-xs text-neutral-600">
               <div className="flex items-center gap-1.5">
-                <span>Platform Fee</span>
+                <span>Online payment fee</span>
                 <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-black/5 text-neutral-600 font-semibold">
                   Flat
                 </span>
@@ -249,7 +256,7 @@ export function CustomerReceipt({
             </div>
 
             <div className="pt-2 flex items-center justify-between text-sm font-bold text-black">
-              <span>Total Paid</span>
+              <span>{data.paymentStatus === 'PENDING' ? 'Total due at counter' : 'Total'}</span>
               <span className="text-base">RM {data.total.toFixed(2)}</span>
             </div>
             

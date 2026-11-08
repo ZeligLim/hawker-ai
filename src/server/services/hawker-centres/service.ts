@@ -158,6 +158,7 @@ export const RESERVED_CENTRE_SLUGS = new Set([
   'auth',
   'booths',
   'customer',
+  'hawker',
   'home',
   'menu',
   'orders',

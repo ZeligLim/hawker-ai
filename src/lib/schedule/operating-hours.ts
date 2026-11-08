@@ -12,6 +12,14 @@ export interface OperatingSchedule {
  enabled: boolean;
  weekly: WeeklySchedule;
  timezone?: string;
+ exceptions?: OperatingScheduleException[];
+}
+
+export interface OperatingScheduleException {
+ date: string;
+ isOpen: boolean;
+ open?: string;
+ close?: string;
 }
 
 export const DAYS_OF_WEEK: { key: DayOfWeek; label: string }[] = [
@@ -99,19 +107,43 @@ export function isOperatingOpen(
  manualIsOpen?: boolean,
  now: Date = new Date()
 ): boolean {
+ const timezone = schedule?.timezone || 'UTC';
+ const parts = new Intl.DateTimeFormat('en-US', {
+ timeZone: timezone,
+ year: 'numeric',
+ month: '2-digit',
+ day: '2-digit',
+ weekday: 'short',
+ hour: '2-digit',
+ minute: '2-digit',
+ hourCycle: 'h23',
+ }).formatToParts(now);
+ const value = (type: Intl.DateTimeFormatPartTypes) =>
+ parts.find((part) => part.type === type)?.value ?? '';
+ const dateKey = `${value('year')}-${value('month')}-${value('day')}`;
+ const currentHHMM = `${value('hour')}:${value('minute')}`;
+ const exception = schedule?.exceptions?.find((item) => item.date === dateKey);
+
+ if (exception) {
+ if (!exception.isOpen) return false;
+ if (exception.open && exception.close) {
+ return isTimeInSlot(exception.open, exception.close, currentHHMM);
+ }
+ }
+
   // If schedule is not configured or automated scheduling is disabled, honor manual toggle
  if (!schedule || !schedule.enabled) {
  return manualIsOpen !== false;
   }
 
- const dayKey = getDayKeyFromDate(now);
+ const weekday = value('weekday').toLowerCase().slice(0, 3);
+ const dayKey = weekday as DayOfWeek;
  const dayConfig = schedule.weekly?.[dayKey];
 
  if (!dayConfig || !dayConfig.isOpen) {
  return false;
   }
 
- const currentHHMM = formatTimeHHMM(now);
  return isTimeInSlot(dayConfig.open, dayConfig.close, currentHHMM);
 }
 

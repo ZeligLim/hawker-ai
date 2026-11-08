@@ -1348,20 +1348,12 @@ export default function LandingPage() {
  <div>
  <p className="font-bold text-[#1d1d1f] mb-2.5">Merchants</p>
  <ul className="space-y-2 text-[11px] sm:text-xs">
- <li><Link href="/auth?redirect=/owner" className="hover:text-[#1d1d1f]">Merchant Sign In</Link></li>
+ <li><Link href="/auth" className="hover:text-[#1d1d1f]">Merchant Sign In</Link></li>
  <li><a href="#how-it-works" className="hover:text-[#1d1d1f]">Stall Join (Email Only)</a></li>
  <li><a href="#features" className="hover:text-[#1d1d1f]">Menu Modifiers</a></li>
  </ul>
  </div>
 
- <div>
- <p className="font-bold text-[#1d1d1f] mb-2.5">Diners</p>
- <ul className="space-y-2 text-[11px] sm:text-xs">
- <li><Link href="/stall" className="hover:text-[#1d1d1f]">Diner Web App</Link></li>
-
- <li><Link href="/menu" className="hover:text-[#1d1d1f]">Browse Menus</Link></li>
- </ul>
- </div>
  </div>
 
  <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-[#86868b]">

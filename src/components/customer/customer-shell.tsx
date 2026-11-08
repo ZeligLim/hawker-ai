@@ -1,23 +1,15 @@
 'use client';
 
-import React from 'react';
-import { usePathname, useSearchParams } from 'next/navigation';
-import { Suspense } from 'react';
-import { House, Store, UtensilsCrossed, ClipboardList, UserRound } from 'lucide-react';
+import React, { Suspense, useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
+import { ClipboardList, UserRound, UtensilsCrossed } from 'lucide-react';
 import { ClientBottomNav } from '@/components/shared/client-bottom-nav';
 import { ComponentLoader } from '@/components/page-loader';
-import dynamic from 'next/dynamic';
-
-
 import { getStoredTableSession, type CurrentTableSession } from '@/lib/table-session';
-import { useState, useEffect } from 'react';
 
 
 function CustomerShellContent({ children }: { children: React.ReactNode }) {
  const pathname = usePathname();
- const searchParams = useSearchParams();
- const centreParam = searchParams.get('centre') || searchParams.get('slug');
- const isHomePage = pathname === '/stall';
  const [session, setSession] = useState<CurrentTableSession | null>(null);
 
  useEffect(() => {
@@ -31,19 +23,27 @@ function CustomerShellContent({ children }: { children: React.ReactNode }) {
     };
   }, [pathname]);
 
- const activeCentreSlug = centreParam || session?.centreSlug;
- const suffix = activeCentreSlug ? `?centre=${encodeURIComponent(activeCentreSlug)}` : '';
-
  const customerNavItems = [
-    { href: `/stall${suffix}`, label: 'Stall', icon: Store },
-    { href: `/menu${suffix}`, label: 'Menu', icon: UtensilsCrossed },
-    { href: '/orders', label: 'Orders', icon: ClipboardList },
-    { href: '/profile', label: 'Profile', icon: UserRound },
-  ];
+ ...(session?.tableId && session.centreSlug
+ ? [
+ {
+ href: `/${encodeURIComponent(session.centreSlug)}/menu?table_id=${encodeURIComponent(session.tableId)}`,
+ label: 'Menu',
+ icon: UtensilsCrossed,
+ },
+ {
+ href: `/${encodeURIComponent(session.centreSlug)}/orders?table_id=${encodeURIComponent(session.tableId)}`,
+ label: 'Orders',
+ icon: ClipboardList,
+ },
+ ]
+ : []),
+ { href: '/profile', label: 'Profile', icon: UserRound },
+ ];
 
  return (
-    <div className={`relative ${isHomePage ? 'h-screen w-screen overflow-hidden' : 'min-h-screen'} bg-[#f5f5f7] text-black`}>
-      <main className={isHomePage ? 'h-full w-full overflow-hidden' : 'pb-24'}>{children}</main>
+    <div className="relative min-h-screen bg-[#f5f5f7] text-black">
+      <main className="pb-24">{children}</main>
       <ClientBottomNav
  items={customerNavItems}
  theme="customer"

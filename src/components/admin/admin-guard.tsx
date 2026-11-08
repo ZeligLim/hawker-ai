@@ -44,10 +44,10 @@ export function AdminGuard({ children }: { children: React.ReactNode }) {
  <LogIn className="h-4 w-4" /> Sign In as Superadmin
  </Link>
  <Link
- href={'/stall' as any}
+ href={'/' as any}
  className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-white py-3 text-xs sm:text-sm font-medium text-[#1d1d1f] hover:bg-black/[0.03] "
  >
- <ArrowLeft className="h-4 w-4" /> Return to Diner App
+ <ArrowLeft className="h-4 w-4" /> Return to website
  </Link>
  </div>
  </div>
@@ -78,10 +78,10 @@ export function AdminGuard({ children }: { children: React.ReactNode }) {
  </p>
  <div className="mt-6 flex flex-col sm:flex-row gap-2.5">
  <Link
- href={'/stall' as any}
+ href={'/' as any}
  className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl bg-white py-2.5 text-xs font-semibold text-[#1d1d1f] hover:bg-black/[0.03] "
  >
- <ArrowLeft className="h-3.5 w-3.5" /> Diner App
+ <ArrowLeft className="h-3.5 w-3.5" /> Public website
  </Link>
  {roles.hasShopOwner && (
  <Link

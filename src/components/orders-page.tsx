@@ -6,7 +6,6 @@ import { useEffect, useMemo, useState, useCallback } from "react";
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { CustomizationCard } from "@/components/customization-card";
-import { useAuth } from "@/components/auth-provider";
 import {
  buildCartSummary,
  updateCartItemCustomization,
@@ -26,18 +25,25 @@ import {
  getActiveOrder,
  clearActiveOrder,
 } from "@/lib/active-order";
+import { PageLoader } from "@/components/page-loader";
+import { connectTableFromLink } from "@/lib/customer-table-link";
 
-export default function OrdersPage() {
+export default function OrdersPage(
+ { centreSlug, tableId }: { centreSlug: string; tableId: string },
+) {
  const searchParams = useSearchParams();
  const returnOrderId = searchParams.get('orderId');
  const { cartItems, setCartItems } = useCartItems();
  const router = useRouter();
- const { status, isGuest } = useAuth();
+ const [tableLinkStatus, setTableLinkStatus] = useState<'checking' | 'ready' | 'invalid'>(
+ tableId ? 'checking' : 'invalid',
+ );
+ const [tableLinkError, setTableLinkError] = useState(
+ tableId ? '' : 'Open orders using the table QR code or the link from its menu.',
+ );
  const [customizingItem, setCustomizingItem] = useState<CartItem | null>(null);
  const [checkoutState, setCheckoutState] = useState<
     | "idle"
-    | "generating_intent"
-    | "tng_redirect"
     | "submitting"
     | "success"
   >("idle");
@@ -45,7 +51,27 @@ export default function OrdersPage() {
  const [placedReceipt, setPlacedReceipt] = useState<ReceiptData | null>(null);
 
  useEffect(() => {
- if (returnOrderId) {
+ let active = true;
+ if (!tableId) return;
+ void connectTableFromLink(tableId, centreSlug)
+ .then(() => {
+ if (!active) return;
+ const activeOrder = getActiveOrder(tableId);
+ if (activeOrder) setPlacedReceipt(activeOrder);
+ setTableLinkStatus('ready');
+ })
+ .catch((error: unknown) => {
+ if (!active) return;
+ setTableLinkError(error instanceof Error ? error.message : 'Could not verify this table link.');
+ setTableLinkStatus('invalid');
+ });
+ return () => {
+ active = false;
+ };
+ }, [centreSlug, tableId]);
+
+ useEffect(() => {
+ if (returnOrderId && tableLinkStatus === 'ready') {
       // Poll or fetch receipt
  let active = true;
  const fetchReceipt = async () => {
@@ -59,7 +85,7 @@ export default function OrdersPage() {
  if (data.receipt.paymentStatus === 'PAID') {
  setCartItems([]);
  setCheckoutState("success");
- router.replace('/orders'); // Clean URL
+ router.replace(`/${centreSlug}/orders?table_id=${encodeURIComponent(tableId)}`);
               }
             }
           }
@@ -73,17 +99,7 @@ export default function OrdersPage() {
  fetchReceipt();
  return () => { active = false; clearInterval(timer); };
     }
-  }, [returnOrderId, router, setCartItems, placedReceipt]);
-
-  
-
- useEffect(() => {
- const active = getActiveOrder(getCurrentTableSession().tableId ?? null);
- if (active) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-setPlacedReceipt(active);
-    }
-  }, [placedReceipt]);
+  }, [returnOrderId, router, setCartItems, placedReceipt, tableLinkStatus, centreSlug, tableId]);
 
  useEffect(() => {
  if (cartItems.length > 0 && checkoutState === "success") {
@@ -91,51 +107,9 @@ setPlacedReceipt(active);
 setCheckoutState("idle");
     }
   }, [cartItems.length, checkoutState]);
- const [feeConfig, setFeeConfig] = useState<any>(undefined);
- const [isFeeConfigLoading, setIsFeeConfigLoading] = useState(true);
-
- const firstStallId = cartItems.length > 0 ? cartItems[0].stallId : null;
- useEffect(() => {
- let active = true;
- async function fetchFeeConfig() {
- if (cartItems.length === 0) {
- setIsFeeConfigLoading(false);
- return;
-      }
- setIsFeeConfigLoading(true);
- try {
- const res = await fetch(`/api/outlets?id=${cartItems[0].stallId}`);
- if (!res.ok) return;
- const data = await res.json();
- if (active && data.outlets?.[0]) {
- const outlet = data.outlets[0];
- const r = Array.isArray(outlet.restaurants)
-            ? outlet.restaurants[0]
-            : outlet.restaurants;
- setFeeConfig({
- feePayer: r?.fee_payer ?? outlet.fee_payer ?? "CUSTOMER",
- platformFeeFixed: Number(
- r?.platform_fee_fixed ?? outlet.platform_fee_fixed ?? 0.5,
-            ),
- platformFeePercent: Number(
- r?.platform_fee_percent ?? outlet.platform_fee_percent ?? 0.0,
-            ),
-          });
-        }
-      } catch {
-      } finally {
- if (active) setIsFeeConfigLoading(false);
-      }
-    }
- fetchFeeConfig();
- return () => {
- active = false;
-    };
-  }, [firstStallId, cartItems]);
-
  const summary = useMemo(
-    () => buildCartSummary(cartItems, feeConfig),
-    [cartItems, feeConfig],
+    () => buildCartSummary(cartItems, { platformFeeFixed: 0, platformFeePercent: 0 }),
+    [cartItems],
   );
 
  const updateQuantity = (itemId: string, quantity: number) => {
@@ -184,7 +158,7 @@ setCheckoutState("idle");
 
  try {
  const session = getCurrentTableSession();
- if (!session || !session.tableId) {
+ if (!session.tableId || !session.sessionId || session.tableId !== tableId || session.centreSlug?.toLowerCase() !== centreSlug.toLowerCase()) {
  throw new Error("No active table session found");
       }
 
@@ -216,14 +190,10 @@ setCheckoutState("idle");
  method: "POST",
  headers,
  body: JSON.stringify({
- tableSessionId: getCurrentTableSession().tableId ?? null,
+ tableSessionId: getCurrentTableSession().sessionId ?? null,
  subtotal: summary.subtotal,
  serviceFee: summary.serviceFee,
  total: summary.total,
- subtotalAmount: summary.subtotal,
- platformFeeAmount: summary.serviceFee,
- totalAmount: summary.total,
- merchantPayoutAmount: summary.merchantPayoutAmount,
  items: cartItems.map((item) => ({
  dishId: item.dishId,
  stallId: item.stallId,
@@ -254,6 +224,7 @@ setCheckoutState("idle");
  subtotal: summary.subtotal,
  serviceFee: summary.serviceFee,
  total: summary.total,
+ paymentStatus: 'PENDING',
  status: "PENDING",
  items: cartItems.map((item) => ({
  id: item.id,
@@ -268,12 +239,24 @@ setCheckoutState("idle");
  saveActiveOrder(receiptData, getCurrentTableSession().tableId ?? null);
  setCheckoutState("success");
     },
-    [cartItems, summary, setCartItems, supabase],
+    [cartItems, summary, setCartItems],
   );
 
-  
+  if (tableLinkStatus === 'checking') {
+  return <PageLoader text="Checking table session" />;
+  }
+  if (tableLinkStatus === 'invalid') {
+  return (
+  <main className="flex min-h-[70vh] items-center justify-center px-4 text-center">
+  <div className="max-w-sm rounded-3xl bg-white p-6">
+  <h1 className="text-lg font-bold text-black">Table link unavailable</h1>
+  <p className="mt-2 text-sm text-neutral-500">{tableLinkError}</p>
+  </div>
+  </main>
+  );
+  }
 
- return (
+  return (
     <main className="min-h-screen bg-[#f5f5f7] px-4 pb-32 pt-5 text-black sm:px-6">
       <div className="mx-auto w-full max-w-md sm:max-w-xl md:max-w-3xl lg:max-w-5xl">
         <div className="md:grid md:grid-cols-[1fr_360px] lg:grid-cols-[1fr_380px] md:gap-6 md:items-start">
@@ -297,10 +280,10 @@ setCheckoutState("idle");
                   Add dishes from the menu to start ordering.
                 </p>
                 <Link
- href="/stall"
+ href={`/${centreSlug}/menu?table_id=${encodeURIComponent(tableId)}`}
  className="mt-4 inline-flex h-11 items-center justify-center rounded-full bg-black hover:bg-neutral-800 px-6 text-sm font-semibold text-white "
                 >
-                  Browse dishes
+                  Back to menu
                 </Link>
               </div>
             ) : (
@@ -385,7 +368,7 @@ setCheckoutState("idle");
 
                 <div className="pt-2">
                   <Link
- href="/stall"
+ href={`/${centreSlug}/menu?table_id=${encodeURIComponent(tableId)}`}
  className="inline-flex items-center text-xs font-semibold text-black hover:underline"
                   >
                     + Add more dishes
@@ -402,18 +385,7 @@ setCheckoutState("idle");
                 <span>Order summary</span>
               </div>
 
-              {isFeeConfigLoading ? (
-                <div className="mt-4 space-y-4 ">
-                  <div className="h-9 w-32 bg-white/20 rounded-lg"></div>
-                  <div className="h-4 w-48 bg-white/10 rounded"></div>
-                  <div className="mt-5 space-y-2.5 pt-4">
-                    <div className="h-4 w-full bg-white/10 rounded"></div>
-                    <div className="h-4 w-full bg-white/10 rounded"></div>
-                    <div className="h-5 w-full bg-white/20 rounded pt-2"></div>
-                  </div>
-                </div>
-              ) : (
-                <>
+              <>
                   <div className="mt-4">
                     <p className="text-3xl font-bold tracking-tight">
                       RM {summary.total.toFixed(2)}
@@ -435,21 +407,6 @@ setCheckoutState("idle");
                           RM {summary.subtotal.toFixed(2)}
                         </span>
                       </div>
-                      {feeConfig?.feePayer !== "MERCHANT" && (
-                        <div className="flex justify-between text-white/75">
-                          <span className="flex items-center gap-1.5">
-                            Platform Fee
-                            <span className="text-[10px] text-white bg-white/20 px-2 py-0.5 rounded-full font-semibold">
-                              {feeConfig?.platformFeePercent > 0
-                                ? `${(feeConfig.platformFeePercent * 100).toFixed(1)}%`
-                                : "Flat"}
-                            </span>
-                          </span>
-                          <span className="font-semibold text-white">
-                            RM {summary.serviceFee.toFixed(2)}
-                          </span>
-                        </div>
-                      )}
                       <div className="flex justify-between text-sm font-bold text-white pt-2">
                         <span>Total</span>
                         <span className="text-base">
@@ -458,27 +415,25 @@ setCheckoutState("idle");
                       </div>
                     </div>
                   )}
+                  <p className="mt-3 text-center text-xs text-white/70">
+                    No online payment required. Pay at the counter.
+                  </p>
                 </>
-              )}
               <button
  type="button"
  onClick={handleCheckout}
  disabled={
- checkoutState === "generating_intent" ||
  checkoutState === "submitting" ||
  checkoutState === "success" ||
- cartItems.length === 0 ||
- isFeeConfigLoading
+ cartItems.length === 0
                   }
  className="mt-6 flex h-11 w-full items-center justify-center rounded-full bg-white px-5 text-sm font-semibold text-black disabled:opacity-50 hover:bg-neutral-100 "
                 >
-                  {checkoutState === "generating_intent"
-                    ? "Secure Checkout..."
-                    : checkoutState === "submitting"
+                  {checkoutState === "submitting"
                       ? "Processing Order..."
                       : checkoutState === "success"
-                        ? "Paid!"
-                        : "Pay with TNG"}
+                        ? "Order placed"
+                        : "Place order"}
                 </button>
 
               {checkoutError && (
@@ -488,7 +443,7 @@ setCheckoutState("idle");
               )}
               {checkoutState === "success" && (
                 <p className="mt-3 text-center text-xs text-emerald-300 bg-emerald-950/60 p-2.5 rounded-xl font-medium">
-                  Order placed successfully!
+                  Order placed successfully. Please pay at the counter.
                 </p>
               )}
             </section>

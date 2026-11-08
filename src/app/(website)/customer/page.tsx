@@ -122,11 +122,11 @@ export default function CustomerLandingPage() {
  {/* Right Action Buttons */}
  <div className="hidden sm:flex items-center gap-2.5 shrink-0">
  <Link
- href="/scan"
+ href="#how-it-works"
  className="inline-flex items-center gap-1.5 text-xs font-semibold text-black px-4 py-2 rounded-full bg-neutral-100 hover:bg-neutral-200 "
  >
  <QrCode className="w-3.5 h-3.5 text-black" />
- <span>Scan QR</span>
+ <span>Use table QR</span>
  </Link>
 
 
@@ -151,12 +151,12 @@ export default function CustomerLandingPage() {
  {/* Mobile Actions */}
  <div className="flex sm:hidden items-center gap-2">
  <Link
- href="/scan"
+ href="#how-it-works"
  className="inline-flex items-center gap-1 text-xs font-semibold text-[#1d1d1f] bg-white px-2.5 py-1.5 rounded-full "
- aria-label="Scan QR"
+ aria-label="Use table QR"
  >
  <QrCode className="w-3.5 h-3.5 text-[#0071e3]" />
- <span>Scan</span>
+ <span>QR</span>
  </Link>
 
  <button
@@ -410,12 +410,6 @@ export default function CustomerLandingPage() {
  </h2>
  </div>
 
- <Link
- href="/stall"
- className="inline-flex items-center gap-1 text-xs font-semibold text-[#0071e3] hover:underline"
- >
- Browse all stalls & dishes <ArrowRight className="w-3.5 h-3.5" />
- </Link>
  </div>
 
  {loadingHalls ? (
@@ -456,12 +450,9 @@ export default function CustomerLandingPage() {
  ) : null}
  </div>
 
- <Link
- href={`/stall/${hall.id || 'centre'}/${hall.slug}` as any}
- className="w-full inline-flex items-center justify-center py-2.5 rounded-full bg-white hover:bg-black/[0.02] text-xs font-semibold text-[#1d1d1f] "
- >
- View Food Centre ({hall.stallsCount} {hall.stallsCount === 1 ? 'Stall' : 'Stalls'})
- </Link>
+ <p className="text-center text-[10px] font-medium text-[#6e6e73]">
+ Scan a table QR code to open this centre&apos;s menu
+ </p>
  </div>
  ))}
  </div>
@@ -548,7 +539,7 @@ export default function CustomerLandingPage() {
  <span>• Digital Food Court Table Ordering</span>
  </div>
  <div className="flex items-center gap-4 text-[#86868b]">
- <Link href="/stall" className="hover:text-[#1d1d1f]">Dishes</Link>
+ <Link href="#food-halls" className="hover:text-[#1d1d1f]">Centres</Link>
 
  <span>&bull;</span>
  <a href="#faq" className="hover:text-[#1d1d1f]">FAQ</a>

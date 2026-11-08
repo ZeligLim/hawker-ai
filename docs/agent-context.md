@@ -49,7 +49,7 @@
 
 ## Phase 8: UI Updates
 - Removed the customer `/home` page entirely.
-- Redirected the default authenticated customer route from `/home` to `/stall`.
+- Customer sign-in defaults to the public landing page; table ordering is entered through centre- and table-specific QR links.
 - Removed references to the `HomePage` component and the `/home` route in multiple places including navigation, redirects, and guards.
 
 ## Phase 9: React Best Practices Optimization & Code Quality Audit
@@ -64,7 +64,7 @@
 - Standardised UI Loading states (`PageLoader`, `ComponentLoader`, `ButtonLoader`, `SkeletonLoader`) replacing custom inconsistent spinners globally.
 - Created `api/owner/tables` and `/shop-owner/tables` allowing Centre Owners to spawn tables natively linked to `hawker_tables`.
 - Added QR code generation (`qrcode.react`) and Print/Save functionality for Centre Owners.
-- Resurrected the `/(customer)/scan` route using `@yudiel/react-qr-scanner`, parsing `outlet_id` and `table_id`, creating a `table_session`, and pushing the user seamlessly to the menu ordering screen.
+- Table QR codes link directly to the centre menu with the table ID in the URL; diners use the iPhone camera to open that link.
 
 ## Phase 11: Simplified Order Management and Cancellation Workflow
 - Removed all obsolete payment integrations, checkouts, and backend gateways for V1.
@@ -73,3 +73,27 @@
 - Enabled stall owners to directly Accept or Reject a customer's cancellation request, gracefully reverting to the order's `previous_status` upon rejection.
 - Executed strict compliance sweep across UI guidelines (removing borders, hover boundaries, standardizing heights).
 - Passed final unit testing, build (`next build`), and typechecks.
+
+## Phase 12: Hawker Centre Analytics Calendar View & Table QR Sticker Generator
+- **Route & Directory Restructuring**:
+  - Created `/hawker/[hawker-slug]/analytics` (`src/app/(center)/hawker/[hawker-slug]/analytics/page.tsx`).
+  - Updated `src/app/(center)/shop-owner/analytics/page.tsx` to automatically redirect users to their owned hawker centre analytics route (`/hawker/[hawker-slug]/analytics`).
+  - Updated `src/components/owner/owner-shell.tsx` bottom navigation to dynamically target the active hawker centre's analytics URL.
+  - Updated `PermissionEngine.getClientForPath` and permissions tests so `/hawker/...` paths belong to the `owner` client app.
+  - Added `'hawker'` to `nonCentreRoutes` and `RESERVED_CENTRE_SLUGS`.
+- **Calendar View System (Stall App Alignment)**:
+  - Built `HawkerCalendar` (`src/components/hawker/hawker-calendar.tsx`) featuring the same unified Day / Month / Year calendar view as `StallCalendar`.
+  - Added live monthly grid showing daily revenue figures (e.g. `RM 1.2k`), order counts, and date selection.
+  - Added Day view order breakdown with stall badges, time, line items, and totals.
+  - Added stall focus dropdown filter to view combined hawker centre totals or isolate individual stall revenue.
+  - Integrated Supabase realtime updates on `merchant_orders`.
+- **Table QR Generation & Physical Sticker Downloads**:
+  - Integrated table management directly into the analytics view.
+  - Added physical sticker preview simulating the card to be pasted on dining tables.
+  - Implemented high-resolution PNG canvas export (`Download Table QR (PNG)`) formatting venue header, table number badge, high-contrast QR code, and diner scan instructions ready for printing.
+  - Implemented direct single-sticker and batch print functionality (`Print All QRs`).
+
+### UI Guidelines: No Top Headers on Operational / Calendar Views
+- **Strictly do not add top page headers** (e.g. `<header>` tags with banners, badges such as 'Venue Analytics & Tables', or outer venue title headers) above calendar or operational views.
+- Calendar views must mount directly into the clean card container (`<section className="rounded-[24px] bg-white p-4 sm:p-6">`), starting immediately with the period navigator and toolbar controls, identical to the Stall App view (`StallCalendar`).
+- Any venue or stall switchers must be integrated cleanly within the inline toolbar controls inside the card, rather than in an external header banner.

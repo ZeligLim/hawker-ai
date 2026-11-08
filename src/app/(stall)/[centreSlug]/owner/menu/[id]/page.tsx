@@ -4,7 +4,9 @@ import Link from 'next/link';
 import { ArrowLeft, ImagePlus, LoaderCircle, Plus, Trash2 } from 'lucide-react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { useAuth } from '@/components/auth-provider';
 import { supabase } from '@/lib/supabase/client';
+import { getStallSlug } from '@/lib/stall-route';
 
 type Dish = {
  id: string;
@@ -26,10 +28,14 @@ function loadCustomizations(dish: Dish | null) {
 }
 
 export default function OwnerDishEditorPage() {
- const params = useParams<{ id: string }>();
+ const params = useParams<{ centreSlug: string; id: string }>();
  const router = useRouter();
  const searchParams = useSearchParams();
  const preselectedBoothId = searchParams.get('boothId');
+ const requestedOutletId = searchParams.get('foodOutletId');
+ const { roles } = useAuth();
+ const routeBooth = roles.booths.find((booth) => getStallSlug(booth) === params.centreSlug);
+ const foodOutletId = routeBooth?.id ?? preselectedBoothId ?? requestedOutletId;
  const isNew = params.id === 'new';
  const [dish, setDish] = useState<Dish | null>(() => isNew ? {
  id: `dish-${Date.now()}`, name: '', category: 'Main course', price: 0, available: true,
@@ -46,18 +52,26 @@ export default function OwnerDishEditorPage() {
 
  useEffect(() => {
  const client = supabase;
- if (!params.id || !client) return;
+ if (!params.id || !client || roles.isLoading) return;
  let active = true;
  const loadDish = async () => {
  setIsLoading(true);
  const token = (await client.auth.getSession()).data.session?.access_token;
  if (!token) {
- if (active) setIsLoading(false);
+ if (active) {
+ setError('Please sign in to load this dish.');
+ setIsLoading(false);
+ }
  return;
  }
- const response = await fetch('/api/owner/dishes', { headers: { Authorization: `Bearer ${token}` } });
+ const query = foodOutletId ? `?foodOutletId=${encodeURIComponent(foodOutletId)}` : '';
+ const response = await fetch(`/api/owner/dishes${query}`, { headers: { Authorization: `Bearer ${token}` } });
  if (!response.ok) {
- if (active) setIsLoading(false);
+ const responseBody = await response.json().catch(() => ({})) as { error?: string };
+ if (active) {
+ setError(responseBody.error || 'Unable to load this dish.');
+ setIsLoading(false);
+ }
  return;
  }
  const payload = await response.json() as { dishes?: Array<Record<string, unknown>>; foodOutletIds?: string[] };
@@ -81,12 +95,19 @@ export default function OwnerDishEditorPage() {
  setTags(loaded.tags?.join(', ') ?? '');
  } else if (isNew && (preselectedBoothId || payload.foodOutletIds?.[0])) {
  setDish((current) => current ? { ...current, foodOutletId: preselectedBoothId || payload.foodOutletIds?.[0] } : current);
+ } else if (!isNew) {
+ setError('This dish is not available in the selected stall menu.');
  }
  setIsLoading(false);
  };
- void loadDish();
+ void loadDish().catch((loadError: unknown) => {
+ if (active) {
+ setError(loadError instanceof Error ? loadError.message : 'Unable to load this dish.');
+ setIsLoading(false);
+ }
+ });
  return () => { active = false; };
- }, [isNew, params.id, preselectedBoothId]);
+ }, [foodOutletId, isNew, params.id, preselectedBoothId, roles.isLoading]);
 
  if (isLoading) {
  return (
@@ -97,7 +118,7 @@ export default function OwnerDishEditorPage() {
  }
 
  if (!dish) {
- return <main className="min-h-screen bg-[#f5f5f7] p-5 text-[#1d1d1f] text-center pt-20"><p className="mb-4 font-medium">Dish not found</p><Link href="/owner/menu" className="inline-flex h-9 items-center justify-center rounded-full bg-[#111827] px-4 text-xs font-semibold text-white hover:bg-black ">Back to menu</Link></main>;
+ return <main className="min-h-screen bg-[#f5f5f7] p-5 text-[#1d1d1f] text-center pt-20"><p className="mb-4 font-medium">{error || 'Dish not found'}</p><Link href={`/${encodeURIComponent(params.centreSlug)}/owner/menu` as any} className="inline-flex h-9 items-center justify-center rounded-full bg-[#111827] px-4 text-xs font-semibold text-white hover:bg-black ">Back to menu</Link></main>;
  }
 
  const updateDish = (changes: Partial<Dish>) => setDish((current) => current ? { ...current, ...changes } : current);
@@ -153,7 +174,7 @@ export default function OwnerDishEditorPage() {
  isAvailable: saved.available,
  tags: saved.tags,
  customizations: saved.customizations,
- imageUrl: dish.imageUrl || null,
+ ...(pendingPhoto ? {} : { imageUrl: dish.imageUrl || null }),
  };
  const response = await fetch(isNew ? '/api/owner/dishes' : `/api/owner/dishes/${dish.id}`, {
  method: isNew ? 'POST' : 'PATCH',
@@ -178,7 +199,7 @@ export default function OwnerDishEditorPage() {
  return;
  }
  }
- router.replace('/owner/menu' as any);
+ router.replace(`/${encodeURIComponent(params.centreSlug)}/owner/menu` as any);
  return;
  setIsSaving(false);
  };
@@ -188,7 +209,7 @@ export default function OwnerDishEditorPage() {
  <div className="mx-auto max-w-[620px]">
  <header className="flex items-center gap-3">
  <Link
- href="/owner/menu"
+ href={`/${encodeURIComponent(params.centreSlug)}/owner/menu` as any}
  className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-[#1d1d1f] hover:bg-neutral-100 "
  aria-label="Back to menu"
  >

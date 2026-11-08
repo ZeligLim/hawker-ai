@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import { NextRequest, NextResponse } from 'next/server';
 import { CreateTableSessionSchema } from '@/shared/schemas/session';
 import { requireRequestUser } from '@/lib/supabase/server';
@@ -55,13 +56,20 @@ export async function POST(request: NextRequest) {
 
  if (!table) return NextResponse.json({ error: 'Table not found.' }, { status: 404 });
 
- const { data, error } = await auth.client
+ const sessionId = randomUUID();
+ const { error } = await auth.client
  .from('table_sessions')
- .insert({ hawker_table_id: table.id, customer_id: auth.user?.id ?? null, status: 'active' })
- .select('id, hawker_table_id, status, created_at')
- .single();
+ .insert({
+ id: sessionId,
+ hawker_table_id: table.id,
+ customer_id: auth.user?.id ?? null,
+ status: 'active',
+ });
  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
- return NextResponse.json({ session: data, table }, { status: 201 });
+ return NextResponse.json({
+ session: { id: sessionId, hawker_table_id: table.id, status: 'active' },
+ table,
+ }, { status: 201 });
 }
 
 export async function GET(request: NextRequest) {

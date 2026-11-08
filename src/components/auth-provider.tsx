@@ -11,6 +11,8 @@ import {
  resolveUserDestination,
  saveAuthRedirect,
 } from '@/lib/auth-redirect';
+import { isCentreCustomerRoute } from '@/lib/customer-routes';
+import { getStallRoute } from '@/lib/stall-route';
 
 export type AuthStatus = 'loading' | 'authenticated' | 'unauthenticated';
 
@@ -29,7 +31,7 @@ export type UserRoles = {
  isSaasOwner: boolean;
  platformRole: 'superadmin' | 'saas_owner' | 'support' | null;
  isLoading: boolean;
- shops: Array<{ id: string; name: string; role: string; isActive?: boolean; schedule?: any; phone?: string; address?: string; lat?: number; lng?: number }>;
+ shops: Array<{ id: string; name: string; slug?: string | null; role: string; isActive?: boolean; schedule?: any; phone?: string; address?: string; lat?: number; lng?: number }>;
  booths: Array<{
  id: string;
  name: string;
@@ -73,8 +75,6 @@ const publicRoutes = [
  '/pricing',
  '/subscribe',
  '/shop-owner/profile',
- '/stall',
- '/menu',
  '/shop',
  '/results',
 
@@ -223,6 +223,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
  const res = await authenticatedFetch('/api/user/roles');
  if (res.ok) {
  const data = await res.json();
+ const firstBooth = data.booths?.[0];
+ if (firstBooth && typeof window !== 'undefined') {
+ window.localStorage.setItem('hawker-stall-route', getStallRoute(firstBooth));
+ }
  setRoles({
  isCustomer: data.isCustomer ?? true,
  hasShopOwner: data.hasShopOwner ?? false,
@@ -265,13 +269,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
  if (typeof window !== 'undefined') {
  window.localStorage.setItem('hawker-user-mode', 'customer');
  window.localStorage.setItem('hawker-shop-owner-mode', 'false');
- router.push('/stall');
+ router.push('/');
  }
  } else if (mode === 'booth') {
  if (roles.hasBooth && typeof window !== 'undefined') {
  window.localStorage.setItem('hawker-user-mode', 'owner');
  window.localStorage.setItem('hawker-shop-owner-mode', 'false');
- router.push('/owner/orders');
+ const stall = roles.booths[0];
+ if (stall) router.push(getStallRoute(stall, 'orders') as any);
  }
  } else if (mode === 'shop_owner') {
  if (roles.hasShopOwner && typeof window !== 'undefined') {
@@ -281,13 +286,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
  }
  }
  },
- [roles.hasBooth, roles.hasShopOwner, router],
+ [roles.booths, roles.hasBooth, roles.hasShopOwner, router],
  );
 
  useEffect(() => {
  if (effectiveStatus === 'loading' || isSigningOutRef.current) return;
 
- const isPublicRoute = publicRoutes.some((route) => pathname === route || pathname.startsWith(`${route}/`));
+ const isPublicRoute =
+ publicRoutes.some((route) => pathname === route || pathname.startsWith(`${route}/`)) ||
+ isCentreCustomerRoute(pathname);
 
  if (effectiveStatus === 'unauthenticated' && !isPublicRoute) {
  const returnUrl = pathname + (typeof window !== 'undefined' ? window.location.search : '');
@@ -310,7 +317,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
  router.replace('/shop-owner/profile');
  return;
  }
- if ((pathname.startsWith('/owner') || pathname.startsWith('/stall')) && !roles.hasBooth && !roles.hasShopOwner) {
+ if (pathname.split('/').filter(Boolean)[1] === 'owner' && !roles.hasBooth && !roles.hasShopOwner) {
  router.replace('/profile');
  return;
  }

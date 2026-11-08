@@ -2,7 +2,6 @@
 
 import { ArrowRight, CupSoda, IceCreamCone, MapPin, UtensilsCrossed } from 'lucide-react';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useState } from 'react';
 import { PageLoader } from '@/components/page-loader';
 import { HawkerSearchBar } from '@/components/hawker-search-bar';
@@ -12,6 +11,7 @@ import { getDishQuantity, removeCartItem, updateCartItemQuantity } from '@/lib/o
 import { useCartAdd } from '@/components/use-cart-add';
 import { getDishCustomization } from '@/lib/order/customizations';
 import { getStoredTableSession } from '@/lib/table-session';
+import { connectTableFromLink } from '@/lib/customer-table-link';
 
 function MainCourseIcon() {
  return <UtensilsCrossed className="h-[18px] w-[18px]" strokeWidth={1.8} />;
@@ -54,10 +54,14 @@ function categorizeDish(name: string, tags: string[] = []): 'main-course' | 'dri
  return 'main-course';
 }
 
-function MenuContent() {
- const searchParams = useSearchParams();
- const rawCentre = searchParams.get('centre') || searchParams.get('slug') || '';
+function MenuContent({ centreSlug, tableId }: { centreSlug: string; tableId: string }) {
  const [centreName, setCentreName] = useState<string>('');
+ const [tableLinkStatus, setTableLinkStatus] = useState<'checking' | 'ready' | 'invalid'>(
+ tableId ? 'checking' : 'invalid',
+ );
+ const [tableLinkError, setTableLinkError] = useState(
+ tableId ? '' : 'Open this menu using the table QR code.',
+ );
 
  const [searchValue, setSearchValue] = useState('');
  const [items, setItems] = useState<MenuItem[]>([]);
@@ -67,29 +71,47 @@ function MenuContent() {
 
  useEffect(() => {
  let active = true;
+ if (!tableId) return;
+ void connectTableFromLink(tableId, centreSlug)
+ .then(() => {
+ if (active) setTableLinkStatus('ready');
+ })
+ .catch((error: unknown) => {
+ if (!active) return;
+ setTableLinkError(error instanceof Error ? error.message : 'Could not verify this table link.');
+ setTableLinkStatus('invalid');
+ });
+ return () => {
+ active = false;
+ };
+ }, [centreSlug, tableId]);
+
+ useEffect(() => {
+ if (tableLinkStatus !== 'ready') return;
+ let active = true;
  const loadDishes = async () => {
  try {
  const stored = getStoredTableSession();
- const targetCentre = rawCentre || stored?.centreSlug || '';
  if (stored?.centreName) setCentreName(stored.centreName);
 
- const centreQuery = targetCentre ? `?centre=${encodeURIComponent(targetCentre)}` : '';
+ const centreQuery = `?centre=${encodeURIComponent(centreSlug)}`;
  const res = await fetch(`/api/outlets${centreQuery}`);
  if (!res.ok) return;
  const data = await res.json();
  if (!active || !Array.isArray(data.outlets)) return;
+ if (!stored?.centreName) {
+ setCentreName(data.outlets[0]?.restaurants?.name || '');
+ }
 
  const loaded: MenuItem[] = [];
  for (const outlet of data.outlets) {
  const restaurantName = outlet.restaurants?.name || outlet.name;
- if (!centreName && outlet.restaurants?.name) {
- setCentreName(outlet.restaurants.name);
- }
  for (const dish of outlet.dishes ?? []) {
  
  loaded.push({
  id: dish.id,
  foodOutletId: outlet.id,
+ restaurantId: outlet.restaurant_id,
  restaurantName,
  stallName: outlet.name,
  name: dish.name,
@@ -115,7 +137,7 @@ function MenuContent() {
  return () => {
  active = false;
  };
- }, [rawCentre, centreName]);
+ }, [centreSlug, tableLinkStatus]);
 
  const filteredItems = items.filter((item) =>
  searchValue.trim() ? item.name.toLowerCase().includes(searchValue.toLowerCase().trim()) : true,
@@ -185,6 +207,20 @@ function MenuContent() {
 
  const totalCartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
  const cartSubtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+
+ if (tableLinkStatus === 'checking') {
+ return <PageLoader text="Opening table menu" />;
+ }
+ if (tableLinkStatus === 'invalid') {
+ return (
+ <main className="flex min-h-[70vh] items-center justify-center px-4 text-center">
+ <div className="max-w-sm rounded-3xl bg-white p-6">
+ <h1 className="text-lg font-bold text-[#1d1d1f]">Table link unavailable</h1>
+ <p className="mt-2 text-sm text-[#6e6e73]">{tableLinkError}</p>
+ </div>
+ </main>
+ );
+ }
 
  return (
  <main className="min-h-screen bg-[#f5f5f7] text-[#1d1d1f]">
@@ -290,7 +326,7 @@ function MenuContent() {
  {totalCartCount > 0 && (
  <div className="fixed bottom-20 left-4 right-4 z-40 mx-auto max-w-md">
  <Link
- href="/orders"
+ href={`/${centreSlug}/orders?table_id=${encodeURIComponent(tableId)}`}
  className="flex h-11 items-center justify-between rounded-full bg-black px-5 text-white hover:bg-neutral-800 "
  >
  <div className="flex items-center gap-2">
@@ -311,7 +347,7 @@ function MenuContent() {
  );
 }
 
-export function MenuPage() {
+export function MenuPage({ centreSlug, tableId }: { centreSlug: string; tableId: string }) {
  return (
  <Suspense
  fallback={
@@ -320,7 +356,7 @@ export function MenuPage() {
  </div>
  }
  >
- <MenuContent />
+ <MenuContent centreSlug={centreSlug} tableId={tableId} />
  </Suspense>
  );
 }

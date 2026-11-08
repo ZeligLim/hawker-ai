@@ -2,11 +2,14 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { useParams } from 'next/navigation';
 import { useAuth } from '@/components/auth-provider';
+import { getStallSlug } from '@/lib/stall-route';
 import { Store, ShieldAlert, ArrowLeft } from 'lucide-react';
 
 export function StallGuard({ children }: { children: React.ReactNode }) {
  const { status, roles, isGuest } = useAuth();
+ const params = useParams<{ centreSlug?: string }>();
 
  // If still resolving authentication or roles, render lightweight loading state
  if (status === 'loading' || roles.isLoading) {
@@ -34,13 +37,13 @@ export function StallGuard({ children }: { children: React.ReactNode }) {
  </p>
  <div className="mt-6 flex flex-col gap-3">
  <Link
- href={'/auth?redirect=/owner/orders' as any}
+ href="/auth"
  className="w-full rounded-2xl bg-[#1d1d1f] py-3 text-sm font-semibold text-white hover:bg-black "
  >
  Sign In to Stall App
  </Link>
  <Link
- href={'/stall' as any}
+ href={'/' as any}
  className="w-full rounded-2xl bg-[#f5f5f7] py-3 text-sm font-medium text-[#1d1d1f] hover:bg-[#e8e8ed] "
  >
  Back to Customer App
@@ -65,7 +68,7 @@ export function StallGuard({ children }: { children: React.ReactNode }) {
  </p>
  <div className="mt-6 flex flex-col gap-3">
  <Link
- href={'/stall' as any}
+ href={'/' as any}
  className="flex items-center justify-center gap-2 w-full rounded-2xl bg-[#1d1d1f] py-3 text-sm font-semibold text-white hover:bg-black "
  >
  <ArrowLeft className="h-4 w-4" /> Return to Customer App
@@ -77,6 +80,18 @@ export function StallGuard({ children }: { children: React.ReactNode }) {
  Register as Shop Owner
  </Link>
  </div>
+ </div>
+ </div>
+ );
+ }
+
+ const matchedStall = roles.booths.some((booth) => getStallSlug(booth) === params.centreSlug);
+ if (!matchedStall) {
+ return (
+ <div className="flex min-h-screen items-center justify-center bg-[#f5f5f7] px-4 text-center text-[#1d1d1f]">
+ <div className="max-w-md rounded-3xl bg-white p-8">
+ <h2 className="text-xl font-bold">Stall workspace unavailable</h2>
+ <p className="mt-2 text-sm text-[#6e6e73]">This stall URL is not linked to your account.</p>
  </div>
  </div>
  );

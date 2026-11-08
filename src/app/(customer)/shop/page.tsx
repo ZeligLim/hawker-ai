@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { supabase } from '@/lib/supabase/client';
 
 export const dynamic = 'force-dynamic';
@@ -7,7 +6,6 @@ export default async function ShopPage() {
  let shops: Array<{
  id: string;
  name: string;
- slug: string;
  description: string;
  eta: string;
  busy: string;
@@ -16,11 +14,10 @@ export default async function ShopPage() {
  if (supabase) {
  const { data: outlets } = await supabase
  .from('food_outlets')
- .select('id, name, restaurant_id, is_open, restaurants(name, slug, is_active)');
+ .select('id, name, restaurant_id, is_open, restaurants(name, is_active)');
 
  if (outlets && outlets.length > 0) {
  shops = outlets.map((outlet: any) => {
- const slug = outlet.restaurants?.slug || outlet.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
  const isOpen = outlet.is_open ?? true;
  const isShopActive = outlet.restaurants?.is_active ?? true;
  const isClosed = !isOpen || !isShopActive;
@@ -28,7 +25,6 @@ export default async function ShopPage() {
  return {
  id: outlet.id,
  name: outlet.name,
- slug,
  description: `${outlet.restaurants?.name ?? 'Hawker Stall'} · Local specialty`,
  eta: '10 min',
  busy: isClosed ? 'Closed' : 'Open',
@@ -45,12 +41,8 @@ export default async function ShopPage() {
  </section>
 
  <div className="mt-5 grid grid-cols-1 gap-3">
- {shops.map((shop) => {
- const slug = shop.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-
- return (
- <Link key={shop.name} href={`/stall/${'centre'}/${slug}` as any} className="block">
- <article className="rounded-[22px] bg-white p-3 ">
+ {shops.map((shop) => (
+ <article key={shop.name} className="rounded-[22px] bg-white p-3 ">
  <div className="flex items-start justify-between gap-3">
  <div className="flex min-w-0 items-start gap-3">
  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[14px] bg-white text-sm font-semibold text-[#1d1d1f] ">
@@ -75,10 +67,9 @@ export default async function ShopPage() {
  ) : null}
  </div>
  </div>
+ <p className="mt-3 text-[10px] font-medium text-[#86868b]">Scan a table QR code to view the menu</p>
  </article>
- </Link>
- );
- })}
+ ))}
  </div>
  </div>
  </main>

@@ -10,6 +10,7 @@ import {
  resolveUserDestination,
  saveAuthRedirect,
 } from '@/lib/auth-redirect';
+import { isCentreCustomerRoute } from '@/lib/customer-routes';
 
 const isValidEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 
@@ -32,10 +33,7 @@ function AuthForm() {
  // It does NOT apply when signing in from the public landing page or merchant onboarding.
  const isCustomerIntent = Boolean(
  redirectParam &&
- (redirectParam.startsWith('/stall') ||
- redirectParam.startsWith('/menu') ||
- redirectParam.startsWith('/orders') ||
-
+ (isCentreCustomerRoute(redirectParam.split('?')[0]) ||
  redirectParam.startsWith('/shop/') ||
  redirectParam === '/shop' ||
  redirectParam.startsWith('/results'))
