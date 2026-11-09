@@ -19,17 +19,27 @@ export function CustomizationCard({
  onConfirm: (selection: { options: CustomizationOption[]; price: number }) => void;
 }) {
  // Determine default spice selection if it exists
- const defaultSpiceId = customization.spiceOptions?.[0]?.id;
+ const defaultSpiceId = customization.spiceOptions?.find(
+  (option) => option.id === `spice-${customization.defaultSpiceLevel ?? 0}`,
+ )?.id;
 
- const [selectedIds, setSelectedIds] = useState<string[]>(
- initialSelection ?? [
- ...(defaultSpiceId ? [defaultSpiceId] : []),
- // If there are options and it's not multi-select (unlikely, but just in case), select first
- ...(!customization.multiSelect && customization.options?.length && !defaultSpiceId
- ? [customization.options[0].id]
- : []),
- ]
- );
+ const [selectedIds, setSelectedIds] = useState<string[]>(() => {
+  if (initialSelection) {
+   const selectedSpice = initialSelection.find((id) => id.startsWith('spice-'));
+   return [
+    ...initialSelection.filter((id) => !id.startsWith('spice-')),
+    ...(selectedSpice || !defaultSpiceId ? [] : [defaultSpiceId]),
+    ...(selectedSpice ? [selectedSpice] : []),
+   ];
+  }
+
+  return [
+   ...(defaultSpiceId ? [defaultSpiceId] : []),
+   ...(!customization.multiSelect && customization.options?.length && !defaultSpiceId
+    ? [customization.options[0].id]
+    : []),
+  ];
+ });
 
  const allAvailableOptions = useMemo(
  () => [...(customization.options || []), ...(customization.spiceOptions || [])],

@@ -2,8 +2,8 @@
 
 import { useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { LoaderCircle } from 'lucide-react';
 import { useAuth } from '@/components/auth-provider';
+import { PageLoader } from '@/components/page-loader';
 
 export default function ShopOwnerAnalyticsRedirectPage() {
   const router = useRouter();
@@ -29,12 +29,5 @@ export default function ShopOwnerAnalyticsRedirectPage() {
     }
   }, [status, roles.isLoading, roles.shops, router, searchParams]);
 
-  return (
-    <main className="min-h-screen bg-[#f5f5f7] px-4 pb-32 pt-5 sm:px-6 text-[#1d1d1f]">
-      <div className="mx-auto max-w-7xl flex items-center justify-center min-h-[50vh] text-xs text-[#6e6e73]">
-        <LoaderCircle className="h-5 w-5 mr-2 text-[#111827] animate-spin" />
-        Redirecting to hawker analytics...
-      </div>
-    </main>
-  );
+  return <PageLoader text="Redirecting to hawker analytics" variant="analytics" />;
 }

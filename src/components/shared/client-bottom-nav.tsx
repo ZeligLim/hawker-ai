@@ -9,21 +9,16 @@ export interface NavItem {
  href: string;
  label: string;
  icon: LucideIcon;
- mobileLabel?: string;
 }
 
 export interface ClientBottomNavProps {
  items: NavItem[];
- theme?: 'customer' | 'stall' | 'owner';
  ariaLabel: string;
- showLabels?: boolean;
 }
 
 export function ClientBottomNav({
  items,
- theme = 'customer',
  ariaLabel,
- showLabels = false,
 }: ClientBottomNavProps) {
  const pathname = usePathname();
 
@@ -54,29 +49,26 @@ export function ClientBottomNav({
  <div
  className={`grid ${gridColsClass} gap-1 rounded-full p-1.5 backdrop-blur-xl ${containerTheme}`}
  >
- {items.map(({ href, label, icon: Icon, mobileLabel }) => {
+ {items.map(({ href, label, icon: Icon }) => {
  const basePath = href.split('?')[0];
  const isHome = basePath.endsWith('/owner') || basePath === '/admin';
  const isAnalytics = basePath.includes('/analytics') && pathname.includes('/analytics');
+ const isBooths = basePath.includes('/booths') && pathname.includes('/booths');
+ const isProfile = basePath.includes('/profile') && pathname.includes('/profile');
  const active = isHome
             ? pathname === basePath
-            : isAnalytics || pathname === basePath || pathname.startsWith(basePath + '/');
+            : isAnalytics || isBooths || isProfile || pathname === basePath || pathname.startsWith(basePath + '/');
 
  return (
  <Link
  key={label}
  href={href as any}
- className={`flex ${showLabels ? 'h-14 flex-col gap-0.5' : 'h-11'} items-center justify-center rounded-full ${ active ? activeTheme : inactiveTheme }`}
+ className={`flex h-11 items-center justify-center rounded-full ${ active ? activeTheme : inactiveTheme }`}
  aria-label={label}
  title={label}
  aria-current={active ? 'page' : undefined}
  >
- <Icon className={`${showLabels ? 'h-4 w-4' : 'h-5 w-5'} shrink-0`} strokeWidth={active ? 2.2 : 1.8} />
- {showLabels && (
- <span className="max-w-full truncate px-1 text-[9px] font-medium leading-none">
- {mobileLabel ?? label}
- </span>
- )}
+ <Icon className="h-5 w-5 shrink-0" strokeWidth={active ? 2.2 : 1.8} />
  </Link>
  );
  })}

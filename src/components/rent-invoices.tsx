@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { authenticatedFetch } from '@/lib/supabase/client';
 import { LoaderCircle, FileText, CheckCircle2 } from 'lucide-react';
+import { SkeletonLoader } from '@/components/page-loader';
 
 type RentInvoice = {
  id: string;
@@ -47,7 +48,12 @@ export function RentInvoices({ boothId }: { boothId: string }) {
     }
   };
 
- if (loading) return <div className="p-4 flex justify-center"><LoaderCircle className="h-5 w-5 animate-spin" /></div>;
+ if (loading) return (
+ <section role="status" aria-label="Loading rent invoices" className="mt-6 rounded-[26px] bg-white p-5 sm:p-6">
+ <div className="mb-4 flex items-center gap-2"><div className="h-5 w-5 animate-pulse rounded bg-neutral-200" /><div className="h-4 w-32 animate-pulse rounded-full bg-neutral-200" /></div>
+ <SkeletonLoader lines={3} />
+ </section>
+ );
 
  if (invoices.length === 0) return null;
 

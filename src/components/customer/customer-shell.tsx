@@ -46,7 +46,6 @@ function CustomerShellContent({ children }: { children: React.ReactNode }) {
       <main className="pb-24">{children}</main>
       <ClientBottomNav
  items={customerNavItems}
- theme="customer"
  ariaLabel="Customer Navigation"
       />
 

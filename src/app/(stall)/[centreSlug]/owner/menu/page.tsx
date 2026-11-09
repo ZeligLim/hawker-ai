@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Edit3, Plus, UtensilsCrossed, Camera } from 'lucide-react';
+import { Edit3, Plus, UtensilsCrossed } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/components/auth-provider';
@@ -24,6 +24,35 @@ type OwnerDish = {
  spice: { enabled: boolean; levels: number };
  };
 };
+
+function MenuLoadingState() {
+ return (
+ <div role="status" aria-live="polite" aria-label="Loading menu" className="space-y-4">
+ <div className="flex items-center gap-3 rounded-[20px] bg-white px-4 py-3.5 shadow-sm shadow-black/[0.03]">
+ <div className="h-9 w-9 animate-pulse rounded-xl bg-[#f0f0f2] motion-reduce:animate-none" />
+ <div className="min-w-0 flex-1">
+ <p className="text-xs font-semibold text-[#1d1d1f]">Getting your menu ready</p>
+ <p className="mt-0.5 text-[11px] text-[#86868b]">Loading dishes and availability</p>
+ </div>
+ <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#0071e3] motion-reduce:animate-none" />
+ </div>
+
+ <div className="grid grid-cols-1 gap-3.5 md:grid-cols-2" aria-hidden="true">
+ {Array.from({ length: 4 }, (_, index) => (
+ <div key={index} className="flex items-center gap-3 rounded-[22px] bg-white p-3.5 shadow-sm shadow-black/[0.03]">
+ <div className="h-12 w-12 shrink-0 animate-pulse rounded-[14px] bg-[#f0f0f2] motion-reduce:animate-none" />
+ <div className="min-w-0 flex-1 space-y-2">
+ <div className="h-3.5 w-2/3 animate-pulse rounded-full bg-[#ededf0] motion-reduce:animate-none" />
+ <div className="h-2.5 w-1/2 animate-pulse rounded-full bg-[#f2f2f4] motion-reduce:animate-none" />
+ </div>
+ <div className="h-8 w-8 shrink-0 animate-pulse rounded-xl bg-[#f2f2f4] motion-reduce:animate-none" />
+ <div className="h-7 w-12 shrink-0 animate-pulse rounded-full bg-[#e9eaed] motion-reduce:animate-none" />
+ </div>
+ ))}
+ </div>
+ </div>
+ );
+}
 
 export default function OwnerMenuPage() {
  const { centreSlug } = useParams<{ centreSlug: string }>();
@@ -162,7 +191,7 @@ export default function OwnerMenuPage() {
 
  <section className="mt-6">
  {isLoading ? (
- <div className="rounded-[24px] bg-white p-8 text-center text-xs sm:text-sm text-[#6e6e73] truncate">Loading menu...</div>
+ <MenuLoadingState />
  ) : null}
 
  {!isLoading && dishes.length === 0 && !error ? (

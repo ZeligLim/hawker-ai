@@ -9,6 +9,7 @@ export type DishCustomization = {
  title?: string;
  options?: CustomizationOption[];
  multiSelect?: boolean;
+ defaultSpiceLevel?: number;
   
   // Spice Level
  spiceOptions?: CustomizationOption[];
@@ -19,6 +20,9 @@ export type CustomizationSource =
   | {
  name?: string;
  customizations?: any;
+ availableCustomizations?: CustomizationOption[];
+ availableSpiceOptions?: CustomizationOption[];
+ defaultSpiceLevel?: number;
  spiceLevel?: number;
  spice_level?: number;
     };
@@ -27,16 +31,22 @@ export function getDishCustomization(source: CustomizationSource | null | undefi
  if (!source) return null;
 
  let parsedOptions: CustomizationOption[] = [];
+ let parsedSpiceOptions: CustomizationOption[] = [];
  let dishName = '';
+ let spiceLevel = 0;
 
   // Case 1: Object passed with real database customizations or spice level
  if (typeof source === 'object') {
  const rawCustoms = source.customizations;
- const spice = Number(source.spiceLevel ?? source.spice_level ?? 0);
+ spiceLevel = Number(source.spiceLevel ?? source.spice_level ?? source.defaultSpiceLevel ?? 0);
  dishName = (source.name ?? '').trim();
 
- if (Array.isArray(rawCustoms) && rawCustoms.length > 0) {
- parsedOptions = rawCustoms
+ const sourceOptions = Array.isArray(source.availableCustomizations)
+  ? source.availableCustomizations
+  : rawCustoms;
+
+ if (Array.isArray(sourceOptions) && sourceOptions.length > 0) {
+ parsedOptions = sourceOptions
         .map((item, index) => {
  if (!item) return null;
  if (typeof item === 'string') {
@@ -49,7 +59,7 @@ export function getDishCustomization(source: CustomizationSource | null | undefi
  if (!label) return null;
  const price = Number(item.price ?? 0);
  return {
- id: `opt-${index}-${label.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
+ id: typeof item.id === 'string' ? item.id : `opt-${index}-${label.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
  label,
  price: isNaN(price) ? 0 : price,
             };
@@ -58,6 +68,20 @@ export function getDishCustomization(source: CustomizationSource | null | undefi
         })
         .filter((opt): opt is CustomizationOption => opt !== null);
     }
+
+ if (Array.isArray(source.availableSpiceOptions)) {
+ parsedSpiceOptions = source.availableSpiceOptions;
+ } else if (Array.isArray(source.availableCustomizations)) {
+ parsedSpiceOptions = parsedOptions.filter((option) => option.id.startsWith('spice-'));
+ parsedOptions = parsedOptions.filter((option) => !option.id.startsWith('spice-'));
+ } else if (spiceLevel > 0) {
+ const labels = ['No spice', 'Mild', 'Medium', 'Hot', 'Very hot', 'Extra hot'];
+ parsedSpiceOptions = Array.from({ length: Math.min(5, Math.max(0, spiceLevel)) + 1 }, (_, level) => ({
+ id: `spice-${level}`,
+ label: `Spice level: ${labels[level]}`,
+ price: 0,
+ }));
+ }
   } else {
     // Case 2: String dish name passed (legacy fallback)
  dishName = source.toLowerCase().trim();
@@ -72,7 +96,7 @@ export function getDishCustomization(source: CustomizationSource | null | undefi
   }
 
   // Return null if neither spicy nor has options
- if (parsedOptions.length === 0) {
+ if (parsedOptions.length === 0 && parsedSpiceOptions.length === 0) {
  return null;
   }
 
@@ -83,8 +107,10 @@ export function getDishCustomization(source: CustomizationSource | null | undefi
  result.options = parsedOptions;
  result.multiSelect = true;
   }
-  
-  
+ if (parsedSpiceOptions.length > 0) {
+ result.spiceOptions = parsedSpiceOptions;
+ result.defaultSpiceLevel = Math.min(parsedSpiceOptions.length - 1, Math.max(0, spiceLevel));
+ }
 
  return result;
 }

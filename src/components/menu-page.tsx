@@ -190,6 +190,11 @@ function MenuContent({ centreSlug, tableId }: { centreSlug: string; tableId: str
  dishId: item.id,
  customizationKey: selection.options.map((option) => option.id).sort().join('|'),
  customizations: selection.options.map((option) => option.label),
+ availableCustomizations: [
+  ...(getDishCustomization(item)?.options ?? []),
+  ...(getDishCustomization(item)?.spiceOptions ?? []),
+ ],
+ spiceLevel: item.spiceLevel,
  name: item.name,
  restaurantId: item.restaurantId ?? '',
  restaurantName: item.restaurantName,
@@ -209,7 +214,7 @@ function MenuContent({ centreSlug, tableId }: { centreSlug: string; tableId: str
  const cartSubtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
  if (tableLinkStatus === 'checking') {
- return <PageLoader text="Opening table menu" />;
+ return <PageLoader text="Opening table menu" variant="menu" />;
  }
  if (tableLinkStatus === 'invalid') {
  return (
@@ -261,7 +266,7 @@ function MenuContent({ centreSlug, tableId }: { centreSlug: string; tableId: str
  </div>
 
  {loading ? (
- <PageLoader text="Loading menu items" fullHeight={false} />
+ <PageLoader text="Loading menu items" fullHeight={false} variant="menu" />
  ) : (
  <section className="mt-8 space-y-8">
  {categories.map(({ id, label, icon: Icon }) => {

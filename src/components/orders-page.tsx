@@ -127,7 +127,7 @@ setCheckoutState("idle");
   };
 
  const openCustomization = (item: CartItem) => {
- if (getDishCustomization(item.name)) {
+ if (getDishCustomization(item)) {
  setCustomizingItem(item);
     }
   };
@@ -243,7 +243,7 @@ setCheckoutState("idle");
   );
 
   if (tableLinkStatus === 'checking') {
-  return <PageLoader text="Checking table session" />;
+  return <PageLoader text="Checking table session" variant="receipt" />;
   }
   if (tableLinkStatus === 'invalid') {
   return (
@@ -339,7 +339,7 @@ setCheckoutState("idle");
                         </button>
                       </div>
 
-                      {getDishCustomization(item.name) ? (
+                      {getDishCustomization(item) ? (
                         <button
  type="button"
  onClick={() => openCustomization(item)}
@@ -466,9 +466,10 @@ setCheckoutState("idle");
 
         {customizingItem ? (
           <CustomizationCard
+ key={customizingItem.id}
  dishName={customizingItem.name}
  basePrice={(() => {
- const customization = getDishCustomization(customizingItem.name);
+            const customization = getDishCustomization(customizingItem);
  const allAvailableOptions = [
                 ...(customization?.options || []),
                 ...(customization?.spiceOptions || []),
@@ -486,9 +487,9 @@ setCheckoutState("idle");
                 )
               );
             })()}
- customization={getDishCustomization(customizingItem.name)!}
+ customization={getDishCustomization(customizingItem)!}
  initialSelection={(() => {
- const customization = getDishCustomization(customizingItem.name);
+            const customization = getDishCustomization(customizingItem);
  const allAvailableOptions = [
                 ...(customization?.options || []),
                 ...(customization?.spiceOptions || []),

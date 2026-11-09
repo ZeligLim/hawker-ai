@@ -9,6 +9,8 @@ import { ResultCard } from '@/components/result-card';
 import { buildCartSummary, removeCartItem, updateCartItemQuantity } from '@/lib/order/cart';
 import { useCartAdd } from '@/components/use-cart-add';
 import type { SearchResult } from '@/shared/schemas/search';
+import { getDishCustomization } from '@/lib/order/customizations';
+import type { CustomizationOption } from '@/lib/order/customizations';
 
 export default function ResultsPage() {
  return (
@@ -51,7 +53,7 @@ function ResultsContent() {
  const resolvedQuery = useMemo(() => query, [query]);
  const cartSummary = useMemo(() => buildCartSummary(cartItems), [cartItems]);
 
- const handleAddToCart = (dish: SearchResult) => {
+ const handleAddToCart = (dish: SearchResult, selection?: { options: CustomizationOption[]; price: number }) => {
  const stallId = `${dish.restaurantName}:${dish.stallName}`.replace(/[^a-z0-9]+/gi, '-').toLowerCase();
  setCheckoutMessage(null);
  addDish({
@@ -61,8 +63,15 @@ function ResultsContent() {
  restaurantName: dish.restaurantName,
  stallName: dish.stallName,
  stallId,
- price: dish.price,
+ price: selection?.price ?? dish.price,
  quantity: 1,
+ customizations: selection?.options.map((option) => option.label),
+ customizationKey: selection?.options.map((option) => option.id).sort().join('|'),
+ availableCustomizations: [
+  ...(getDishCustomization(dish)?.options ?? []),
+  ...(getDishCustomization(dish)?.spiceOptions ?? []),
+ ],
+ spiceLevel: dish.spiceLevel,
  });
  };
 
@@ -156,7 +165,7 @@ function ResultsContent() {
  </div>
 
  {loading && (
- <PageLoader text="Finding hawker matches for you" fullHeight={false} />
+ <PageLoader text="Finding hawker matches for you" fullHeight={false} variant="cards" />
  )}
 
  {error && (

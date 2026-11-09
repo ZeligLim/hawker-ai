@@ -10,6 +10,8 @@ import { addItemToCart, buildCartSummary, removeCartItem, updateCartItemQuantity
 import { useCartAdd } from '@/components/use-cart-add';
 import { ButtonLoader } from '@/components/page-loader';
 import { getStoredTableSession } from '@/lib/table-session';
+import { getDishCustomization } from '@/lib/order/customizations';
+import type { CustomizationOption } from '@/lib/order/customizations';
 
 const quickIdeas = [
  'I want a halal meal under RM15',
@@ -81,7 +83,7 @@ export function HawkerSearch({ initialQuery = 'I want a vegetarian meal under RM
  },
  };
 
- const handleAddToCart = (dish: SearchResult) => {
+ const handleAddToCart = (dish: SearchResult, selection?: { options: CustomizationOption[]; price: number }) => {
  const stallId = `${dish.restaurantName}:${dish.stallName}`.replace(/[^a-z0-9]+/gi, '-').toLowerCase();
  setCheckoutMessage(null);
  addDish({
@@ -91,8 +93,15 @@ export function HawkerSearch({ initialQuery = 'I want a vegetarian meal under RM
  restaurantName: dish.restaurantName,
  stallName: dish.stallName,
  stallId,
- price: dish.price,
+ price: selection?.price ?? dish.price,
  quantity: 1,
+ customizations: selection?.options.map((option) => option.label),
+ customizationKey: selection?.options.map((option) => option.id).sort().join('|'),
+ availableCustomizations: [
+  ...(getDishCustomization(dish)?.options ?? []),
+  ...(getDishCustomization(dish)?.spiceOptions ?? []),
+ ],
+ spiceLevel: dish.spiceLevel,
  });
  };
 

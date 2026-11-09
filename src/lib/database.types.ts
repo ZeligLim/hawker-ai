@@ -453,6 +453,7 @@ export type Database = {
  paid_at: string | null
  payment_intent_id: string | null
  payment_reference: string | null
+ payment_status: string | null
  previous_status?: string | null
  platform_fee_amount: number | null
  refund_amount: number
@@ -473,6 +474,7 @@ export type Database = {
  paid_at?: string | null
  payment_intent_id?: string | null
  payment_reference?: string | null
+ payment_status?: string | null
  previous_status?: string | null
  platform_fee_amount?: number | null
  refund_amount?: number
@@ -493,6 +495,7 @@ export type Database = {
  paid_at?: string | null
  payment_intent_id?: string | null
  payment_reference?: string | null
+ payment_status?: string | null
  previous_status?: string | null
  platform_fee_amount?: number | null
  refund_amount?: number
@@ -716,6 +719,84 @@ export type Database = {
  referencedColumns: ["id"]
           },
         ]
+      }
+      platform_plans: {
+        Row: {
+          plan_key: string
+          name: string
+          description: string
+          monthly_price: number
+          currency: string
+          is_active: boolean
+          online_payments_enabled: boolean
+          features: string[]
+          display_order: number
+          updated_at: string
+        }
+        Insert: {
+          plan_key: string
+          name: string
+          description?: string
+          monthly_price?: number
+          currency?: string
+          is_active?: boolean
+          online_payments_enabled?: boolean
+          features?: string[]
+          display_order?: number
+          updated_at?: string
+        }
+        Update: {
+          plan_key?: string
+          name?: string
+          description?: string
+          monthly_price?: number
+          currency?: string
+          is_active?: boolean
+          online_payments_enabled?: boolean
+          features?: string[]
+          display_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      platform_costs: {
+        Row: {
+          id: string
+          incurred_on: string
+          category: string
+          vendor: string
+          description: string
+          amount: number
+          currency: string
+          created_by: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          incurred_on: string
+          category: string
+          vendor?: string
+          description?: string
+          amount: number
+          currency?: string
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          incurred_on?: string
+          category?: string
+          vendor?: string
+          description?: string
+          amount?: number
+          currency?: string
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
     }
     Views: {

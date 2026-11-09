@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Store, BarChart3, CircleUserRound } from 'lucide-react';
+import { Store, BarChart3, CircleUserRound, QrCode } from 'lucide-react';
 import { OwnerGuard } from './owner-guard';
 import { ClientBottomNav } from '@/components/shared/client-bottom-nav';
 import { useAuth } from '@/components/auth-provider';
@@ -9,14 +9,23 @@ import { useAuth } from '@/components/auth-provider';
 export function OwnerShell({ children }: { children: React.ReactNode }) {
   const { roles } = useAuth();
   const primaryShop = roles.shops[0];
-  const analyticsHref = primaryShop?.slug
-    ? `/hawker/${encodeURIComponent(primaryShop.slug)}/analytics`
+  const slug = primaryShop?.slug || primaryShop?.id;
+
+  const boothsHref = slug
+    ? `/hawker/${encodeURIComponent(slug)}/booths`
+    : '/shop-owner/booths';
+
+  const analyticsHref = slug
+    ? `/hawker/${encodeURIComponent(slug)}/analytics`
     : '/shop-owner/analytics';
 
+  const profileHref = '/shop-owner/profile';
+
   const ownerNavItems = [
-    { href: '/shop-owner/booths', label: 'Booths', icon: Store },
     { href: analyticsHref, label: 'Analytics', icon: BarChart3 },
-    { href: '/shop-owner/profile', label: 'Profile', icon: CircleUserRound },
+    { href: boothsHref, label: 'Booths', icon: Store },
+    { href: '/shop-owner/tables', label: 'Table QR', icon: QrCode },
+    { href: profileHref, label: 'Profile', icon: CircleUserRound },
   ];
 
   return (
@@ -26,7 +35,6 @@ export function OwnerShell({ children }: { children: React.ReactNode }) {
 
         <ClientBottomNav
           items={ownerNavItems}
-          theme="owner"
           ariaLabel="Shop Owner Navigation"
         />
       </div>

@@ -86,6 +86,8 @@ Comprehensive endpoint documentation is available in [`docs/endpoints.md`](docs/
 - If Supabase credentials are unavailable, the app falls back to a deterministic internal fallback dataset so the UI still loads.
 - OpenRouter is required for AI-powered natural-language parsing.
 
+The GitHub Actions release flow, required secrets, preview isolation, and Supabase migration process are documented in [`docs/development-pipeline.md`](docs/development-pipeline.md).
+
 ## Supabase schema
 
 Raw SQL migrations live in `supabase/migrations/` and seed data in `supabase/seed/`.

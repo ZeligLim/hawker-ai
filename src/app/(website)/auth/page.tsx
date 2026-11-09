@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { LoaderCircle, LockKeyhole, Mail } from 'lucide-react';
+import { SkeletonLoader } from '@/components/page-loader';
 import { Suspense, useEffect, useState } from 'react';
 import { useAuth } from '@/components/auth-provider';
 import { supabase } from '@/lib/supabase/client';
@@ -250,9 +251,10 @@ export default function AuthPage() {
  <main className="min-h-screen bg-[#f5f5f7] px-4 py-8 text-[#1d1d1f]">
  <div className="mx-auto max-w-[430px]">
  <Suspense fallback={
- <div className="rounded-[32px] bg-white p-8 text-center ">
- <LoaderCircle className="mx-auto h-8 w-8 text-[#1d1d1f] animate-spin" />
- <p className="mt-4 text-sm text-[#6e6e73]">Loading</p>
+ <div role="status" aria-label="Loading sign in" className="rounded-[32px] bg-white p-8">
+ <div className="mx-auto mb-6 h-12 w-12 animate-pulse rounded-2xl bg-neutral-200" />
+ <SkeletonLoader lines={4} />
+ <div className="mt-6 h-11 w-full animate-pulse rounded-full bg-neutral-200" />
  </div>
  }>
  <AuthForm />

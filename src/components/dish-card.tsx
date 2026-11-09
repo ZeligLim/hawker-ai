@@ -32,10 +32,10 @@ export function DishCard({
  <article
  data-dish-id={id}
  aria-label={name}
- className={`group relative flex flex-col justify-between overflow-hidden rounded-[22px] sm:rounded-[26px] bg-white ${!isAvailable ? 'opacity-50 grayscale' : ''}`}
+ className={`group relative overflow-hidden rounded-[22px] bg-white sm:rounded-[26px] ${!isAvailable ? 'opacity-50 grayscale' : ''}`}
  >
  {/* Visual Picture-Only Card Area */}
- <div className="relative aspect-square w-full overflow-hidden bg-neutral-100">
+ <div className="relative aspect-square w-full bg-neutral-100">
  {imageUrl ? (
  <img
  src={imageUrl}
@@ -84,10 +84,11 @@ export function DishCard({
  ) : null}
  </div>
 
- {/* Quantity Controls Floating on Image Bottom */}
- <div className="absolute bottom-2.5 left-2.5 right-2.5">
+ {/* Controls float over the image; the article alone clips the card corners. */}
+ <div className="absolute inset-x-0 bottom-0 z-10 h-[50px] sm:h-[58px]">
+ <div className="absolute bottom-2.5 left-2.5 right-2.5 flex h-10 items-center justify-between sm:h-12">
  {quantity > 0 ? (
- <div className="flex w-full items-center justify-between rounded-full bg-white/95 px-2 py-1 backdrop-blur-md">
+ <>
  <button
  type="button"
  aria-label={`Decrease ${name} quantity`}
@@ -95,13 +96,10 @@ export function DishCard({
  e.stopPropagation();
  onUpdateQuantity(-1);
  }}
- className="flex h-8 w-8 items-center justify-center rounded-full bg-[#f2f2f7] text-base font-bold text-[#1d1d1f] hover:bg-[#e5e5ea] "
+ className="flex h-10 w-10 items-center justify-center rounded-full bg-[#f2f2f7] text-xl font-bold text-[#1d1d1f] hover:bg-[#e5e5ea] sm:h-12 sm:w-12 sm:text-2xl"
  >
  −
  </button>
- <span className="min-w-6 text-center text-xs sm:text-sm font-bold text-[#1d1d1f]">
- {quantity}
- </span>
  <button
  type="button"
  aria-label={`Increase ${name} quantity`}
@@ -109,32 +107,32 @@ export function DishCard({
  e.stopPropagation();
  onUpdateQuantity(1);
  }}
- className="flex h-8 w-8 items-center justify-center rounded-full bg-black text-base font-bold text-white hover:bg-neutral-800 "
+ className="flex h-10 w-10 items-center justify-center rounded-full bg-black text-white hover:bg-neutral-800 sm:h-12 sm:w-12"
  >
- +
+ <Plus className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={2.2} />
  </button>
- </div>
- ) : (
- <div className="flex justify-end">
-              {isAvailable ? (
+ <span className="absolute left-1/2 top-0 flex h-10 min-w-12 -translate-x-1/2 items-center justify-center rounded-full bg-white/95 px-3 text-sm font-bold text-[#1d1d1f] shadow-sm backdrop-blur-md sm:h-12 sm:min-w-16 sm:px-4 sm:text-base">
+ {quantity}
+ </span>
+ </>
+ ) : isAvailable ? (
                 <button
  type="button"
  onClick={(e) => {
  e.stopPropagation();
  onAdd();
                   }}
- className="flex h-9 w-9 items-center justify-center rounded-full bg-black text-white hover:bg-neutral-800 "
+ className="ml-auto flex h-10 w-10 items-center justify-center rounded-full bg-black text-white hover:bg-neutral-800 sm:h-12 sm:w-12"
  aria-label={`Add ${name} to cart`}
                 >
-                  <Plus className="h-4 w-4" strokeWidth={2.2} />
+                  <Plus className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={2.2} />
                 </button>
               ) : (
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-neutral-200 text-neutral-500">
+                <div className="ml-auto flex h-10 w-10 items-center justify-center rounded-full bg-neutral-200 text-neutral-500 sm:h-12 sm:w-12">
                   <span className="text-[10px] font-bold uppercase">OUT</span>
                 </div>
               )}
-            </div>
- )}
+ </div>
  </div>
  </div>
  </article>

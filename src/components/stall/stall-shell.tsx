@@ -26,9 +26,7 @@ export function StallShell({ children }: { children: React.ReactNode }) {
 
  <ClientBottomNav
  items={stallNavItems}
- theme="stall"
  ariaLabel="Stall Worker Navigation"
- showLabels
  />
  </div>
  </StallGuard>
