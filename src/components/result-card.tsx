@@ -1,5 +1,11 @@
-import type { SearchResult } from '@/shared/schemas/search';
+'use client';
+
+import { useState } from 'react';
 import { Flame, Leaf, Plus } from 'lucide-react';
+import { CustomizationCard } from '@/components/customization-card';
+import { getDishCustomization } from '@/lib/order/customizations';
+import type { CustomizationOption } from '@/lib/order/customizations';
+import type { SearchResult } from '@/shared/schemas/search';
 
 const spiceLabels: Record<number, string> = {
  0: 'Non-spicy',
@@ -15,9 +21,13 @@ export function ResultCard({
  onAddToCart,
 }: {
  dish: SearchResult;
- onAddToCart?: (dish: SearchResult) => void;
+ onAddToCart?: (dish: SearchResult, selection?: { options: CustomizationOption[]; price: number }) => void;
 }) {
+ const [isCustomizing, setIsCustomizing] = useState(false);
+ const customization = getDishCustomization(dish);
+
  return (
+ <>
  <article className="rounded-[28px] bg-white p-4 hover:-translate-y-0.5 ">
  {dish.imageUrl ? (
  <div className="relative aspect-[16/9] w-full overflow-hidden rounded-[20px] bg-[#f5f5f7] mb-3">
@@ -105,7 +115,7 @@ export function ResultCard({
 
  <button
  type="button"
- onClick={() => onAddToCart?.(dish)}
+ onClick={() => customization ? setIsCustomizing(true) : onAddToCart?.(dish)}
  aria-label={`Add ${dish.name} to your order`}
  className="mt-5 flex h-11 w-full items-center justify-center gap-1.5 rounded-full bg-[#007aff] hover:bg-[#0071e3] px-5 text-sm font-semibold text-white active:scale-[0.98]"
  >
@@ -113,5 +123,18 @@ export function ResultCard({
  <span>Add to order</span>
  </button>
  </article>
+ {isCustomizing && customization ? (
+ <CustomizationCard
+ dishName={dish.name}
+ basePrice={dish.price}
+ customization={customization}
+ onCancel={() => setIsCustomizing(false)}
+ onConfirm={(selection) => {
+ onAddToCart?.(dish, selection);
+ setIsCustomizing(false);
+ }}
+ />
+ ) : null}
+ </>
  );
 }

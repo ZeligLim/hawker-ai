@@ -18,16 +18,30 @@ function monthWindow(month: string) {
   return { startDate, endDate, startPaidAt, endPaidAt };
 }
 
+function validYear(value: string | null): value is string {
+  return Boolean(value && /^\d{4}$/.test(value) && Number(value) >= 1900 && Number(value) <= 9998);
+}
+
+function yearWindow(yearText: string) {
+  const year = Number(yearText);
+  const startDate = `${yearText}-01-01`;
+  const endDate = `${year + 1}-01-01`;
+  const startPaidAt = new Date(Date.UTC(year, 0, 1) - 8 * 60 * 60 * 1000).toISOString();
+  const endPaidAt = new Date(Date.UTC(year + 1, 0, 1) - 8 * 60 * 60 * 1000).toISOString();
+  return { startDate, endDate, startPaidAt, endPaidAt };
+}
+
 export async function GET(request: NextRequest) {
   const auth = await requirePlatformAdmin(request);
   if (!auth.authorized) return auth.response;
 
   const month = request.nextUrl.searchParams.get('month');
-  if (!validMonth(month)) {
-    return NextResponse.json({ error: 'Provide a month in YYYY-MM format.' }, { status: 400 });
+  const year = request.nextUrl.searchParams.get('year');
+  if (!validMonth(month) && !validYear(year)) {
+    return NextResponse.json({ error: 'Provide a month in YYYY-MM or year in YYYY format.' }, { status: 400 });
   }
 
-  const { startDate, endDate, startPaidAt, endPaidAt } = monthWindow(month);
+  const { startDate, endDate, startPaidAt, endPaidAt } = validYear(year) ? yearWindow(year) : monthWindow(month!);
   const client = createAdminClient();
   if (!client) {
     return NextResponse.json({ error: 'Platform service credentials are required for cross-venue financial data.' }, { status: 500 });

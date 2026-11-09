@@ -250,7 +250,7 @@ export default function OwnerOrdersPage() {
  {/* Tickets Section */}
  <section className="mt-6">
  {loading ? (
- <PageLoader text="Loading kitchen tickets" fullHeight={false} />
+ <PageLoader text="Loading kitchen tickets" fullHeight={false} variant="list" />
  ) : error && orders.length === 0 ? (
  <div className="rounded-[24px] bg-white p-10 text-center ">
  <AlertCircle className="mx-auto h-8 w-8 text-rose-500" />

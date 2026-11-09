@@ -1,8 +1,9 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, ArrowRight, CalendarDays, LoaderCircle, Plus, Trash2 } from 'lucide-react';
+import { LoaderCircle, Plus, Trash2 } from 'lucide-react';
 import { authenticatedFetch } from '@/lib/supabase/client';
+import { CalendarPeriodToolbar, type CalendarPeriodView } from '@/components/shared/calendar-period-toolbar';
 
 type RevenueEntry = {
   id: string;
@@ -32,6 +33,9 @@ const COST_CATEGORIES: Array<{ value: CostCategory; label: string }> = [
   { value: 'other', label: 'Other' },
 ];
 const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+const MONTH_NAMES = Array.from({ length: 12 }, (_, month) =>
+  new Intl.DateTimeFormat('en', { month: 'long', timeZone: 'UTC' }).format(new Date(Date.UTC(2026, month, 1))),
+);
 
 function getMalaysiaDateKey(date: Date) {
   const parts = new Intl.DateTimeFormat('en-CA', {
@@ -56,6 +60,12 @@ function shiftMonth(monthKey: string, delta: number) {
   return `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, '0')}`;
 }
 
+function shiftDate(dateKey: string, days: number) {
+  const date = new Date(`${dateKey}T12:00:00Z`);
+  date.setUTCDate(date.getUTCDate() + days);
+  return date.toISOString().slice(0, 10);
+}
+
 function currency(amount: number) {
   return new Intl.NumberFormat('en-MY', { style: 'currency', currency: 'MYR', minimumFractionDigits: 2 }).format(amount);
 }
@@ -77,11 +87,12 @@ function displayMonth(monthKey: string) {
 
 export function AdminFinancialCalendar() {
   const today = useMemo(() => getMalaysiaDateKey(new Date()), []);
-  const [month, setMonth] = useState(() => getMonthKey(today));
   const [selectedDate, setSelectedDate] = useState(today);
+  const [view, setView] = useState<CalendarPeriodView>('month');
   const [revenueEntries, setRevenueEntries] = useState<RevenueEntry[]>([]);
   const [costs, setCosts] = useState<CostEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState('');
   const [category, setCategory] = useState<CostCategory>('hosting');
@@ -89,10 +100,15 @@ export function AdminFinancialCalendar() {
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
 
-  const loadMonth = useCallback(async () => {
-    setIsLoading(true);
+  const month = getMonthKey(selectedDate);
+  const periodKey = view === 'year' ? selectedDate.slice(0, 4) : month;
+
+  const loadPeriod = useCallback(async (refresh = false) => {
+    if (refresh) setIsRefreshing(true);
+    else setIsLoading(true);
     try {
-      const response = await authenticatedFetch(`/api/admin/financials?month=${month}`);
+      const periodParam = view === 'year' ? `year=${periodKey}` : `month=${periodKey}`;
+      const response = await authenticatedFetch(`/api/admin/financials?${periodParam}`);
       const payload = (await response.json()) as { revenueEntries?: RevenueEntry[]; costs?: CostEntry[]; error?: string };
       if (!response.ok) throw new Error(payload.error ?? 'Unable to load financial activity.');
       setRevenueEntries(payload.revenueEntries ?? []);
@@ -101,11 +117,12 @@ export function AdminFinancialCalendar() {
     } catch (loadError) {
       setError(loadError instanceof Error ? loadError.message : 'Unable to load financial activity.');
     } finally {
-      setIsLoading(false);
+      if (refresh) setIsRefreshing(false);
+      else setIsLoading(false);
     }
-  }, [month]);
+  }, [periodKey, view]);
 
-  useEffect(() => { void loadMonth(); }, [loadMonth]);
+  useEffect(() => { void loadPeriod(); }, [loadPeriod]);
 
   const daily = useMemo(() => {
     const result = new Map<string, DaySummary>();
@@ -123,22 +140,34 @@ export function AdminFinancialCalendar() {
     return result;
   }, [revenueEntries, costs]);
 
-  const monthSummary = useMemo(() => Array.from(daily.values()).reduce((total, day) => ({
+  const periodSummary = useMemo(() => Array.from(daily.values()).reduce((total, day) => ({
     revenue: total.revenue + day.revenue,
     costs: total.costs + day.costs,
   }), { revenue: 0, costs: 0 }), [daily]);
 
   const dates = useMemo(() => monthDates(month), [month]);
+  const monthlyTotals = useMemo(() => {
+    const totals = new Map<number, DaySummary>();
+    for (const [dateKey, day] of daily) {
+      const monthIndex = Number(dateKey.slice(5, 7)) - 1;
+      const total = totals.get(monthIndex) ?? { revenue: 0, costs: 0 };
+      total.revenue += day.revenue;
+      total.costs += day.costs;
+      totals.set(monthIndex, total);
+    }
+    return totals;
+  }, [daily]);
   const selectedCosts = costs.filter((cost) => cost.incurred_on === selectedDate);
-  const selectedRevenue = revenueEntries
-    .filter((entry) => getMalaysiaDateKey(new Date(entry.paid_at)) === selectedDate)
-    .reduce((total, entry) => total + Math.max(0, Number(entry.platform_fee_amount ?? entry.service_fee ?? 0) - Number(entry.refund_amount ?? 0)), 0);
+  const selectedRevenueEntries = revenueEntries.filter((entry) => getMalaysiaDateKey(new Date(entry.paid_at)) === selectedDate);
+  const selectedSummary = daily.get(selectedDate) ?? { revenue: 0, costs: 0 };
 
-  const changeMonth = (delta: number) => {
-    const nextMonth = shiftMonth(month, delta);
-    setMonth(nextMonth);
-    setSelectedDate(`${nextMonth}-01`);
+  const navigate = (direction: -1 | 1) => {
+    if (view === 'day') setSelectedDate(shiftDate(selectedDate, direction));
+    else if (view === 'month') setSelectedDate(`${shiftMonth(month, direction)}-01`);
+    else setSelectedDate(`${Number(selectedDate.slice(0, 4)) + direction}-01-01`);
   };
+
+  const heading = view === 'year' ? selectedDate.slice(0, 4) : view === 'month' ? displayMonth(month) : fullDate(selectedDate);
 
   const addCost = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -178,134 +207,25 @@ export function AdminFinancialCalendar() {
     }
   };
 
-  if (isLoading && revenueEntries.length === 0 && costs.length === 0) {
-    return <div className="mx-auto max-w-6xl rounded-[26px] bg-white p-8 text-sm text-[#86868b]">Loading financial calendar…</div>;
-  }
-
   return (
     <div className="mx-auto max-w-6xl space-y-4">
       {error && <div role="alert" className="rounded-2xl bg-red-50 p-3 text-sm font-medium text-red-700">{error}</div>}
-
-      <div className="grid gap-3 sm:grid-cols-2">
-        <section className="rounded-[22px] bg-white p-4 sm:p-5">
-          <p className="text-xs font-medium text-[#6e6e73]">Paid platform revenue</p>
-          <p className="mt-2 text-2xl font-semibold tracking-tight text-[#1d1d1f]">{currency(monthSummary.revenue)}</p>
-          <p className="mt-1 text-[11px] text-[#86868b]">Fees from completed orders with a recorded payment</p>
-        </section>
-        <section className="rounded-[22px] bg-white p-4 sm:p-5">
-          <p className="text-xs font-medium text-[#6e6e73]">Operating costs</p>
-          <p className="mt-2 text-2xl font-semibold tracking-tight text-[#1d1d1f]">{currency(monthSummary.costs)}</p>
-          <p className="mt-1 text-[11px] text-[#86868b]">Hosting, infrastructure, software, and other costs</p>
-        </section>
-      </div>
-
-      <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1.5fr)_minmax(300px,0.8fr)]">
-        <section aria-label="Financial calendar" className="rounded-[26px] bg-white p-4 sm:p-5">
-          <div className="mb-4 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <CalendarDays className="h-4 w-4 text-[#0071e3]" />
-              <h1 className="text-base font-semibold tracking-tight text-[#1d1d1f]">{displayMonth(month)}</h1>
-              {isLoading && <LoaderCircle className="h-3.5 w-3.5 animate-spin text-[#86868b]" />}
-            </div>
-            <div className="flex items-center gap-1">
-              <button type="button" onClick={() => changeMonth(-1)} aria-label="Previous month" className="flex h-9 w-9 items-center justify-center rounded-full bg-[#f5f5f7] text-[#1d1d1f] hover:bg-black/[0.07]"><ArrowLeft className="h-4 w-4" /></button>
-              <button type="button" onClick={() => changeMonth(1)} aria-label="Next month" className="flex h-9 w-9 items-center justify-center rounded-full bg-[#f5f5f7] text-[#1d1d1f] hover:bg-black/[0.07]"><ArrowRight className="h-4 w-4" /></button>
-            </div>
-          </div>
-
-          <div className="mb-2 grid grid-cols-7 text-center text-[10px] font-semibold text-[#86868b]">
-            {WEEKDAYS.map((weekday) => <span key={weekday} className="py-2">{weekday}</span>)}
-          </div>
-          <div className="grid grid-cols-7 gap-1 sm:gap-1.5">
-            {dates.map((dateKey, index) => {
-              if (!dateKey) return <div key={`empty-${index}`} className="min-h-[72px] sm:min-h-[88px]" />;
-              const summary = daily.get(dateKey) ?? { revenue: 0, costs: 0 };
-              const selected = dateKey === selectedDate;
-              return (
-                <button
-                  key={dateKey}
-                  type="button"
-                  aria-pressed={selected}
-                  aria-label={`${fullDate(dateKey)}, revenue ${currency(summary.revenue)}, costs ${currency(summary.costs)}`}
-                  onClick={() => setSelectedDate(dateKey)}
-                  className={`min-h-[72px] min-w-0 rounded-xl p-1.5 text-left transition-colors sm:min-h-[88px] sm:p-2 ${selected ? 'bg-[#1d1d1f] text-white' : 'bg-[#f8f8fa] text-[#1d1d1f] hover:bg-[#f0f0f2]'}`}
-                >
-                  <span className={`block text-[11px] font-semibold ${selected ? 'text-white' : 'text-[#6e6e73]'}`}>{Number(dateKey.slice(-2))}</span>
-                  <span className="mt-1 block truncate text-[9px] font-semibold text-emerald-600 sm:text-[10px]">{compactCurrency(summary.revenue)}</span>
-                  <span className={`block truncate text-[9px] font-medium sm:text-[10px] ${selected ? 'text-white/65' : 'text-[#86868b]'}`}>{compactCurrency(summary.costs)}</span>
-                </button>
-              );
-            })}
-          </div>
-          <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-[10px] text-[#6e6e73]">
-            <span><span className="mr-1.5 inline-block h-1.5 w-1.5 rounded-full bg-emerald-500" />Revenue</span>
-            <span><span className="mr-1.5 inline-block h-1.5 w-1.5 rounded-full bg-[#86868b]" />Costs</span>
-          </div>
-          <p className="mt-3 text-[10px] leading-relaxed text-[#86868b]">Revenue includes paid platform fees only. Counter-payment orders without a recorded platform payment are excluded.</p>
-        </section>
-
-        <aside className="space-y-4">
-          <section className="rounded-[26px] bg-white p-5">
-            <p className="text-xs font-medium text-[#86868b]">Selected date</p>
-            <h2 className="mt-1 text-base font-semibold text-[#1d1d1f]">{fullDate(selectedDate)}</h2>
-            <div className="mt-4 grid grid-cols-2 gap-2">
-              <div className="rounded-2xl bg-[#f5f5f7] p-3">
-                <p className="text-[10px] text-[#6e6e73]">Revenue</p>
-                <p className="mt-1 text-sm font-semibold text-[#1d1d1f]">{currency(selectedRevenue)}</p>
-              </div>
-              <div className="rounded-2xl bg-[#f5f5f7] p-3">
-                <p className="text-[10px] text-[#6e6e73]">Costs</p>
-                <p className="mt-1 text-sm font-semibold text-[#1d1d1f]">{currency(selectedCosts.reduce((total, cost) => total + Number(cost.amount), 0))}</p>
-              </div>
-            </div>
-            <div className="mt-4 space-y-2">
-              {selectedCosts.length === 0 ? <p className="text-xs text-[#86868b]">No costs recorded for this day.</p> : selectedCosts.map((cost) => (
-                <div key={cost.id} className="flex items-start justify-between gap-3 rounded-2xl bg-[#f8f8fa] p-3">
-                  <div className="min-w-0">
-                    <p className="truncate text-xs font-semibold text-[#1d1d1f]">{cost.vendor || COST_CATEGORIES.find((item) => item.value === cost.category)?.label}</p>
-                    <p className="mt-0.5 truncate text-[10px] text-[#86868b]">{cost.description || COST_CATEGORIES.find((item) => item.value === cost.category)?.label}</p>
-                  </div>
-                  <div className="flex shrink-0 items-center gap-2">
-                    <span className="text-xs font-semibold text-[#1d1d1f]">{currency(Number(cost.amount))}</span>
-                    <button type="button" aria-label={`Delete cost ${cost.vendor || cost.category}`} onClick={() => void deleteCost(cost.id)} className="flex h-7 w-7 items-center justify-center rounded-full text-[#86868b] hover:bg-red-50 hover:text-red-600"><Trash2 className="h-3.5 w-3.5" /></button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          <form onSubmit={(event) => void addCost(event)} className="space-y-3 rounded-[26px] bg-white p-5">
-            <div className="flex items-center gap-2">
-              <Plus className="h-4 w-4 text-[#0071e3]" />
-              <h2 className="text-sm font-semibold text-[#1d1d1f]">Add a cost</h2>
-            </div>
-            <label className="block text-xs font-medium text-[#6e6e73]">
-              Cost type
-              <select value={category} onChange={(event) => setCategory(event.target.value as CostCategory)} className="mt-1.5 w-full px-3 py-2.5 text-sm text-[#1d1d1f]">
-                {COST_CATEGORIES.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
-              </select>
-            </label>
-            <label className="block text-xs font-medium text-[#6e6e73]">
-              Vendor
-              <input value={vendor} onChange={(event) => setVendor(event.target.value)} maxLength={120} placeholder="e.g. Vercel" className="mt-1.5 w-full px-3 py-2.5 text-sm text-[#1d1d1f] placeholder:text-[#a1a1a6]" />
-            </label>
-            <label className="block text-xs font-medium text-[#6e6e73]">
-              Description
-              <input value={description} onChange={(event) => setDescription(event.target.value)} maxLength={300} placeholder="e.g. Monthly hosting" className="mt-1.5 w-full px-3 py-2.5 text-sm text-[#1d1d1f] placeholder:text-[#a1a1a6]" />
-            </label>
-            <label className="block text-xs font-medium text-[#6e6e73]">
-              Amount (MYR)
-              <div className="mt-1.5 flex items-center rounded-[14px] bg-[#f5f5f7] px-3">
-                <span className="text-sm text-[#86868b]">RM</span>
-                <input type="number" required min="0.01" max="100000000" step="0.01" value={amount} onChange={(event) => setAmount(event.target.value)} className="w-full bg-transparent px-2 py-2.5 text-sm text-[#1d1d1f]" />
-              </div>
-            </label>
-            <button type="submit" disabled={isSaving} className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-full bg-[#1d1d1f] px-4 text-xs font-semibold text-white hover:bg-black disabled:opacity-60">
-              {isSaving ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
-              Record cost for this day
-            </button>
-          </form>
-        </aside>
+      <section aria-label="Financial calendar" className="rounded-[24px] bg-white p-4 sm:p-6">
+        <CalendarPeriodToolbar heading={heading} view={view} onViewChange={setView} onNavigate={navigate} onRefresh={() => void loadPeriod(true)} isLoading={isLoading} isRefreshing={isRefreshing} refreshLabel="Refresh financial calendar" />
+        <div className="mt-4 grid gap-2 sm:grid-cols-3">
+          <div className="rounded-2xl bg-[#f5f5f7] p-3"><p className="text-[11px] font-medium text-[#6e6e73]">Selected day revenue</p><p className="mt-1 text-lg font-semibold">{currency(selectedSummary.revenue)}</p></div>
+          <div className="rounded-2xl bg-[#f5f5f7] p-3"><p className="text-[11px] font-medium text-[#6e6e73]">{view === 'year' ? 'Year revenue' : 'Month revenue'}</p><p className="mt-1 text-lg font-semibold">{currency(periodSummary.revenue)}</p></div>
+          <div className="rounded-2xl bg-[#f5f5f7] p-3"><p className="text-[11px] font-medium text-[#6e6e73]">{view === 'year' ? 'Year costs' : 'Month costs'}</p><p className="mt-1 text-lg font-semibold">{currency(periodSummary.costs)}</p></div>
+        </div>
+        {view === 'year' ? <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">{MONTH_NAMES.map((name, index) => { const total = monthlyTotals.get(index) ?? { revenue: 0, costs: 0 }; return <button type="button" key={name} onClick={() => { setSelectedDate(`${selectedDate.slice(0, 4)}-${String(index + 1).padStart(2, '0')}-01`); setView('month'); }} className="rounded-2xl bg-[#f5f5f7] p-4 text-left hover:bg-[#ededf0]"><span className="text-sm font-semibold">{name}</span><span className="mt-2 block text-xs text-emerald-700">Revenue {currency(total.revenue)}</span><span className="block text-xs text-[#6e6e73]">Costs {currency(total.costs)}</span></button>; })}</div> : <>
+          {view === 'month' ? <><div className="mb-2 mt-4 grid grid-cols-7 text-center text-[10px] font-semibold text-[#86868b]">{WEEKDAYS.map((weekday) => <span key={weekday} className="py-2">{weekday}</span>)}</div><div className="grid grid-cols-7 gap-1 sm:gap-1.5">{dates.map((dateKey, index) => { if (!dateKey) return <div key={`empty-${index}`} className="min-h-[72px] sm:min-h-[88px]" />; const summary = daily.get(dateKey) ?? { revenue: 0, costs: 0 }; const selected = dateKey === selectedDate; return <button key={dateKey} type="button" aria-pressed={selected} aria-label={`${fullDate(dateKey)}, revenue ${currency(summary.revenue)}, costs ${currency(summary.costs)}`} onClick={() => setSelectedDate(dateKey)} className={`min-h-[72px] min-w-0 rounded-xl p-1.5 text-left transition-colors sm:min-h-[88px] sm:p-2 ${selected ? 'bg-[#1d1d1f] text-white' : 'bg-[#f8f8fa] text-[#1d1d1f] hover:bg-[#f0f0f2]'}`}><span className={`block text-[11px] font-semibold ${selected ? 'text-white' : 'text-[#6e6e73]'}`}>{Number(dateKey.slice(-2))}</span><span className="mt-1 block truncate text-[9px] font-semibold text-emerald-600 sm:text-[10px]">{compactCurrency(summary.revenue)}</span><span className={`block truncate text-[9px] font-medium sm:text-[10px] ${selected ? 'text-white/65' : 'text-[#86868b]'}`}>{compactCurrency(summary.costs)}</span></button>; })}</div></> : <div className="mt-4 space-y-2 rounded-2xl bg-[#f8f8fa] p-4"><div className="grid grid-cols-2 gap-3"><div><p className="text-xs text-[#6e6e73]">Paid platform revenue</p><p className="mt-1 text-lg font-semibold">{currency(selectedSummary.revenue)}</p></div><div><p className="text-xs text-[#6e6e73]">Operating costs</p><p className="mt-1 text-lg font-semibold">{currency(selectedSummary.costs)}</p></div></div>{selectedRevenueEntries.map((entry) => <div key={entry.id} className="flex justify-between border-t border-black/5 pt-2 text-xs"><span>{new Intl.DateTimeFormat('en-MY', { timeZone: 'Asia/Kuala_Lumpur', hour: 'numeric', minute: '2-digit' }).format(new Date(entry.paid_at))} · Order {entry.id.slice(0, 8)}</span><strong>{currency(Math.max(0, Number(entry.platform_fee_amount ?? entry.service_fee ?? 0) - Number(entry.refund_amount ?? 0)))}</strong></div>)}</div>}
+          <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-[10px] text-[#6e6e73]"><span><span className="mr-1.5 inline-block h-1.5 w-1.5 rounded-full bg-emerald-500" />Revenue</span><span><span className="mr-1.5 inline-block h-1.5 w-1.5 rounded-full bg-[#86868b]" />Costs</span></div>
+        </>}
+        <p className="mt-3 text-[10px] leading-relaxed text-[#86868b]">Revenue includes paid platform fees only. Counter-payment orders without a recorded platform payment are excluded.</p>
+      </section>
+      <div className="grid items-start gap-4 lg:grid-cols-2">
+        <section className="space-y-3 rounded-[24px] bg-white p-5"><div><p className="text-xs font-medium text-[#86868b]">Selected date</p><h2 className="mt-1 text-base font-semibold text-[#1d1d1f]">{fullDate(selectedDate)}</h2><p className="mt-1 text-sm text-[#6e6e73]">Revenue {currency(selectedSummary.revenue)} · Costs {currency(selectedSummary.costs)}</p></div><div className="space-y-2">{selectedCosts.length === 0 ? <p className="text-xs text-[#86868b]">No costs recorded for this day.</p> : selectedCosts.map((cost) => <div key={cost.id} className="flex items-start justify-between gap-3 rounded-2xl bg-[#f8f8fa] p-3"><div className="min-w-0"><p className="truncate text-xs font-semibold text-[#1d1d1f]">{cost.vendor || COST_CATEGORIES.find((item) => item.value === cost.category)?.label}</p><p className="mt-0.5 truncate text-[10px] text-[#86868b]">{cost.description || COST_CATEGORIES.find((item) => item.value === cost.category)?.label}</p></div><div className="flex shrink-0 items-center gap-2"><span className="text-xs font-semibold">{currency(Number(cost.amount))}</span><button type="button" aria-label={`Delete cost ${cost.vendor || cost.category}`} onClick={() => void deleteCost(cost.id)} className="flex h-7 w-7 items-center justify-center rounded-full text-[#86868b] hover:bg-red-50 hover:text-red-600"><Trash2 className="h-3.5 w-3.5" /></button></div></div>)}</div></section>
+        <form onSubmit={(event) => void addCost(event)} className="space-y-3 rounded-[24px] bg-white p-5"><div className="flex items-center gap-2"><Plus className="h-4 w-4 text-[#0071e3]" /><h2 className="text-sm font-semibold">Add a cost</h2></div><label className="block text-xs font-medium text-[#6e6e73]">Cost type<select value={category} onChange={(event) => setCategory(event.target.value as CostCategory)} className="mt-1.5 w-full px-3 py-2.5 text-sm">{COST_CATEGORIES.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}</select></label><label className="block text-xs font-medium text-[#6e6e73]">Vendor<input value={vendor} onChange={(event) => setVendor(event.target.value)} maxLength={120} placeholder="e.g. Vercel" className="mt-1.5 w-full px-3 py-2.5 text-sm" /></label><label className="block text-xs font-medium text-[#6e6e73]">Description<input value={description} onChange={(event) => setDescription(event.target.value)} maxLength={300} placeholder="e.g. Monthly hosting" className="mt-1.5 w-full px-3 py-2.5 text-sm" /></label><label className="block text-xs font-medium text-[#6e6e73]">Amount (MYR)<div className="mt-1.5 flex items-center rounded-[14px] bg-[#f5f5f7] px-3"><span className="text-sm text-[#86868b]">RM</span><input type="number" required min="0.01" max="100000000" step="0.01" value={amount} onChange={(event) => setAmount(event.target.value)} className="w-full bg-transparent px-2 py-2.5 text-sm" /></div></label><button type="submit" disabled={isSaving} className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-full bg-[#1d1d1f] px-4 text-xs font-semibold text-white disabled:opacity-60">{isSaving ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}Record cost for this day</button></form>
       </div>
     </div>
   );

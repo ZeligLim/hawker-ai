@@ -89,7 +89,7 @@ export function AdminPlansPage() {
     }
   };
 
-  if (isLoading) return <PageLoader text="Loading plans" fullHeight={false} />;
+  if (isLoading) return <PageLoader text="Loading plans" fullHeight={false} variant="plans" />;
 
   return (
     <main className="mx-auto max-w-4xl space-y-5">

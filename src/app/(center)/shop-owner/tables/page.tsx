@@ -204,7 +204,7 @@ export default function TablesManagementPage() {
   };
 
  if (loading) {
- return <PageLoader text="Loading your tables" />;
+ return <PageLoader text="Loading your tables" variant="table" />;
   }
 
  return (

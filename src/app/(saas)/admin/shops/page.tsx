@@ -51,7 +51,7 @@ export default function AdminShopsListPage() {
  <div className="space-y-6 sm:space-y-8">
 
  {loading ? (
- <PageLoader text="Loading venues" fullHeight={false} />
+ <PageLoader text="Loading venues" fullHeight={false} variant="table" />
  ) : error ? (
  <div className="rounded-2xl bg-red-50 p-4 text-xs font-medium text-red-700 ">
  {error}

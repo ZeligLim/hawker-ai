@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { ArrowLeft, ImagePlus, LoaderCircle, Plus, Trash2 } from 'lucide-react';
+import { PageLoader } from '@/components/page-loader';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/components/auth-provider';
@@ -110,11 +111,7 @@ export default function OwnerDishEditorPage() {
  }, [foodOutletId, isNew, params.id, preselectedBoothId, roles.isLoading]);
 
  if (isLoading) {
- return (
- <main className="min-h-screen bg-[#f5f5f7] px-4 py-6 sm:px-6 flex items-center justify-center">
- <LoaderCircle className="h-6 w-6 animate-spin text-[#86868b]" />
- </main>
- );
+ return <PageLoader text="Loading dish details" variant="form" />;
  }
 
  if (!dish) {
@@ -266,7 +263,7 @@ export default function OwnerDishEditorPage() {
  <div className="mt-6 pt-4">
  <div className="flex items-center justify-between gap-3">
  <div>
- <p className="text-sm font-semibold">Spicy level</p>
+ <p className="text-sm font-semibold">Maximum spice level</p>
  <p className="mt-1 text-xs text-[#6e6e73]">
  {spiceLevels === 0 ? 'Not spicy (0)' : spiceLevels === 1 ? 'Mild (1)' : `Spicy Level ${spiceLevels}`}
  </p>

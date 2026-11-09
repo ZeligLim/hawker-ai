@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { LoaderCircle } from 'lucide-react';
+import { SkeletonLoader } from '@/components/page-loader';
 import { supabase } from '@/lib/supabase/client';
 import {
  clearAuthRedirect,
@@ -60,11 +60,9 @@ export default function AuthCallbackPage() {
  return (
  <main className="min-h-screen bg-[#f5f5f7] px-4 py-8 text-[#1d1d1f]">
  <div className="mx-auto flex min-h-[80vh] max-w-[420px] items-center justify-center">
- <div className="w-full rounded-[30px] bg-white p-6 text-center ">
- <div className="flex items-center justify-center">
- <LoaderCircle className="h-8 w-8 text-[#1d1d1f] animate-spin" />
- </div>
- <p className="mt-4 text-sm text-[#6e6e73]">{message}</p>
+ <div role="status" aria-label={message} className="w-full rounded-[30px] bg-white p-6">
+ <div className="mx-auto mb-5 h-12 w-12 animate-pulse rounded-2xl bg-neutral-200" />
+ <SkeletonLoader lines={2} />
  </div>
  </div>
  </main>

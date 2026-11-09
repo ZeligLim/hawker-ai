@@ -487,7 +487,7 @@ export default function ShopOwnerBoothsPage() {
  <section className="mt-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5 items-start">
  {loading ? (
  <div className="col-span-full">
- <PageLoader text="Loading booths" fullHeight={false} />
+ <PageLoader text="Loading booths" fullHeight={false} variant="booths" />
  </div>
  ) : boothList.length === 0 ? (
  <div className="col-span-full rounded-[24px] bg-white p-8 text-center ">

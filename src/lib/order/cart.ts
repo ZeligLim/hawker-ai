@@ -16,6 +16,18 @@ export function useCartItems() {
   }, []);
 
  useEffect(() => {
+ const syncCart = () => setCartItems(readCartItems());
+ window.addEventListener('hawker-cart-changed', syncCart);
+ window.addEventListener('hawker-session-changed', syncCart);
+ window.addEventListener('storage', syncCart);
+ return () => {
+ window.removeEventListener('hawker-cart-changed', syncCart);
+ window.removeEventListener('hawker-session-changed', syncCart);
+ window.removeEventListener('storage', syncCart);
+ };
+ }, []);
+
+ useEffect(() => {
  if (!hasHydrated) return;
  writeCartItems(cartItems);
   }, [cartItems, hasHydrated]);
@@ -42,6 +54,12 @@ export function writeCartItems(items: CartItem[]) {
  window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
 }
 
+export function clearCartItems() {
+ if (typeof window === 'undefined') return;
+ writeCartItems([]);
+ window.dispatchEvent(new Event('hawker-cart-changed'));
+}
+
 export type CartItem = {
  id: string;
  dishId: string;
@@ -55,6 +73,8 @@ export type CartItem = {
  notes?: string;
  customizationKey?: string;
  customizations?: string[];
+ availableCustomizations?: { id: string; label: string; price: number }[];
+ spiceLevel?: number;
 };
 
 export type MerchantGroup = {

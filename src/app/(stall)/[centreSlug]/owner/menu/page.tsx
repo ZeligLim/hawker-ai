@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Edit3, Plus, UtensilsCrossed, LoaderCircle } from 'lucide-react';
+import { Edit3, Plus, UtensilsCrossed } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/components/auth-provider';
@@ -29,9 +29,7 @@ function MenuLoadingState() {
  return (
  <div role="status" aria-live="polite" aria-label="Loading menu" className="space-y-4">
  <div className="flex items-center gap-3 rounded-[20px] bg-white px-4 py-3.5 shadow-sm shadow-black/[0.03]">
- <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#f5f5f7]">
- <LoaderCircle className="h-4 w-4 animate-spin text-[#0071e3] motion-reduce:animate-none" />
- </div>
+ <div className="h-9 w-9 animate-pulse rounded-xl bg-[#f0f0f2] motion-reduce:animate-none" />
  <div className="min-w-0 flex-1">
  <p className="text-xs font-semibold text-[#1d1d1f]">Getting your menu ready</p>
  <p className="mt-0.5 text-[11px] text-[#86868b]">Loading dishes and availability</p>

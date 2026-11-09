@@ -1,5 +1,6 @@
-import { LoaderCircle, Store, ChevronRight } from 'lucide-react';
+import { Store, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
+import { SkeletonLoader } from '@/components/page-loader';
 
 const rankMedalStyles: Record<number, string> = {
  0: 'bg-amber-100 text-amber-800 ', // Gold
@@ -30,9 +31,14 @@ export function StallLeaderboard({
  
 
  {loading ? (
- <div className="flex items-center justify-center p-12 text-xs text-[#86868b]">
- <LoaderCircle className="w-4 h-4 mr-2 text-[#111827] animate-spin" />
- Loading performance data…
+ <div className="grid gap-3 p-4 sm:grid-cols-2 xl:grid-cols-3" role="status" aria-label="Loading performance data">
+ {Array.from({ length: 6 }, (_, index) => (
+ <div key={index} className="rounded-[16px] bg-[#f5f5f7]/70 p-3">
+ <SkeletonLoader lines={2} />
+ <div className="mt-4 h-4 w-1/3 animate-pulse rounded-full bg-neutral-200" />
+ <div className="mt-3 h-1 w-full animate-pulse rounded-full bg-neutral-200" />
+ </div>
+ ))}
  </div>
  ) : booths.length === 0 ? (
  <div className="rounded-2xl bg-[#f5f5f7] p-8 text-center text-xs text-[#6e6e73]">

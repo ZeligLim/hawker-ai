@@ -39,7 +39,7 @@ export default function AdminShopDetailPage({ params }: { params: Promise<{ id: 
     return () => { active = false; };
   }, [id]);
 
-  if (loading) return <PageLoader text="Loading venue details" fullHeight={false} />;
+  if (loading) return <PageLoader text="Loading venue details" fullHeight={false} variant="form" />;
   if (error || !venue) return <div role="alert" className="rounded-2xl bg-red-50 p-4 text-sm font-medium text-red-700">{error || 'Venue not found.'}</div>;
 
   return (

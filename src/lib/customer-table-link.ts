@@ -3,6 +3,7 @@ import {
  setCurrentTableSession,
  type CurrentTableSession,
 } from '@/lib/table-session';
+import { clearCartItems, readCartItems } from '@/lib/order/cart';
 
 type TableSessionResponse = {
  error?: unknown;
@@ -30,6 +31,18 @@ export function buildTableMenuUrl(origin: string, centreSlug: string, tableId: s
  return url.toString();
 }
 
+function reconcileCartWithTableSession(nextSession: CurrentTableSession) {
+ const currentSession = getStoredTableSession();
+ const isSameSession =
+ currentSession?.tableId === nextSession.tableId &&
+ currentSession?.sessionId === nextSession.sessionId;
+ const cartBelongsToCentre = readCartItems().every(
+  (item) => item.restaurantId === nextSession.centreId,
+ );
+
+ if (!isSameSession || !cartBelongsToCentre) clearCartItems();
+}
+
 export async function connectTableFromLink(
  tableId: string,
  expectedCentreSlug: string,
@@ -40,6 +53,7 @@ export async function connectTableFromLink(
  stored?.tableId === tableId &&
  stored.centreSlug?.toLowerCase() === expectedCentreSlug.toLowerCase()
  ) {
+ reconcileCartWithTableSession(stored);
  return stored;
  }
 
@@ -77,11 +91,21 @@ export async function connectTableFromLink(
  throw new Error('This table link belongs to a different centre.');
  }
 
- setCurrentTableSession(table.table_number, table.id, {
+ const nextSession: CurrentTableSession = {
+ tableNumber: table.table_number,
+ tableId: table.id,
  sessionId: session.id,
  centreId: centre.id,
  centreSlug: centre.slug,
  centreName: centre.name,
+ };
+
+ reconcileCartWithTableSession(nextSession);
+ setCurrentTableSession(table.table_number, table.id, {
+  sessionId: nextSession.sessionId,
+  centreId: nextSession.centreId,
+  centreSlug: nextSession.centreSlug,
+  centreName: nextSession.centreName,
  });
 
  const connected = getStoredTableSession();

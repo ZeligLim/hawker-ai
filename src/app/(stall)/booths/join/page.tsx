@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useState } from 'react';
 import { useAuth } from '@/components/auth-provider';
 import { Store, KeyRound, ArrowRight, LoaderCircle, CheckCircle2, Building2, AlertCircle } from 'lucide-react';
+import { PageLoader } from '@/components/page-loader';
 import { authenticatedFetch } from '@/lib/supabase/client';
 import { getStallRoute } from '@/lib/stall-route';
 
@@ -118,14 +119,7 @@ function JoinBoothContent() {
  };
 
  if (status === 'loading') {
- return (
- <main className="min-h-screen bg-[#f5f5f7] px-4 py-12 flex items-center justify-center text-[#1d1d1f]">
- <div className="flex items-center gap-2.5 text-xs text-[#86868b]">
- <LoaderCircle className="w-4 h-4 text-[#0071e3] animate-spin" />
- <span>Validating stall credentials…</span>
- </div>
- </main>
- );
+ return <PageLoader text="Validating stall credentials" variant="form" />;
  }
 
  if (status !== 'authenticated') {
