@@ -122,7 +122,10 @@ export function AdminFinancialCalendar() {
     }
   }, [periodKey, view]);
 
-  useEffect(() => { void loadPeriod(); }, [loadPeriod]);
+  useEffect(() => {
+    const timer = window.setTimeout(() => { void loadPeriod(); }, 0);
+    return () => window.clearTimeout(timer);
+  }, [loadPeriod]);
 
   const daily = useMemo(() => {
     const result = new Map<string, DaySummary>();
