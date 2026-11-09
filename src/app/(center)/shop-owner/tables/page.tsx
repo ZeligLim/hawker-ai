@@ -1,7 +1,6 @@
 'use client';
 
 import { useCallback, useEffect, useState, useRef } from 'react';
-import Link from 'next/link';
 import {
   AlertCircle,
   CheckCircle2,
@@ -10,7 +9,6 @@ import {
   QrCode,
   Download,
   Printer,
-  ChevronLeft,
 } from 'lucide-react';
 import { PageLoader, ButtonLoader } from '@/components/page-loader';
 import { authenticatedFetch } from '@/lib/supabase/client';
@@ -211,28 +209,6 @@ export default function TablesManagementPage() {
 
  return (
     <main className="min-h-screen bg-[#f5f5f7] pb-24 text-[#1d1d1f]">
-      {/* Header */}
-      <div className="bg-white ">
-        <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6">
-          <div className="flex items-center gap-3">
-            <Link
- href="/shop-owner"
- className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#f5f5f7] hover:bg-black/5 "
-            >
-              <ChevronLeft className="w-4 h-4 text-[#1d1d1f]" />
-            </Link>
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#1d1d1f]">
-                Table Management
-              </h1>
-              <p className="text-sm text-[#6e6e73] mt-1">
-                Manage seating and generate QR codes for diners.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 space-y-6">
         {error && (
           <div className="rounded-2xl bg-red-50 p-4 text-sm font-medium text-red-700 flex items-center gap-2">

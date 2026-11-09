@@ -5,7 +5,7 @@ import { AdminShell } from '@/components/admin/admin-shell';
 
 export const metadata: Metadata = {
  title: 'SaaS Platform Admin | Hawker',
- description: 'SaaS Superadmin control plane for monetization and venue management.',
+ description: 'SaaS administration for platform finances, plans, and venues.',
 };
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {

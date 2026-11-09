@@ -3,6 +3,7 @@
 import { useAuth } from '@/components/auth-provider';
 import { LogOut, ShieldCheck, User } from 'lucide-react';
 import { useState } from 'react';
+import { RoleModeSwitcher } from '@/components/role-mode-switcher';
 
 export default function AdminProfilePage() {
  const { user, roles, signOut } = useAuth();
@@ -11,12 +12,7 @@ export default function AdminProfilePage() {
  const roleLabel = roles.isSaasOwner ? 'SaaS Owner' : 'Superadmin';
 
  return (
- <div className="max-w-2xl mx-auto space-y-6">
- <div className="mb-8">
- <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#1d1d1f]">Profile</h1>
- <p className="mt-2 text-sm text-[#6e6e73]">Manage your superadmin session.</p>
- </div>
-
+ <div className="mx-auto max-w-[760px] space-y-6">
  <div className="rounded-3xl bg-white p-6 ">
  <div className="flex items-center gap-4">
  <div className="w-16 h-16 rounded-full bg-black/5 flex items-center justify-center text-[#1d1d1f]">
@@ -32,6 +28,10 @@ export default function AdminProfilePage() {
  </div>
  </div>
  </div>
+ </div>
+
+ <div className="mt-6">
+ <RoleModeSwitcher currentMode="admin" />
  </div>
 
  <div className="rounded-3xl bg-white p-2 ">

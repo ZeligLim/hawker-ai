@@ -1,5 +1,3 @@
-'use client';
-
 import Link from 'next/link';
 import { MarketingNav } from '@/components/marketing-nav';
 import {
@@ -11,12 +9,24 @@ import {
  Sparkles,
  RefreshCw,
  Building2,
- CreditCard,
  QrCode,
  Smartphone,
  CheckCircle2,
  XCircle,
 } from 'lucide-react';
+import { createAdminClient } from '@/lib/supabase/server';
+
+export const dynamic = 'force-dynamic';
+
+type PublicPlan = {
+ plan_key: 'ordering' | 'online_payments';
+ name: string;
+ description: string;
+ monthly_price: number;
+ is_active: boolean;
+ online_payments_enabled: boolean;
+ features: string[];
+};
 
 const comparisonRows = [
  {
@@ -41,12 +51,6 @@ const comparisonRows = [
  feature: 'Refunds',
  hawker: 'No online payments to refund',
  legacy: 'Online refunds depend on configured gateway support',
- highlight: false,
- },
- {
- feature: 'Plan availability',
- hawker: 'Available now',
- legacy: 'Requires payment provider integration',
  highlight: false,
  },
 ];
@@ -86,24 +90,40 @@ const includedFeatures = [
 
 const faqs = [
  {
- q: 'What is included in Level 1?',
- a: 'Level 1 includes QR-based menus, ordering, and order management. Customers pay at the stall counter; checkout does not collect online payment.',
+ q: 'What does the ordering plan include?',
+ a: 'It includes QR-based menus, order submission, and stall order management. Customers pay at the stall counter.',
  },
  {
- q: 'What does Level 2 add?',
- a: 'Level 2 is intended to add online payment processing. It is not currently available until a payment provider is integrated and configured.',
+ q: 'What does the online payments plan add?',
+ a: 'It adds online payment processing after a payment provider is integrated and configured.',
  },
  {
  q: 'Are online payments or refunds enabled today?',
- a: 'No. Level 1 orders are unpaid online and marked pending payment for counter collection. Level 2 payment processing and online refunds require a configured payment provider.',
+ a: 'Online payment processing and online refunds require a configured payment provider.',
  },
  {
- q: 'Do customers need to pay to place a Level 1 order?',
+ q: 'Do customers need to pay online to place an order?',
  a: 'No online payment is taken when the order is submitted. The customer pays the stall at the counter.',
  },
 ];
 
-export default function PlansPage() {
+export default async function PlansPage() {
+ const database = createAdminClient();
+ let configuredPlans: PublicPlan[] = [];
+ if (database) {
+  const { data, error } = await database
+   .from('platform_plans')
+   .select('plan_key, name, description, monthly_price, is_active, online_payments_enabled, features')
+   .order('display_order', { ascending: true });
+  if (!error && data) configuredPlans = data as PublicPlan[];
+ }
+ const fallbackPlans: PublicPlan[] = [
+  { plan_key: 'ordering', name: 'Level 1 · Ordering', description: 'QR menus and order submission with payment at the stall counter.', monthly_price: 0, is_active: true, online_payments_enabled: false, features: ['Centre QR menus and order submission', 'Live stall order management', 'Pay at the stall counter'] },
+  { plan_key: 'online_payments', name: 'Level 2 · Online payments', description: 'Online checkout and payment status after a payment provider is integrated.', monthly_price: 0, is_active: false, online_payments_enabled: true, features: ['Online checkout through a configured provider', 'Payment status and provider-dependent refunds'] },
+ ];
+ const plans = configuredPlans.length ? configuredPlans : fallbackPlans;
+ const orderingPlan = plans.find((plan) => plan.plan_key === 'ordering') ?? plans[0];
+ const onlinePaymentsPlan = plans.find((plan) => plan.plan_key === 'online_payments') ?? plans[1];
  return (
  <div className="min-h-screen bg-[#f5f5f7] text-[#1d1d1f] antialiased selection:bg-[#0071e3] selection:text-white">
  {/* ── Apple Breadcrumb Navigation Header (Auth-Aware) ── */}
@@ -113,56 +133,41 @@ export default function PlansPage() {
  <section className="pt-16 pb-12 sm:pt-24 sm:pb-16 text-center px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
  <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#0071e3]/10 text-[#0071e3] text-xs font-semibold mb-6">
  <Zap className="w-3.5 h-3.5" />
- <span>Pay-As-You-Grow Economics</span>
+ <span>Plans for food halls</span>
  </div>
 
  <h1 className="text-4xl sm:text-6xl font-semibold tracking-[-0.035em] text-[#1d1d1f] leading-[1.08]">
- No monthly software bills.
+ Choose a plan that fits your food hall.
  <br />
- <span className="text-[#0071e3]">Choose how customers pay.</span>
+ <span className="text-[#0071e3]">Clear features and pricing.</span>
  </h1>
 
  <p className="mt-5 text-base sm:text-xl text-[#6e6e73] max-w-2xl mx-auto leading-relaxed">
- Start with QR-based ordering and counter payment. Online payment processing is reserved for Level 2 and is not enabled until a provider is configured.
+ Plan prices, availability, and included features are managed by the platform administrator.
  </p>
  </section>
 
  {/* ── ORDERING TIERS ── */}
  <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
  <div className="grid md:grid-cols-2 gap-5">
- <article className="rounded-[32px] bg-[#1d1d1f] p-8 text-white">
- <p className="text-xs font-semibold uppercase tracking-wide text-[#30d158]">Available now</p>
- <h2 className="mt-3 text-3xl font-semibold">Level 1 · Ordering</h2>
- <p className="mt-2 text-sm leading-relaxed text-white/70">
- Customers browse the centre menu, place orders, and pay at the stall counter.
- </p>
- <ul className="mt-6 space-y-3 text-sm text-white/85">
- <li className="flex gap-2"><CheckCircle2 className="h-4 w-4 shrink-0 text-[#30d158]" /> Centre QR menus and order submission</li>
- <li className="flex gap-2"><CheckCircle2 className="h-4 w-4 shrink-0 text-[#30d158]" /> Live stall order management</li>
- <li className="flex gap-2"><CheckCircle2 className="h-4 w-4 shrink-0 text-[#30d158]" /> No online payment is collected</li>
+ {plans.map((plan, index) => (
+ <article key={plan.plan_key} className={`rounded-[32px] p-8 ${index === 0 ? 'bg-[#1d1d1f] text-white' : 'bg-white text-[#1d1d1f]'}`}>
+ <p className={`text-xs font-semibold uppercase tracking-wide ${index === 0 ? 'text-[#30d158]' : 'text-[#0071e3]'}`}>{plan.is_active ? 'Available' : 'Not available'}</p>
+ <h2 className="mt-3 text-3xl font-semibold">{plan.name}</h2>
+ <p className={`mt-2 text-sm leading-relaxed ${index === 0 ? 'text-white/70' : 'text-[#6e6e73]'}`}>{plan.description}</p>
+ <p className="mt-5 text-2xl font-semibold">{plan.monthly_price === 0 ? 'No monthly fee' : `RM ${Number(plan.monthly_price).toFixed(2)}`}<span className={`ml-1 text-xs font-normal ${index === 0 ? 'text-white/60' : 'text-[#86868b]'}`}>{plan.monthly_price === 0 ? '' : '/ month'}</span></p>
+ <ul className={`mt-6 space-y-3 text-sm ${index === 0 ? 'text-white/85' : 'text-[#515154]'}`}>
+ {plan.features.map((feature) => <li key={feature} className="flex gap-2"><CheckCircle2 className={`h-4 w-4 shrink-0 ${index === 0 ? 'text-[#30d158]' : 'text-[#0071e3]'}`} />{feature}</li>)}
  </ul>
- <Link
- href={'/shop-owner/profile' as any}
- className="mt-8 inline-flex items-center rounded-full bg-[#0071e3] px-6 py-3 text-sm font-semibold text-white hover:bg-[#0077ed]"
- >
- Start with Level 1 <ArrowRight className="ml-2 h-4 w-4" />
- </Link>
+ {plan.plan_key === 'ordering' && plan.is_active ? (
+  <Link href={'/shop-owner/profile' as any} className="mt-8 inline-flex items-center rounded-full bg-[#0071e3] px-6 py-3 text-sm font-semibold text-white hover:bg-[#0077ed]">
+   Get started <ArrowRight className="ml-2 h-4 w-4" />
+  </Link>
+ ) : plan.online_payments_enabled ? (
+  <p className="mt-8 rounded-2xl bg-[#f5f5f7] p-4 text-xs leading-relaxed text-[#6e6e73]">Online checkout still requires a configured payment provider.</p>
+ ) : null}
  </article>
- <article className="rounded-[32px] bg-white p-8">
- <p className="text-xs font-semibold uppercase tracking-wide text-[#0071e3]">Level 2</p>
- <h2 className="mt-3 text-3xl font-semibold">Online payments</h2>
- <p className="mt-2 text-sm leading-relaxed text-[#6e6e73]">
- Adds online payment processing to ordering after a payment provider is integrated and configured.
- </p>
- <ul className="mt-6 space-y-3 text-sm text-[#515154]">
- <li className="flex gap-2"><CreditCard className="h-4 w-4 shrink-0 text-[#0071e3]" /> Online checkout through a configured provider</li>
- <li className="flex gap-2"><CreditCard className="h-4 w-4 shrink-0 text-[#0071e3]" /> Payment status and provider-dependent refunds</li>
- <li className="flex gap-2"><XCircle className="h-4 w-4 shrink-0 text-[#86868b]" /> Not available until gateway integration is complete</li>
- </ul>
- <p className="mt-8 rounded-2xl bg-[#f5f5f7] p-4 text-xs leading-relaxed text-[#6e6e73]">
- No gateway, transaction fee, or settlement capability is currently represented as active.
- </p>
- </article>
+ ))}
  </div>
  </section>
 
@@ -170,13 +175,13 @@ export default function PlansPage() {
  <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
  <div className="max-w-2xl mx-auto text-center mb-12">
  <p className="text-xs font-semibold text-[#0071e3] mb-2">
- Level 1 included features
+ Included platform features
  </p>
  <h2 className="text-2xl sm:text-4xl font-semibold tracking-tight text-[#1d1d1f]">
  Order without online payment.
  </h2>
  <p className="text-sm sm:text-base text-[#6e6e73] mt-2">
- Level 1 provides the digital menu and order flow; customers pay the stall directly at the counter.
+ QR ordering, kitchen management, venue tools, and customer discovery in one platform.
  </p>
  </div>
 
@@ -206,18 +211,18 @@ export default function PlansPage() {
  Plan comparison
  </p>
  <h2 className="text-2xl sm:text-4xl font-semibold tracking-tight text-[#1d1d1f]">
- Level 1 vs. Level 2
+ Compare plan features
  </h2>
  <p className="text-sm sm:text-base text-[#6e6e73] mt-2">
- Level 2 online payments require a payment provider integration that is not yet configured.
+ Plan availability and features are managed by the platform administrator.
  </p>
  </div>
 
  <div className="bg-white rounded-[32px] overflow-hidden">
  <div className="grid grid-cols-[1.2fr_1fr_1fr] p-5 sm:p-6 bg-[#f5f5f7] text-xs font-semibold text-[#86868b]">
  <div>Feature</div>
- <div className="text-[#0071e3]">Level 1 · Ordering</div>
- <div className="text-[#86868b]">Level 2 · Online payments</div>
+ <div className="text-[#0071e3]">{orderingPlan?.name ?? 'Ordering'}</div>
+ <div className="text-[#86868b]">{onlinePaymentsPlan?.name ?? 'Online payments'}</div>
  </div>
 
  <div className=" text-xs sm:text-sm">
@@ -277,7 +282,7 @@ export default function PlansPage() {
  Ready to bring your food hall into the future?
  </h2>
  <p className="mt-4 text-sm sm:text-base text-white/70 max-w-xl mx-auto">
- Zero setup fees. Zero monthly subscriptions. Activate your food hall today in under 15 minutes.
+ Review the available plans above and start setting up your food hall.
  </p>
 
  <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
@@ -285,7 +290,7 @@ export default function PlansPage() {
  href={'/shop-owner/profile' as any}
  className="w-full sm:w-auto px-8 py-3.5 rounded-full text-sm font-semibold bg-[#0071e3] text-white hover:bg-[#0077ed] "
  >
- Get Started for Free
+ Get Started
  </Link>
  <Link
  href="/"
